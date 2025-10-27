@@ -14,11 +14,12 @@ export class SupabaseService {
   signUp(email: string, password: string) {
     return this.supabase.auth.signUp({ email, password }); // envía mail de verificación
   }
+  
   getSession() { return this.supabase.auth.getSession(); }
   getUser() { return this.supabase.auth.getUser(); }
 
   // STORAGE
-  async uploadAvatar(userId: string, file: File, idx: 1|2) {
+  async uploadAvatar(userId: string, file: File, idx: 1 | 2) {
     const path = `${userId}/${Date.now()}_${idx}_${file.name}`;
     const { error } = await this.supabase.storage.from('avatars').upload(path, file);
     if (error) throw error;
@@ -26,11 +27,13 @@ export class SupabaseService {
     return pub.publicUrl;
   }
 
+  
   // DB
   async upsertProfile(profile: any) {
     const { error } = await this.supabase.from('profiles').upsert(profile, { onConflict: 'id' });
     if (error) throw error;
   }
+
   async getMyProfile() {
     const { data, error } = await this.supabase
       .from('profiles')
@@ -39,7 +42,27 @@ export class SupabaseService {
     if (error) throw error;
     return data;
   }
-  
+
+  // src/app/services/supabase.service.ts
+  // ... resto del servicio
+  iniciarSesion(correo: string, contrasenia: string) {
+    return this.supabase.auth.signInWithPassword({ email: correo, password: contrasenia });
+  }
+  cerrarSesion() {
+    return this.supabase.auth.signOut();
+  }
+  obtenerUsuarioActual() {
+    return this.supabase.auth.getUser(); // { data: { user }, error }
+  }
+  obtenerPerfilPorId(id: string) {
+    return this.supabase
+      .from('profiles')
+      .select('id, rol, aprobado, nombre, apellido')
+      .eq('id', id)
+      .single();
+  }
+
+
 }
 
 

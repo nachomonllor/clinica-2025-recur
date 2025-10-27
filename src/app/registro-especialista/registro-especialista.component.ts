@@ -138,12 +138,12 @@ export class RegistroEspecialistaComponent implements OnInit {
         nombre: fv.nombre!,
         apellido: fv.apellido!,
         dni: fv.dni!,
-        obra_social: null,                 // no aplica acá
+        obra_social: null,                 // no usamos obra social para especialista
         fecha_nacimiento: fv.fechaNacimiento!,
         avatar_url: avatarUrl,
         imagen2_url: null,                 // no usamos segunda imagen para especialista
-        aprobado: false,                   // ← clave: requiere aprobación de Admin
-        especialidades                     // ← text[]
+        aprobado: false,                   // <===== requiere aprobación de Admin
+        especialidades                     // <=== array de especialidades
       });
 
       Swal.fire({

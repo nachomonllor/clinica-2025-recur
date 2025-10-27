@@ -1,0 +1,29 @@
+<!-- src/app/components/login-paciente/login-paciente.component.html -->
+<mat-card class="login-card" *ngIf="formularioLogin as f">
+    <mat-card-title>Iniciar sesión – Paciente</mat-card-title>
+
+    <form [formGroup]="f" (ngSubmit)="iniciarSesion()">
+        <div *ngIf="error" class="login-error">{{ error }}</div>
+
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Correo electrónico</mat-label>
+            <input matInput type="email" formControlName="email" />
+            <mat-error *ngIf="f.get('email')?.hasError('required')">El correo es obligatorio.</mat-error>
+            <mat-error *ngIf="f.get('email')?.hasError('email')">Formato inválido.</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Contraseña</mat-label>
+            <input matInput type="password" formControlName="password" />
+            <mat-error *ngIf="f.get('password')?.hasError('required')">La contraseña es obligatoria.</mat-error>
+            <mat-error *ngIf="f.get('password')?.hasError('minlength')">Mínimo 6 caracteres.</mat-error>
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" class="full-width" type="submit" [disabled]="f.invalid || cargando">
+            <ng-container *ngIf="!cargando; else spinner">Ingresar</ng-container>
+            <ng-template #spinner>
+                <mat-progress-spinner diameter="20" mode="indeterminate"></mat-progress-spinner>
+            </ng-template>
+        </button>
+    </form>
+</mat-card>
