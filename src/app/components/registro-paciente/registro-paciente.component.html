@@ -1,1 +1,137 @@
-<p>registro-paciente works!</p>
+
+<!-- 
+<mat-card class="registro-container">
+  <mat-card-title>Registro de Paciente</mat-card-title>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+    <mat-grid-list cols="2" rowHeight="auto" gutterSize="16px">
+   
+      <mat-grid-tile colspan="1">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nombre</mat-label>
+          <input matInput formControlName="nombre" />
+        </mat-form-field>
+      </mat-grid-tile>
+
+      <mat-grid-tile colspan="1">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Apellido</mat-label>
+          <input matInput formControlName="apellido" />
+        </mat-form-field>
+      </mat-grid-tile>
+
+      <mat-grid-tile colspan="1">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>DNI</mat-label>
+          <input matInput formControlName="dni" />
+        </mat-form-field>
+      </mat-grid-tile>
+
+      <mat-grid-tile colspan="1">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Obra Social</mat-label>
+          <input matInput formControlName="obraSocial" />
+        </mat-form-field>
+      </mat-grid-tile>
+
+      <mat-grid-tile colspan="1">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Fecha de nacimiento</mat-label>
+          <input matInput type="date" formControlName="fechaNacimiento" />
+        </mat-form-field>
+      </mat-grid-tile>
+
+      <mat-grid-tile colspan="1">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Correo Electrónico</mat-label>
+          <input matInput type="email" formControlName="email" />
+        </mat-form-field>
+      </mat-grid-tile>
+
+      <mat-grid-tile colspan="2">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Contraseña</mat-label>
+          <input matInput type="password" formControlName="password" />
+        </mat-form-field>
+      </mat-grid-tile>
+    </mat-grid-list>
+
+    <div class="file-section">
+      <button mat-raised-button color="primary" type="button" (click)="file1.click()">Seleccionar Imagen 1</button>
+      <input #file1 type="file" hidden (change)="onFileChange($event,1)" accept="image/*" />
+      <div class="preview" *ngIf="imgPrev1"><img [src]="imgPrev1" alt="Img 1" /></div>
+
+      <button mat-raised-button color="primary" type="button" (click)="file2.click()">Seleccionar Imagen 2</button>
+      <input #file2 type="file" hidden (change)="onFileChange($event,2)" accept="image/*" />
+      <div class="preview" *ngIf="imgPrev2"><img [src]="imgPrev2" alt="Img 2" /></div>
+    </div>
+
+    <button mat-raised-button color="accent" class="full-width" [disabled]="form.invalid" type="submit">
+      Registrarse
+    </button>
+
+  </form>
+</mat-card> -->
+
+
+
+
+<mat-card class="registro-container">
+  <mat-card-title>Registro de Paciente</mat-card-title>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Nombre</mat-label>
+      <input matInput formControlName="nombre" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Apellido</mat-label>
+      <input matInput formControlName="apellido" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>DNI</mat-label>
+      <input matInput formControlName="dni" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Obra Social</mat-label>
+      <input matInput formControlName="obraSocial" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Fecha de nacimiento</mat-label>
+      <input matInput type="date" formControlName="fechaNacimiento" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Correo Electrónico</mat-label>
+      <input matInput type="email" formControlName="email" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Contraseña</mat-label>
+      <input matInput type="password" formControlName="password" />
+    </mat-form-field>
+
+    <div class="full-width file-group">
+      <button mat-raised-button type="button" color="primary" (click)="file1.click()">Seleccionar Imagen 1</button>
+      <input #file1 type="file" hidden (change)="onFileChange($event,1)" accept="image/*" />
+      <div class="preview" *ngIf="imgPrev1"><img [src]="imgPrev1" alt="Img 1" /></div>
+    </div>
+
+    <div class="full-width file-group">
+      <button mat-raised-button type="button" color="primary" (click)="file2.click()">Seleccionar Imagen 2</button>
+      <input #file2 type="file" hidden (change)="onFileChange($event,2)" accept="image/*" />
+      <div class="preview" *ngIf="imgPrev2"><img [src]="imgPrev2" alt="Img 2" /></div>
+    </div>
+
+    <button mat-raised-button color="accent" class="full-width" [disabled]="form.invalid" type="submit">
+      Registrarse
+    </button>
+  </form>
+</mat-card> 
+
