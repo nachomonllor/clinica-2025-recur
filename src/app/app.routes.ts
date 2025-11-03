@@ -38,6 +38,10 @@ export const routes: Routes = [
        TurnosEspecialidadComponent
  
   */
+
+ /////// PRUEBA MODIF //////
+
+
   // home por ahora
   { path: '', redirectTo: 'login-paciente', pathMatch: 'full' },
   { path: '**', redirectTo: 'login-paciente' },
