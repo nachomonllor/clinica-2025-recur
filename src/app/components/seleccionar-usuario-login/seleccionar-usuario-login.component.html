@@ -1,0 +1,41 @@
+
+<mat-card class="selector-card">
+  <mat-card-header>
+    <mat-card-title>Iniciar sesión</mat-card-title>
+    <mat-card-subtitle>¿Con qué rol desea ingresar?</mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content class="button-group">
+    <button mat-raised-button color="primary"
+            (click)="router.navigate(['/login-paciente'])">
+      Paciente
+    </button>
+    <button mat-raised-button color="accent"
+            (click)="router.navigate(['/login-especialista'])">
+      Especialista
+    </button>
+  </mat-card-content>
+</mat-card>
+
+
+<!-- <div class="seleccionar-usuario-container">
+  <mat-card class="selector-card">
+    <mat-card-header>
+      <mat-card-title>Iniciar sesión</mat-card-title>
+      <mat-card-subtitle>¿Con qué rol desea ingresar?</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div class="button-group">
+        <button mat-raised-button color="primary"
+                (click)="router.navigate(['/auth','login','paciente'])">
+          Paciente
+        </button>
+        <button mat-raised-button color="accent"
+                (click)="router.navigate(['/auth','login','especialista'])">
+          Especialista
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div> -->

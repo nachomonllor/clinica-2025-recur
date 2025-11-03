@@ -1,0 +1,188 @@
+<mat-card>
+  <mat-card-title>Mis turnos</mat-card-title>
+
+  <div class="toolbar">
+    <mat-form-field appearance="outline">
+      <mat-label>Buscar</mat-label>
+      <input matInput #f (input)="applyFilter(f.value)" placeholder="Especialidad, especialista o estado" />
+    </mat-form-field>
+  </div>
+
+  <!-- antes -->
+  <!-- <input matInput (keyup)="applyFilter($event.target.value)" ... /> -->
+  <!-- después (seguro con referencia #f y (input)) -->
+  <!-- <input matInput #f (input)="applyFilter(f.value)"
+       placeholder="Especialidad, especialista o estado" /> -->
+
+  <div class="table-wrap">
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z1">
+
+      <!-- ID -->
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef>#</th>
+        <td mat-cell *matCellDef="let t">{{ t.id | slice:0:8 }}</td>
+      </ng-container>
+
+      <!-- Fecha -->
+      <ng-container matColumnDef="fecha">
+        <th mat-header-cell *matHeaderCellDef>Fecha</th>
+        <td mat-cell *matCellDef="let t">{{ t.fecha | date:'shortDate' }}</td>
+      </ng-container>
+
+      <!-- Hora -->
+      <ng-container matColumnDef="hora">
+        <th mat-header-cell *matHeaderCellDef>Hora</th>
+        <td mat-cell *matCellDef="let t">{{ t.hora }}</td>
+      </ng-container>
+
+      <!-- Especialidad -->
+      <ng-container matColumnDef="especialidad">
+        <th mat-header-cell *matHeaderCellDef>Especialidad</th>
+        <td mat-cell *matCellDef="let t">{{ t.especialidad }}</td>
+      </ng-container>
+
+      <!-- Especialista -->
+      <ng-container matColumnDef="especialista">
+        <th mat-header-cell *matHeaderCellDef>Especialista</th>
+        <td mat-cell *matCellDef="let t">{{ t.especialista }}</td>
+      </ng-container>
+
+      <!-- Estado -->
+      <ng-container matColumnDef="estado">
+        <th mat-header-cell *matHeaderCellDef>Estado</th>
+        <td mat-cell *matCellDef="let t">
+          <span class="chip" [class.ok]="t.estado==='realizado'"
+            [class.warn]="t.estado==='pendiente' || t.estado==='aceptado'"
+            [class.bad]="t.estado==='cancelado' || t.estado==='rechazado'">
+            {{ t.estado }}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- Acciones -->
+      <ng-container matColumnDef="acciones">
+        <th mat-header-cell *matHeaderCellDef>Acciones</th>
+        <td mat-cell *matCellDef="let t">
+          <button mat-button color="warn" (click)="cancelarTurno(t)" [disabled]="!puedeCancelar(t)">
+            <mat-icon>event_busy</mat-icon> Cancelar
+          </button>
+          <button mat-button (click)="verResena(t)" *ngIf="t.resena">
+            <mat-icon>rate_review</mat-icon> Reseña
+          </button>
+          <button mat-button color="primary" (click)="completarEncuesta(t)"
+            *ngIf="t.estado==='realizado' && !t.encuesta">
+            <mat-icon>assignment</mat-icon> Encuesta
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns" class="header"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </div>
+</mat-card>
+
+<!-- Diálogo de confirmación -->
+<ng-template #confirmDialog let-data>
+  <h2 mat-dialog-title>Confirmar</h2>
+  <mat-dialog-content>{{ data?.message }}</mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close="false">No</button>
+    <button mat-raised-button color="warn" [mat-dialog-close]="true">Sí, cancelar</button>
+  </mat-dialog-actions>
+</ng-template>
+
+
+
+
+
+<!-- <mat-card class="mis-turnos-container">
+    <mat-card-header>
+        <mat-card-title>Mis Turnos</mat-card-title>
+    </mat-card-header>
+
+    <div class="filter-container">
+        <mat-form-field appearance="outline" style="width: 60%;">
+            <mat-label>Filtra por especialidad o especialista</mat-label>
+            <input matInput #filterInput (keyup)="applyFilter(filterInput.value)" placeholder="Buscar…">
+            <button mat-icon-button matSuffix aria-label="Limpiar búsqueda" *ngIf="dataSource.filter"
+                (click)="applyFilter('')">
+                <mat-icon>close</mat-icon>
+            </button>
+        </mat-form-field>
+    </div>
+
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+        <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef> ID </th>
+            <td mat-cell *matCellDef="let t"> {{ t.id }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="fecha">
+            <th mat-header-cell *matHeaderCellDef> Fecha </th>
+            <td mat-cell *matCellDef="let t"> {{ t.fecha | date:'dd/MM/yyyy' }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="hora">
+            <th mat-header-cell *matHeaderCellDef> Hora </th>
+            <td mat-cell *matCellDef="let t"> {{ t.hora }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="especialidad">
+            <th mat-header-cell *matHeaderCellDef> Especialidad </th>
+            <td mat-cell *matCellDef="let t"> {{ t.especialidad }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="especialista">
+            <th mat-header-cell *matHeaderCellDef> Especialista </th>
+            <td mat-cell *matCellDef="let t"> {{ t.especialista }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="estado">
+            <th mat-header-cell *matHeaderCellDef> Estado </th>
+            <td mat-cell *matCellDef="let t"> {{ t.estado | titlecase }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="acciones">
+            <th mat-header-cell *matHeaderCellDef> Acciones </th>
+            <td mat-cell *matCellDef="let t">
+                <button mat-icon-button color="warn" (click)="cancelarTurno(t)" [disabled]="t.estado === 'realizado'"
+                    matTooltip="Cancelar turno" aria-label="Cancelar turno">
+                    <mat-icon>cancel</mat-icon>
+                </button>
+
+                <button mat-icon-button color="primary" *ngIf="t.resena" (click)="verResena(t)" matTooltip="Ver reseña"
+                    aria-label="Ver reseña">
+                    <mat-icon>visibility</mat-icon>
+                </button>
+
+                <button mat-icon-button color="accent" *ngIf="t.estado === 'realizado' && t.resena && !t.encuesta"
+                    (click)="completarEncuesta(t)" matTooltip="Completar encuesta" aria-label="Completar encuesta">
+                    <mat-icon>assignment</mat-icon>
+                </button>
+
+                <button mat-icon-button *ngIf="t.estado === 'realizado'" (click)="calificarAtencion(t)"
+                    matTooltip="Calificar atención" aria-label="Calificar atención">
+                    <mat-icon>star_rate</mat-icon>
+                </button>
+            </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+    <p *ngIf="!dataSource.data.length" class="no-data">
+        No se encontraron turnos.
+    </p>
+</mat-card>
+
+<ng-template #confirmDialog let-data>
+    <h2 mat-dialog-title>Confirmar</h2>
+    <mat-dialog-content> {{ data.message }} </mat-dialog-content>
+    <mat-dialog-actions align="end">
+        <button mat-button mat-dialog-close="false">No</button>
+        <button mat-raised-button color="warn" [mat-dialog-close]="true">Sí</button>
+    </mat-dialog-actions>
+</ng-template> -->

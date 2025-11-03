@@ -1,0 +1,54 @@
+<div class="selector-container">
+  <h2>Selecciona tu tipo de usuario</h2>
+  <div class="cards">
+    <mat-card class="card" (click)="irAPaciente()">
+      <div class="icon">
+        <img src="assets/icons/paciente.JPG" alt="Paciente">
+      </div>
+      <button mat-button>Paciente</button>
+    </mat-card>
+
+    <mat-card class="card" (click)="irAEspecialista()">
+      <div class="icon">
+        <img src="assets/icons/especialista.JPG" alt="Especialista">
+      </div>
+      <button mat-button>Especialista</button>
+    </mat-card>
+  </div>
+</div>
+
+
+<!-- <div class="seleccionar-usuario-container">
+  <mat-card class="selector-card">
+    <mat-card-header>
+      <mat-card-title>Bienvenido</mat-card-title>
+      <mat-card-subtitle>Seleccione su rol</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div class="button-group">
+        <button mat-raised-button color="primary"
+                (click)="router.navigate(['/auth','login','paciente'])">
+          Iniciar sesión como Paciente
+        </button>
+
+        <button mat-raised-button color="accent"
+                (click)="router.navigate(['/auth','login','especialista'])">
+          Iniciar sesión como Especialista
+        </button>
+      </div>
+
+      <div class="button-group">
+        <button mat-stroked-button color="primary"
+                (click)="router.navigate(['/auth','register','paciente'])">
+          Registrarme como Paciente
+        </button>
+
+        <button mat-stroked-button color="accent"
+                (click)="router.navigate(['/auth','register','especialista'])">
+          Registrarme como Especialista
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div> -->

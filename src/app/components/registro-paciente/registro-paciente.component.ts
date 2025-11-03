@@ -67,7 +67,7 @@ export class RegistroPacienteComponent implements OnInit {
       const url2 = await this.supa.uploadAvatar(userId, fv.imagenPerfil2, 2);
 
       // 3) Upsert profile (rol PACIENTE por defecto; especialista lo verá Admin)
-      await this.supa.upsertProfile({
+      await this.supa.upsertPerfil({
         id: userId,
         rol: 'paciente',
         nombre: fv.nombre,

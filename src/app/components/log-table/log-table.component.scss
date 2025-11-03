@@ -1,0 +1,16 @@
+.log-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.log-table th,
+.log-table td {
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.log-table thead {
+  background-color: #f5f5f5;
+}

@@ -1,0 +1,90 @@
+/* Centrar el contenido del componente en la pantalla */
+:host {
+  display: grid;
+  place-items: center;
+  min-height: calc(100vh - 64px);
+  padding: 24px;
+}
+
+/* Tarjeta principal */
+.login-card {
+  width: 100%;
+  max-width: 420px;
+  padding: 20px 20px 24px;
+  border-radius: 14px;
+
+  /* Superficie blanca suave, no “blanco puro” */
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid var(--border, rgba(2, 42, 84, 0.06));
+  box-shadow: 0 10px 28px rgba(2, 42, 84, 0.08);
+  backdrop-filter: blur(2px);
+
+  /* Entrada sutil para sumar puntos a “animaciones” */
+  animation: loginFadeIn 320ms ease-out both;
+}
+
+@keyframes loginFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Título */
+mat-card-title {
+  text-align: center;
+  font-size: 1.35rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+  letter-spacing: .2px;
+  color: var(--text, #0f172a);
+}
+
+/* Campos Material */
+.full-width { width: 100%; }
+mat-form-field { display: block; margin-bottom: 12px; }
+
+/* Mensaje de error general (sobre el formulario) */
+.login-error {
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: .93rem;
+  line-height: 1.2rem;
+  color: #b42318;                 /* rojo clínico sobrio */
+  background: #fee4e2;            /* fondo suave */
+  border: 1px solid #f8b4b4;
+}
+
+/* Botón principal */
+button.full-width {
+  width: 100%;
+  height: 44px;
+  font-weight: 600;
+  letter-spacing: .2px;
+}
+
+/* Spinner dentro del botón: centrado vertical */
+mat-progress-spinner {
+  vertical-align: middle;
+}
+
+/* Accesibilidad: enfoque claro en inputs */
+:host ::ng-deep .mdc-text-field--outlined.mdc-text-field--focused .mdc-notched-outline__leading,
+:host ::ng-deep .mdc-text-field--outlined.mdc-text-field--focused .mdc-notched-outline__notch,
+:host ::ng-deep .mdc-text-field--outlined.mdc-text-field--focused .mdc-notched-outline__trailing {
+  border-color: #1e40af !important; /* azul confiable */
+}
+
+/* Placeholders algo más tenues */
+:host ::ng-deep input::placeholder {
+  color: rgba(15, 23, 42, .55);
+}
+
+:host{display:grid;place-items:center;min-height:calc(100vh - 64px);padding:24px}
+.login-card{max-width:420px;width:100%;padding:20px;border-radius:14px;background:#fff}
+.full-width{width:100%}
+
+/* Responsive fino */
+@media (max-width: 480px) {
+  .login-card { padding: 16px 16px 20px; }
+  mat-card-title { font-size: 1.2rem; }
+}

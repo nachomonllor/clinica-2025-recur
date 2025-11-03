@@ -1,0 +1,128 @@
+<mat-card class="mis-turnos-container">
+    <mat-card-header>
+        <mat-card-title>Mis Turnos (Especialista)</mat-card-title>
+    </mat-card-header>
+
+    <!-- filtro único -->
+    <div class="filter-container">
+        <mat-form-field appearance="outline" style="width: 60%;">
+            <mat-label>Filtra por especialidad o paciente</mat-label>
+            <input matInput #filterInput (keyup)="applyFilter(filterInput.value)" placeholder="Buscar…">
+            <button mat-icon-button matSuffix aria-label="Limpiar búsqueda" *ngIf="dataSource.filter"
+                (click)="applyFilter('')">
+                <mat-icon>close</mat-icon>
+            </button>
+        </mat-form-field>
+    </div>
+
+    <!-- tabla -->
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+        <!-- ID -->
+        <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef> ID </th>
+            <td mat-cell *matCellDef="let t"> {{ t.id }} </td>
+        </ng-container>
+
+        <!-- Fecha -->
+        <ng-container matColumnDef="fecha">
+            <th mat-header-cell *matHeaderCellDef> Fecha </th>
+            <!-- td mat-cell *matCellDef="let t"> {{ t.fecha | date:'dd/MM/yyyy' }} </td -->
+
+             <td mat-cell *matCellDef="let t"> {{ t.fecha }} </td>
+        </ng-container>
+
+       
+        <!-- Hora -->
+        <ng-container matColumnDef="hora">
+            <th mat-header-cell *matHeaderCellDef> Hora </th>
+            <td mat-cell *matCellDef="let t"> {{ t.hora }} </td>
+        </ng-container>
+
+        <!-- Especialidad -->
+        <ng-container matColumnDef="especialidad">
+            <th mat-header-cell *matHeaderCellDef> Especialidad </th>
+            <td mat-cell *matCellDef="let t"> {{ t.especialidad }} </td>
+        </ng-container>
+
+        <!-- Paciente -->
+        <!-- <ng-container matColumnDef="paciente">
+            <th mat-header-cell *matHeaderCellDef> Paciente </th>
+            <td mat-cell *matCellDef="let t">
+                {{ t.pacienteNombre }} (ID: {{ t.pacienteId }})
+            </td>
+        </ng-container> -->
+        <!-- mis-turnos-especialista.component.html -->
+
+        <ng-container matColumnDef="paciente">
+            <th mat-header-cell *matHeaderCellDef> Paciente </th>
+            <td mat-cell *matCellDef="let t">
+                {{ t.paciente }}
+            </td>
+        </ng-container>
+
+        <!-- Estado -->
+        <ng-container matColumnDef="estado">
+            <th mat-header-cell *matHeaderCellDef> Estado </th>
+            <td mat-cell *matCellDef="let t"> {{ t.estado | titlecase }} </td>
+        </ng-container>
+
+        <!-- Acciones -->
+        <ng-container matColumnDef="acciones">
+            <th mat-header-cell *matHeaderCellDef> Acciones </th>
+            <td mat-cell *matCellDef="let t">
+                <!-- Aceptar -->
+                <button mat-icon-button color="primary"
+                    *ngIf="t.estado !== 'realizado' && t.estado !== 'cancelado' && t.estado !== 'rechazado'"
+                    (click)="aceptarTurno(t)" matTooltip="Aceptar turno">
+                    <mat-icon>check_circle</mat-icon>
+                </button>
+
+                <!-- Rechazar -->
+                <button mat-icon-button color="warn"
+                    *ngIf="t.estado !== 'aceptado' && t.estado !== 'realizado' && t.estado !== 'cancelado'"
+                    (click)="rechazarTurno(t)" matTooltip="Rechazar turno">
+                    <mat-icon>block</mat-icon>
+                </button>
+
+                <!-- Cancelar -->
+                <button mat-icon-button color="warn"
+                    *ngIf="t.estado !== 'aceptado' && t.estado !== 'realizado' && t.estado !== 'rechazado'"
+                    (click)="cancelarTurno(t)" matTooltip="Cancelar turno">
+                    <mat-icon>cancel</mat-icon>
+                </button>
+
+                <!-- Finalizar -->
+                <button mat-icon-button color="accent" *ngIf="t.estado === 'aceptado'" (click)="finalizarTurno(t)"
+                    matTooltip="Finalizar turno">
+                    <mat-icon>event_available</mat-icon>
+                </button>
+
+                <!-- Ver reseña -->
+                <button mat-icon-button color="primary" *ngIf="t.resena" (click)="verResena(t)" matTooltip="Ver reseña">
+                    <mat-icon>visibility</mat-icon>
+                </button>
+            </td>
+        </ng-container>
+
+        <!-- filas -->
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+    <p *ngIf="!dataSource.data.length" class="no-data">
+        No se encontraron turnos.
+    </p>
+</mat-card>
+
+<!-- diálogo de confirmación / comentario / reseña -->
+<ng-template #confirmDialog let-data>
+    <h2 mat-dialog-title>Confirmar</h2>
+    <mat-dialog-content>{{ data.message }}</mat-dialog-content>
+    <mat-dialog-actions align="end">
+        <button mat-button mat-dialog-close="false">Cancelar</button>
+        <button mat-raised-button color="primary" [mat-dialog-close]="true">
+            Aceptar
+        </button>
+    </mat-dialog-actions>
+</ng-template>

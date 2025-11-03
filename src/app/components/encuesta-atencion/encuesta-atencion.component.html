@@ -1,0 +1,82 @@
+<mat-card class="encuesta-card">
+    <mat-card-header>
+        <mat-card-title>Encuesta de Atención</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content [formGroup]="encuestaForm">
+        <!-- 1. Cuadro de texto -->
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Comentario</mat-label>
+            <textarea matInput formControlName="comentario" rows="3" placeholder="Escribe tu comentario"></textarea>
+            <mat-error *ngIf="encuestaForm.get('comentario')?.hasError('required')">
+                El comentario es obligatorio
+            </mat-error>
+        </mat-form-field>
+
+        <!-- 2. Estrellas para calificar -->
+        <div class="rating-group">
+            <label class="group-label">Tu calificación:</label>
+            <ng-container *ngFor="let star of starIcons">
+                <button mat-icon-button type="button" (click)="setRating(star)">
+                    <mat-icon>
+                        {{ encuestaForm.get('calificacion')?.value >= star
+                        ? 'star'
+                        : 'star_border' }}
+                    </mat-icon>
+                </button>
+            </ng-container>
+            <mat-error *ngIf="encuestaForm.get('calificacion')?.hasError('required')">
+                Selecciona una calificación
+            </mat-error>
+        </div>
+
+        <!-- 3. Radio button -->
+        <div class="full-width">
+            <label class="group-label">¿Recomiendas al profesional?</label>
+            <mat-radio-group formControlName="opcion">
+                <mat-radio-button value="si">Sí</mat-radio-button>
+                <mat-radio-button value="no">No</mat-radio-button>
+            </mat-radio-group>
+            <mat-error *ngIf="encuestaForm.get('opcion')?.hasError('required')">
+                Elige una opción
+            </mat-error>
+        </div>
+
+        <!-- 4. Checkboxes -->
+        <div formGroupName="aspectos" class="full-width">
+            <label class="group-label">¿Qué aspectos destacas?</label>
+            <mat-checkbox formControlName="puntualidad">Puntualidad</mat-checkbox>
+            <mat-checkbox formControlName="amabilidad">Amabilidad</mat-checkbox>
+            <mat-checkbox formControlName="limpieza">Limpieza</mat-checkbox>
+            <mat-checkbox formControlName="explicacion">Explicación</mat-checkbox>
+        </div>
+
+        <!-- 5. Control de rango -->
+        <!-- <div class="full-width range-group">
+            <label class="group-label">Califica del 1 al 10:</label>
+            <mat-slider [min]="1" [max]="10" [step]="1" thumbLabel tickInterval="1">
+                 el formControlName va aquí 
+                <input matSliderThumb formControlName="rango" />
+            </mat-slider>
+        </div> -->
+
+        <div class="full-width range-group">
+            <label class="group-label">Califica del 1 al 10:</label>
+            <mat-slider [min]="1" [max]="10" [step]="1" thumbLabel tickInterval="1">
+                <input matSliderThumb formControlName="rango" />
+            </mat-slider>
+            <span class="slider-value">
+                {{ encuestaForm.get('rango')?.value }}
+            </span>
+        </div>
+
+
+    </mat-card-content>
+
+    <mat-card-actions align="end">
+        <button mat-raised-button color="primary" (click)="onSubmit()">
+            Enviar
+        </button>
+    </mat-card-actions>
+
+</mat-card>

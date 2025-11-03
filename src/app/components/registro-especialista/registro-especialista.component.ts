@@ -1,15 +1,3 @@
-// // import { Component } from '@angular/core';
-
-// // @Component({
-// //   selector: 'app-registro-especialista',
-// //   standalone: true,
-// //   imports: [],
-// //   templateUrl: './registro-especialista.component.html',
-// //   styleUrl: './registro-especialista.component.scss'
-// // })
-// // export class RegistroEspecialistaComponent {
-
-// // }
 
 // src/app/components/registro-especialista/registro-especialista.component.ts
 import { Component, OnInit } from '@angular/core';
@@ -23,7 +11,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatSelectModule } from '@angular/material/select';
 import Swal from 'sweetalert2';
-import { SupabaseService } from '../../services/supabase.service';
+import { SupabaseService } from '../../../services/supabase.service';
 
 @Component({
   selector: 'app-registro-especialista',
@@ -42,7 +30,9 @@ import { SupabaseService } from '../../services/supabase.service';
 })
 export class RegistroEspecialistaComponent implements OnInit {
 
-  // EXTEERNDER LA LISTA CUANDO SEA NECESARIO
+  // private supa = inject(SupabaseService).client; // 👈 acá queda “el cliente”
+
+  // EXTEERNDER LA LISTA CUANDO SEA NECESARI
   especialidadesBase = [
     'Cardiología', 'Dermatología', 'Ginecología', 'Pediatría', 'Neurología', 'Otro'
   ];
@@ -62,8 +52,8 @@ export class RegistroEspecialistaComponent implements OnInit {
   }>;
 
   constructor(
-    private fb: FormBuilder,
-    private supa: SupabaseService
+    public fb: FormBuilder,
+    public supa: SupabaseService
   ) {}
 
   ngOnInit(): void {
@@ -103,6 +93,19 @@ export class RegistroEspecialistaComponent implements OnInit {
     reader.onload = () => this.imagenPrevia = reader.result as string;
     reader.readAsDataURL(file);
   }
+    
+  // // DB
+  // async upsertPerfil(profile: any) {
+  //   const { error } = await this.supa.from('profiles').upsert(profile, { onConflict: 'id' });
+  //   if (error) throw error;
+  // }
+
+  async upsertPerfil(profile: any) {
+    const { error } = await this.supa.client
+      .from('profiles')
+      .upsert(profile, { onConflict: 'id' });
+    if (error) throw error;
+  }
 
   async onSubmit(): Promise<void> {
     if (this.registroForm.invalid) {
@@ -111,7 +114,7 @@ export class RegistroEspecialistaComponent implements OnInit {
     }
 
     const fv = this.registroForm.value;
-    this._toggleLoading(true);
+    //this._toggleLoading(true);
 
     try {
       // 1) Alta en Auth (envía mail de verificación)
@@ -132,7 +135,7 @@ export class RegistroEspecialistaComponent implements OnInit {
       const avatarUrl = await this.supa.uploadAvatar(userId, fv.imagenPerfil!, 1);
 
       // 4) Upsert en profiles (rol especialista, pendiente de aprobación)
-      await this.supa.upsertProfile({
+      await this.supa.upsertPerfil({
         id: userId,
         rol: 'especialista',
         nombre: fv.nombre!,
@@ -140,10 +143,11 @@ export class RegistroEspecialistaComponent implements OnInit {
         dni: fv.dni!,
         obra_social: null,                 // no usamos obra social para especialista
         fecha_nacimiento: fv.fechaNacimiento!,
+        email: fv.email!,
         avatar_url: avatarUrl,
         imagen2_url: null,                 // no usamos segunda imagen para especialista
-        aprobado: false,                   // <===== requiere aprobación de Admin
-        especialidades                     // <=== array de especialidades
+        aprobado: false                  // <===== requiere aprobación de Admin
+        //especialidades                     // <=== array de especialidades
       });
 
       Swal.fire({
@@ -159,14 +163,18 @@ export class RegistroEspecialistaComponent implements OnInit {
     } catch (e: any) {
       Swal.fire('Error', e.message || e, 'error');
     } finally {
-      this._toggleLoading(false);
+      //this._toggleLoading(false);
     }
   }
 
-  private _toggleLoading(v: boolean) {
-    // Podés agregar spinner/overlay aquí si querés.
-  }
 }
+
+
+
+//-------------------------------------------------------------------------------------------
+//----------------------- ANTES ERA ASI -------------------------------------
+//---------------------------------------------------------------------------
+
 
 
 // // registro-especialista.component.ts

@@ -1,0 +1,93 @@
+:host { display:block; }
+mat-card { margin: 1rem; }
+
+.toolbar {
+  margin: .5rem 0 1rem;
+  display: flex;
+  gap: .75rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.table-wrap {
+  overflow: auto;
+  border: 1px solid #eee;
+  border-radius: 8px;
+}
+
+table { width: 100%; background: #fff; }
+.header th { background: #fafafa; }
+
+.chip {
+  border: 1px solid #ddd;
+  border-radius: 999px;
+  padding: .1rem .5rem;
+  background: #f7f7f7;
+  text-transform: capitalize;
+}
+.chip.ok   { border-color: #2e7d32; color:#2e7d32; background: #e8f5e9; }
+.chip.warn { border-color: #f9a825; color:#f9a825; background: #fff8e1; }
+.chip.bad  { border-color: #c62828; color:#c62828; background: #ffebee; }
+.row td, .header th {
+  padding: .5rem .75rem;
+}
+
+
+
+.mis-turnos-container {
+  margin: 24px;
+
+  .mat-card-header {
+    .mat-card-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+  }
+
+  .filter-container {
+    display: flex;
+    justify-content: flex-end;
+    margin: 16px 0;
+
+    mat-form-field {
+      width: 100%;
+      max-width: 400px;
+    }
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th.mat-header-cell,
+    td.mat-cell {
+      padding: 12px 8px;
+    }
+
+    th.mat-header-cell {
+      font-weight: 600;
+      text-transform: uppercase;
+      border-bottom: 2px solid rgba(0, 0, 0, 0.12);
+    }
+
+    tr.mat-row:hover {
+      background-color: rgba(0, 0, 0, 0.04);
+    }
+
+    button[mat-icon-button] {
+      margin-right: 8px;
+    }
+  }
+
+  .no-data {
+    text-align: center;
+    margin: 24px 0;
+    font-style: italic;
+    color: rgba(0, 0, 0, 0.54);
+  }
+
+  ::ng-deep .mat-dialog-container {
+    padding: 0;
+    border-radius: 8px;
+  }
+}

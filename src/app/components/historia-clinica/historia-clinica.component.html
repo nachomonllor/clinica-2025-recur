@@ -1,0 +1,207 @@
+<mat-card class="historia-card">
+  <mat-card-header>
+    <mat-card-title>Historia Clínica</mat-card-title>
+  </mat-card-header>
+
+  <mat-card-content>
+    <form [formGroup]="historiaForm" (ngSubmit)="onSubmit()">
+
+      <!-- Datos fijos -->
+      <div class="section">
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Altura (cm)</mat-label>
+          <input matInput type="number" formControlName="altura" placeholder="Ej: 175" />
+          <mat-error *ngIf="historiaForm.get('altura')?.hasError('required')">
+            La altura es obligatoria.
+          </mat-error>
+          <mat-error *ngIf="historiaForm.get('altura')?.hasError('min')">
+            Debe ser un valor positivo.
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Peso (kg)</mat-label>
+          <input matInput type="number" formControlName="peso" placeholder="Ej: 70" />
+          <mat-error *ngIf="historiaForm.get('peso')?.hasError('required')">
+            El peso es obligatorio.
+          </mat-error>
+          <mat-error *ngIf="historiaForm.get('peso')?.hasError('min')">
+            Debe ser un valor positivo.
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Temperatura (°C)</mat-label>
+          <input matInput type="number" formControlName="temperatura" placeholder="Ej: 36.5" />
+          <mat-error *ngIf="historiaForm.get('temperatura')?.hasError('required')">
+            La temperatura es obligatoria.
+          </mat-error>
+          <mat-error *ngIf="historiaForm.get('temperatura')?.hasError('min')">
+            Debe ser un valor positivo.
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Presión arterial</mat-label>
+          <input matInput type="text" formControlName="presion" placeholder="Ej: 120/80" />
+          <mat-error *ngIf="historiaForm.get('presion')?.hasError('required')">
+            La presión es obligatoria.
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Datos dinámicos existentes -->
+      <div formArrayName="datosDinamicos" class="section">
+        <h3>Datos Dinámicos</h3>
+        <button
+          mat-mini-fab
+          color="primary"
+          type="button"
+          (click)="addDatoDinamico()"
+          [disabled]="datosDinamicos.length >= 3"
+        >
+          <mat-icon>add</mat-icon>
+        </button>
+
+        <div
+          *ngFor="let dato of datosDinamicos.controls; let i = index"
+          [formGroupName]="i"
+          class="dato-dinamico"
+        >
+          <mat-form-field appearance="fill" class="flex-item">
+            <mat-label>Clave</mat-label>
+            <input matInput formControlName="clave" placeholder="Clave" />
+          </mat-form-field>
+          <mat-form-field appearance="fill" class="flex-item">
+            <mat-label>Valor</mat-label>
+            <input matInput formControlName="valor" placeholder="Valor" />
+          </mat-form-field>
+          <button mat-icon-button color="warn" type="button" (click)="removeDatoDinamico(i)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <!-- Nuevos datos dinámicos -->
+      <div formGroupName="nuevosDatos" class="section">
+        <h3>Nuevos Datos</h3>
+
+        <div class="flex-center">
+          <mat-slider formControlName="rango" min="0" max="100" tickInterval="10"></mat-slider>
+          <span>{{ historiaForm.get('nuevosDatos.rango')?.value }}</span>
+        </div>
+
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Valor numérico</mat-label>
+          <input matInput type="number" formControlName="valorNumerico" placeholder="Ej: 42" />
+        </mat-form-field>
+
+        <div class="flex-center">
+          <mat-slide-toggle formControlName="switchSiNo">Sí / No</mat-slide-toggle>
+          <span>{{ historiaForm.get('nuevosDatos.switchSiNo')?.value ? 'Sí' : 'No' }}</span>
+        </div>
+      </div>
+
+      <!-- Botón de envío -->
+      <div class="actions">
+        <button mat-raised-button color="primary" type="submit" [disabled]="historiaForm.invalid">
+          Guardar Historia Clinica
+        </button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>
+
+
+
+
+
+<!-- <div class="historia-clinica-container">
+  <h2>Historia Clínica</h2>
+  <form [formGroup]="historiaForm" (ngSubmit)="onSubmit()">
+    Datos fijos 
+    <div class="form-group">
+      <label for="altura">Altura (cm)</label>
+      <input id="altura" type="number" formControlName="altura" placeholder="Ingrese altura" />
+      <div *ngIf="historiaForm.get('altura')?.touched && historiaForm.get('altura')?.invalid">
+        <small *ngIf="(historiaForm.get('altura')?.errors || {})['required']">La altura es obligatoria.</small>
+        <small *ngIf="(historiaForm.get('altura')?.errors || {})['min']">La altura debe ser positiva.</small>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="peso">Peso (kg)</label>
+      <input id="peso" type="number" formControlName="peso" placeholder="Ingrese peso" />
+      <div *ngIf="historiaForm.get('peso')?.touched && historiaForm.get('peso')?.invalid">
+        <small *ngIf="(historiaForm.get('peso')?.errors || {})['required']">El peso es obligatorio.</small>
+        <small *ngIf="(historiaForm.get('peso')?.errors || {})['min']">El peso debe ser positivo.</small>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="temperatura">Temperatura (°C)</label>
+      <input id="temperatura" type="number" formControlName="temperatura" placeholder="Ingrese temperatura" />
+      <div *ngIf="historiaForm.get('temperatura')?.touched && historiaForm.get('temperatura')?.invalid">
+        <small *ngIf="(historiaForm.get('temperatura')?.errors || {})['required']">La temperatura es obligatoria.</small>
+        <small *ngIf="(historiaForm.get('temperatura')?.errors || {})['min']">La temperatura debe ser positiva.</small>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="presion">Presión</label>
+      <input id="presion" type="text" formControlName="presion" placeholder="Ej: 120/80" />
+      <div *ngIf="historiaForm.get('presion')?.touched && historiaForm.get('presion')?.invalid">
+        <small *ngIf="(historiaForm.get('presion')?.errors || {})['required']">La presión es obligatoria.</small>
+      </div>
+    </div>
+
+    Datos dinámicos existentes (clave/valor) 
+    <div class="datos-dinamicos">
+      <h3>Datos Dinámicos (máximo 3)</h3>
+      <button type="button" (click)="addDatoDinamico()" [disabled]="datosDinamicos.length >= 3">
+        Agregar dato dinámico
+      </button>
+      <div formArrayName="datosDinamicos">
+        <div *ngFor="let dato of datosDinamicos.controls; let i = index" [formGroupName]="i" class="dato-dinamico">
+          <div class="form-group">
+            <label for="clave-{{i}}">Clave</label>
+            <input id="clave-{{i}}" type="text" formControlName="clave" placeholder="Ingrese clave" />
+          </div>
+          <div class="form-group">
+            <label for="valor-{{i}}">Valor</label>
+            <input id="valor-{{i}}" type="text" formControlName="valor" placeholder="Ingrese valor" />
+          </div>
+          <button type="button" (click)="removeDatoDinamico(i)">Eliminar</button>
+        </div>
+      </div>
+    </div>
+
+    Nuevos datos dinámicos específicos 
+    <div formGroupName="nuevosDatos" class="nuevos-datos">
+      <h3>Nuevos Datos Dinámicos</h3>
+      Control de rango 
+      <div class="form-group">
+        <label for="rango">Control de Rango (0-100)</label>
+        <input id="rango" type="range" formControlName="rango" min="0" max="100" />
+        <span>{{ historiaForm.get('nuevosDatos')?.get('rango')?.value }}</span>
+      </div>
+      Cuadro de texto numérico 
+      <div class="form-group">
+        <label for="valorNumerico">Valor Numérico</label>
+        <input id="valorNumerico" type="number" formControlName="valorNumerico" placeholder="Ingrese valor numérico" />
+      </div>
+      Switch con "Sí" o "No" 
+      <div class="form-group">
+        <label for="switchSiNo">Switch (Sí/No)</label>
+        <label class="switch">
+          <input id="switchSiNo" type="checkbox" formControlName="switchSiNo" />
+          <span class="slider round"></span>
+        </label>
+        <span>{{ historiaForm.get('nuevosDatos')?.get('switchSiNo')?.value ? 'Sí' : 'No' }}</span>
+      </div>
+    </div>
+
+    <button type="submit" [disabled]="historiaForm.invalid">Guardar Historia Clínica</button>
+  </form>
+</div> -->
+
