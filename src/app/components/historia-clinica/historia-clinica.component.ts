@@ -13,23 +13,23 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { HistoriaClinica } from '../../../models/historia-clinica.model';
 
 @Component({
-    selector: 'app-historia-clinica',
-    standalone: true,
-    imports: [
-      CommonModule, 
-      FormsModule, 
-      ReactiveFormsModule,
-        // Material
-        MatToolbarModule,
-        MatCardModule,
-        MatButtonModule,
-        MatIconModule,
-        MatInputModule,
-        MatTableModule,
-        MatSlideToggleModule
-    ],
-    templateUrl: './historia-clinica.component.html',
-    styleUrl: './historia-clinica.component.css'
+  selector: 'app-historia-clinica',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    // Material
+    MatToolbarModule,
+    MatCardModule,
+    MatButtonModule,
+    MatIconModule,
+    MatInputModule,
+    MatTableModule,
+    MatSlideToggleModule
+  ],
+  templateUrl: './historia-clinica.component.html',
+  styleUrl: './historia-clinica.component.css'
 })
 
 export class HistoriaClinicaComponent implements OnInit {
@@ -111,7 +111,7 @@ export class HistoriaClinicaComponent implements OnInit {
     } else {
       this.historiaForm.markAllAsTouched();
 
-      // **SweetAlert2** de error (opcional)
+      // SweetAlert2 de error (opcional)
       Swal.fire({
         icon: 'error',
         title: 'Error',

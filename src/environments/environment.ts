@@ -1,8 +1,8 @@
 
 export const environment = {
   production: false,
-  supabaseUrl: 'https://TU-PROYECTO.supabase.co',
-  supabaseKey: 'TU-ANON-KEY',
+  supabaseUrl: ' https://tuwlrspqlkpqatnaintx.supabase.co',             
+  supabaseKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR1d2xyc3BxbGtwcWF0bmFpbnR4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU3NDcyOTEsImV4cCI6MjA3MTMyMzI5MX0.O5eawMd27SKifzyOvKp5fJZcvgBodxXA5LZWZdexRSA',
   captchaEnabled: true,
   quickLogins: {
     paciente:     { email: 'paciente@test.com',     password: 'Paciente123' },
@@ -10,10 +10,6 @@ export const environment = {
     admin:        { email: 'admin@test.com',        password: 'Admin123' }
   }
 };
-
-
-
-
 
 
 // export const environment = {
