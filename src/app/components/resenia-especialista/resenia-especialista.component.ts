@@ -1,15 +1,3 @@
-// import { Component } from '@angular/core';
-
-// @Component({
-//   selector: 'app-resenia-especialista',
-//   imports: [],
-//   templateUrl: './resenia-especialista.component.html',
-//   styleUrl: './resenia-especialista.component.scss'
-// })
-// export class ReseniaEspecialistaComponent {
-
-// }
-
 
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
@@ -88,3 +76,18 @@ export class ReseniaEspecialistaComponent implements OnInit {
     // );
   }
 }
+
+
+
+// import { Component } from '@angular/core';
+
+// @Component({
+//   selector: 'app-resenia-especialista',
+//   imports: [],
+//   templateUrl: './resenia-especialista.component.html',
+//   styleUrl: './resenia-especialista.component.scss'
+// })
+// export class ReseniaEspecialistaComponent {
+
+// }
+
