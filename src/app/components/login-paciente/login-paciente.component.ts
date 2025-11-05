@@ -12,11 +12,11 @@ import Swal from 'sweetalert2';
 import { SupabaseService } from '../../../services/supabase.service';
 
 type Rol = 'paciente' | 'especialista' | 'admin';
-interface Perfil {
-  id: string;
-  rol: Rol;
-  aprobado?: boolean | null;
-}
+// interface Perfil {
+//   id: string;
+//   rol: Rol;
+//   aprobado?: boolean | null;
+// }
 
 @Component({
   selector: 'app-login-paciente',
@@ -42,64 +42,55 @@ export class LoginPacienteComponent implements OnInit {
     });
   }
 
-  // async iniciarSesion(): Promise<void> {
-  //   if (this.formularioLogin.invalid) {
-  //     this.formularioLogin.markAllAsTouched();
-  //     return;
-  //   }
+  async iniciarSesion(): Promise<void> {
+    if (this.formularioLogin.invalid) {
+      this.formularioLogin.markAllAsTouched();
+      return;
+    }
 
-  //   this.cargando = true;
-  //   this.error = '';
+    this.cargando = true;
+    this.error = '';
 
-  //   try {
-  //     if (!navigator.onLine) throw new Error('Sin conexión a internet.');
+    try {
+      const { email, password } = this.formularioLogin.value;
 
-  //     const { email, password } = this.formularioLogin.value;
+      // 1) Login
+      const { error: eLogin } = await this.supa.iniciarSesion(email, password);
+      if (eLogin) throw eLogin;
 
-  //     // 1) Login
-  //     const { error: eLogin } = await this.supa.iniciarSesion(email, password); // <============================== 
-  //     if (eLogin) throw eLogin;
+      // 2) Usuario + verificación de correo (desde Auth, NO desde profiles)
+      const { data: userData, error: eUser } = await this.supa.obtenerUsuarioActual();
+      if (eUser || !userData?.user) throw eUser || new Error('No se pudo obtener el usuario.');
+      const user = userData.user;
+      if (!user.email_confirmed_at) {
+        await this.supa.cerrarSesion();
+        throw new Error('Debes verificar tu correo antes de ingresar.');
+      }
 
-  //     // 2) Verificación de correo
-  //     const { data: userData, error: eUser } = await this.supa.obtenerUsuarioActual(); // <=============================
-  //     if (eUser || !userData?.user) throw eUser || new Error('No se pudo obtener el usuario.');
-  //     const user = userData.user;
-  //     if (!user.email_confirmed_at) {
-  //       await this.supa.cerrarSesion();
-  //       throw new Error('Debes verificar tu correo antes de ingresar.');
-  //     }
+      // 3) Perfil (sin seleccionar email en SupabaseService.obtenerPerfil)
+      const { data: perfil, error: ePerfil } = await this.supa.obtenerPerfil(user.id);
+      if (ePerfil || !perfil) throw ePerfil || new Error('No se encontró el perfil del usuario.');
+      if (perfil.rol !== 'paciente') {
+        await this.supa.cerrarSesion();
+        throw new Error('No estás registrado como paciente.');
+      }
 
-  //     // 3) Traer perfil y verificar que sea PACIENTE
-  //     // const { data: perfil, error: ePerfil } = await this.supa.obtenerPerfil(user.id) as { data: Perfil | null, error: any };
-  //     // if (ePerfil || !perfil) throw ePerfil || new Error('No se encontró el perfil del usuario.');
-  //     // if (perfil.rol !== 'paciente') {
-  //     //   await this.supa.cerrarSesion();
-  //     //   throw new Error('No estás registrado como paciente.');
-  //     // }
+      // (OPCIONAL) asegurar fila en profiles 
+      // await this.supa.client.from('profiles').upsert(
+      //   { id: user.id, rol: 'paciente', aprobado: true }, //sin email
+      //   { onConflict: 'id' }
+      // );
 
-  //     // 3) Traer perfil y verificar que sea PACIENTE
-  //     const { data: perfil, error: ePerfil } = await this.supa.obtenerPerfil(user.id);
+      await Swal.fire({ icon: 'success', title: 'Bienvenido', timer: 1500, showConfirmButton: false });
+      this.router.navigate(['/mis-turnos-paciente']);
+    } catch (e) {
+      this.error = this.traducirError(e);
+      await Swal.fire('Error', this.error || 'Ocurrió un error al iniciar sesión', 'error');
+    } finally {
+      this.cargando = false;
+    }
+  }
 
-  //     if (ePerfil || !perfil) throw ePerfil || new Error('No se encontró el perfil del usuario.');
-  //     if (perfil.rol !== 'paciente') {
-  //       await this.supa.cerrarSesion();
-  //       throw new Error('No estás registrado como paciente.');
-  //     }
-
-  //     await Swal.fire({ icon: 'success', title: 'Bienvenido', timer: 1500, showConfirmButton: false });
-  //     this.router.navigate(['/mis-turnos-paciente']); //
-
-
-  //     // (Pacientes no requieren "aprobado")
-  //     //await Swal.fire({ icon: 'success', title: 'Bienvenido', timer: 1500, showConfirmButton: false });
-  //     //this.router.navigate(['/mis-turnos']);
-  //   } catch (e) {
-  //     this.error = this.traducirError(e);
-  //     await Swal.fire('Error', this.error || 'Ocurrió un error al iniciar sesión', 'error');
-  //   } finally {
-  //     this.cargando = false;
-  //   }
-  // }
 
   private traducirError(e: unknown): string {
     const texto = ((): string => {
@@ -125,6 +116,7 @@ export class LoginPacienteComponent implements OnInit {
     return texto.trim();
   }
 
+}
 
   // async onSubmit() {
   //   if (this.form.invalid) return;
@@ -154,53 +146,53 @@ export class LoginPacienteComponent implements OnInit {
   // }
 
 
-  async iniciarSesion(): Promise<void> {
-    if (this.formularioLogin.invalid) {
-      this.formularioLogin.markAllAsTouched();
-      return;
-    }
+  // async iniciarSesion(): Promise<void> {
+  //   if (this.formularioLogin.invalid) {
+  //     this.formularioLogin.markAllAsTouched();
+  //     return;
+  //   }
 
-    this.cargando = true;
-    this.error = '';
+  //   this.cargando = true;
+  //   this.error = '';
 
-    try {
-      if (!navigator.onLine) throw new Error('Sin conexión a internet.');
+  //   try {
+  //     if (!navigator.onLine) throw new Error('Sin conexión a internet.');
 
-      const { email, password } = this.formularioLogin.value;
+  //     const { email, password } = this.formularioLogin.value;
 
-      // 1) Login con SupabaseService
-      const { error: eLogin } = await this.supa.iniciarSesion(email, password);
-      if (eLogin) throw eLogin;
+  //     // 1) Login con SupabaseService
+  //     const { error: eLogin } = await this.supa.iniciarSesion(email, password);
+  //     if (eLogin) throw eLogin;
 
-      // 2) Verificación de correo
-      const { data: userData, error: eUser } = await this.supa.obtenerUsuarioActual();
-      if (eUser || !userData?.user) throw eUser || new Error('No se pudo obtener el usuario.');
-      const user = userData.user;
-      if (!user.email_confirmed_at) {
-        await this.supa.cerrarSesion();
-        throw new Error('Debes verificar tu correo antes de ingresar.');
-      }
+  //     // 2) Verificación de correo
+  //     const { data: userData, error: eUser } = await this.supa.obtenerUsuarioActual();
+  //     if (eUser || !userData?.user) throw eUser || new Error('No se pudo obtener el usuario.');
+  //     const user = userData.user;
+  //     if (!user.email_confirmed_at) {
+  //       await this.supa.cerrarSesion();
+  //       throw new Error('Debes verificar tu correo antes de ingresar.');
+  //     }
 
-      // 3) Traer perfil y verificar que sea PACIENTE (ya sin 'email' en select)
-      const { data: perfil, error: ePerfil } = await this.supa.obtenerPerfil(user.id);
-      if (ePerfil || !perfil) throw ePerfil || new Error('No se encontró el perfil del usuario.');
-      if (perfil.rol !== 'paciente') {
-        await this.supa.cerrarSesion();
-        throw new Error('No estás registrado como paciente.');
-      }
+  //     // 3) Traer perfil y verificar que sea PACIENTE (ya sin 'email' en select)
+  //     const { data: perfil, error: ePerfil } = await this.supa.obtenerPerfil(user.id);
+  //     if (ePerfil || !perfil) throw ePerfil || new Error('No se encontró el perfil del usuario.');
+  //     if (perfil.rol !== 'paciente') {
+  //       await this.supa.cerrarSesion();
+  //       throw new Error('No estás registrado como paciente.');
+  //     }
 
-      await Swal.fire({ icon: 'success', title: 'Bienvenido', timer: 1500, showConfirmButton: false });
-      this.router.navigate(['/mis-turnos-paciente']);
-    } catch (e) {
-      this.error = this.traducirError(e);
-      await Swal.fire('Error', this.error || 'Ocurrió un error al iniciar sesión', 'error');
-    } finally {
-      this.cargando = false;
-    }
-  }
+  //     await Swal.fire({ icon: 'success', title: 'Bienvenido', timer: 1500, showConfirmButton: false });
+  //     this.router.navigate(['/mis-turnos-paciente']);
+  //   } catch (e) {
+  //     this.error = this.traducirError(e);
+  //     await Swal.fire('Error', this.error || 'Ocurrió un error al iniciar sesión', 'error');
+  //   } finally {
+  //     this.cargando = false;
+  //   }
+  // }
 
 
-}
+
 
 
 

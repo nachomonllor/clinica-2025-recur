@@ -4,9 +4,14 @@
 
 // src/app/app.routes.ts
 import { Routes } from '@angular/router';
+import { BienvenidaComponent } from './bienvenida/bienvenida.component';
 
 export const routes: Routes = [
   // Home (redirige a login por ahora)
+
+  { path: '', pathMatch: 'full', redirectTo: 'bienvenida' },
+  { path: 'bienvenida', component: BienvenidaComponent },
+
   { path: '', redirectTo: 'login-paciente', pathMatch: 'full' },
 
   // Auth / público
