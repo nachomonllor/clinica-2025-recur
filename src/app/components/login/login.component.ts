@@ -30,7 +30,7 @@ export class LoginComponent {
 
   // Accesos rápidos (ajustá rutas e imágenes a tu proyecto)
   quickItems: QuickItem[] = [
-    { label: 'Admin', route: '/admin', avatar: 'assets/avatars/admin.jpg', rol: 'admin', tooltip: 'Admin' },
+    { label: 'Admin', route: '/admin/home', avatar: 'assets/avatars/admin.jpg', rol: 'admin', tooltip: 'Admin' },
     { label: 'Esp. 1', route: '/especialista/home', avatar: 'assets/avatars/especialista1.jpg', rol: 'especialista' },
     { label: 'Esp. 2', route: '/especialista/home', avatar: 'assets/avatars/especialista2.jpg', rol: 'especialista' },
     { label: 'Paciente 1', route: '/paciente/home', avatar: 'assets/avatars/paciente1.jpg', rol: 'paciente' },

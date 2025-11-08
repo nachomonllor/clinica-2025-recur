@@ -1,1 +1,167 @@
-<p>especialista-home works!</p>
+<section class="topbar">
+  <h1 class="brand">
+    <mat-icon>medical_information</mat-icon>
+    Panel del Especialista
+  </h1>
+</section>
+
+<section class="stats">
+  <div class="item" *ngIf="counters as c; else skeleton">
+    <div class="value">{{ c.pacientes }}</div>
+    <div class="label">Pacientes</div>
+  </div>
+  <div class="item" *ngIf="counters">
+    <div class="value">{{ counters.turnosHoy }}</div>
+    <div class="label">Turnos hoy</div>
+  </div>
+  <div class="item" *ngIf="counters">
+    <div class="value">{{ counters.proximosTurnos }}</div>
+    <div class="label">Próximos turnos</div>
+  </div>
+  <div class="item warn" *ngIf="counters">
+    <div class="value">{{ counters.reseniasPendientes }}</div>
+    <div class="label">Reseñas pendientes</div>
+  </div>
+
+  <ng-template #skeleton>
+    <div class="item skeleton" *ngFor="let _ of [1,2,3,4]">
+      <div class="value">—</div>
+      <div class="label">Cargando…</div>
+    </div>
+  </ng-template>
+</section>
+
+<!-- Próximos turnos -->
+<section class="panel">
+  <mat-card class="card">
+    <div class="card__head">
+      <div class="title">
+        <mat-icon>event</mat-icon>
+        <h3>Próximos turnos</h3>
+      </div>
+      <a mat-stroked-button color="primary" routerLink="/especialista/agenda">
+        Ver agenda
+      </a>
+    </div>
+
+    <div class="turnos" *ngIf="proximosTurnos.length; else noTurnos">
+      <div class="turno" *ngFor="let t of proximosTurnos">
+        <div class="when">
+          <mat-icon>schedule</mat-icon>
+          <span>{{ t.fechaISO | date:'EEE d/MM HH:mm' }}</span>
+        </div>
+        <div class="who">
+          <mat-icon>person</mat-icon>
+          <a [routerLink]="['/especialista/paciente', t.pacienteId]">
+            {{ t.pacienteNombre }}
+          </a>
+        </div>
+        <div class="what" *ngIf="t.motivo">{{ t.motivo }}</div>
+
+        <div class="actions">
+          <a mat-button color="primary" [routerLink]="['/especialista/turno', t.id]">Abrir</a>
+          <a mat-button [routerLink]="['/especialista/turno', t.id, 'resenia']">
+            Reseña
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <ng-template #noTurnos>
+      <div class="empty">
+        <mat-icon>info</mat-icon>
+        Sin turnos próximos.
+      </div>
+    </ng-template>
+  </mat-card>
+</section>
+
+<!-- Mis pacientes (favbuttons, solo atendidos ≥1) -->
+<section class="panel">
+  <mat-card class="card">
+    <div class="card__head">
+      <div class="title">
+        <mat-icon>groups</mat-icon>
+        <h3>Mis pacientes</h3>
+      </div>
+      <a mat-stroked-button color="primary" routerLink="/especialista/pacientes">Ver todos</a>
+    </div>
+
+    <div class="favrail" *ngIf="pacientesFav.length; else noPacientes">
+      <button
+        class="favbtn"
+        *ngFor="let p of pacientesFav"
+        matTooltip="{{ p.nombre }}"
+        [routerLink]="['/especialista/paciente', p.id]"
+      >
+        <img [src]="p.avatarUrl" [alt]="p.nombre" />
+      </button>
+    </div>
+
+    <ng-template #noPacientes>
+      <div class="empty">
+        <mat-icon>person_off</mat-icon>
+        Aún no tenés pacientes atendidos.
+      </div>
+    </ng-template>
+  </mat-card>
+</section>
+
+<!-- Accesos rápidos -->
+<section class="grid">
+  <mat-card class="tile" routerLink="/especialista/agenda" tabindex="0">
+    <div class="tile__icon"><mat-icon>calendar_month</mat-icon></div>
+    <div class="tile__body">
+      <h3>Agenda</h3>
+      <p>Gestioná tus turnos.</p>
+      <a mat-stroked-button color="primary" routerLink="/especialista/agenda">Abrir</a>
+    </div>
+  </mat-card>
+
+  <mat-card class="tile" routerLink="/solicitar-turno" tabindex="0">
+    <div class="tile__icon"><mat-icon>add_task</mat-icon></div>
+    <div class="tile__body">
+      <h3>Solicitar turno</h3>
+      <p>Creá un turno para un paciente.</p>
+      <a mat-stroked-button color="primary" routerLink="/solicitar-turno">Abrir</a>
+    </div>
+  </mat-card>
+
+  <mat-card class="tile" routerLink="/especialista/resenias" tabindex="0">
+    <div class="tile__icon"><mat-icon>rate_review</mat-icon></div>
+    <div class="tile__body">
+      <h3>Reseñas</h3>
+      <p>Completá reseñas pendientes.</p>
+      <a mat-stroked-button color="primary" routerLink="/especialista/resenias">Abrir</a>
+    </div>
+  </mat-card>
+
+  <mat-card class="tile" routerLink="/mi-perfil" tabindex="0">
+    <div class="tile__icon"><mat-icon>person</mat-icon></div>
+    <div class="tile__body">
+      <h3>Mi perfil</h3>
+      <p>Datos del especialista.</p>
+      <a mat-stroked-button color="primary" routerLink="/mi-perfil">Abrir</a>
+    </div>
+  </mat-card>
+</section>
+
+<!-- FAB -->
+<div class="fab">
+  <button mat-fab color="primary" (click)="toggleFab()" aria-label="Acciones rápidas">
+    <mat-icon>{{ showFab ? 'close' : 'add' }}</mat-icon>
+  </button>
+  <div class="fab__menu" [class.show]="showFab">
+    <button mat-mini-fab aria-label="Nuevo turno" (click)="onNuevoTurno()">
+      <mat-icon>add_task</mat-icon>
+    </button>
+    <button mat-mini-fab aria-label="Ver agenda" (click)="onVerAgenda()">
+      <mat-icon>calendar_month</mat-icon>
+    </button>
+    <button mat-mini-fab aria-label="Reseñas" (click)="onResenias()">
+      <mat-icon>rate_review</mat-icon>
+    </button>
+  </div>
+</div>
+
+

@@ -25,17 +25,61 @@ import { SeleccionarUsuarioRegistroComponent } from './components/seleccionar-us
 import { TurnosEspecialidadComponent } from './components/turnos-especialidad/turnos-especialidad.component';
 
 export const routes: Routes = [
-  // Redirect raíz -> bienvenida
+  // Redirect raíz : bienvenida
   { path: '', pathMatch: 'full', redirectTo: 'bienvenida' },
 
   // Páginas principales
   { path: 'bienvenida', component: BienvenidaComponent },
   { path: 'login', component: LoginComponent },
 
-  // Homes por rol
-  { path: 'paciente/home', component: PacienteHomeComponent },
-  { path: 'especialista/home', component: EspecialistaHomeComponent },
-  { path: 'admin', component: AdminHomeComponent },
+ 
+    // Homes por rol (solo esta forma)
+  {
+    path: 'paciente/home',
+    children: [
+      { path: '', component: PacienteHomeComponent },
+      // { path: 'turnos', loadComponent: ... },
+      // { path: 'estudios', loadComponent: ... },
+      // { path: 'estudios/subir', loadComponent: ... },
+      // { path: 'encuestas', loadComponent: ... },
+      // { path: 'turno/:id', loadComponent: ... },
+    ],
+    // canMatch: [pacienteGuard],
+  },
+  {
+    path: 'especialista/home',
+    children: [
+      { path: '', component: EspecialistaHomeComponent },
+      // { path: 'agenda', loadComponent: ... },
+      // { path: 'pacientes', loadComponent: ... },
+      // { path: 'turno/:id', loadComponent: ... },
+      // { path: 'turno/:id/resenia', loadComponent: ... },
+      // { path: 'resenias', loadComponent: ... },
+      // { path: 'paciente/:id', loadComponent: ... },
+    ],
+    // canMatch: [especialistaGuard],
+  },
+  {
+    path: 'admin/home',
+    children: [
+      { path: '', component: AdminHomeComponent },
+      // { path: 'usuarios', loadComponent: ... },
+      // { path: 'turnos', loadComponent: ... },
+      // { path: 'reportes', loadComponent: ... },
+    ],
+    // canMatch: [adminGuard],
+  },
+
+    { path: 'paciente', children: [
+      { path: '', component: PacienteHomeComponent },
+      // { path: 'turnos', loadComponent: ... },
+      // { path: 'estudios', loadComponent: ... },
+      // { path: 'estudios/subir', loadComponent: ... },
+      // { path: 'encuestas', loadComponent: ... },
+      // { path: 'turno/:id', loadComponent: ... },
+    ]
+    // , canMatch: [pacienteGuard] // protege por rol
+  },
 
   // Registro
   { path: 'registro-paciente', component: RegistroPacienteComponent },
