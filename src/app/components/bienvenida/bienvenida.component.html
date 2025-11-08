@@ -1,8 +1,58 @@
-<section class="hero">
-  <img class="hero-bg" src="assets/img/consultorio-bg.jpg" alt="" />
-  <!-- ...tu contenido... -->
+<!-- Fondo de la pantalla (cubre todo) -->
+<div class="bg" aria-hidden="true">
+  <img src="assets/hero-bg.jpg" alt="" loading="eager" />
+  <!-- Overlay opcional para mejorar contraste -->
+  <!-- <div class="bg-overlay"></div> -->
+</div>
 
-  <!-- <section class="hero" [@fadeIn]> -->
+
+<div class="topbar">
+  <div class="brand"><mat-icon>add_box</mat-icon> Clínica Monllor</div>
+  <a routerLink="/login" class="ingresar"><mat-icon>login</mat-icon> Ingresar</a>
+</div>
+
+<div class="wrapper">
+  <div class="hero-grid">
+    <section class="copy">
+      <h1>Clínica Monllor</h1>
+      <p class="lead">Cuidamos tu salud con tecnología, seguimiento personalizado y atención profesional.</p>
+
+      <div class="chips">
+        <div class="chip glass">
+          <h3><mat-icon>local_offer</mat-icon> Especialidades</h3>
+          <ul>
+            <li>Clínica Médica · Pediatría · Cardiología</li>
+            <li>Dermatología · Nutrición · Psicología</li>
+          </ul>
+        </div>
+
+        <div class="chip glass">
+          <h3><mat-icon>schedule</mat-icon> Horarios de Atención</h3>
+          <ul>
+            <li>Lunes a Viernes: 8:00 a 19:00 hs</li>
+            <li>Sábados: 9:00 a 14:00 hs</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="cta-row">
+        <button mat-raised-button color="primary"><mat-icon>login</mat-icon> Iniciar Sesión</button>
+        <button mat-stroked-button><mat-icon>person_add</mat-icon> Registrarse</button>
+      </div>
+    </section>
+
+    <aside class="photo-card">
+      <img src="assets/clinica-team.jpg" alt="Equipo médico de la clínica" />
+    </aside>
+  </div>
+</div>
+
+<footer class="foot">Clínica Online – UTN</footer>
+
+
+
+<!-- <section class="hero">
+  <img class="hero-bg" src="assets/img/consultorio-bg.jpg" alt="" />
 
   <header class="topbar" aria-label="Clínica Online">
     <div class="brand">
@@ -17,7 +67,7 @@
   </header>
 
   <div class="hero-grid">
-    <!-- Columna izquierda: copy + chips -->
+
     <div class="copy">
       <h1>Clínica Monllor</h1>
       <p class="lead">
@@ -52,11 +102,10 @@
       </div>
     </div>
 
-    <!-- Columna derecha: foto -->
     <div class="photo-card glass">
       <img src="assets/img/staff.webp" alt="Equipo médico de la clínica" />
     </div>
   </div>
 
   <footer class="foot"> Clínica Online — UTN</footer>
-</section>
+</section> -->

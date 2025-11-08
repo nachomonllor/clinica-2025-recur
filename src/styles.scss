@@ -1,52 +1,145 @@
-/* You can add global styles to this file, and also import other style files */
 
-
-/* === Fondo global para TODA la app === */
+/* === Fondo global: “clínica tecnológica” claro === */
 :root {
-  --bg-blue-spot: rgba(123, 178, 223, 0.25);
-  --bg-green-spot: rgba(76,175,80,.25);
-  --bg-top: #172a3d;
-  --bg-mid: #445361;
-  --bg-bottom: #263849;
+  /* Manchas MUY sutiles (apenas un tinte) */
+  --bg-blue-spot: rgba(180, 200, 255, 0.10);
+  --bg-green-spot: rgba(180, 240, 210, 0.08);
+
+  /* Gradiente casi blanco (frío, limpio) */
+  --bg-top:    #fafbfd;  /* casi blanco */
+  --bg-mid:    #f5f7fa;  /* blanco rebajado */
+  --bg-bottom: #eef2f6;  /* leve contraste */
+  
+  /* Texto base oscuro para buen contraste */
+  --text-color: #1f2937;
+  --muted-text: #4b5563;
+  --border-soft: rgba(0, 0, 0, 0.06);
 }
 
-html, body {
-  height: 100%;
-}
+html, body { height: 100%; }
 
 body {
   margin: 0;
-  /* Fallback sólido por si falla el gradient */
-  background-color: var(--bg-mid);
-  /* Mismo gradient que usamos en Bienvenida */
+  color: var(--text-color);
+  background-color: var(--bg-mid); /* fallback sólido */
+
+  /* Gradiente hiper claro + manchas muy suaves */
   background:
-    radial-gradient(1200px 600px at 80% -10%, var(--bg-blue-spot), transparent),
-    radial-gradient(900px 500px at -10% 20%, var(--bg-green-spot), transparent),
-    linear-gradient(180deg, var(--bg-top) 0%, var(--bg-mid) 40%, var(--bg-bottom) 100%);
-  background-attachment: fixed;     /* que no “salte” al scrollear */
+    radial-gradient(900px 500px at 80% -10%, var(--bg-blue-spot), transparent 60%),
+    radial-gradient(700px 400px at -10% 25%, var(--bg-green-spot), transparent 60%),
+    linear-gradient(180deg, var(--bg-top) 0%, var(--bg-mid) 45%, var(--bg-bottom) 100%);
+  background-attachment: fixed;
   background-repeat: no-repeat;
   background-size: cover;
-  min-height: 100dvh;               /* cubre alto total en móviles */
+  min-height: 100dvh;
+  font-family: Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
-/* Opcional: estilo translúcido global para mat-card */
+/* Tarjetas tipo “glass white” (claras, elegantes) */
 .mdc-card, .mat-mdc-card {
-  background: rgba(255,255,255,0.06) !important;
-  color: #eaf2fb;
-  border: 1px solid rgba(255,255,255,0.10);
-  backdrop-filter: blur(6px);
+  background: rgba(255, 255, 255, 0.78) !important;
+  color: var(--text-color);
+  border: 1px solid var(--border-soft);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+  backdrop-filter: blur(10px);
 }
 
-// .mat-mdc-card-title, .mat-mdc-card-subtitle {
-//   color: #eaf2fb;
-// }
+/* Títulos/subtítulos en cards */
+.mat-mdc-card-title,
+.mat-mdc-card-subtitle {
+  color: var(--text-color);
+}
+.mat-mdc-card-subtitle { color: var(--muted-text); }
 
+/* Hero sin fondo propio (el body gobierna) */
 .hero {
   min-height: 100dvh;
   display: grid;
   grid-template-rows: auto auto 1fr auto;
-  /* (Quitar el background - SE MANEJA EN EL BODY ) */
 }
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+/* Opcional: superficies utilitarias claras */
+.surface {
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid var(--border-soft);
+  border-radius: 16px;
+  backdrop-filter: blur(8px);
+}
+
+.elevated {
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+}
+
+/* Toolbar/material claros (si usás MatToolbar) */
+.mat-toolbar,
+.mdc-top-app-bar {
+  background: rgba(255, 255, 255, 0.85) !important;
+  color: var(--text-color) !important;
+  border-bottom: 1px solid var(--border-soft);
+  backdrop-filter: blur(8px);
+}
+
+/* Inputs: borde suave y focus limpio */
+.mdc-text-field--filled,
+.mdc-text-field--outlined {
+  background: rgba(255, 255, 255, 0.9);
+}
+.mdc-notched-outline__leading,
+.mdc-notched-outline__notch,
+.mdc-notched-outline__trailing {
+  border-color: var(--border-soft) !important;
+}
+
+/* Footer discreto */
+.app-footer {
+  color: var(--muted-text);
+  border-top: 1px solid var(--border-soft);
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(6px);
+}
+
+
+
+
+
+// :root {
+//   --bg-blue-spot: rgba(221, 229, 235, 0.25);
+//   --bg-green-spot: rgba(224, 236, 225, 0.25);
+//   --bg-top: #545458;
+//   --bg-mid: #dae0e6;
+//   --bg-bottom: #636566;
+// }
+
+// html, body {
+//   height: 100%;
+// }
+
+// body {
+//   margin: 0;
+//   background-color: var(--bg-mid);
+//   background:
+//     radial-gradient(1200px 600px at 80% -10%, var(--bg-blue-spot), transparent),
+//     radial-gradient(900px 500px at -10% 20%, var(--bg-green-spot), transparent),
+//     linear-gradient(180deg, var(--bg-top) 0%, var(--bg-mid) 40%, var(--bg-bottom) 100%);
+//   background-attachment: fixed;     /* que no “salte” al scrollear */
+//   background-repeat: no-repeat;
+//   background-size: cover;
+//   min-height: 100dvh;               /* cubre alto total en móviles */
+// }
+
+// .mdc-card, .mat-mdc-card {
+//   background: rgba(238, 239, 241, 0.06) !important;
+//   color: #eaf2fb;
+//   border: 1px solid rgba(208, 199, 247, 0.1);
+//   backdrop-filter: blur(6px);
+// }
+
+// .hero {
+//   min-height: 100dvh;
+//   display: grid;
+//   grid-template-rows: auto auto 1fr auto;
+
+// }
+
+// html, body { height: 100%; }
+// body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

@@ -30,12 +30,12 @@ export class LoginComponent {
 
   // Accesos rápidos (ajustá rutas e imágenes a tu proyecto)
   quickItems: QuickItem[] = [
-    { label: 'Admin', route: '/admin', avatar: 'assets/avatars/admin.png', rol: 'admin', tooltip: 'Admin' },
-    { label: 'Esp. 1', route: '/especialista/home', avatar: 'assets/avatars/especialista1.png', rol: 'especialista' },
-    { label: 'Esp. 2', route: '/especialista/home', avatar: 'assets/avatars/especialista2.png', rol: 'especialista' },
-    { label: 'Paciente 1', route: '/paciente/home', avatar: 'assets/avatars/paciente1.png', rol: 'paciente' },
-    { label: 'Paciente 2', route: '/paciente/home', avatar: 'assets/avatars/paciente2.png', rol: 'paciente' },
-    { label: 'Paciente 3', route: '/paciente/home', avatar: 'assets/avatars/paciente3.png', rol: 'paciente' },
+    { label: 'Admin', route: '/admin', avatar: 'assets/avatars/admin.jpg', rol: 'admin', tooltip: 'Admin' },
+    { label: 'Esp. 1', route: '/especialista/home', avatar: 'assets/avatars/especialista1.jpg', rol: 'especialista' },
+    { label: 'Esp. 2', route: '/especialista/home', avatar: 'assets/avatars/especialista2.jpg', rol: 'especialista' },
+    { label: 'Paciente 1', route: '/paciente/home', avatar: 'assets/avatars/paciente1.jpg', rol: 'paciente' },
+    { label: 'Paciente 2', route: '/paciente/home', avatar: 'assets/avatars/paciente2.jpg', rol: 'paciente' },
+    { label: 'Paciente 3', route: '/paciente/home', avatar: 'assets/avatars/paciente3.jpg', rol: 'paciente' },
   ];
 
   async ingresar() {
