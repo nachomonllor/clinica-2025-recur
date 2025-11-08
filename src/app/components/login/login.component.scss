@@ -1,0 +1,80 @@
+
+
+.login-wrapper{
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  background: url('/assets/bg/clinica-wall.jpg') center/cover no-repeat fixed;
+  padding: 2rem;
+}
+
+.card{
+  width: 100%;
+  max-width: 380px;
+  padding: 1.5rem;
+  border-radius: 18px;
+  background: rgba(255,255,255,.22);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,.35);
+  box-shadow: 0 10px 30px rgba(0,0,0,.25);
+}
+
+h1{
+  margin: 0 0 1rem 0;
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: .3px;
+}
+
+form{
+  display: grid;
+  gap: .9rem;
+}
+
+label{
+  display: grid;
+  gap: .35rem;
+
+  span{
+    font-size: .9rem;
+    opacity: .85;
+  }
+}
+
+input{
+  height: 42px;
+  padding: 0 .9rem;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,.12);
+  outline: none;
+  background: rgba(255,255,255,.9);
+}
+
+.btn{
+  height: 44px;
+  border: 0;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  background: #2563eb;
+  color: white;
+  transition: transform .08s ease, box-shadow .2s ease, filter .2s ease;
+}
+.btn:hover{ filter: brightness(1.05); }
+.btn:active{ transform: translateY(1px); }
+
+.error{
+  margin: .25rem 0 0;
+  color: #b91c1c;
+  font-size: .9rem;
+}
+.info{
+  margin: .5rem 0 0;
+  font-size: .9rem;
+  opacity: .85;
+  text-align: center;
+}
+
+
+
+

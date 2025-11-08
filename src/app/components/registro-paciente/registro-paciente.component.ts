@@ -17,7 +17,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 
 import Swal from 'sweetalert2';
-import { SupabaseService } from '../../../services/supabase.service';
+import { SupabaseService } from '../../services/supabase.service';
 
 @Component({
   selector: 'app-registro-paciente',

@@ -1,24 +1,21 @@
 
 :host { display: block; min-height: 100dvh; }
 
-/* === Ajuste: el fondo general ya lo pusiste en body (styles.scss).
-   Agregamos una imagen tenue desenfocada SOLO en Bienvenida. === */
-.hero {
-  position: relative;
-  min-height: 100dvh;
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-  color: #eaf2fb;
+// .hero {
+//   position: relative;
+//   min-height: 100dvh;
+//   display: grid;
+//   grid-template-rows: auto 1fr auto;
+//   color: #eaf2fb;
 
-  &::before {
-    content: "";
-    position: fixed; inset: 0; z-index: -1;
-    background: url("assets/img/consultorio-bg.webp") center/cover no-repeat;
-    opacity: .35;
-    filter: blur(1.5px) saturate(.9) contrast(1.05);
-    /* La imagen queda por encima del gradiente global pero muy suave */
-  }
-}
+//   &::before {
+//     content: "";
+//     position: fixed; inset: 0; z-index: -1;
+//     background: url("../../assets/img/consultorio-bg.jpg") center/cover no-repeat;
+//     opacity: .35;
+//     filter: blur(1.5px) saturate(.9) contrast(1.05);
+//   }
+// }
 
 /* Topbar */
 .topbar {

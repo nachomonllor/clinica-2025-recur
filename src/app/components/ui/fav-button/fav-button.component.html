@@ -1,0 +1,7 @@
+<p>fav-button works!</p>
+
+<a class="fav" [routerLink]="route" [title]="tooltip || label" [attr.aria-label]="label">
+    <img *ngIf="avatar" [src]="avatar" [alt]="label" />
+    <ng-content *ngIf="!avatar"></ng-content>
+    <span class="sr-only">{{ label }}</span>
+</a>

@@ -24,3 +24,20 @@
 //     font-weight: 500;
 //     letter-spacing: .2px;
 // }
+
+
+  .overlay {
+      position: fixed; inset: 0; z-index: 9999;
+      background: rgba(8, 16, 24, .35);
+      backdrop-filter: blur(2px);
+      display: grid; align-content: start;
+    }
+    .center {
+      place-self: center; display: grid; justify-items: center; gap: 12px;
+      padding: 16px 20px; border-radius: 10px;
+      background: rgba(15, 34, 53, .9); color: #eaf2fb;
+      box-shadow: 0 6px 18px rgba(0,0,0,.35);
+    }
+
+    
+    .label { font-weight: 500; letter-spacing: .2px; }

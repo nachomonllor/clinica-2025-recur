@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
-import { LogEntry, LogService } from '../../../services/log.service';
+import { LogEntry, LogService } from '../../services/log.service';
 
 @Component({
     selector: 'app-log-table',

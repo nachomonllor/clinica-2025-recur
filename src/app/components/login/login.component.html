@@ -1,0 +1,30 @@
+<p>login works!</p>
+
+<div class="login-wrapper">
+  <div class="card">
+    <h1>Ingresar</h1>
+
+    <form [formGroup]="form" (ngSubmit)="ingresar()">
+      <label>
+        <span>Email</span>
+        <input type="email" formControlName="email" placeholder="tu@correo.com" autocomplete="username" />
+      </label>
+
+      <label>
+        <span>Contraseña</span>
+        <input type="password" formControlName="password" placeholder="••••••••" autocomplete="current-password" />
+      </label>
+
+      <button class="btn" type="submit" [disabled]="cargando || form.invalid">
+        {{ cargando ? 'Ingresando...' : 'Ingresar' }}
+      </button>
+
+      <p class="error" *ngIf="errorMsg">{{ errorMsg }}</p>
+    </form>
+  </div>
+
+  <!-- Accesos rápidos flotantes -->
+  <app-quick-access-panel [items]="quickItems"></app-quick-access-panel>
+</div>
+
+

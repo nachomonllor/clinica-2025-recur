@@ -13,9 +13,9 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatCardModule } from '@angular/material/card';
 
 import { Router } from '@angular/router';
-import { TurnoService } from '../../../services/turno.service';
 import { TurnoEspecialista } from '../../../models/turno-especialista.model';
 import { Turno } from '../../../models/turno.model';
+import { TurnoService } from '../../services/turno.service';
 
 @Component({
   selector: 'app-mis-turnos-especialista',

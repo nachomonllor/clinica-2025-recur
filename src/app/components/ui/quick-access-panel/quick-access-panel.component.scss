@@ -1,0 +1,20 @@
+
+
+.panel{
+  position: fixed;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+  z-index: 1000;
+
+  /* “frosted rail” opcional detrás de los botones */
+  padding: .5rem;
+  border-radius: 1.25rem;
+  background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255,255,255,.15);
+}
+
+

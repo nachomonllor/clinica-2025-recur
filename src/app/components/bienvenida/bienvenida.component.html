@@ -1,0 +1,62 @@
+<section class="hero">
+  <img class="hero-bg" src="assets/img/consultorio-bg.jpg" alt="" />
+  <!-- ...tu contenido... -->
+
+  <!-- <section class="hero" [@fadeIn]> -->
+
+  <header class="topbar" aria-label="Clínica Online">
+    <div class="brand">
+      <mat-icon>local_hospital</mat-icon>
+      <span>Clínica Monllor</span>
+    </div>
+    <nav class="top-actions">
+      <a mat-button color="primary" routerLink="/login-paciente">
+        <mat-icon>login</mat-icon> Ingresar
+      </a>
+    </nav>
+  </header>
+
+  <div class="hero-grid">
+    <!-- Columna izquierda: copy + chips -->
+    <div class="copy">
+      <h1>Clínica Monllor</h1>
+      <p class="lead">
+        Cuidamos tu salud con tecnología, seguimiento personalizado y atención profesional.
+      </p>
+
+      <div class="chips">
+        <div class="chip glass">
+          <h3><mat-icon>local_offer</mat-icon> Especialidades</h3>
+          <ul>
+            <li>Clínica Médica · Pediatría · Cardiología</li>
+            <li>Dermatología · Nutrición · Psicología</li>
+          </ul>
+        </div>
+
+        <div class="chip glass">
+          <h3><mat-icon>schedule</mat-icon> Horarios de Atención</h3>
+          <ul>
+            <li>Lunes a Viernes: 8:00 a 19:00 hs</li>
+            <li>Sábados: 9:00 a 14:00 hs</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="cta-row">
+        <a mat-flat-button color="primary" routerLink="/login-paciente">
+          <mat-icon>login</mat-icon> Iniciar Sesión
+        </a>
+        <a mat-raised-button color="accent" routerLink="/registro-paciente">
+          <mat-icon>person_add</mat-icon> Registrarse
+        </a>
+      </div>
+    </div>
+
+    <!-- Columna derecha: foto -->
+    <div class="photo-card glass">
+      <img src="assets/img/staff.webp" alt="Equipo médico de la clínica" />
+    </div>
+  </div>
+
+  <footer class="foot"> Clínica Online — UTN</footer>
+</section>

@@ -1,0 +1,38 @@
+
+
+.fav{
+  --size: 64px;
+  width: var(--size);
+  height: var(--size);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(255,255,255,.15);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 6px 20px rgba(0,0,0,.22);
+  border: 1px solid rgba(255,255,255,.25);
+  overflow: hidden;
+  transition: transform .16s ease, box-shadow .2s ease, background .2s ease;
+  cursor: pointer;
+  user-select: none;
+}
+.fav:hover{
+  transform: scale(1.08);
+  box-shadow: 0 10px 26px rgba(0,0,0,.30);
+  background: rgba(255,255,255,.22);
+}
+.fav:active{ transform: scale(.96); }
+
+.fav img{
+  width: 80%;
+  height: 80%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.sr-only{
+  position: absolute;
+  left: -9999px;
+}
+
+

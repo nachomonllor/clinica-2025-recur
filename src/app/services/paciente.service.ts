@@ -3,10 +3,10 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { from, map, Observable } from 'rxjs';
-import { Turno } from '../models/turno.model';
-import { Paciente } from '../models/paciente.model';
-import { HistoriaClinica } from '../models/historia-clinica.model';
 import { SupabaseService } from './supabase.service';
+import { Turno } from '../../models/turno.model';
+import { Paciente } from '../../models/paciente.model';
+import { HistoriaClinica } from '../../models/historia-clinica.model';
 
 @Injectable({ providedIn: 'root' })
 export class PacienteService {

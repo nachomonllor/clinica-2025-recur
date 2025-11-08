@@ -11,7 +11,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatSelectModule } from '@angular/material/select';
 import Swal from 'sweetalert2';
-import { SupabaseService } from '../../../services/supabase.service';
+import { SupabaseService } from '../../services/especialista.service';
 
 @Component({
   selector: 'app-registro-especialista',

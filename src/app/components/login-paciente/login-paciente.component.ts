@@ -9,7 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import Swal from 'sweetalert2';
-import { SupabaseService } from '../../../services/supabase.service';
+import { SupabaseService } from '../../services/supabase.service';
 
 type Rol = 'paciente' | 'especialista' | 'admin';
 // interface Perfil {

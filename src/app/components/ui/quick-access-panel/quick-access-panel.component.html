@@ -1,0 +1,11 @@
+<p>quick-access-panel works!</p>
+
+   <div class="panel">
+      <app-fav-button
+        *ngFor="let it of items"
+        [label]="it.label"
+        [route]="it.route"
+        [avatar]="it.avatar"
+        [tooltip]="it.tooltip || it.label">
+      </app-fav-button>
+    </div>

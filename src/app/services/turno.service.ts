@@ -1,8 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { from, map, switchMap } from 'rxjs';
 import { SupabaseService } from './supabase.service';
-import { TurnoVM, EstadoTurno } from '../models/turno.model';
-import { TurnoEspecialista } from '../models/turno-especialista.model';
+import { EstadoTurno, TurnoVM } from '../../models/turno.model';
+import { TurnoEspecialista } from '../../models/turno-especialista.model';
 
 @Injectable({ providedIn: 'root' })
 export class TurnoService {

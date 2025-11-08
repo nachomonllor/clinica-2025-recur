@@ -18,11 +18,8 @@ import {
   type UserResponse      // 👈
 } from '@supabase/supabase-js';
 import { Injectable } from '@angular/core';
-
-
-// Si usás tipos de perfil en tu app:
-import type { PerfilInsert, PerfilRow } from '../models/perfil.model';
-import { environment } from '../environments/environment';
+import { environment } from '../../environments/environment';
+import { PerfilInsert, PerfilRow } from '../../models/perfil.model';
 
 /** Evitar múltiples instancias en dev/HMR */
 declare global {
