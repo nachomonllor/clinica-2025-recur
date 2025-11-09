@@ -3,7 +3,7 @@
 import { Injectable } from '@angular/core';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { environment } from '../../environments/environment';
-import { PerfilRow, PerfilInsert } from '../../models/perfil.model';
+import { PerfilInsert, PerfilRow } from '../../models/interfaces';
 
 @Injectable({ providedIn: 'root' })
 export class SupabaseService {

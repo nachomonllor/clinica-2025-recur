@@ -1,0 +1,101 @@
+<p>listar-especialistas works!</p>
+
+<section class="toolbar" [class.loading]="loading" aria-live="polite">
+    <div class="search">
+        <input type="search" [formControl]="filtro" [placeholder]="placeholderFiltro"
+            aria-label="Filtrar especialistas" />
+        <button type="button" class="ghost" title="Limpiar" (click)="filtro.setValue('')" [disabled]="!filtro.value"
+            aria-label="Limpiar filtro">
+            ✕
+        </button>
+    </div>
+
+    <div class="sort">
+        <span class="sort__label">Ordenar por:</span>
+        <button type="button" class="sort__btn" [class.active]="sortKey === 'apellido'" (click)="setSort('apellido')"
+            aria-pressed="{{ sortKey === 'apellido' }}">
+            Nombre
+            <span class="dir" *ngIf="sortKey === 'apellido'">{{ sortDir === 'asc' ? '▲' : '▼' }}</span>
+        </button>
+        <button type="button" class="sort__btn" [class.active]="sortKey === 'especialidades'"
+            (click)="setSort('especialidades')" aria-pressed="{{ sortKey === 'especialidades' }}">
+            Especialidades
+            <span class="dir" *ngIf="sortKey === 'especialidades'">{{ sortDir === 'asc' ? '▲' : '▼' }}</span>
+        </button>
+        <button type="button" class="sort__btn" [class.active]="sortKey === 'estado'" (click)="setSort('estado')"
+            aria-pressed="{{ sortKey === 'estado' }}">
+            Estado
+            <span class="dir" *ngIf="sortKey === 'estado'">{{ sortDir === 'asc' ? '▲' : '▼' }}</span>
+        </button>
+    </div>
+</section>
+
+<!-- Estado de carga -->
+<div class="grid" *ngIf="loading">
+    <article class="card skeleton" *ngFor="let i of [0,1,2,3,4]">
+        <div class="avatar"></div>
+        <div class="lines">
+            <div class="line w-70"></div>
+            <div class="line w-40"></div>
+            <div class="chips">
+                <span class="chip"></span><span class="chip"></span><span class="chip"></span>
+            </div>
+        </div>
+    </article>
+</div>
+
+<!-- Lista -->
+<div class="grid" *ngIf="!loading && vm.length > 0">
+    <article class="card" *ngFor="let e of vm; trackBy: trackById">
+        <div class="avatar" [class.has-img]="!!e.fotoUrl">
+            <img *ngIf="e.fotoUrl" [src]="e.fotoUrl" [alt]="e.apellido + ', ' + e.nombre" />
+            <span *ngIf="!e.fotoUrl" aria-hidden="true">{{ initials(e) }}</span>
+        </div>
+
+        <div class="info">
+            <h3 class="name" [innerHTML]="highlight(e.apellido + ', ' + e.nombre, filtro.value)"></h3>
+            <p class="email" [innerHTML]="highlight(e.email, filtro.value)"></p>
+
+            <div class="chips">
+                <span class="chip" *ngFor="let esp of e.especialidades"
+                    [innerHTML]="highlight(esp, filtro.value)"></span>
+            </div>
+
+            <div class="badges">
+                <span class="badge" [class.badge--ok]="e.verificadoEmail" [class.badge--warn]="!e.verificadoEmail">
+                    <span class="dot"></span>
+                    {{ e.verificadoEmail ? 'Email verificado' : 'Pendiente de verificación' }}
+                </span>
+
+                <span class="badge" [class.badge--ok]="e.habilitado" [class.badge--off]="!e.habilitado">
+                    <span class="dot"></span>
+                    {{ e.habilitado ? 'Habilitado' : 'Deshabilitado' }}
+                </span>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button type="button" class="btn" (click)="verDetalle.emit(e)">Ver perfil</button>
+
+            <button *ngIf="isAdmin" type="button" class="btn outline" (click)="onToggleHabilitado(e)"
+                [attr.aria-pressed]="e.habilitado">
+                {{ e.habilitado ? 'Inhabilitar' : 'Habilitar' }}
+            </button>
+
+            <button *ngIf="isAdmin && e.verificadoEmail === false" type="button" class="btn ghost"
+                (click)="reenviarVerificacion.emit(e)">
+                Reenviar verificación
+            </button>
+
+            <button *ngIf="permitirSeleccion" type="button" class="btn primary" (click)="seleccionar.emit(e)">
+                Seleccionar
+            </button>
+        </div>
+    </article>
+</div>
+
+<!-- Vacío -->
+<div class="empty" *ngIf="!loading && vm.length === 0">
+    <p>No encontramos especialistas que coincidan con "<strong>{{ filtro.value }}</strong>".</p>
+    <button type="button" class="btn" (click)="filtro.setValue('')">Borrar filtro</button>
+</div>

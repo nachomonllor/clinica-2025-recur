@@ -5,8 +5,7 @@ import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { QuickAccessPanelComponent } from '../ui/quick-access-panel/quick-access-panel.component';
 import { SupabaseService } from '../../services/supabase.service';
-import { Perfil, QuickItem } from '../../../models/quick-item.model';
-import { Rol } from '../../../models/perfil.model';
+import { Perfil, QuickItem, Rol } from '../../../models/interfaces';
 
 @Component({
   standalone: true,

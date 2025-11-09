@@ -1,0 +1,79 @@
+<p>admin-home works!</p>
+
+<section class="topbar">
+  <h1 class="brand">
+    <mat-icon>admin_panel_settings</mat-icon>
+    Panel de Administración
+  </h1>
+</section>
+
+<section class="stats">
+  <div class="stat" *ngIf="counters as c; else skeleton">
+    <div class="item">
+      <div class="value">{{ c.usuarios }}</div>
+      <div class="label">Usuarios</div>
+    </div>
+    <div class="item">
+      <div class="value">{{ c.especialistasPendientes }}</div>
+      <div class="label">Especialistas pendientes</div>
+    </div>
+    <div class="item">
+      <div class="value">{{ c.turnosHoy }}</div>
+      <div class="label">Turnos hoy</div>
+    </div>
+    <div class="item">
+      <div class="value">{{ c.turnosPendientes }}</div>
+      <div class="label">Turnos pendientes</div>
+    </div>
+  </div>
+
+  <ng-template #skeleton>
+    <div class="item skeleton" *ngFor="let _ of [1,2,3,4]">
+      <div class="value">—</div>
+      <div class="label">Cargando…</div>
+    </div>
+  </ng-template>
+</section>
+
+<section class="grid">
+  <mat-card class="tile" *ngFor="let l of links" [routerLink]="l.route" tabindex="0">
+    <div class="tile__icon">
+      <mat-icon>{{ l.icon }}</mat-icon>
+    </div>
+    <div class="tile__body">
+      <h3>{{ l.title }}</h3>
+      <p>{{ l.desc }}</p>
+      <a mat-stroked-button color="primary" [routerLink]="l.route">Abrir</a>
+    </div>
+  </mat-card>
+</section>
+
+<!-- Floating Action Button (acciones rápidas) -->
+<div class="fab">
+  <button mat-fab color="primary" (click)="toggleFab()" aria-label="Acciones rápidas">
+    <mat-icon>{{ showFab ? 'close' : 'add' }}</mat-icon>
+  </button>
+
+  <div class="fab__menu" [class.show]="showFab">
+    <button mat-mini-fab aria-label="Nuevo usuario" (click)="onNuevoUsuario()">
+      <mat-icon>person_add</mat-icon>
+    </button>
+    <button mat-mini-fab aria-label="Solicitar turno" (click)="onSolicitarTurno()">
+      <mat-icon>add_task</mat-icon>
+    </button>
+    <button mat-mini-fab aria-label="Exportar usuarios" (click)="onExportarUsuarios()">
+      <mat-icon>file_download</mat-icon>
+    </button>
+  </div>
+</div>
+
+
+<!-- En el template del contenedor (ej: UsuariosAdminComponent) -->
+<!-- <app-listar-especialistas
+  [especialistas]="especialistas$ | async"
+  [loading]="cargando"
+  [isAdmin]="true"
+  (verDetalle)="onVerDetalle($event)"
+  (toggleHabilitado)="onToggleHabilitado($event)"
+  (reenviarVerificacion)="onReenviarVerificacion($event)"
+></app-listar-especialistas> -->

@@ -1,0 +1,90 @@
+<p>turno-detalle works!</p>
+
+<mat-card class="wrap">
+  <div class="head">
+    <h2><mat-icon>event</mat-icon> Detalle del turno</h2>
+    <button mat-stroked-button (click)="volver()">
+      <mat-icon>arrow_back</mat-icon> Volver
+    </button>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading" *ngIf="loading">
+    <mat-icon>hourglass_empty</mat-icon>
+    Cargando turno…
+  </div>
+
+  <!-- Error -->
+  <div class="error" *ngIf="!loading && error">
+    <mat-icon>error</mat-icon>
+    {{ error }}
+  </div>
+
+  <!-- Contenido -->
+  <ng-container *ngIf="!loading && !error">
+    <ng-container *ngIf="turno$ | async as t; else notfound">
+      <div class="row meta">
+        <div class="state chip"
+             [class.ok]="t.estado==='realizado'"
+             [class.warn]="t.estado==='pendiente' || t.estado==='aceptado' || t.estado==='confirmado'"
+             [class.bad]="t.estado==='cancelado' || t.estado==='rechazado'">
+          {{ t.estado }}
+        </div>
+        <div class="when">
+          <mat-icon>schedule</mat-icon>
+          <span>{{ t.fechaISO | date:'EEE d/MM/yyyy HH:mm' }}</span>
+        </div>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <div class="row">
+        <div class="field">
+          <div class="label"><mat-icon>badge</mat-icon> Especialista</div>
+          <div class="value">{{ t.especialista }}</div>
+        </div>
+        <div class="field">
+          <div class="label"><mat-icon>medical_services</mat-icon> Especialidad</div>
+          <div class="value">{{ t.especialidad }}</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <div class="label"><mat-icon>location_on</mat-icon> Ubicación</div>
+          <div class="value">{{ t.ubicacion || '—' }}</div>
+        </div>
+        <div class="field">
+          <div class="label"><mat-icon>notes</mat-icon> Notas</div>
+          <div class="value">{{ t.notas || '—' }}</div>
+        </div>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <div class="actions">
+        <button mat-raised-button color="warn"
+                (click)="cancelar(t)"
+                [disabled]="!puedeCancelar(t)">
+          <mat-icon>event_busy</mat-icon> Cancelar
+        </button>
+
+        <button mat-button (click)="verResena(t)" *ngIf="t.resenaEspecialista">
+          <mat-icon>rate_review</mat-icon> Ver reseña
+        </button>
+
+        <button mat-button color="primary" (click)="completarEncuesta(t)"
+                *ngIf="t.estado==='realizado' && !t.encuesta">
+          <mat-icon>assignment</mat-icon> Completar encuesta
+        </button>
+      </div>
+    </ng-container>
+
+    <ng-template #notfound>
+      <div class="empty">
+        <mat-icon>info</mat-icon>
+        No se encontró el turno.
+      </div>
+    </ng-template>
+  </ng-container>
+</mat-card>

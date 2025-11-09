@@ -1,0 +1,69 @@
+src/app/
+  ├─ core/                           # Servicios y utilidades transversales
+  │   ├─ guards/                     # Guards de rol (admin, especialista, paciente)
+  │   ├─ services/
+  │   │   ├─ auth.service.ts
+  │   │   ├─ turnos.service.ts       # Lógica común de turnos (compartida por roles)
+  │   │   ├─ usuarios.service.ts
+  │   │   ├─ export.service.ts       # Excel/PDF
+  │   │   └─ storage.service.ts
+  │   └─ interceptors/
+  ├─ shared/                         # Reusables (UI, pipes, directives)
+  │   ├─ components/
+  │   ├─ directives/
+  │   └─ pipes/
+  ├─ models/                         # Tipos/VMs compartidos (TurnoVM, Usuario, etc.)
+  │   └─ turno.model.ts
+  │
+  ├─ bienvenida/
+  │   └─ bienvenida.component.{ts,html,scss}
+  ├─ auth/
+  │   ├─ login/login.component.{ts,html,scss}
+  │   └─ registro/registro.component.{ts,html,scss}
+  │
+  ├─ paciente/
+  │   ├─ paciente-home/
+  │   │   └─ paciente-home.component.{ts,html,scss}
+  │   ├─ mis-turnos-paciente/        # Tu componente existente
+  │   │   └─ mis-turnos-paciente.component.{ts,html,scss}
+  │   ├─ turno-detalle/
+  │   │   └─ turno-detalle.component.{ts,html,scss}
+  │   ├─ estudios/
+  │   │   └─ estudios.component.{ts,html,scss}
+  │   ├─ estudios-subir/
+  │   │   └─ estudios-subir.component.{ts,html,scss}
+  │   └─ encuestas/
+  │       └─ encuestas.component.{ts,html,scss}
+  │
+  ├─ especialista/
+  │   ├─ especialista-home/
+  │   │   └─ especialista-home.component.{ts,html,scss}
+  │   ├─ agenda/
+  │   │   └─ agenda.component.{ts,html,scss}
+  │   ├─ pacientes/
+  │   │   └─ pacientes.component.{ts,html,scss}
+  │   ├─ paciente-detalle/
+  │   │   └─ paciente-detalle.component.{ts,html,scss}
+  │   ├─ turno-detalle-esp/
+  │   │   └─ turno-detalle-esp.component.{ts,html,scss}
+  │   ├─ resenia/                    # usar "resenia" (sin ñ) para evitar problemas en paths
+  │   │   └─ resenia.component.{ts,html,scss}
+  │   └─ resenias/
+  │       └─ resenias.component.{ts,html,scss}
+  │
+  ├─ admin/
+  │   ├─ admin-home/
+  │   │   └─ admin-home.component.{ts,html,scss}
+  │   ├─ usuarios/
+  │   │   └─ usuarios.component.{ts,html,scss}
+  │   ├─ turnos/
+  │   │   └─ turnos-admin.component.{ts,html,scss}
+  │   └─ reportes/
+  │       └─ reportes.component.{ts,html,scss}
+  │
+  ├─ solicitar-turno/
+  │   └─ solicitar-turno.component.{ts,html,scss}
+  └─ mi-perfil/
+      ├─ mi-perfil.component.{ts,html,scss}
+      └─ mis-horarios/               # Solo especialista
+          └─ mis-horarios.component.{ts,html,scss}

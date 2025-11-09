@@ -14,7 +14,6 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
-
 @Component({
   selector: 'app-resenia-especialista',
   standalone: true,
@@ -37,8 +36,6 @@ export class ReseniaEspecialistaComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private fb: FormBuilder,
-  //  private turnoService: TurnoService,
-    private snackBar: MatSnackBar,
     public router: Router
   ) {}
 

@@ -1,19 +1,22 @@
 import { Injectable, inject } from '@angular/core';
-import { from, map, switchMap } from 'rxjs';
+import { from, map, switchMap, Observable } from 'rxjs';
 import { SupabaseService } from './supabase.service';
-import { EstadoTurno, TurnoVM } from '../../models/turno.model';
-import { TurnoEspecialista } from '../../models/turno-especialista.model';
+import { TurnoVM, EstadoTurno, TurnoEspecialistaVM } from '../../models/interfaces';
 
 @Injectable({ providedIn: 'root' })
 export class TurnoService {
-    private supa = inject(SupabaseService).client;
-    private tabla = 'turnos';
+  private supa = inject(SupabaseService).client;
+  private tabla = 'turnos';
 
-    /** Lista turnos del paciente logueado y los mapea a la vista */
-    getTurnosPacienteVM$() {
-      return from(this.supa.auth.getUser()).pipe(
-        map(res => res.data.user?.id || ''),
-        switchMap(uid => from(
+  /**
+   * Lista turnos del paciente logueado y los mapea al VM canónico.
+   * Retorna fechaISO (obligatoria) y deja fecha/hora para compatibilidad con tu tabla.
+   */
+  getTurnosPacienteVM$(): Observable<TurnoVM[]> {
+    return from(this.supa.auth.getUser()).pipe(
+      map(res => res.data.user?.id || ''),
+      switchMap(uid =>
+        from(
           this.supa
             .from(this.tabla)
             .select(`
@@ -29,106 +32,97 @@ export class TurnoService {
             `)
             .eq('paciente_id', uid)
             .order('fecha_iso', { ascending: false })
-        )),
-        map(({ data, error }) => {
-          if (error) throw error;
-          const out: TurnoVM[] = (data || []).map((t: any) => {
-            const dt = new Date(t.fecha_iso);
-            const hora = dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            const fechaSolo = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate());
-            const especialista = t.especialista ? `${t.especialista.apellido || ''}, ${t.especialista.nombre || ''}`.trim() : '-';
-            const encuesta = !!t.encuesta;
-            const calificacion = Number(t.encuesta?.estrellas ?? t.encuesta?.rating ?? NaN);
-            return {
-              id: t.id,
-              fecha: fechaSolo,
-              hora,
-              especialidad: t.especialidad,
-              especialista,
-              estado: t.estado as EstadoTurno,
-              resena: t.resena_especialista || '',
-              encuesta,
-              pacienteId: t.paciente_id,
-              calificacion: isNaN(calificacion) ? undefined : calificacion
-            } as TurnoVM;
-          });
-          return out;
-        })
-      );
-    }
+        )
+      ),
+      map(({ data, error }) => {
+        if (error) throw error;
 
-    getTurnosEspecialista$(especialistaId?: string) {
-      return from(this.supa.auth.getUser()).pipe(
-        map(res => especialistaId || res.data.user?.id || ''),
-          switchMap(uid => from(
-            this.supa
-              .from('turnos')
-              .select(`
-                id,
-                paciente_id,
-                especialista_id,
-                especialidad,
-                fecha_iso,
-                estado,
-                resena_especialista,
-                encuesta,
-                paciente:profiles!turnos_paciente_id_fkey ( apellido, nombre )
-              `)
-              .eq('especialista_id', uid)
-              .order('fecha_iso', { ascending: false })
-          )),
-          // map(({ data, error }) => {
-          //   if (error) throw error;
-          //   // Mapea a la misma VM que uses en tu tabla de especialista
-          //   return (data || []).map((t: any) => {
-          //     const dt = new Date(t.fecha_iso);
-          //     const hora = dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-          //     const fechaSolo = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate());
-          //     const paciente = t.paciente ? `${t.paciente.apellido || ''}, ${t.paciente.nombre || ''}`.trim() : '-';
-          //     const encuesta = !!t.encuesta;
-          //     return {
-          //       id: t.id,
-          //       fecha: fechaSolo,
-          //       hora,
-          //       especialidad: t.especialidad,
-          //       paciente,
-          //       estado: t.estado,
-          //       resena: t.resena_especialista || '',
-          //       encuesta
-          //     };
-          //   });
-          // })
+        const out: TurnoVM[] = (data || []).map((t: any) => {
+          const dt = new Date(t.fecha_iso);
+          const hora = dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          const fechaSolo = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate());
+          const especialista = t.especialista
+            ? `${t.especialista.apellido || ''}, ${t.especialista.nombre || ''}`.trim()
+            : '-';
+          const encuesta = !!t.encuesta;
+          const calificacion = Number(t.encuesta?.estrellas ?? t.encuesta?.rating ?? NaN);
 
-          map(({ data, error }) => {
-            if (error) throw error;
-            return (data || []).map((t: any) => {
-              const dt = new Date(t.fecha_iso);
-              const yyyy = dt.getFullYear();
-              const mm = String(dt.getMonth() + 1).padStart(2, '0');
-              const dd = String(dt.getDate()).padStart(2, '0');
-              const fechaStr = `${yyyy}-${mm}-${dd}`;                     // <- string
-              const hora = dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-              const paciente = t.paciente ? `${t.paciente.apellido || ''}, ${t.paciente.nombre || ''}`.trim() : '-';
-              const encuesta = !!t.encuesta;
-              return {
-                id: t.id,
-                fecha: fechaStr,                                          // <- string
-                hora,                                                     // <- string
-                especialidad: t.especialidad,
-                paciente,
-                estado: t.estado,
-                resena: t.resena_especialista || '',
-                encuesta
-              } as TurnoEspecialista;
-            });
-          })
+          return {
+            id: t.id,
+            // canónico:
+            fechaISO: t.fecha_iso,
+            // compat (tu tabla actual):
+            fecha: fechaSolo,
+            hora,
+            especialidad: t.especialidad,
+            especialista,
+            estado: t.estado as EstadoTurno,
+            resenaEspecialista: t.resena_especialista || null,
+            tieneResena: !!t.resena_especialista,
+            encuesta,
+            pacienteId: t.paciente_id,
+            calificacion: isNaN(calificacion) ? undefined : calificacion
+          } satisfies TurnoVM;
+        });
 
-
+        return out;
+      })
     );
   }
 
-  /** Cancela el turno (update estado='cancelado') */
-  cancelarTurno(id: string) {
+  /**
+   * Turnos del especialista (listado). Mapea al VM de especialista.
+   * Si no pasás `especialistaId`, toma el usuario actual.
+   */
+  getTurnosEspecialista$(especialistaId?: string): Observable<TurnoEspecialistaVM[]> {
+    return from(this.supa.auth.getUser()).pipe(
+      map(res => especialistaId || res.data.user?.id || ''),
+      switchMap(uid =>
+        from(
+          this.supa
+            .from(this.tabla)
+            .select(`
+              id,
+              paciente_id,
+              especialista_id,
+              especialidad,
+              fecha_iso,
+              estado,
+              resena_especialista,
+              encuesta,
+              paciente:profiles!turnos_paciente_id_fkey ( apellido, nombre )
+            `)
+            .eq('especialista_id', uid)
+            .order('fecha_iso', { ascending: false })
+        )
+      ),
+      map(({ data, error }) => {
+        if (error) throw error;
+
+        return (data || []).map((t: any) => {
+          const dt = new Date(t.fecha_iso);
+          const hora = dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          const paciente = t.paciente
+            ? `${t.paciente.apellido || ''}, ${t.paciente.nombre || ''}`.trim()
+            : '-';
+
+          const vm: TurnoEspecialistaVM = {
+            id: t.id,
+            fechaISO: t.fecha_iso,
+            hora,
+            especialidad: t.especialidad,
+            paciente,
+            estado: t.estado as EstadoTurno,
+            resenaEspecialista: t.resena_especialista || null
+          };
+          return vm;
+        });
+      })
+    );
+  }
+
+  /** Cancela el turno (update estado='cancelado') y devuelve void si OK */
+  cancelarTurno(id: string): Observable<void> {
     return from(
       this.supa
         .from(this.tabla)
@@ -136,6 +130,11 @@ export class TurnoService {
         .eq('id', id)
         .select('id')
         .single()
+    ).pipe(
+      map(({ error }) => {
+        if (error) throw error;
+        return void 0;
+      })
     );
   }
 }
@@ -143,108 +142,141 @@ export class TurnoService {
 
 
 
+
+
+
+
+
+
 // import { Injectable, inject } from '@angular/core';
 // import { from, map, switchMap } from 'rxjs';
 // import { SupabaseService } from './supabase.service';
-// import { TurnoVM } from '../models/turno.model';
-
-// export interface Turno {
-//   id?: string;
-//   paciente_id: string;
-//   especialista_id: string;
-//   especialidad: string;
-//   fecha_iso: string; // ISO
-//   estado: 'pendiente'|'aceptado'|'realizado'|'cancelado'|'rechazado';
-// }
+// import { TurnoVM } from '../../models/interfaces';
 
 // @Injectable({ providedIn: 'root' })
 // export class TurnoService {
-//   private supa = inject(SupabaseService).client;
-//   private tabla = 'turnos';
+//     private supa = inject(SupabaseService).client;
+//     private tabla = 'turnos';
 
-  
+//     /** Lista turnos del paciente logueado y los mapea a la vista */
+//     getTurnosPacienteVM$() {
+//       return from(this.supa.auth.getUser()).pipe(
+//         map(res => res.data.user?.id || ''),
+//         switchMap(uid => from(
+//           this.supa
+//             .from(this.tabla)
+//             .select(`
+//               id,
+//               paciente_id,
+//               especialista_id,
+//               especialidad,
+//               fecha_iso,
+//               estado,
+//               resena_especialista,
+//               encuesta,
+//               especialista:profiles!turnos_especialista_id_fkey ( apellido, nombre )
+//             `)
+//             .eq('paciente_id', uid)
+//             .order('fecha_iso', { ascending: false })
+//         )),
+//         map(({ data, error }) => {
+//           if (error) throw error;
+//           const out: TurnoVM[] = (data || []).map((t: any) => {
+//             const dt = new Date(t.fecha_iso);
+//             const hora = dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+//             const fechaSolo = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate());
+//             const especialista = t.especialista ? `${t.especialista.apellido || ''}, ${t.especialista.nombre || ''}`.trim() : '-';
+//             const encuesta = !!t.encuesta;
+//             const calificacion = Number(t.encuesta?.estrellas ?? t.encuesta?.rating ?? NaN);
+//             return {
+//               id: t.id,
+//               fecha: fechaSolo,
+//               hora,
+//               especialidad: t.especialidad,
+//               especialista,
+//               estado: t.estado as EstadoTurno,
+//               resena: t.resena_especialista || '',
+//               encuesta,
+//               pacienteId: t.paciente_id,
+//               calificacion: isNaN(calificacion) ? undefined : calificacion
+//             } as TurnoVM;
+//           });
+//           return out;
+//         })
+//       );
+//     }
 
-//   crearTurno(turno: Turno) {
-//     return from(this.supa.from(this.tabla).insert(turno));
-//   }
+//     getTurnosEspecialista$(especialistaId?: string) {
+//       return from(this.supa.auth.getUser()).pipe(
+//         map(res => especialistaId || res.data.user?.id || ''),
+//           switchMap(uid => from(
+//             this.supa
+//               .from('turnos')
+//               .select(`
+//                 id,
+//                 paciente_id,
+//                 especialista_id,
+//                 especialidad,
+//                 fecha_iso,
+//                 estado,
+//                 resena_especialista,
+//                 encuesta,
+//                 paciente:profiles!turnos_paciente_id_fkey ( apellido, nombre )
+//               `)
+//               .eq('especialista_id', uid)
+//               .order('fecha_iso', { ascending: false })
+//           )),
+//           // map(({ data, error }) => {
+//           //   if (error) throw error;
+//           //   // Mapea a la misma VM que uses en tu tabla de especialista
+//           //   return (data || []).map((t: any) => {
+//           //     const dt = new Date(t.fecha_iso);
+//           //     const hora = dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+//           //     const fechaSolo = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate());
+//           //     const paciente = t.paciente ? `${t.paciente.apellido || ''}, ${t.paciente.nombre || ''}`.trim() : '-';
+//           //     const encuesta = !!t.encuesta;
+//           //     return {
+//           //       id: t.id,
+//           //       fecha: fechaSolo,
+//           //       hora,
+//           //       especialidad: t.especialidad,
+//           //       paciente,
+//           //       estado: t.estado,
+//           //       resena: t.resena_especialista || '',
+//           //       encuesta
+//           //     };
+//           //   });
+//           // })
 
-//   /** Reemplazo del viejo getTurnosPaciente$ con Supabase */
-//   getTurnosPaciente$(pacienteId?: string) {
-//     return from(this.supa.auth.getUser()).pipe(
-//       map(res => pacienteId || res.data.user?.id || ''),
-//       switchMap(uid => from(
-//         this.supa.from(this.tabla)
-//           .select('id, paciente_id, especialista_id, especialidad, fecha_iso, estado')
-//           .eq('paciente_id', uid)
-//           .order('fecha_iso', { ascending: false })
-//       )),
-//       map(({ data, error }) => { if (error) throw error; return data as Turno[]; })
+//           map(({ data, error }) => {
+//             if (error) throw error;
+//             return (data || []).map((t: any) => {
+//               const dt = new Date(t.fecha_iso);
+//               const yyyy = dt.getFullYear();
+//               const mm = String(dt.getMonth() + 1).padStart(2, '0');
+//               const dd = String(dt.getDate()).padStart(2, '0');
+//               const fechaStr = `${yyyy}-${mm}-${dd}`;                     // <- string
+//               const hora = dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+//               const paciente = t.paciente ? `${t.paciente.apellido || ''}, ${t.paciente.nombre || ''}`.trim() : '-';
+//               const encuesta = !!t.encuesta;
+//               return {
+//                 id: t.id,
+//                 fecha: fechaStr,                                          // <- string
+//                 hora,                                                     // <- string
+//                 especialidad: t.especialidad,
+//                 paciente,
+//                 estado: t.estado,
+//                 resena: t.resena_especialista || '',
+//                 encuesta
+//               } as TurnoEspecialista;
+//             });
+//           })
+
+
 //     );
 //   }
 
-//   /** Reemplazo del viejo getTurnosEspecialista$ */
-//   getTurnosEspecialista$(especialistaId?: string) {
-//     return from(this.supa.auth.getUser()).pipe(
-//       map(res => especialistaId || res.data.user?.id || ''),
-//       switchMap(uid => from(
-//         this.supa.from(this.tabla)
-//           .select('id, paciente_id, especialista_id, especialidad, fecha_iso, estado')
-//           .eq('especialista_id', uid)
-//           .order('fecha_iso', { ascending: false })
-//       )),
-//       map(({ data, error }) => { if (error) throw error; return data as Turno[]; })
-//     );
-//   }
-
-//   /** Lista los turnos del paciente logueado con nombre del especialista y mapea a VM de la UI. */
-//   getTurnosPacienteVM$() {
-//     return from(this.supa.auth.getUser()).pipe(
-//       map(res => res.data.user?.id || ''),
-//       switchMap(uid => from(
-//         this.supa
-//           .from(this.tabla)
-//           .select(`
-//             id,
-//             paciente_id,
-//             especialista_id,
-//             especialidad,
-//             fecha_iso,
-//             estado,
-//             resena_especialista,
-//             encuesta,
-//             especialista:profiles!turnos_especialista_id_fkey ( apellido, nombre )
-//           `)
-//           .eq('paciente_id', uid)
-//           .order('fecha_iso', { ascending: false })
-//       )),
-//       map(({ data, error }) => {
-//         if (error) throw error;
-//         const out: TurnoVM[] = (data || []).map((t: any) => {
-//           const dt = new Date(t.fecha_iso);
-//           const hora = dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-//           const fechaSolo = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate());
-//           const especialista = t.especialista ? `${t.especialista.apellido || ''}, ${t.especialista.nombre || ''}`.trim() : '-';
-//           const encuesta = !!t.encuesta; // asume que es objeto o null
-//           const calificacion = Number(t.encuesta?.estrellas ?? t.encuesta?.rating ?? NaN);
-//           return {
-//             id: t.id,
-//             fecha: fechaSolo,
-//             hora,
-//             especialidad: t.especialidad,
-//             especialista,
-//             estado: t.estado,
-//             resena: t.resena_especialista || '',
-//             encuesta,
-//             pacienteId: t.paciente_id,
-//             calificacion: isNaN(calificacion) ? undefined : calificacion
-//           } as TurnoVM;
-//         });
-//         return out;
-//       })
-//     );
-//   }
-
-//   /** Cancela el turno (si las RLS permiten que el paciente actual lo modifique). */
+//   /** Cancela el turno (update estado='cancelado') */
 //   cancelarTurno(id: string) {
 //     return from(
 //       this.supa
@@ -256,6 +288,146 @@ export class TurnoService {
 //     );
 //   }
 // }
+
+
+
+
+// ------------------------------------------------------------------------------ ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+// import { Injectable, inject } from '@angular/core';
+// import { Observable, from, map } from 'rxjs';
+// import { SupabaseService } from './supabase.service';
+
+// export type EstadoTurno =
+//   | 'pendiente' | 'aceptado' | 'confirmado'
+//   | 'realizado' | 'rechazado' | 'cancelado';
+
+// export interface TurnoVM {
+//   id: string;
+//   pacienteId: string;
+//   especialistaId: string;
+//   especialista: string;     // nombre para UI
+//   especialidad: string;
+//   fechaISO: string;         // ISO 8601
+//   hora?: string;            // opcional si lo usás en la tabla
+//   estado: EstadoTurno;
+//   ubicacion?: string;
+//   notas?: string;
+//   resena?: boolean;
+//   encuesta?: boolean;
+// }
+
+// @Injectable({ providedIn: 'root' })
+// export class TurnoService {
+//   private sb = inject(SupabaseService);
+
+//   /**
+//    * Mis turnos (paciente): view model para tu tabla.
+//    * Si ya tenés algo hecho, dejá la misma firma para no romper nada.
+//    */
+//   getTurnosPacienteVM$(pacienteId?: string): Observable<TurnoVM[]> {
+//     // Si ya manejás el userId en otro lado, podés ignorar el parámetro.
+//     // --- Supabase real ---
+//     // return from(
+//     //   this.sb.client
+//     //     .from('turnos')
+//     //     .select(`
+//     //       id, paciente_id, especialista_id, especialidad, fecha_iso, estado, notas,
+//     //       especialista:perfiles_especialista(nombre, apellido)
+//     //     `)
+//     //     .eq('paciente_id', pacienteId)            // si lo recibís
+//     //     .order('fecha_iso', { ascending: true })
+//     // ).pipe(
+//     //   map(({ data, error }) => {
+//     //     if (error) throw error;
+//     //     return (data ?? []).map(r => <TurnoVM>{
+//     //       id: r.id,
+//     //       pacienteId: r.paciente_id,
+//     //       especialistaId: r.especialista_id,
+//     //       especialista: this.fullName(r.especialista),
+//     //       especialidad: r.especialidad,
+//     //       fechaISO: r.fecha_iso,
+//     //       estado: r.estado as EstadoTurno,
+//     //       notas: r.notas
+//     //     });
+//     //   })
+//     // );
+
+//     // --- Placeholder para que compile ya (borralo cuando conectes) ---
+//     return from(Promise.resolve<TurnoVM[]>([]));
+//   }
+
+//   /**
+//    * Detalle del turno por ID (paciente).
+//    */
+//   getTurnoPacienteById$(id: string): Observable<TurnoVM> {
+//     // --- Supabase real ---
+//     // return from(
+//     //   this.sb.client
+//     //     .from('turnos')
+//     //     .select(`
+//     //       id, paciente_id, especialista_id, especialidad, fecha_iso, estado, notas, ubicacion,
+//     //       especialista:perfiles_especialista(nombre, apellido)
+//     //     `)
+//     //     .eq('id', id)
+//     //     .maybeSingle()
+//     // ).pipe(
+//     //   map(({ data, error }) => {
+//     //     if (error) throw error;
+//     //     if (!data) throw new Error('Turno no encontrado');
+//     //     return <TurnoVM>{
+//     //       id: data.id,
+//     //       pacienteId: data.paciente_id,
+//     //       especialistaId: data.especialista_id,
+//     //       especialista: this.fullName(data.especialista),
+//     //       especialidad: data.especialidad,
+//     //       fechaISO: data.fecha_iso,
+//     //       estado: data.estado as EstadoTurno,
+//     //       notas: data.notas,
+//     //       ubicacion: data.ubicacion
+//     //     };
+//     //   })
+//     // );
+
+//     // --- Placeholder para que compile ya ---
+//     return from(Promise.reject<TurnoVM>(new Error('TODO: conectar a Supabase')));
+//   }
+
+//   /**
+//    * Cancelar turno (paciente).
+//    */
+//   cancelarTurno(id: string): Observable<void> {
+//     // --- Supabase real ---
+//     // return from(
+//     //   this.sb.client
+//     //     .from('turnos')
+//     //     .update({ estado: 'cancelado' })
+//     //     .eq('id', id)
+//     // ).pipe(
+//     //   map(({ error }) => { if (error) throw error; return void 0; })
+//     // );
+
+//     // --- Placeholder para que compile ya ---
+//     return from(Promise.resolve(void 0));
+//   }
+
+//   // Util
+//   private fullName(p?: { nombre?: string; apellido?: string } | null): string {
+//     if (!p) return '—';
+//     const n = [p.nombre, p.apellido].filter(Boolean).join(' ');
+//     return n || '—';
+//   }
+// }
+
+
+// ------------------------------------------------------------------------------ ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
 
 
 

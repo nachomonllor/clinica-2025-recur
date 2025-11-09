@@ -19,7 +19,7 @@ import {
 } from '@supabase/supabase-js';
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
-import { PerfilInsert, PerfilRow } from '../../models/perfil.model';
+import { PerfilInsert, PerfilRow } from '../../models/interfaces';
 
 /** Evitar múltiples instancias en dev/HMR */
 declare global {
