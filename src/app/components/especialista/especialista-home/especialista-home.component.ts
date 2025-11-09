@@ -1,16 +1,3 @@
-// import { Component } from '@angular/core';
-
-// @Component({
-//   selector: 'app-especialista-home',
-//   standalone: true,
-//   imports: [],
-//   templateUrl: './especialista-home.component.html',
-//   styleUrl: './especialista-home.component.scss'
-// })
-// export class EspecialistaHomeComponent {
-
-// }
-
 import { CommonModule, DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
@@ -63,46 +50,14 @@ export class EspecialistaHomeComponent {
       .sort((a, b) => +new Date(a.fechaISO) - +new Date(b.fechaISO));
   }
 
-  // // ---------------------------
-  // // Helpers de normalización
-  // // ---------------------------
-  // private toVM(t: any): TurnoVM {
-  //   const fecha = this.pickDate(t);
-  //   const pacienteId =
-  //     t.pacienteId ?? t.paciente?.id ?? t.paciente?.uid ?? t.pacienteUID ?? '';
 
-  //   const pacienteNombre =
-  //     t.pacienteNombre ??
-  //     t.paciente?.nombre ??
-  //     t.paciente?.displayName ??
-  //     t.paciente?.name ??
-  //     'Paciente';
-
-  //   const motivo: string | null =
-  //     t.motivo ?? t.motivoConsulta ?? t.descripcion ?? null;
-
-  //   return {
-  //       id: String(t.id ?? t.uid ?? t._id ?? crypto.randomUUID?.() ?? Math.random()),
-  //       fechaISO: fecha ? fecha.toISOString() : '',
-  //       pacienteId,
-  //       pacienteNombre,
-  //       motivo,
-
-  //       especialidad: '',
-  //       especialista: '',
-  //       estado: 'realizado',
-
-  //     };
-  // }
-
-
-  // private toVM(t: any): TurnoVM {
+  //   private toVM(t: any): TurnoVM {
   //   const fecha: Date | null = this.pickDate(t) ?? null;
 
   //   const pacienteId: UUID | undefined =
   //     (t.pacienteId ?? t.paciente?.id ?? t.paciente?.uid ?? t.pacienteUID) || undefined;
 
-  //   const pacienteNombre: string =
+  //   const nombre =
   //     t.pacienteNombre ??
   //     t.paciente?.nombre ??
   //     t.paciente?.displayName ??
@@ -112,15 +67,11 @@ export class EspecialistaHomeComponent {
   //   const motivo: string | null =
   //     t.motivo ?? t.motivoConsulta ?? t.descripcion ?? null;
 
-  //   // Derivados/obligatorios
   //   const especialidad: string =
   //     t.especialidad?.nombre ?? t.especialidad ?? '—';
 
-  //   const especialista: string =
-  //     t.especialista?.nombreCompleto ??
-  //     [t.especialista?.apellido, t.especialista?.nombre].filter(Boolean).join(', ') ||
-  //     t.especialistaNombre ||
-  //     '—';
+
+  //   const especialista =  [t.especialista?.apellido, t.especialista?.nombre].filter(Boolean).join(', ') ||   t.especialistaNombre ??  '—';
 
   //   const estado: EstadoTurno = (t.estado as EstadoTurno) ?? 'pendiente';
 
@@ -131,60 +82,65 @@ export class EspecialistaHomeComponent {
   //     especialista,
   //     estado,
 
-  //     // opcionales / extras:
+  //     // opcionales existentes
   //     pacienteId,
-  //     pacienteNombre,
-  //     motivo,
+  //     notas: [nombre, motivo].filter(Boolean).join(' — ') || null,
   //   };
   // }
 
+
   private toVM(t: any): TurnoVM {
-  const fecha: Date | null = this.pickDate(t) ?? null;
+    const fecha: Date | null = this.pickDate(t) ?? null;
 
-  const pacienteId: UUID | undefined =
-    (t.pacienteId ?? t.paciente?.id ?? t.paciente?.uid ?? t.pacienteUID) || undefined;
+    // Solo '??' para IDs (si no hay nada, queda undefined)
+    const pacienteId: UUID | undefined =
+      (t.pacienteId ?? t.paciente?.id ?? t.paciente?.uid ?? t.pacienteUID) as UUID | undefined;
 
-  const nombre =
-    t.pacienteNombre ??
-    t.paciente?.nombre ??
-    t.paciente?.displayName ??
-    t.paciente?.name ??
-    'Paciente';
+    // Nombre base para notas (solo nullish coalescing aquí)
+    const nombre =
+      t.pacienteNombre ??
+      t.paciente?.nombre ??
+      t.paciente?.displayName ??
+      t.paciente?.name ??
+      '';
 
-  const motivo: string | null =
-    t.motivo ?? t.motivoConsulta ?? t.descripcion ?? null;
+    const motivo: string | null =
+      t.motivo ?? t.motivoConsulta ?? t.descripcion ?? null;
 
-  const especialidad: string =
-    t.especialidad?.nombre ?? t.especialidad ?? '—';
+    // Especialidad: prioritiza objeto.especialidad.nombre, luego string, si no '—'
+    let especialidad = '—';
+    if (t.especialidad?.nombre && String(t.especialidad.nombre).trim()) {
+      especialidad = t.especialidad.nombre;
+    } else if (typeof t.especialidad === 'string' && t.especialidad.trim()) {
+      especialidad = t.especialidad;
+    }
 
-  // const especialista: string =
-  //   t.especialista?.nombreCompleto ??
-  //   [t.especialista?.apellido, t.especialista?.nombre].filter(Boolean).join(', ') ||
-  //   t.especialistaNombre ||
-  //   '—';
+    // Especialista: "Apellido, Nombre" > especialistaNombre > '—'
+    let especialista = '—';
+    const apNom = [t.especialista?.apellido, t.especialista?.nombre]
+      .filter(Boolean).join(', ');
+    if (apNom) {
+      especialista = apNom;
+    } else if (t.especialistaNombre && t.especialistaNombre.trim()) {
+      especialista = t.especialistaNombre;
+    }
 
-  
-  const especialista =
-  [t.especialista?.apellido, t.especialista?.nombre].filter(Boolean).join(', ') || 
-  t.especialistaNombre ?? 
-  '—';
+    const estado: EstadoTurno = (t.estado as EstadoTurno) ?? 'pendiente';
 
+    return {
+      id: String(
+        t.id ?? t.uid ?? t._id ?? (crypto.randomUUID?.() ?? Math.random())
+      ) as UUID,
+      fechaISO: fecha ? fecha.toISOString() : '',
+      especialidad,
+      especialista,
+      estado,
+      pacienteId,
+      // si queda string vacío, caemos a null para no mostrar " — "
+      notas: [nombre, motivo].filter(Boolean).join(' — ') || null,
+    };
 
-  const estado: EstadoTurno = (t.estado as EstadoTurno) ?? 'pendiente';
-
-  return {
-    id: String(t.id ?? t.uid ?? t._id ?? crypto.randomUUID?.() ?? Math.random()) as UUID,
-    fechaISO: fecha ? fecha.toISOString() : '',
-    especialidad,
-    especialista,
-    estado,
-
-    // opcionales existentes
-    pacienteId,
-    notas: [nombre, motivo].filter(Boolean).join(' — ') || null,
-  };
-}
-
+  }
 
 
   /** Detecta la fecha sin importar cómo venga (Date, string, number, Timestamp) */
@@ -289,4 +245,80 @@ export class EspecialistaHomeComponent {
 //   onNuevoTurno() { /* this.router.navigateByUrl('/solicitar-turno'); */ }
 //   onVerAgenda()  { /* this.router.navigateByUrl('/especialista/agenda'); */ }
 //   onResenias()   { /* this.router.navigateByUrl('/especialista/resenias'); */ }
+// }
+
+
+// // ---------------------------
+// // Helpers de normalización
+// // ---------------------------
+// private toVM(t: any): TurnoVM {
+//   const fecha = this.pickDate(t);
+//   const pacienteId =
+//     t.pacienteId ?? t.paciente?.id ?? t.paciente?.uid ?? t.pacienteUID ?? '';
+
+//   const pacienteNombre =
+//     t.pacienteNombre ??
+//     t.paciente?.nombre ??
+//     t.paciente?.displayName ??
+//     t.paciente?.name ??
+//     'Paciente';
+
+//   const motivo: string | null =
+//     t.motivo ?? t.motivoConsulta ?? t.descripcion ?? null;
+
+//   return {
+//       id: String(t.id ?? t.uid ?? t._id ?? crypto.randomUUID?.() ?? Math.random()),
+//       fechaISO: fecha ? fecha.toISOString() : '',
+//       pacienteId,
+//       pacienteNombre,
+//       motivo,
+
+//       especialidad: '',
+//       especialista: '',
+//       estado: 'realizado',
+
+//     };
+// }
+
+
+// private toVM(t: any): TurnoVM {
+//   const fecha: Date | null = this.pickDate(t) ?? null;
+
+//   const pacienteId: UUID | undefined =
+//     (t.pacienteId ?? t.paciente?.id ?? t.paciente?.uid ?? t.pacienteUID) || undefined;
+
+//   const pacienteNombre: string =
+//     t.pacienteNombre ??
+//     t.paciente?.nombre ??
+//     t.paciente?.displayName ??
+//     t.paciente?.name ??
+//     'Paciente';
+
+//   const motivo: string | null =
+//     t.motivo ?? t.motivoConsulta ?? t.descripcion ?? null;
+
+//   // Derivados/obligatorios
+//   const especialidad: string =
+//     t.especialidad?.nombre ?? t.especialidad ?? '—';
+
+//   const especialista: string =
+//     t.especialista?.nombreCompleto ??
+//     [t.especialista?.apellido, t.especialista?.nombre].filter(Boolean).join(', ') ||
+//     t.especialistaNombre ||
+//     '—';
+
+//   const estado: EstadoTurno = (t.estado as EstadoTurno) ?? 'pendiente';
+
+//   return {
+//     id: String(t.id ?? t.uid ?? t._id ?? crypto.randomUUID?.() ?? Math.random()) as UUID,
+//     fechaISO: fecha ? fecha.toISOString() : '',
+//     especialidad,
+//     especialista,
+//     estado,
+
+//     // opcionales / extras:
+//     pacienteId,
+//     pacienteNombre,
+//     motivo,
+//   };
 // }

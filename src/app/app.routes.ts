@@ -24,87 +24,87 @@ import { RegistroEspecialistaComponent } from './components/auth/registro-especi
 import { AdminHomeComponent } from './components/admin/admin-home/admin-home.component';
 
 export const routes: Routes = [
-  // Redirect raíz : bienvenida
-  { path: '', pathMatch: 'full', redirectTo: 'bienvenida' },
+    // Redirect raíz : bienvenida
+    { path: '', pathMatch: 'full', redirectTo: 'bienvenida' },
 
-  // Páginas principales
-  { path: 'bienvenida', component: BienvenidaComponent },
-  { path: 'login', component: LoginComponent },
+    // Páginas principales
+    { path: 'bienvenida', component: BienvenidaComponent },
+    { path: 'login', component: LoginComponent },
 
-  // {
-  //   path: 'paciente',
-  //   children: [
-  //     { path: '', component: PacienteHomeComponent },
-  //     { path: 'turnos', loadComponent: () => import('./paciente/turnos/turnos-paciente.component').then(m => m.TurnosPacienteComponent) },
-  //     { path: 'turno/:id', loadComponent: () => import('./paciente/turno-detalle/turno-detalle.component').then(m => m.TurnoDetalleComponent) },
-  //     { path: 'estudios', loadComponent: () => import('./paciente/estudios/estudios.component').then(m => m.EstudiosComponent) },
-  //     { path: 'estudios/subir', loadComponent: () => import('./paciente/estudios-subir/estudios-subir.component').then(m => m.EstudiosSubirComponent) },
-  //     { path: 'encuestas', loadComponent: () => import('./paciente/encuestas/encuestas.component').then(m => m.EncuestasComponent) },
-  //   ],
-  //   // canMatch: [pacienteGuard],
-  // },
+    // {
+    //   path: 'paciente',
+    //   children: [
+    //     { path: '', component: PacienteHomeComponent },
+    //     { path: 'turnos', loadComponent: () => import('./paciente/turnos/turnos-paciente.component').then(m => m.TurnosPacienteComponent) },
+    //     { path: 'turno/:id', loadComponent: () => import('./paciente/turno-detalle/turno-detalle.component').then(m => m.TurnoDetalleComponent) },
+    //     { path: 'estudios', loadComponent: () => import('./paciente/estudios/estudios.component').then(m => m.EstudiosComponent) },
+    //     { path: 'estudios/subir', loadComponent: () => import('./paciente/estudios-subir/estudios-subir.component').then(m => m.EstudiosSubirComponent) },
+    //     { path: 'encuestas', loadComponent: () => import('./paciente/encuestas/encuestas.component').then(m => m.EncuestasComponent) },
+    //   ],
+    //   // canMatch: [pacienteGuard],
+    // },
 
-  {
-    path: 'paciente',
+    {
+      path: 'paciente',
+      children: [
+        { path: '', component: PacienteHomeComponent },
+            { path: 'turnos',  loadComponent: () => import('./components/paciente/paciente-home/paciente-home.component').then(m => m.PacienteHomeComponent)},
+            { path: 'turno/:id',  loadComponent: () => import('./components/paciente/turno-detalle/turno-detalle.component').then(m => m.TurnoDetalleComponent)}, 
+            { path: 'estudios', loadComponent: () => import('./components/paciente/estudios/estudios.component').then(m => m.EstudiosComponent) },
+            { path: 'estudios/subir', loadComponent: () => import('./components/paciente/estudios-subir/estudios-subir.component').then(m => m.EstudiosSubirComponent) },
+            { path: 'encuestas', loadComponent: () => import('./components/paciente/encuesta-atencion/encuesta-atencion.component').then(m => m.EncuestaAtencionComponent) }
+      ],
+      // canMatch: [pacienteGuard],
+    },
+
+    // {
+    //   path: 'especialista',
+    //   children: [
+    //     { path: '', component: EspecialistaHomeComponent },
+    //     { path: 'especialista/agenda', loadComponent: () => import('./components/especialista/agenda/agenda.component').then(m => m.AgendaComponent) },
+    //      { path: 'agenda', loadComponent: () => import('./components/especialista/agenda/agenda.component').then(m => m.AgendaComponent) },
+    //     // { path: 'pacientes', loadComponent: () => import('.components/especialista/pacientes/pacientes.component').then(m => m.PacientesComponent) },
+    //     // { path: 'paciente/:id', loadComponent: () => import('./especialista/paciente-detalle/paciente-detalle.component').then(m => m.PacienteDetalleComponent) },
+    //     // { path: 'turno/:id', loadComponent: () => import('./especialista/turno-detalle/turno-detalle-esp.component').then(m => m.TurnoDetalleEspComponent) },
+    //     // { path: 'turno/:id/resenia', loadComponent: () => import('./especialista/resenia/resenia.component').then(m => m.ReseniaComponent) },
+    //     // { path: 'resenias', loadComponent: () => import('./especialista/resenias/resenias.component').then(m => m.ReseniasComponent) },
+    //   ],
+    //   // canMatch: [especialistaGuard],
+    // },
+
+    {
+    path: 'especialista',
     children: [
-      { path: '', component: PacienteHomeComponent },
-          { path: 'turnos',  loadComponent: () => import('./components/paciente/paciente-home/paciente-home.component').then(m => m.PacienteHomeComponent)},
-          { path: 'turno/:id',  loadComponent: () => import('./components/paciente/turno-detalle/turno-detalle.component').then(m => m.TurnoDetalleComponent)}, 
-          { path: 'estudios', loadComponent: () => import('./components/paciente/estudios/estudios.component').then(m => m.EstudiosComponent) },
-          { path: 'estudios/subir', loadComponent: () => import('./components/paciente/estudios-subir/estudios-subir.component').then(m => m.EstudiosSubirComponent) },
-          { path: 'encuestas', loadComponent: () => import('./components/paciente/encuesta-atencion/encuesta-atencion.component').then(m => m.EncuestaAtencionComponent) }
-    ],
-    // canMatch: [pacienteGuard],
+      { path: '', component: EspecialistaHomeComponent },
+
+      //  agenda (NO REPETIR 'especialista/agenda' dentro del hijo)
+      { path: 'agenda', loadComponent: () =>
+          import('./components/especialista/agenda/agenda.component')
+            .then(m => m.AgendaComponent) },
+
+      // resto de pantallas
+      { path: 'pacientes', loadComponent: () =>
+          import('./components/especialista/pacientes/pacientes.component')
+            .then(m => m.PacientesComponent) },
+          // .then(m => m.PacientesComponent) },
+
+      { path: 'paciente/:id', loadComponent: () =>
+          import('./components/especialista/paciente-detalle/paciente-detalle.component')
+            .then(m => m.PacienteDetalleComponent) },
+
+      { path: 'turno/:id', loadComponent: () =>
+          import('./components/especialista/turno-detalle-esp/turno-detalle-esp.component')
+            .then(m => m.TurnoDetalleEspComponent) },
+
+      { path: 'resenia/:id', loadComponent: () =>
+          import('./components/especialista/resenia/resenia.component')
+            .then(m => m.ReseniaComponent) },
+
+      { path: 'resenias', loadComponent: () =>
+          import('./components/especialista/resenias/resenias.component')
+            .then(m => m.ReseniasComponent) },
+    ]
   },
-
-  // {
-  //   path: 'especialista',
-  //   children: [
-  //     { path: '', component: EspecialistaHomeComponent },
-  //     { path: 'especialista/agenda', loadComponent: () => import('./components/especialista/agenda/agenda.component').then(m => m.AgendaComponent) },
-  //      { path: 'agenda', loadComponent: () => import('./components/especialista/agenda/agenda.component').then(m => m.AgendaComponent) },
-  //     // { path: 'pacientes', loadComponent: () => import('.components/especialista/pacientes/pacientes.component').then(m => m.PacientesComponent) },
-  //     // { path: 'paciente/:id', loadComponent: () => import('./especialista/paciente-detalle/paciente-detalle.component').then(m => m.PacienteDetalleComponent) },
-  //     // { path: 'turno/:id', loadComponent: () => import('./especialista/turno-detalle/turno-detalle-esp.component').then(m => m.TurnoDetalleEspComponent) },
-  //     // { path: 'turno/:id/resenia', loadComponent: () => import('./especialista/resenia/resenia.component').then(m => m.ReseniaComponent) },
-  //     // { path: 'resenias', loadComponent: () => import('./especialista/resenias/resenias.component').then(m => m.ReseniasComponent) },
-  //   ],
-  //   // canMatch: [especialistaGuard],
-  // },
-
-  {
-  path: 'especialista',
-  children: [
-    { path: '', component: EspecialistaHomeComponent },
-
-    //  agenda (NO repitas 'especialista/agenda' dentro del hijo)
-    { path: 'agenda', loadComponent: () =>
-        import('./components/especialista/agenda/agenda.component')
-          .then(m => m.AgendaComponent) },
-
-    // resto de pantallas
-    { path: 'pacientes', loadComponent: () =>
-        import('./components/especialista/pacientes/pacientes.component')
-          .then(m => m.PacientesComponent) },
-         // .then(m => m.PacientesComponent) },
-
-    { path: 'paciente/:id', loadComponent: () =>
-        import('./components/especialista/paciente-detalle/paciente-detalle.component')
-          .then(m => m.PacienteDetalleComponent) },
-
-    { path: 'turno/:id', loadComponent: () =>
-        import('./components/especialista/turno-detalle-esp/turno-detalle-esp.component')
-          .then(m => m.TurnoDetalleEspComponent) },
-
-    { path: 'resenia/:id', loadComponent: () =>
-        import('./components/especialista/resenia/resenia.component')
-          .then(m => m.ReseniaComponent) },
-
-    { path: 'resenias', loadComponent: () =>
-        import('./components/especialista/resenias/resenias.component')
-          .then(m => m.ReseniasComponent) },
-  ]
-},
   //   // canMatch: [especialistaGuard],
 
    {
