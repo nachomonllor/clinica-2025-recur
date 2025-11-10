@@ -1,3 +1,162 @@
 <h2>Usuarios</h2>
 <p>Listado/ABM de usuarios.</p>
 
+<section class="usuarios">
+    <header class="header">
+        <h1>Usuarios</h1>
+
+        <div class="actions">
+            <div class="buscador">
+                <!-- input type="search" [value]="searchTerm" (input)="setSearch(($event.target as HTMLInputElement).value)"
+                    placeholder="Buscar por nombre, DNI, mail o especialidad" aria-label="Buscar usuarios" / -->
+
+                <input type="search" #q [value]="searchTerm" (input)="setSearch(q.value)">
+
+            </div>
+
+            <button class="btn secondary" (click)="exportar()" [disabled]="(cargando$ | async)">
+                Exportar
+            </button>
+
+            <button class="btn primary" (click)="onCrearUsuario()">Nuevo usuario</button>
+        </div>
+    </header>
+
+    <!-- Filtros -->
+    <div class="filters">
+        <div class="group">
+            <span class="label">Rol</span>
+            <button class="pill" [class.active]="(rolFilter$ | async) === 'todos'" (click)="setRol('todos')">
+                Todos
+            </button>
+            <button class="pill" [class.active]="(rolFilter$ | async) === 'paciente'" (click)="setRol('paciente')">
+                Pacientes
+            </button>
+            <button class="pill" [class.active]="(rolFilter$ | async) === 'especialista'"
+                (click)="setRol('especialista')">
+                Especialistas
+            </button>
+            <button class="pill" [class.active]="(rolFilter$ | async) === 'admin'" (click)="setRol('admin')">
+                Admins
+            </button>
+        </div>
+
+        <div class="group" *ngIf="(rolFilter$ | async) === 'especialista'">
+            <span class="label">Estado</span>
+            <button class="pill" [class.active]="(estadoFilter$ | async) === 'todos'" (click)="setEstado('todos')">
+                Todos
+            </button>
+            <button class="pill" [class.active]="(estadoFilter$ | async) === 'habilitados'"
+                (click)="setEstado('habilitados')">
+                Habilitados
+            </button>
+            <button class="pill" [class.active]="(estadoFilter$ | async) === 'pendientes'"
+                (click)="setEstado('pendientes')">
+                Pendientes
+            </button>
+            <button class="pill" [class.active]="(estadoFilter$ | async) === 'inhabilitados'"
+                (click)="setEstado('inhabilitados')">
+                Inhabilitados
+            </button>
+        </div>
+    </div>
+
+    <!-- Estado de error -->
+    <div class="estado" *ngIf="(error$ | async) as err">
+        <div class="error">{{ err }}</div>
+    </div>
+
+    <!-- Tabla -->
+    <div class="tabla-wrapper" *ngIf="filtrados$ | async as usuarios; else loading">
+        <table class="tabla">
+            <thead>
+                <tr>
+                    <th>Usuario</th>
+                    <th>Rol</th>
+                    <th>Especialidades / Obra Social</th>
+                    <th>Estado</th>
+                    <th>Email</th>
+                    <th style="width: 1%;">Acciones</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr *ngFor="let u of usuarios; trackBy: trackById"
+                    [class.inhabilitado]="u.rol === 'especialista' && u.habilitado === false">
+
+                    <td class="usuario-cell">
+                        <!-- cerrar el atributo y usar el campo correcto del VM -->
+                        <img [src]="u.avatarUrl || 'assets/avatar.svg'" (error)="onImgError($event)"
+                            [alt]="u.apellido + ', ' + u.nombre" />
+
+                        <div>
+                            <div class="nombre">{{ u.apellido }}, {{ u.nombre }}</div>
+                            <div class="dni-obra">
+                                {{ u.dni }}
+                                <ng-container *ngIf="u.rol === 'paciente' && u.obraSocial">
+                                    • {{ u.obraSocial }}
+                                </ng-container>
+                            </div>
+                        </div>
+                    </td>
+
+                    <td>
+                        <span class="rol" [class.especialista]="u.rol === 'especialista'"
+                            [class.admin]="u.rol === 'admin'">
+                            {{ u.rol | titlecase }}
+                        </span>
+                    </td>
+
+                    <td>
+                        <ng-container *ngIf="u.rol === 'especialista'; else verif">
+                            <label class="switch" title="Habilitar/Inhabilitar acceso">
+                                <!-- input type="checkbox" [checked]="u.habilitado"
+                                    (change)="onToggleHabilitado(u, ($event.target as HTMLInputElement).checked)" / -->
+
+                                <input type="checkbox" #chk [checked]="u.habilitado"
+                                    (change)="onToggleHabilitado(u, chk.checked)" />
+
+
+
+                                <span class="slider"></span>
+                            </label>
+                            <span class="estado-text" [class.ok]="u.habilitado" [class.warn]="!u.habilitado">
+                                {{ u.habilitado ? 'Habilitado' : 'Inhabilitado' }}
+                            </span>
+
+                            <div class="secundario" *ngIf="!u.aprobado || !u.mailVerificado">
+                                <button class="link" *ngIf="!u.aprobado" (click)="onAprobar(u)">Aprobar
+                                    especialista</button>
+                                <span class="badge warn" *ngIf="!u.mailVerificado">Mail no verificado</span>
+                            </div>
+                        </ng-container>
+
+                        <ng-template #verif>
+                            <span class="badge" [class.ok]="u.mailVerificado" [class.warn]="!u.mailVerificado">
+                                {{ u.mailVerificado ? 'Mail verificado' : 'Mail no verificado' }}
+                            </span>
+                        </ng-template>
+                    </td>
+
+                    <td class="email">
+                        <a [href]="'mailto:' + u.email">{{ u.email }}</a>
+                    </td>
+
+                    <td class="acciones">
+                        <button class="btn icon" (click)="onVerDetalle(u)" title="Ver detalle">Detalle</button>
+                        <button class="btn icon" *ngIf="u.rol === 'paciente'" (click)="onVerHistoriaClinica(u)"
+                            title="Historia clínica">
+                            H.C.
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="empty" *ngIf="usuarios.length === 0">No se encontraron usuarios con esos filtros.</div>
+    </div>
+
+    <ng-template #loading>
+        <div class="loading">Cargando…</div>
+    </ng-template>
+</section>

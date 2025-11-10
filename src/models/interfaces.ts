@@ -1,25 +1,111 @@
-import { Interaction } from "chart.js";
+import type { Observable } from 'rxjs';
 
-// --------- Comunes ---------
+// ========= Comunes =========
 export type UUID = string;
 export type Rol = 'paciente' | 'especialista' | 'admin';
 
-// --------- Turnos (CANÓNICO) ---------
+// Filtros para la sección Usuarios
+export type RolTab = 'todos' | Rol;
+export type EstadoTab = 'todos' | 'habilitados' | 'pendientes' | 'inhabilitados';
+
+// ========= Turnos (CANÓNICO) =========
 export type EstadoTurno =
   | 'pendiente' | 'aceptado' | 'confirmado'
   | 'realizado' | 'rechazado' | 'cancelado';
 
-// Aliases de compatibilidad (no usar en código nuevo):
+// Aliases de compatibilidad (no usar en código nuevo)
 export type TurnoEstado = EstadoTurno;
 export type Estado = EstadoTurno;
 
-type VM = {
-  turnosFiltrados: Turno[];
-  especialidades: string[];
-  especialistas: { id: string; nombre: string; apellido: string }[];
-  total: number;
+// Alias de compatibilidad
+export type TurnoVm = TurnoVM;
+export type Counters = SpecialistCounters;
+
+// =================== Usuarios (VM para la sección Admin) ===================
+export interface Usuario {
+  id: UUID;
+  rol: Rol;                         // 'paciente' | 'especialista' | 'admin'
+  nombre: string;
+  apellido: string;
+  email: string;
+
+  // Opcionales por rol:
+  dni?: string | null;
+  obraSocial?: string | null;       // paciente
+  especialidades?: string[] | null; // especialista
+
+  // Estados de acceso/aprobación:
+  habilitado?: boolean | null;      // especialista puede ingresar
+  aprobado?: boolean | null;        // especialista aprobado por admin
+  mailVerificado?: boolean | null;  // verificación de email
+
+  avatarUrl?: string | null;
+  createdAt?: string | null;        // ISO
+}
+
+// Puerto opcional (si tenés un servicio, implementalo con este contrato)
+export interface UsuariosPort {
+  getAll(): Observable<Usuario[]>;
+  toggleHabilitado(id: string, habilitado: boolean): Promise<void> | Observable<void>;
+  aprobarEspecialista(id: string): Promise<void> | Observable<void>;
+}
+
+// ========= VM ÚNICO de turnos (con alias de compatibilidad) =========
+export interface TurnoVM {
+  id: UUID;
+  especialidad: string;
+  estado: EstadoTurno;
+
+  // Fecha canónica
+  fechaISO: string;
+
+  // Identidades
+  especialistaId?: UUID;
+  pacienteId?: UUID;
+
+  // Nombres (preferido) y alias legacy
+  especialistaNombre?: string; // Preferido: "Apellido, Nombre"
+  especialista?: string;       // LEGACY: mismo contenido que especialistaNombre
+  pacienteNombre?: string;
+
+  // Extras
+  ubicacion?: string | null;
+  notas?: string | null;
+  resenaEspecialista?: string | null;
+  tieneResena?: boolean;
+  encuesta?: boolean;
+  calificacion?: number;
+  motivo?: string | null;
+
+  // ---- Compatibilidad legacy (evitar en código nuevo) ----
+  fecha?: Date;
+  hora?: string;
+  /** @deprecated usar tieneResena */
+  tieneResenia?: boolean;
+  /** @deprecated usar encuesta */
+  puedeEncuesta?: boolean;
+}
+
+// ========= Logins / Accesos =========
+// VM para gráficos de “Log de ingresos”
+export interface LoginLog {
+  id: string;
+  userId: UUID;
+  email?: string | null;
+  rol: Rol;
+  atISO: string; // ISO 8601 del ingreso
+}
+
+// Fila cruda de BD (si usás una tabla de ingresos)
+// Si tu tabla/consulta tiene otros nombres de columnas, ajustá acá:
+export type IngresoRow = {
+  user_id: UUID;
+  email: string;
+  rol: Rol;                  // 'admin' | 'paciente' | 'especialista'
+  timestamp: string;         // timestamptz (ISO)
 };
 
+// ========= Misceláneos =========
 export interface DatoDinamico {
   clave: string;
   valor: string;
@@ -33,7 +119,7 @@ export interface QuickItem {
   tooltip?: string;
 }
 
-// --------- Admin ---------
+// ========= Admin =========
 export interface AdminCounters {
   usuarios: number;
   especialistasPendientes: number;
@@ -41,7 +127,7 @@ export interface AdminCounters {
   turnosPendientes: number;
 }
 
-// --------- Perfiles / Auth (alineado a Supabase) ---------
+// ========= Perfiles / Auth (alineado a Supabase) =========
 export interface PerfilRow {
   id: UUID;                  // PK = auth.users.id
   rol: Rol;
@@ -78,7 +164,7 @@ export interface Perfil {
   email?: string | null;
 }
 
-// --------- Especialista ---------
+// ========= Especialista =========
 export interface Horario {
   especialidad: string;
   dias: string[];   // ["Lunes","Miércoles"]
@@ -115,7 +201,7 @@ export interface PacienteFav {
   ultimaVisita?: string;           // ISO o texto
 }
 
-// --------- Paciente ---------
+// ========= Paciente =========
 export interface Paciente {
   id: UUID;
   nombre: string;
@@ -131,7 +217,7 @@ export interface Paciente {
   password?: string;               // TODO: eliminar
 }
 
-// --------- Historia Clínica ---------
+// ========= Historia Clínica =========
 export interface HistoriaClinica {
   altura: number;
   peso: number;
@@ -141,7 +227,7 @@ export interface HistoriaClinica {
   datosDinamicos?: DatoDinamico[];
 }
 
-// Forma de BD
+// ========= Turnos: Forma de BD (canónica) =========
 export interface TurnoRow {
   id: UUID;
   paciente_id: UUID;
@@ -157,7 +243,21 @@ export interface TurnoRow {
   updated_at?: string;
 }
 
-// Dominio (normalizado)
+// ========= Turnos: Vista/consulta denormalizada =========
+// (Renombre del viejo "type TurnoRow = { ... }")
+export interface TurnoRowView {
+  id: string;
+  fecha: string;                 // timestamptz (ISO)
+  especialidad: string;
+  especialista_id: string;
+  especialista_nombre: string;
+  paciente_id: string;
+  estado: string;                // crudo desde la view
+  creado_el: string;             // timestamptz
+  finalizado_el: string | null;
+}
+
+// ========= Turnos: Dominio (normalizado) =========
 export interface Turno {
   id: UUID;
   pacienteId: UUID;
@@ -172,14 +272,15 @@ export interface Turno {
   calificacion?: number;              // ej. estrellas
 }
 
-export interface VMAdmin 
-{
+// ========= VM para Admin =========
+export interface VMAdmin {
   turnosFiltrados: TurnoVM[];
   especialidades: string[];
   especialistas: { id: string; nombre: string; apellido: string }[];
   total: number;
-};
+}
 
+// ========= Legacy (mantener por compat mientras migrás) =========
 export interface TurnoRowVM  {
   id: string;
   fecha: Date;
@@ -188,39 +289,8 @@ export interface TurnoRowVM  {
   especialista: { id: string; nombre: string; apellido: string };
   paciente: { id: string; nombre: string; apellido: string };
   estado: EstadoTurno;
-};
-
-
-export interface TurnoVM {
-  id: UUID;
-  especialidad: string;
-  especialista: string;    // "Apellido, Nombre"
-  estado: EstadoTurno;
-
-  // Canónico:
-  fechaISO: string;
-
-  // Compatibilidad legacy:
-  fecha?: Date;
-  hora?: string;
-
-  // Extras:
-  pacienteId?: UUID;
-  especialistaId?: UUID;
-  ubicacion?: string | null;
-  notas?: string | null;
-  tieneResena?: boolean;
-  resenaEspecialista?: string | null;
-  encuesta?: boolean;
-  calificacion?: number;
-
-  // =============================
-  pacienteNombre?: string;
-  motivo?: string | null;
 }
 
-
-// VM para especialista POR SI SE NECESITA SEPARADO
 export interface TurnoEspecialistaVM {
   id: UUID;
   fechaISO: string;
@@ -231,40 +301,13 @@ export interface TurnoEspecialistaVM {
   resenaEspecialista?: string | null;
 }
 
-// src/app/models/turno-especialista.model.ts
 export interface TurnoEspecialista {
-    id: number;
-    fecha: string;    // la mostrarás con un date pipe, o viene ya formateada
-    hora: string;
-    especialidad: string;
-    paciente: string; // aquí guardas el nombre o “Nombre Apellido (ID)”
-    estado: 'pendiente' | 'aceptado' | 'realizado' | 'cancelado' | 'rechazado';
-    resena?: string;  // la reseña que deja el especialista
-}
-
-export interface TurnoVm {
-  id: string;
+  id: number;
+  fecha: string;    // ya formateada o para date pipe
+  hora: string;
   especialidad: string;
-  especialista: string;
-  fechaISO: string;
-  estado: Estado;
-  tieneResenia?: boolean;
-  puedeEncuesta?: boolean;
+  paciente: string;
+  estado: EstadoTurno;  // unificado
+  resena?: string;
 }
-
-export interface Counters {
-  pacientes: number;
-  turnosHoy: number;
-  proximosTurnos: number;
-  reseniasPendientes: number;
-}
-
-
-
-
-
-
-
-
-
 

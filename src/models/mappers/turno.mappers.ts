@@ -1,4 +1,4 @@
-import { TurnoRow, Turno, TurnoVM, EstadoTurno, UUID } from '../../models/interfaces';
+import { TurnoRow, Turno, TurnoVM, EstadoTurno, UUID, LoginLog, IngresoRow } from '../../models/interfaces';
 
 export function rowToTurno(r: TurnoRow): Turno {
   return {
@@ -61,77 +61,55 @@ export function puedeCancelar(estado: EstadoTurno): boolean {
 }
 
 
+// Row (BD) -> Dominio
+export function mapTurnoRowToTurno(row: TurnoRow): Turno {
+  return {
+    id: row.id,
+    pacienteId: row.paciente_id,
+    especialistaId: row.especialista_id,
+    especialidad: row.especialidad,
+    fecha: new Date(row.fecha_iso),
+    estado: row.estado,
+    ubicacion: row.ubicacion ?? null,
+    notas: row.notas ?? null,
+    resenaEspecialista: row.resena_especialista ?? null,
+    encuesta: !!row.encuesta,
+    calificacion: row.encuesta?.estrellas ?? undefined,
+  };
+}
+
+// Dominio -> VM (para listas/gráficos)
+export function mapTurnoToVM(t: Turno, especialistaNombre?: string, pacienteNombre?: string): TurnoVM {
+  return {
+    id: t.id,
+    especialidad: t.especialidad,
+    estado: t.estado,
+    fechaISO: t.fecha.toISOString(),
+    especialistaId: t.especialistaId,
+    pacienteId: t.pacienteId,
+    especialistaNombre,
+    especialista: especialistaNombre, // alias legacy
+    pacienteNombre,
+    ubicacion: t.ubicacion ?? null,
+    notas: t.notas ?? null,
+    resenaEspecialista: t.resenaEspecialista ?? null,
+    tieneResena: !!t.resenaEspecialista,
+    encuesta: t.encuesta ?? false,
+    calificacion: t.calificacion,
+  };
+}
+
+// IngresoRow (crudo) -> LoginLog (VM)
+export function mapIngresoToLoginLog(r: IngresoRow): LoginLog {
+  return {
+    id: `${r.user_id}-${r.timestamp}`,
+    userId: r.user_id as UUID,
+    email: r.email,
+    rol: r.rol,
+    atISO: r.timestamp,
+  };
+}
 
 
 
 
-// import { Turno, TurnoRow, TurnoVM } from "../interfaces";
-
-// const hhmm = (iso: string): string => {
-//   const d = new Date(iso);
-//   const hh = String(d.getHours()).padStart(2, '0');
-//   const mm = String(d.getMinutes()).padStart(2, '0');
-//   return `${hh}:${mm}`;
-// };
-
-// /** Row (BD) -> Dominio (normalizado) */
-// // export function rowToTurno(row: TurnoRow): Turno {
-// //   return {
-// //     id: row.id,
-// //     pacienteId: row.paciente_id,
-// //     especialistaId: row.especialista_id,
-// //     especialidad: row.especialidad,
-// //     fecha: new Date(row.fecha_iso),
-// //     estado: row.estado,
-// //     ubicacion: row.ubicacion ?? null,
-// //     notas: row.notas ?? null,
-// //     resenaEspecialista: row.resena_especialista ?? null,
-// //     encuesta: !!row.encuesta,
-// //     calificacion: row.encuesta?.estrellas ?? undefined,
-// //   };
-// // }
-
-// /** Row (BD) -> ViewModel (para UI)
-//  *  Pasá el nombre ya resuelto del especialista (o paciente) por deps.
-//  */
-// // export function rowToTurnoVM(
-// //   row: TurnoRow,
-// //   deps: { especialistaNombre: string; pacienteId?: string }
-// // ): TurnoVM {
-// //   return {
-// //     id: row.id,
-// //     pacienteId: deps.pacienteId ?? row.paciente_id,
-// //     especialistaId: row.especialista_id,
-// //     especialidad: row.especialidad,
-// //     especialista: deps.especialistaNombre,
-// //     estado: row.estado,
-// //     // Canónico para UI:
-// //     fechaISO: row.fecha_iso,
-// //     // Compat con tablas viejas:
-// //     fecha: new Date(row.fecha_iso),
-// //     hora: hhmm(row.fecha_iso),
-// //     // Extras:
-// //     ubicacion: row.ubicacion ?? null,
-// //     notas: row.notas ?? null,
-// //     tieneResena: !!row.resena_especialista,
-// //     resenaEspecialista: row.resena_especialista ?? null,
-// //     encuesta: !!row.encuesta,
-// //     calificacion: row.encuesta?.estrellas ?? undefined,
-// //   };
-// // }
-
-// export function rowToTurno(r: TurnoRow): Turno {
-//   return {
-//     id: r.id,
-//     pacienteId: r.paciente_id,
-//     especialistaId: r.especialista_id,
-//     especialidad: r.especialidad,
-//     fecha: new Date(r.fecha_iso),
-//     estado: r.estado,
-//     ubicacion: r.ubicacion ?? null,
-//     notas: r.notas ?? null,
-//     resenaEspecialista: r.resena_especialista ?? null,
-//     encuesta: !!r.encuesta,
-//     calificacion: Number(r.encuesta?.estrellas ?? NaN) || undefined,
-//   };
-// }

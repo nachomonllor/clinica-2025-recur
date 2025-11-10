@@ -14,8 +14,8 @@ import {
   type AuthChangeEvent,
   type Session,
   type User as SupaUser,
-  type AuthResponse,     // 👈
-  type UserResponse      // 👈
+  type AuthResponse,     // /////////-------------
+  type UserResponse      //////////// ------------
 } from '@supabase/supabase-js';
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
@@ -183,128 +183,57 @@ export class SupabaseService {
   get sdk(): SupabaseClient {
     return this.client;
   }
+
+  // TURNOS: lee por rango (usa la columna que tengas indexada: creado_el o fecha)
+  async fetchTurnos(desde: Date, hasta: Date): Promise<any[]> {
+    const d1 = desde.toISOString();
+    const d2 = hasta.toISOString();
+    const { data, error } = await this._client
+      .from('turnos')
+      .select('id, fecha, especialidad, especialista_id, especialista_nombre, paciente_id, estado, creado_el, finalizado_el')
+      .gte('creado_el', d1)
+      .lte('creado_el', d2);
+
+    if (error) throw error;
+
+    // Normalizo fechas a Date y nombres de campos simples
+    return (data ?? []).map((r: any) => ({
+      id: String(r.id),
+      fecha: new Date(r.fecha),
+      especialidad: r.especialidad || '',
+      especialistaNombre: r.especialista_nombre || '',
+      especialistaId: String(r.especialista_id || ''),
+      pacienteId: String(r.paciente_id || ''),
+      estado: String(r.estado || ''),
+      creadoEl: new Date(r.creado_el),
+      finalizadoEl: r.finalizado_el ? new Date(r.finalizado_el) : null,
+    }));
+  }
+
+  // LOGINS/INGRESOS: lee por rango
+  async fetchIngresos(desde: Date, hasta: Date): Promise<any[]> {
+    const d1 = desde.toISOString();
+    const d2 = hasta.toISOString();
+    const { data, error } = await this._client
+      .from('ingresos')
+      .select('user_id, email, rol, timestamp')
+      .gte('timestamp', d1)
+      .lte('timestamp', d2);
+
+    if (error) throw error;
+
+    return (data ?? []).map((r: any) => ({
+      userId: String(r.user_id || ''),
+      email: r.email || '',
+      rol: String(r.rol || ''),
+      timestamp: new Date(r.timestamp),
+    }));
+  }
+
+
 }
 
 
-
-
-
-
-
-
-// // src/app/services/supabase.service.ts
-// import { Injectable } from '@angular/core';
-// import { createClient, SupabaseClient } from '@supabase/supabase-js';
-// import type { PerfilInsert } from '../models/perfil.model';
-// import { environment } from '../environments/environment';
-// import type { PerfilRow } from '../models/perfil.model';
-
-// @Injectable({ providedIn: 'root' })
-// export class SupabaseService {
-//   public supabase!: SupabaseClient;
-
-//   // Alias para compatibilidad: permite usar inject(SupabaseService).client
-//   get client(): SupabaseClient {
-//     return this.supabase;
-//   }
-
-//   // constructor() {
-//   //   this.supabase = createClient(
-//   //     environment.supabaseUrl,
-//   //     environment.supabaseKey,
-//   //     { auth: { persistSession: true, autoRefreshToken: true } }
-//   //   );
-//   // }
-
-//    constructor() {
-//     this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey, {
-//       auth: {
-//         persistSession: true,
-//         autoRefreshToken: true,
-//         detectSessionInUrl: true,
-//         // Fuerza storage del navegador y desactiva el multi-tab lock:
-//         storage: localStorage,
-//         // @ts-expect-error: multiTab puede no existir en ciertos typings; si no existe, se ignora
-//         multiTab: false
-//       }
-//     });
-//   }
-//   // =============== AUTH ===============
-//   iniciarSesion(email: string, password: string) {
-//     return this.supabase.auth.signInWithPassword({ email, password });
-//   }
-
-//   signUp(email: string, password: string) {
-//     return this.supabase.auth.signUp({ email, password }); // envía mail de verificación
-//   }
-
-//   cerrarSesion() {
-//     return this.supabase.auth.signOut();
-//   }
-
-//   obtenerUsuarioActual() {
-//     return this.supabase.auth.getUser(); // { data: { user }, error }
-//   }
-
-//   getSession() {
-//     return this.supabase.auth.getSession();
-//   }
-
-//   // =============== PROFILES ===============
-//   // async obtenerPerfil(uid: string): Promise<{ data: PerfilRow | null; error: any }> {
-//   //   const { data, error } = await this.supabase
-//   //     .from('profiles')
-//   //     .select('id, rol, aprobado, nombre, apellido, avatar_url, created_at, updated_at')
-//   //     .eq('id', uid) // si usás user_id, cambiá aquí y en policies
-//   //     .single();
-
-//   //   return { data: data as PerfilRow | null, error };
-//   // }
-
-//   // SupabaseService
-//   async obtenerPerfil(uid: string): Promise<{ data: PerfilRow | null; error: any }> {
-
-//     const { data, error } = await this.supabase
-//       .from('profiles')
-//       .select('id, rol, aprobado, nombre, apellido')
-//       .eq('id', uid)
-//       .single();
-//     return { data: data as PerfilRow | null, error };
-//   }
-
-//   // insert/update según conflicto en 'id'
-//   async upsertPerfil(perfil: PerfilInsert): Promise<{ data: PerfilRow | null; error: any }> {
-//     const { data, error } = await this.supabase
-//       .from('profiles')
-//       .upsert(perfil, { onConflict: 'id' }) // si tu unique es 'user_id', cambiá aquí
-//       .select('*')
-//       .single();
-
-//     return { data: data as PerfilRow | null, error };
-//   }
-
-//   // Variante si tu tabla usa 'user_id' (opcional)
-//   async upsertPerfilPorUserId(
-//     perfil: Omit<PerfilInsert, 'id'> & { user_id: string }
-//   ): Promise<{ data: PerfilRow | null; error: any }> {
-//     const { data, error } = await this.supabase
-//       .from('profiles')
-//       .upsert(perfil, { onConflict: 'user_id' })
-//       .select('*')
-//       .single();
-
-//     return { data: data as PerfilRow | null, error };
-//   }
-
-//   // =============== STORAGE ===============
-//   async uploadAvatar(userId: string, file: File, idx: 1 | 2) {
-//     const path = `${userId}/${Date.now()}_${idx}_${file.name}`;
-//     const { error } = await this.supabase.storage.from('avatars').upload(path, file);
-//     if (error) throw error;
-//     const { data: pub } = this.supabase.storage.from('avatars').getPublicUrl(path);
-//     return pub.publicUrl as string;
-//   }
-// }
 
 
 

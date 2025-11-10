@@ -49,9 +49,13 @@ export class MisTurnosPacienteComponent implements OnInit {
     this.turnoService.getTurnosPacienteVM$().subscribe({
       next: (ts) => {
         this.dataSource.data = ts;
+
+        // Filtro único (especialidad + especialista + estado)
         this.dataSource.filterPredicate = (t, f) => {
-          const haystack = `${t.especialidad} ${t.especialista} ${t.estado}`.toLowerCase();
-          return haystack.includes(f);
+          const filtro = (f || '').toLowerCase();
+          const especialistaTxt = (t.especialistaNombre ?? t.especialista ?? '').toLowerCase();
+          const haystack = `${t.especialidad} ${especialistaTxt} ${t.estado}`.toLowerCase();
+          return haystack.includes(filtro);
         };
       },
       error: (e) => console.error('[MisTurnosPaciente] Error', e)
@@ -63,35 +67,25 @@ export class MisTurnosPacienteComponent implements OnInit {
     this.dataSource.filter = (value || '').trim().toLowerCase();
   }
 
-  /** El paciente puede cancelar si no está realizado/rechazado y la fecha es futura */
-  // puedeCancelar(t: TurnoVM): boolean {
-  //   if (t.estado === 'realizado' || t.estado === 'rechazado' || t.estado === 'cancelado') return false;
-  //   const ahora = new Date();
-  //   const fechaHora = new Date(
-  //     t.fechaISO.getFullYear(),
-  //     t.fecha.getMonth(), 
-  //     t.fecha.getDate(),
-  //     Number(t.hora.slice(0, 2)), Number(t.hora.slice(3, 5))
-  //   );
-  //   return fechaHora.getTime() > ahora.getTime();
-  // }
-
+  /** El paciente puede cancelar si no está realizado/rechazado/cancelado y la fecha es futura */
   puedeCancelar(t: TurnoVM): boolean {
     if (t.estado === 'realizado' || t.estado === 'rechazado' || t.estado === 'cancelado') return false;
     if (!t.fechaISO) return false;
-
-    const ms = Date.parse(t.fechaISO);     // parsea ISO con zona
+    const ms = Date.parse(t.fechaISO); // ISO
     if (Number.isNaN(ms)) return false;
-
     return ms > Date.now();
   }
-
 
   cancelarTurno(t: TurnoVM): void {
     const ref = this.dialog.open(this.confirmDialog, { data: { message: `¿Cancelar turno #${t.id}?` } });
     ref.afterClosed().subscribe(ok => {
       if (!ok) return;
-      this.turnoService.cancelarTurno(t.id).subscribe({
+
+      // Sprint 2: Debe dejar un comentario del porqué se cancela el turno
+      const motivo = (prompt('Ingresá el motivo de cancelación:') ?? '').trim();
+      if (!motivo) return;
+
+      this.turnoService.cancelarTurno(t.id, motivo).subscribe({
         next: () => {
           // reflejamos en UI
           t.estado = 'cancelado';
@@ -111,10 +105,133 @@ export class MisTurnosPacienteComponent implements OnInit {
     this.router.navigate(['/encuesta-atencion', t.id]);
   }
 
-  calificarAtencion(t: TurnoVM): void {
-    // implementar si tenés ruta/diálogo para calificación
+  calificarAtencion(_t: TurnoVM): void {
+    
+    // IMPLEMENTAR RUTA Y DIALOGO PARA CALIFICACION
   }
 }
+
+
+
+
+
+// import { CommonModule } from '@angular/common';
+// import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+// import { FormsModule } from '@angular/forms';
+// import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+// import { MatFormFieldModule } from '@angular/material/form-field';
+// import { MatInputModule } from '@angular/material/input';
+// import { MatButtonModule } from '@angular/material/button';
+// import { MatIconModule } from '@angular/material/icon';
+// import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+// import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+// import { MatCardModule } from '@angular/material/card';
+// import { Router } from '@angular/router';
+// import { TurnoService } from '../../../services/turno.service';
+// import { TurnoVM } from '../../../../models/interfaces';
+
+// @Component({
+//   selector: 'app-mis-turnos-paciente',
+//   standalone: true,
+//   templateUrl: './mis-turnos-paciente.component.html',
+//   styleUrls: ['./mis-turnos-paciente.component.scss'],
+//   imports: [
+//     CommonModule,
+//     FormsModule,
+//     MatTableModule,
+//     MatFormFieldModule,
+//     MatInputModule,
+//     MatButtonModule,
+//     MatIconModule,
+//     MatCardModule,
+//     MatDialogModule,
+//     MatSnackBarModule
+//   ]
+// })
+// export class MisTurnosPacienteComponent implements OnInit {
+//   displayedColumns: string[] = ['id', 'fecha', 'hora', 'especialidad', 'especialista', 'estado', 'acciones'];
+//   dataSource = new MatTableDataSource<TurnoVM>([]);
+
+//   @ViewChild('confirmDialog') confirmDialog!: TemplateRef<unknown>;
+
+//   constructor(
+//     private turnoService: TurnoService,
+//     private router: Router,
+//     private dialog: MatDialog,
+//     private snackBar: MatSnackBar
+//   ) { }
+
+//   ngOnInit(): void {
+//     // cargar desde Supabase
+//     this.turnoService.getTurnosPacienteVM$().subscribe({
+//       next: (ts) => {
+//         this.dataSource.data = ts;
+//         this.dataSource.filterPredicate = (t, f) => {
+//           const haystack = `${t.especialidad} ${t.especialista} ${t.estado}`.toLowerCase();
+//           return haystack.includes(f);
+//         };
+//       },
+//       error: (e) => console.error('[MisTurnosPaciente] Error', e)
+//     });
+//   }
+
+//   /* Buscar */
+//   applyFilter(value: string): void {
+//     this.dataSource.filter = (value || '').trim().toLowerCase();
+//   }
+
+//   /** El paciente puede cancelar si no está realizado/rechazado y la fecha es futura */
+//   // puedeCancelar(t: TurnoVM): boolean {
+//   //   if (t.estado === 'realizado' || t.estado === 'rechazado' || t.estado === 'cancelado') return false;
+//   //   const ahora = new Date();
+//   //   const fechaHora = new Date(
+//   //     t.fechaISO.getFullYear(),
+//   //     t.fecha.getMonth(),
+//   //     t.fecha.getDate(),
+//   //     Number(t.hora.slice(0, 2)), Number(t.hora.slice(3, 5))
+//   //   );
+//   //   return fechaHora.getTime() > ahora.getTime();
+//   // }
+
+//   puedeCancelar(t: TurnoVM): boolean {
+//     if (t.estado === 'realizado' || t.estado === 'rechazado' || t.estado === 'cancelado') return false;
+//     if (!t.fechaISO) return false;
+
+//     const ms = Date.parse(t.fechaISO);     // parsea ISO con zona
+//     if (Number.isNaN(ms)) return false;
+
+//     return ms > Date.now();
+//   }
+
+
+//   cancelarTurno(t: TurnoVM): void {
+//     const ref = this.dialog.open(this.confirmDialog, { data: { message: `¿Cancelar turno #${t.id}?` } });
+//     ref.afterClosed().subscribe(ok => {
+//       if (!ok) return;
+//       this.turnoService.cancelarTurno(t.id).subscribe({
+//         next: () => {
+//           // reflejamos en UI
+//           t.estado = 'cancelado';
+//           this.dataSource.data = [...this.dataSource.data];
+//           this.snackBar.open(`Turno ${t.id} cancelado`, 'Cerrar', { duration: 2000 });
+//         },
+//         error: (e) => this.snackBar.open(`Error al cancelar: ${e?.message || e}`, 'Cerrar', { duration: 2500 })
+//       });
+//     });
+//   }
+
+//   verResena(t: TurnoVM): void {
+//     this.router.navigate(['/resenia', t.id]);
+//   }
+
+//   completarEncuesta(t: TurnoVM): void {
+//     this.router.navigate(['/encuesta-atencion', t.id]);
+//   }
+
+//   calificarAtencion(t: TurnoVM): void {
+//     // implementar si tenés ruta/diálogo para calificación
+//   }
+// }
 
 
 

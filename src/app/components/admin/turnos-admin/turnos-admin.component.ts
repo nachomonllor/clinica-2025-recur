@@ -117,7 +117,12 @@ export class TurnosAdminComponent {
         ? filas
         : filas.filter(f =>
           f.especialidad.toLowerCase().includes(filtro) ||
-          f.especialista.toLowerCase().includes(filtro)
+           // f.especialista.toLowerCase().includes(filtro)
+
+           ((f.especialistaNombre ?? f.especialista) ?? '')
+                    .toLowerCase()
+                    .includes(filtro)
+
         );
 
       return <VMAdmin>{

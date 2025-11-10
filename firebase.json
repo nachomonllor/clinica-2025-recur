@@ -1,0 +1,16 @@
+{
+  "hosting": {
+    "public": "clinica-2025-recur",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}

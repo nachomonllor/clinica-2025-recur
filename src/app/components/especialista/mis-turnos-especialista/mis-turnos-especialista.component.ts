@@ -48,7 +48,7 @@ export class MisTurnosEspecialistaComponent implements OnInit {
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
     public router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.turnoService.getTurnosEspecialista$().subscribe({
@@ -137,7 +137,7 @@ export class MisTurnosEspecialistaComponent implements OnInit {
 //   MatTableModule,          // mat-table, [dataSource], matHeaderCell/Cell
 //   MatDialogModule,         // mat-dialog-*
 //   MatSnackBarModule        // MatSnackBar
-//   ], 
+//   ],
 // })
 
 

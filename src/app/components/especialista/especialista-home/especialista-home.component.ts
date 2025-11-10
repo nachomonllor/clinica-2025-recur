@@ -34,10 +34,10 @@ export class EspecialistaHomeComponent {
   showFab = false;
 
   // ---------------------------
-  // Carga/normalización de datos
+  // Carga Y normalizaciOn de datos
   // ---------------------------
   /**
-   * Llamá a este método con el arreglo crudo que te entregue tu servicio.
+   * llamar a este metodo con el arreglo crudo que te entregue tu servicio.
    * Ejemplo de uso:
    *   this.turnosSrv.proximos().subscribe(raw => this.setProximosTurnos(raw));
    */
@@ -101,9 +101,7 @@ export class EspecialistaHomeComponent {
       // si queda string vacío, caemos a null para no mostrar " — "
       notas: [nombre, motivo].filter(Boolean).join(' — ') || null,
     };
-
   }
-
 
   /** Detecta la fecha sin importar cómo venga (Date, string, number, Timestamp) */
   private pickDate(t: any): Date | null {

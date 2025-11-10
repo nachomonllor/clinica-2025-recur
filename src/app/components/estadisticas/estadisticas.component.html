@@ -1,0 +1,95 @@
+<section class="stats">
+  <header class="stats__header">
+    <div class="stats__filters">
+      <label>
+        Desde
+        <!-- input type="date" [value]="range.fromISO" (change)="onRangeChange('from', ($event.target as HTMLInputElement).value)" -->
+
+        <input type="date" #fromDate [value]="range.fromISO" (change)="onRangeChange('from', fromDate.value)" />
+
+      </label>
+      <label>
+        Hasta
+        <!--  input type="date" [value]="range.toISO" (change)="onRangeChange('to', ($event.target as HTMLInputElement).value)" -->
+
+        <input type="date" #toDate [value]="range.toISO" (change)="onRangeChange('to', toDate.value)" />
+
+      </label>
+    </div>
+
+    <div class="stats__actions">
+      <button class="btn" (click)="exportToPDF()" title="Descargar PDF">Exportar PDF</button>
+      <button class="btn" (click)="exportToExcel()" title="Descargar Excel">Exportar Excel</button>
+    </div>
+  </header>
+
+  <div class="grid">
+    <figure class="card">
+      <canvas #chartEspecialidades width="600" height="360"></canvas>
+    </figure>
+
+    <figure class="card">
+      <canvas #chartDias width="600" height="360"></canvas>
+    </figure>
+
+    <figure class="card">
+      <canvas #chartSolicitados width="600" height="360"></canvas>
+    </figure>
+
+    <figure class="card">
+      <canvas #chartFinalizados width="600" height="360"></canvas>
+    </figure>
+
+    <figure class="card card--wide">
+      <canvas #chartIngresos width="1200" height="360"></canvas>
+    </figure>
+  </div>
+</section>
+
+
+
+<!-- <p>estadisticas works!</p>
+
+<section class="stats">
+  <header class="stats__header">
+    <div class="stats__filters">
+      <label>
+        Desde
+        <input type="date" [value]="range.fromISO" (change)="onRangeChange('from', ($event.target as HTMLInputElement).value)">
+      </label>
+      <label>
+        Hasta
+        <input type="date" [value]="range.toISO" (change)="onRangeChange('to', ($event.target as HTMLInputElement).value)">
+      </label>
+    </div>
+
+    <div class="stats__actions">
+      <button class="btn" (click)="exportToPDF()" title="Descargar PDF">Exportar PDF</button>
+      <button class="btn" (click)="exportToExcel()" title="Descargar Excel">Exportar Excel</button>
+    </div>
+  </header>
+
+  <div class="grid">
+    <figure class="card">
+      <canvas #chartEspecialidades width="600" height="360"></canvas>
+    </figure>
+
+    <figure class="card">
+      <canvas #chartDias width="600" height="360"></canvas>
+    </figure>
+
+    <figure class="card">
+      <canvas #chartSolicitados width="600" height="360"></canvas>
+    </figure>
+
+    <figure class="card">
+      <canvas #chartFinalizados width="600" height="360"></canvas>
+    </figure>
+
+    <figure class="card card--wide">
+      <canvas #chartIngresos width="1200" height="360"></canvas>
+    </figure>
+  </div>
+</section>
+
+ -->
