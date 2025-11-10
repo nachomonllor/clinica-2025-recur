@@ -51,44 +51,6 @@ export class EspecialistaHomeComponent {
   }
 
 
-  //   private toVM(t: any): TurnoVM {
-  //   const fecha: Date | null = this.pickDate(t) ?? null;
-
-  //   const pacienteId: UUID | undefined =
-  //     (t.pacienteId ?? t.paciente?.id ?? t.paciente?.uid ?? t.pacienteUID) || undefined;
-
-  //   const nombre =
-  //     t.pacienteNombre ??
-  //     t.paciente?.nombre ??
-  //     t.paciente?.displayName ??
-  //     t.paciente?.name ??
-  //     'Paciente';
-
-  //   const motivo: string | null =
-  //     t.motivo ?? t.motivoConsulta ?? t.descripcion ?? null;
-
-  //   const especialidad: string =
-  //     t.especialidad?.nombre ?? t.especialidad ?? '—';
-
-
-  //   const especialista =  [t.especialista?.apellido, t.especialista?.nombre].filter(Boolean).join(', ') ||   t.especialistaNombre ??  '—';
-
-  //   const estado: EstadoTurno = (t.estado as EstadoTurno) ?? 'pendiente';
-
-  //   return {
-  //     id: String(t.id ?? t.uid ?? t._id ?? crypto.randomUUID?.() ?? Math.random()) as UUID,
-  //     fechaISO: fecha ? fecha.toISOString() : '',
-  //     especialidad,
-  //     especialista,
-  //     estado,
-
-  //     // opcionales existentes
-  //     pacienteId,
-  //     notas: [nombre, motivo].filter(Boolean).join(' — ') || null,
-  //   };
-  // }
-
-
   private toVM(t: any): TurnoVM {
     const fecha: Date | null = this.pickDate(t) ?? null;
 

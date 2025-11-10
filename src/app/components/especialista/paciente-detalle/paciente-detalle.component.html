@@ -1,1 +1,22 @@
 <p>paciente-detalle works!</p>
+
+<mat-card class="wrap">
+  <div class="head">
+    <h2><mat-icon>person</mat-icon> Paciente #{{ id }}</h2>
+    <a mat-stroked-button routerLink="/especialista/pacientes">Volver</a>
+  </div>
+
+  <div class="row">
+    <div class="avatar">
+      <mat-icon *ngIf="!paciente.avatarUrl">person</mat-icon>
+      <img *ngIf="paciente.avatarUrl" [src]="paciente.avatarUrl" [alt]="paciente.nombre">
+    </div>
+    <div class="data">
+      <div class="f"><b>Nombre:</b> {{ paciente.nombre }}</div>
+      <div class="f"><b>DNI:</b> {{ paciente.dni }}</div>
+      <div class="f"><b>Edad:</b> {{ paciente.edad }}</div>
+    </div>
+  </div>
+</mat-card>
+
+

@@ -1,12 +1,175 @@
 import { Injectable, inject } from '@angular/core';
-import { from, map, switchMap, Observable } from 'rxjs';
+import { from, map, switchMap, Observable, delay, of, BehaviorSubject } from 'rxjs';
 import { SupabaseService } from './supabase.service';
-import { TurnoVM, EstadoTurno, TurnoEspecialistaVM } from '../../models/interfaces';
+import { TurnoVM, EstadoTurno, TurnoEspecialistaVM, Turno, UUID } from '../../models/interfaces';
+
+type PerfilMin = { id: UUID; nombre: string; apellido: string };
 
 @Injectable({ providedIn: 'root' })
 export class TurnoService {
   private supa = inject(SupabaseService).client;
   private tabla = 'turnos';
+
+  // Lookups SOLO para mock local. En real vendrá por join/relación.
+  private readonly especialistas: Record<UUID, PerfilMin> = {
+    e1: { id: 'e1', nombre: 'Laura', apellido: 'Ibarra' },
+    e2: { id: 'e2', nombre: 'Diego', apellido: 'Ríos' },
+    e3: { id: 'e3', nombre: 'Micaela', apellido: 'Ruiz' },
+  };
+  private readonly pacientes: Record<UUID, PerfilMin> = {
+    p1: { id: 'p1', nombre: 'Marcos', apellido: 'Sosa' },
+    p2: { id: 'p2', nombre: 'Ana', apellido: 'Gómez' },
+    p3: { id: 'p3', nombre: 'Luz', apellido: 'Maidana' },
+  };
+
+  private readonly _turnos$ = new BehaviorSubject<Turno[]>
+    ([
+      {
+        id: 't1',
+        pacienteId: 'p1',
+        especialistaId: 'e1',
+        especialidad: 'Cardiología',
+        fecha: new Date('2025-03-10T09:00:00-03:00'),
+        estado: 'pendiente',
+      },
+      {
+        id: 't2',
+        pacienteId: 'p2',
+        especialistaId: 'e2',
+        especialidad: 'Dermatología',
+        fecha: new Date('2025-03-11T10:30:00-03:00'),
+        estado: 'aceptado',
+      },
+      {
+        id: 't3',
+        pacienteId: 'p3',
+        especialistaId: 'e3',
+        especialidad: 'Pediatría',
+        fecha: new Date('2025-03-12T12:00:00-03:00'),
+        estado: 'rechazado',
+      },
+    ]);
+
+
+  // private readonly especialistas: Record<UUID, PerfilMin> = {
+  //   e1: { id: 'e1', nombre: 'Laura',   apellido: 'Ibarra' },
+  //   e2: { id: 'e2', nombre: 'Diego',   apellido: 'Ríos'   },
+  //   e3: { id: 'e3', nombre: 'Micaela', apellido: 'Ruiz'   },
+  // };
+
+  // private readonly pacientes: Record<UUID, PerfilMin> = {
+  //   p1: { id: 'p1', nombre: 'Marcos', apellido: 'Sosa'    },
+  //   p2: { id: 'p2', nombre: 'Ana',    apellido: 'Gómez'   },
+  //   p3: { id: 'p3', nombre: 'Luz',    apellido: 'Maidana' },
+  // };
+
+  // ===== Helpers públicos usados por el componente =====
+  getEspecialista(id: UUID): PerfilMin | undefined {
+    return this.especialistas[id];
+  }
+
+  getPaciente(id: UUID): PerfilMin | undefined {
+    return this.pacientes[id];
+  }
+
+  public nombreCompleto(p?: { nombre: string; apellido: string }): string {
+    return p ? `${p.apellido}, ${p.nombre}` : '-';
+  }
+
+  /** formatea HH:mm en 24h: evita variaciones de locale */
+  public horaLocal(fecha: Date): string {
+    const d = new Date(fecha);
+    const hh = String(d.getHours()).padStart(2, '0');
+    const mm = String(d.getMinutes()).padStart(2, '0');
+    return `${hh}:${mm}`;
+  }
+
+
+  listAll(): Observable<Turno[]> {
+    return this._turnos$.asObservable().pipe(delay(120));
+  }
+
+  cancelarTurno(id: string, motivo: string): Observable<void> {
+    const curr = this._turnos$.value.slice();
+    const ix = curr.findIndex(t => t.id === id);
+    if (ix > -1) {
+      curr[ix] = { ...curr[ix], estado: 'cancelado' }; // Motivo lo vas a persistir en BD real
+      this._turnos$.next(curr);
+    }
+    return of(void 0).pipe(delay(200));
+  }
+
+  puedeCancelar(estado: EstadoTurno): boolean {
+    // no fue aceptado / realizado / rechazado / cancelado
+    return !['aceptado', 'realizado', 'rechazado', 'cancelado'].includes(estado);
+  }
+
+
+
+  // // === utilidades para la vista (reusan tus interfaces) ===
+  // getEspecialista(id: UUID) { return this.especialistas[id]; }
+  // getPaciente(id: UUID)     { return this.pacientes[id]; }
+  // nombreCompleto(p?: PerfilMin) { return p ? `${p.apellido}, ${p.nombre}` : '-'; }
+  // horaLocal(fecha: Date) { return new Date(fecha).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); }
+
+  // cancelarTurno(id: string, motivo: string): Observable<void> {
+  //   const current = this._turnos$.value.slice();
+  //   const idx = current.findIndex(t => t.id === id);
+  //   if (idx > -1) {
+  //     current[idx] = {
+  //       ...current[idx],
+  //       estado: 'cancelado',
+  //       comentarios: {
+  //         ...current[idx].comentarios,
+  //         cancelacion: { texto: motivo, por: 'Administrador', fechaISO: new Date().toISOString() }
+  //       }
+  //     };
+  //     this._turnos$.next(current);
+  //   }
+  //   return of(void 0).pipe(delay(250));
+  // }
+
+  // // Utilidad para saber si el Admin puede cancelar según el estado actual:
+  // puedeCancelar(estado: EstadoTurno): boolean {
+  //   // Es cancelable cuando "no fue Aceptado, Realizado o Rechazado" (consigna Sprint 2, p.4)
+  //   return estado !== 'Aceptado' && estado !== 'Realizado' && estado !== 'Rechazado' && estado !== 'Cancelado';
+  // }
+
+
+  getTurnosAdminVM$(): Observable<TurnoVM[]> {
+    return from(
+      this.supa
+        .from('turnos')
+        .select(`
+        id, paciente_id, especialista_id, especialidad, fecha_iso, estado,
+        paciente:profiles!turnos_paciente_id_fkey ( nombre, apellido ),
+        especialista:profiles!turnos_especialista_id_fkey ( nombre, apellido )
+      `)
+        .order('fecha_iso', { ascending: false })
+    ).pipe(
+      map(({ data, error }) => {
+        if (error) throw error;
+        return (data ?? []).map((r: any) => {
+          const fecha = new Date(r.fecha_iso);
+          const especialista = `${r.especialista?.apellido ?? ''}, ${r.especialista?.nombre ?? ''}`.trim();
+          const pacienteNombre = `${r.paciente?.apellido ?? ''}, ${r.paciente?.nombre ?? ''}`.trim();
+          return <TurnoVM>{
+            id: r.id,
+            especialidad: r.especialidad,
+            especialista,
+            estado: r.estado,
+            fechaISO: r.fecha_iso,
+            fecha,
+            hora: this.horaLocal(fecha),
+            pacienteId: r.paciente_id,
+            especialistaId: r.especialista_id,
+            pacienteNombre
+          };
+        });
+      })
+    );
+  }
+
 
   /**
    * Lista turnos del paciente logueado y los mapea al VM canónico.
@@ -121,26 +284,26 @@ export class TurnoService {
     );
   }
 
-  /** Cancela el turno (update estado='cancelado') y devuelve void si OK */
-  cancelarTurno(id: string): Observable<void> {
-    return from(
-      this.supa
-        .from(this.tabla)
-        .update({ estado: 'cancelado' })
-        .eq('id', id)
-        .select('id')
-        .single()
-    ).pipe(
-      map(({ error }) => {
-        if (error) throw error;
-        return void 0;
-      })
-    );
-  }
 }
 
 
 
+// /** Cancela el turno (update estado='cancelado') y devuelve void si OK */
+// cancelarTurno(id: string): Observable<void> {
+//   return from(
+//     this.supa
+//       .from(this.tabla)
+//       .update({ estado: 'cancelado' })
+//       .eq('id', id)
+//       .select('id')
+//       .single()
+//   ).pipe(
+//     map(({ error }) => {
+//       if (error) throw error;
+//       return void 0;
+//     })
+//   );
+// }
 
 
 

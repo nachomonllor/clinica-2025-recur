@@ -1,1 +1,15 @@
-<p>turno-detalle-esp works!</p>
+<mat-card class="wrap">
+  <div class="head">
+    <h2><mat-icon>event</mat-icon> Turno #{{ id }}</h2>
+    <a mat-stroked-button routerLink="/especialista/agenda">Volver</a>
+  </div>
+
+  <div class="row">
+    <div class="f"><b>Fecha:</b> {{ turno.fechaISO | date:'EEE d/MM HH:mm' }}</div>
+    <div class="f"><b>Especialidad:</b> {{ turno.especialidad }}</div>
+    <div class="f"><b>Paciente:</b> {{ turno.paciente }}</div>
+    <div class="f"><b>Estado:</b> {{ turno.estado }}</div>
+  </div>
+</mat-card>
+
+

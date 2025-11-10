@@ -1,19 +1,5 @@
-// import { Component } from '@angular/core';
-
-// @Component({
-//   selector: 'app-agenda',
-//   standalone: true,
-//   imports: [],
-//   templateUrl: './agenda.component.html',
-//   styleUrl: './agenda.component.scss'
-// })
-// export class AgendaComponent {
-
-// }
-
-
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { CommonModule, TitleCasePipe, DatePipe } from '@angular/common';
+import { CommonModule} from '@angular/common';
 import { Router } from '@angular/router';
 
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -112,3 +98,17 @@ export class AgendaComponent implements OnInit {
     this.snack.open(t.resenaEspecialista ?? 'Sin reseña', 'Cerrar', { duration: 4000 });
   }
 }
+
+
+// import { Component } from '@angular/core';
+
+// @Component({
+//   selector: 'app-agenda',
+//   standalone: true,
+//   imports: [],
+//   templateUrl: './agenda.component.html',
+//   styleUrl: './agenda.component.scss'
+// })
+// export class AgendaComponent {
+
+// }

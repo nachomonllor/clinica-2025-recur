@@ -1,3 +1,169 @@
+ <!-- filtros -->
+<input type="search"
+       [formControl]="filterControl"
+       placeholder="Filtrar por especialidad o especialista"
+       aria-label="Filtro único por Especialidad o Especialista" />
+<button type="button" class="btn btn--ghost" (click)="clearFilter()" [disabled]="!filterControl.value.length">
+  Limpiar
+</button>
 
-  <h2>Turnos (Admin)</h2>
-    <p>Gestión de turnos.</p>
+<!-- tabla -->
+<tbody *ngIf="vm$ | async as vm">
+  <tr *ngFor="let t of vm.turnosFiltrados; trackBy: trackById">
+    <td>{{ (t.fecha || t.fechaISO) | date:'dd/MM/yyyy' }}</td>
+    <td>{{ t.hora }}</td>
+    <td>{{ t.especialidad }}</td>
+    <td>{{ t.especialista }}</td>
+    <td>{{ t.pacienteNombre || ('Paciente ' + (t.pacienteId || '')) }}</td>
+    <td><span [class]="estadoClass(t.estado)">{{ t.estado }}</span></td>
+    <td class="col-actions">
+      <button *ngIf="puedeCancelar(t.estado); else noAccion"
+              type="button"
+              class="btn btn--danger"
+              (click)="abrirCancelacion(t)">
+        Cancelar
+      </button>
+      <ng-template #noAccion><span class="muted">—</span></ng-template>
+    </td>
+  </tr>
+</tbody>
+
+<!-- modal -->
+<div class="modal-backdrop" *ngIf="cancelTarget as target">
+  <div class="modal">
+    <h3>Cancelar turno</h3>
+    <p>
+      Estás por cancelar el turno de
+      <strong>{{ target.pacienteNombre || ('Paciente ' + (target.pacienteId || '')) }}</strong>
+      con el/la especialista <strong>{{ target.especialista }}</strong>
+      ({{ target.especialidad }}) el
+      <strong>{{ (target.fecha || target.fechaISO) | date:'dd/MM/yyyy' }}</strong>
+      a las <strong>{{ target.hora }}</strong>.
+    </p>
+    <form [formGroup]="cancelForm" (ngSubmit)="confirmarCancelacion()">
+      <label for="motivo" class="label">Motivo de cancelación <span class="req">*</span></label>
+      <textarea id="motivo" formControlName="motivo" rows="4" placeholder="Escribe el motivo..." autofocus></textarea>
+      <div class="form-hint" *ngIf="cancelForm.get('motivo')?.invalid && cancelForm.get('motivo')?.touched">
+        Debe ingresar un comentario (mínimo 4 caracteres).
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn--ghost" (click)="cerrarCancelacion()" [disabled]="loadingCancel">Volver</button>
+        <button type="submit" class="btn btn--danger" [disabled]="cancelForm.invalid || loadingCancel">
+          {{ loadingCancel ? 'Cancelando…' : 'Confirmar cancelación' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+ 
+
+
+ 
+ <!-- <section class="page">
+  <header class="header">
+    <h1>Turnos (Administrador)</h1>
+    <div class="search">
+      <input type="search" [formControl]="filterControl" placeholder="Filtrar por especialidad o especialista"
+        aria-label="Filtro único por Especialidad o Especialista" />
+      <button type="button" class="btn btn--ghost" (click)="clearFilter()"
+        [disabled]="!(filterControl.value.length)">Limpiar</button>
+    </div>
+  </header>
+
+  Chips de ayuda (no combobox) 
+  <div class="chips-wrap" *ngIf="vm$ | async as vm">
+    <div class="chips-group" *ngIf="vm.especialidades.length">
+      <span class="chips-title">Especialidades:</span>
+      <button type="button" class="chip chip--ghost" *ngFor="let e of vm.especialidades" (click)="setFilter(e)">{{ e
+        }}</button>
+    </div>
+
+    <div class="chips-group" *ngIf="vm.especialistas.length">
+      <span class="chips-title">Especialistas:</span>
+      <button type="button" class="chip chip--ghost" *ngFor="let e of vm.especialistas"
+        (click)="setFilter(e.apellido + ', ' + e.nombre)">
+        {{ e.apellido }}, {{ e.nombre }}
+      </button>
+    </div>
+  </div>
+
+  Tabla 
+  <div class="table-wrap" *ngIf="vm$ | async as vm">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Hora</th>
+          <th>Especialidad</th>
+          <th>Especialista</th>
+          <th>Paciente</th>
+          <th>Estado</th>
+          <th class="col-actions">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let t of vm.turnosFiltrados; trackBy: trackById">
+          <td>{{ t.fecha | date:'dd/MM/yyyy' }}</td>
+          <td>{{ t.hora }}</td>
+          <td>{{ t.especialidad }}</td>
+          <td>{{ t.especialista.apellido }}, {{ t.especialista.nombre }}</td>
+          <td>{{ t.paciente.apellido }}, {{ t.paciente.nombre }}</td>
+          <td><span [class]="estadoClass(t.estado)">{{ t.estado }}</span></td>
+          <td class="col-actions">
+            <button *ngIf="puedeCancelar(t); else noAccion" type="button" class="btn btn--danger"
+              (click)="abrirCancelacion(t)">
+              Cancelar
+            </button>
+            <ng-template #noAccion><span class="muted">—</span></ng-template>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p class="muted" *ngIf="!vm.turnosFiltrados.length">Sin resultados para el filtro actual.</p>
+    <p class="meta">Total de turnos: {{ vm.total }}</p>
+  </div>
+
+   Modal de cancelación 
+  <div class="modal-backdrop" *ngIf="cancelTarget as target">
+    <div class="modal">
+      <h3>Cancelar turno</h3>
+      <p>
+        Estás por cancelar el turno de
+        <strong>{{ target.pacienteNombre || ('Paciente ' + (target.pacienteId || '')) }}</strong>
+        con el/la especialista
+        <strong>{{ target.especialista }}</strong>
+        ({{ target.especialidad }})
+        el
+        <strong>
+          {{ target.fecha ? (target.fecha | date:'dd/MM/yyyy')
+          : (target.fechaISO | date:'dd/MM/yyyy') }}
+        </strong>
+        a las
+        <strong>
+          {{ target.hora || (target.fecha ? (target.fecha | date:'HH:mm')
+          : (target.fechaISO | date:'HH:mm')) }}
+        </strong>.
+      </p>
+
+      <form [formGroup]="cancelForm" (ngSubmit)="confirmarCancelacion()">
+        <label for="motivo" class="label">Motivo de cancelación <span class="req">*</span></label>
+        <textarea id="motivo" formControlName="motivo" rows="4" placeholder="Escribe el motivo..." autofocus></textarea>
+        <div class="form-hint" *ngIf="cancelForm.get('motivo')?.invalid && cancelForm.get('motivo')?.touched">
+          Debe ingresar un comentario (mínimo 4 caracteres).
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn--ghost" (click)="cerrarCancelacion()"
+            [disabled]="loadingCancel">Volver</button>
+          <button type="submit" class="btn btn--danger" [disabled]="cancelForm.invalid || loadingCancel">
+            {{ loadingCancel ? 'Cancelando…' : 'Confirmar cancelación' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</section>
+
+ -->

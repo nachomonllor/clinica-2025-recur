@@ -1,5 +1,3 @@
-
-
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -116,6 +114,7 @@ export class MisTurnosEspecialistaComponent implements OnInit {
     this.snackBar.open(turno.resenaEspecialista ?? 'Sin reseña', 'Cerrar', { duration: 4000 });
   }
 }
+
 
 
 
