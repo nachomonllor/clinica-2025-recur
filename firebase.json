@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "clinica-2025-recur",
+    "public": "dist/clinica-online",
     "ignore": [
       "firebase.json",
       "**/.*",
