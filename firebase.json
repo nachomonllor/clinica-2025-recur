@@ -1,16 +1,13 @@
 {
   "hosting": {
-    "public": "dist/clinica-online",
+    "public": "dist/clinica-online/browser",
     "ignore": [
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
     ],
     "rewrites": [
-      {
-        "source": "**",
-        "destination": "/index.html"
-      }
+      { "source": "**", "destination": "/index.html" }
     ]
   }
 }
