@@ -139,7 +139,7 @@ export class TurnosAdminComponent {
 
   puedeCancelar(estado: EstadoTurno) { return this.turnosSrv.puedeCancelar(estado); }
 
-  // ... (resto: abrir/cerrar modal, confirmarCancelacion)
+  // TODO ABRIR Y CERRAR EL modal, confirmarCancelacion)
 }
 
 

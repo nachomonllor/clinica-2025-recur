@@ -119,6 +119,7 @@ export const routes: Routes = [
           import('./components/especialista/resenia/resenia.component')
             .then(m => m.ReseniaComponent)
       },
+
     ]
   },
 
@@ -151,7 +152,7 @@ export const routes: Routes = [
     ],
   },
 
-  // Aliases/redirects para no romper enlaces existentes (limpiarlos luego)
+  // Aliases y redirects para no romper enlaces existentes ( TODO : limpiarlos)
   { path: 'mis-turnos-paciente', redirectTo: 'paciente/turnos', pathMatch: 'full' },
   { path: 'mis-turnos-especialista', redirectTo: 'especialista/turnos', pathMatch: 'full' },
   { path: 'resenia-especialista', redirectTo: 'especialista/resenias', pathMatch: 'full' },
