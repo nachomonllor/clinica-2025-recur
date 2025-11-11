@@ -105,6 +105,15 @@ export class RegistroEspecialistaComponent implements OnInit {
     if (error) throw error;
   }
 
+  // p.ej. src/app/components/auth/registro-especialista/registro-especialista.component.ts
+  // async onLoginPostConfirm() {
+  //   await this.supa.upsertMyProfile({
+  //     rol: 'especialista',
+  //     nombre: this.fb.value.nombre,
+  //     apellido: this.fb.value.apellido
+  //   });
+  // }
+
   async onSubmit(): Promise<void> {
     if (this.registroForm.invalid) {
       this.registroForm.markAllAsTouched();
