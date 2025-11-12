@@ -1,13 +1,15 @@
 
 // src/app/models/turno-especialista.model.ts
 export interface TurnoEspecialista {
-  id: number;
+  id: string | number;
   fecha: string;    // la mostrarás con un date pipe, o viene ya formateada
   hora: string;
   especialidad: string;
-  paciente: string; // aquí guardas el nombre o “Nombre Apellido (ID)”
+  paciente: string; // aquí guardas el nombre o "Nombre Apellido (ID)"
   estado: 'pendiente' | 'aceptado' | 'realizado' | 'cancelado' | 'rechazado';
   resena?: string;  // la reseña que deja el especialista
+  encuesta?: boolean;
+  historiaBusqueda?: string;  // string de búsqueda con datos de historia clínica
 }
 
 // // DATE PARA LA FECHA

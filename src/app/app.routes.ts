@@ -5,19 +5,18 @@
 // src/app/app.routes.ts
 import { Routes } from '@angular/router';
 import { BienvenidaComponent } from './bienvenida/bienvenida.component';
+import { adminGuard } from '../services/admin.guard';
 
 export const routes: Routes = [
-  // Home (redirige a login por ahora)
-
+  // Home (redirige a bienvenida)
   { path: '', pathMatch: 'full', redirectTo: 'bienvenida' },
-  { path: 'bienvenida', component: BienvenidaComponent },
-
-  { path: '', redirectTo: 'login-paciente', pathMatch: 'full' },
+  { path: 'bienvenida', component: BienvenidaComponent, data: { animation: 'bienvenida' } },
 
   // Auth / público
   { path: 'login-paciente',
     loadComponent: () => import('./components/login-paciente/login-paciente.component')
-      .then(m => m.LoginPacienteComponent) },
+      .then(m => m.LoginPacienteComponent),
+    data: { animation: 'login' } },
 
   { path: 'registro-paciente',
     loadComponent: () => import('./components/registro-paciente/registro-paciente.component')
@@ -38,7 +37,8 @@ export const routes: Routes = [
 
   { path: 'estadisticas',
     loadComponent: () => import('./components/estadisticas/estadisticas.component')
-      .then(m => m.EstadisticasComponent) },
+      .then(m => m.EstadisticasComponent),
+    data: { animation: 'estadisticas' } },
 
   { path: 'historia-clinica',
     loadComponent: () => import('./components/historia-clinica/historia-clinica.component')
@@ -58,7 +58,8 @@ export const routes: Routes = [
 
   { path: 'mis-turnos-paciente',
     loadComponent: () => import('./components/mis-turnos-paciente/mis-turnos-paciente.component')
-      .then(m => m.MisTurnosPacienteComponent) },
+      .then(m => m.MisTurnosPacienteComponent),
+    data: { animation: 'turnos' } },
 
   { path: 'resenia-especialista',
     loadComponent: () => import('./components/resenia-especialista/resenia-especialista.component')
@@ -79,6 +80,28 @@ export const routes: Routes = [
   { path: 'turnos-especialidad',
     loadComponent: () => import('./components/turnos-especialidad/turnos-especialidad.component')
       .then(m => m.TurnosEspecialidadComponent) },
+
+  { path: 'turnos-admin',
+    loadComponent: () => import('./components/turnos-admin/turnos-admin.component')
+      .then(m => m.TurnosAdminComponent),
+    canActivate: [adminGuard] },
+
+  { path: 'solicitar-turno',
+    loadComponent: () => import('./components/solicitar-turno/solicitar-turno.component')
+      .then(m => m.SolicitarTurnoComponent) },
+
+  { path: 'mi-perfil',
+    loadComponent: () => import('./components/mi-perfil/mi-perfil.component')
+      .then(m => m.MiPerfilComponent),
+    data: { animation: 'miPerfil' } },
+  { path: 'pacientes-especialista',
+    loadComponent: () => import('./components/pacientes-especialista/pacientes-especialista.component')
+      .then(m => m.PacientesEspecialistaComponent) },
+
+  { path: 'usuarios-admin',
+    loadComponent: () => import('./components/usuarios-admin/usuarios-admin.component')
+      .then(m => m.UsuariosAdminComponent),
+    canActivate: [adminGuard] },
 
   { path: '**', redirectTo: 'login-paciente' }
 ];

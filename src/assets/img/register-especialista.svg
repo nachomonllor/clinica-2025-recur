@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="gradEspecialista" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#a855f7"/>
+      <stop offset="100%" stop-color="#7c3aed"/>
+    </linearGradient>
+  </defs>
+  <circle cx="64" cy="64" r="62" fill="url(#gradEspecialista)" stroke="#ede9fe" stroke-width="4"/>
+  <rect x="34" y="80" width="60" height="12" rx="6" fill="#ede9fe" opacity="0.9"/>
+  <circle cx="64" cy="44" r="22" fill="#ede9fe" opacity="0.9"/>
+  <path d="M52 96v18m24-18v18" stroke="#ede9fe" stroke-width="8" stroke-linecap="round"/>
+</svg>
+

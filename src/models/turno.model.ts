@@ -82,6 +82,7 @@ export interface TurnoVM {
   encuesta?: boolean;         // true si tiene encuesta cargada
   pacienteId: string;
   calificacion?: number;      // p. ej. estrellas
+  historiaBusqueda?: string;  // string de búsqueda con datos de historia clínica
 }
 
 /**  interfaz antigua para mocks */

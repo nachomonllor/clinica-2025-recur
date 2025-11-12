@@ -18,6 +18,8 @@ import { MatCardModule } from '@angular/material/card';
 
 import Swal from 'sweetalert2';
 import { SupabaseService } from '../../../services/supabase.service';
+import { environment } from '../../../environments/environment';
+import { CaptchaComponent } from '../captcha/captcha.component';
 
 @Component({
   selector: 'app-registro-paciente',
@@ -28,13 +30,18 @@ import { SupabaseService } from '../../../services/supabase.service';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    MatCardModule
+    MatCardModule,
+    CaptchaComponent
   ],
   templateUrl: './registro-paciente.component.html',
   styleUrls: ['./registro-paciente.component.scss']
 })
 export class RegistroPacienteComponent implements OnInit {
   loading = false;
+  imagenPrevia1: string | null = null;
+  imagenPrevia2: string | null = null;
+  captchaEnabled = environment.captchaEnabled;
+  captchaValido = !environment.captchaEnabled; // Si está deshabilitado, siempre válido
 
   // Usamos fechaNacimiento en lugar de edad
   registroPacienteForm!: FormGroup<{
@@ -45,6 +52,8 @@ export class RegistroPacienteComponent implements OnInit {
     obraSocial: FormControl<string | null>;
     email: FormControl<string | null>;
     password: FormControl<string | null>;
+    imagenPerfil1: FormControl<File | null>;
+    imagenPerfil2: FormControl<File | null>;
   }>;
 
   // Para limitar el <input type="date">
@@ -70,7 +79,37 @@ export class RegistroPacienteComponent implements OnInit {
       obraSocial: this.fb.control<string | null>(null, Validators.required),
       email: this.fb.control<string | null>(null, [Validators.required, Validators.email]),
       password: this.fb.control<string | null>(null, Validators.required),
+      imagenPerfil1: this.fb.control<File | null>(null, Validators.required),
+      imagenPerfil2: this.fb.control<File | null>(null, Validators.required),
     });
+  }
+
+  // Manejo de archivos de imagen
+  onFileChange(event: Event, idx: 1 | 2): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files?.length) return;
+    
+    const file = input.files[0];
+    const controlName = idx === 1 ? 'imagenPerfil1' : 'imagenPerfil2';
+    
+    this.registroPacienteForm.get(controlName)!.setValue(file);
+    this.registroPacienteForm.get(controlName)!.markAsDirty();
+    this.registroPacienteForm.get(controlName)!.markAsTouched();
+
+    // Previsualización
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (idx === 1) {
+        this.imagenPrevia1 = reader.result as string;
+      } else {
+        this.imagenPrevia2 = reader.result as string;
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+
+  onCaptchaValid(esValido: boolean): void {
+    this.captchaValido = esValido;
   }
 
   // ---- VALIDACIONES y HELPERS ----
@@ -157,47 +196,62 @@ export class RegistroPacienteComponent implements OnInit {
       if (signUpError) throw signUpError;
 
       const user = signUpData.user;
+      if (!user) throw new Error('No se pudo crear el usuario.');
 
+      // TEMPORALMENTE DESHABILITADO PARA DESARROLLO - Continuar registro aunque no haya sesión
       // Si tienes confirmación de email activa, no habrá session aquí (RLS bloquea insert).
-      if (!signUpData.session) {
-        Swal.fire({
-          icon: 'info',
-          title: 'Confirma tu correo',
-          text: 'Te enviamos un email. Confírmalo para iniciar sesión y completar tu registro.',
-          confirmButtonText: 'Entendido'
-        });
-        return;
-      }
+      // if (!signUpData.session) {
+      //   Swal.fire({
+      //     icon: 'info',
+      //     title: 'Confirma tu correo',
+      //     text: 'Te enviamos un email. Confírmalo para iniciar sesión y completar tu registro.',
+      //     confirmButtonText: 'Entendido'
+      //   });
+      //   return;
+      // }
 
       // 2) Calcular edad desde la fecha de nacimiento
       const edadCalculada = this.calcEdadFromISO(fv.fechaNacimiento!);
 
-      // 3) Insertar en la tabla 'pacientes' (sin guardar password)
+      // 3) Subir imágenes a Supabase Storage
+      const file1 = fv.imagenPerfil1!;
+      const file2 = fv.imagenPerfil2!;
+      
+      const url1 = await this.sb.uploadAvatar(user.id, file1, 1);
+      const url2 = await this.sb.uploadAvatar(user.id, file2, 2);
+
+      // 4) Crear perfil en 'profiles' (requerido para el login)
+      const { error: perfilError } = await supabase
+        .from('profiles')
+        .upsert({
+          id: user.id,
+          rol: 'paciente',
+          nombre: fv.nombre!,
+          apellido: fv.apellido!,
+          dni: fv.dni!,
+          email: fv.email!,
+          avatar_url: url1,
+          imagen2_url: url2,
+          aprobado: true, // Pacientes no requieren aprobación
+        }, { onConflict: 'id' });
+      if (perfilError) throw perfilError;
+
+      // 5) Insertar en la tabla 'pacientes' (sin guardar password)
       const { error: insertError } = await supabase
         .from('pacientes')
-        // .insert({
-        //   id: user!.id,
-        //   nombre: fv.nombre!,
-        //   apellido: fv.apellido!,
-        //   edad: edadCalculada,          // <-- se calcula
-        //   dni: fv.dni!,
-        //   obra_social: fv.obraSocial!,
-        //   email: fv.email!
-        //   // Si luego quieres guardar también la fecha: agrega 'fecha_nacimiento'
-        // });
         .insert({
-          id: user!.id,
+          id: user.id,
           nombre: fv.nombre!,
           apellido: fv.apellido!,
           edad: edadCalculada,
-          fecha_nacimiento: fv.fechaNacimiento!, // <=== PARA LA EDAD
+          fecha_nacimiento: fv.fechaNacimiento!,
           dni: fv.dni!,
           obra_social: fv.obraSocial!,
           email: fv.email!
         });
       if (insertError) throw insertError;
 
-      // 4) Éxito
+      // 6) Éxito
       Swal.fire({
         icon: 'success',
         title: 'Paciente registrado con éxito',
@@ -205,6 +259,8 @@ export class RegistroPacienteComponent implements OnInit {
         timer: 2000
       });
       this.registroPacienteForm.reset();
+      this.imagenPrevia1 = null;
+      this.imagenPrevia2 = null;
 
     } catch (err: any) {
       console.error(err);

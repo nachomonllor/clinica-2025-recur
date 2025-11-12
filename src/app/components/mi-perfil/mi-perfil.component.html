@@ -1,0 +1,184 @@
+<mat-card>
+  <mat-card-title>Mi Perfil</mat-card-title>
+
+  <div class="perfil-info" *ngIf="perfil">
+    <div class="avatar-section">
+      <img *ngIf="perfil.avatar_url" [src]="perfil.avatar_url" alt="Avatar" class="avatar" />
+      <div *ngIf="!perfil.avatar_url" class="avatar-placeholder">
+        <mat-icon>person</mat-icon>
+      </div>
+      <div *ngIf="perfil.rol === 'paciente' && perfil.imagen2_url" class="avatar-secondary">
+        <img [src]="perfil.imagen2_url" alt="Imagen secundaria" />
+      </div>
+    </div>
+
+    <div class="datos-section">
+      <h3>Datos Personales</h3>
+      <div class="datos-grid">
+        <div class="dato-item">
+          <strong>Nombre:</strong> {{ perfil.nombre }}
+        </div>
+        <div class="dato-item">
+          <strong>Apellido:</strong> {{ perfil.apellido }}
+        </div>
+        <div class="dato-item">
+          <strong>DNI:</strong> {{ perfil.dni }}
+        </div>
+        <div class="dato-item">
+          <strong>Email:</strong> {{ perfil.email }}
+        </div>
+        <div class="dato-item" *ngIf="perfil.obra_social">
+          <strong>Obra Social:</strong> {{ perfil.obra_social }}
+        </div>
+        <div class="dato-item" *ngIf="perfil.fecha_nacimiento">
+          <strong>Fecha de Nacimiento:</strong> {{ perfil.fecha_nacimiento | date:'shortDate' }}
+        </div>
+        <div class="dato-item" *ngIf="perfil.especialidades && perfil.especialidades.length > 0">
+          <strong>Especialidades:</strong>
+          <div class="chips-container">
+            <mat-chip *ngFor="let esp of perfil.especialidades">{{ esp }}</mat-chip>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sección de Horarios (solo para especialistas) -->
+  <div class="horarios-section" *ngIf="esEspecialista && formularioHorarios">
+    <h3>Mis Horarios</h3>
+    <p>Configura tu disponibilidad horaria por especialidad</p>
+
+    <form [formGroup]="formularioHorarios" (ngSubmit)="guardarHorarios()">
+      <div formArrayName="horarios">
+        <mat-card *ngFor="let grupo of horariosArray.controls; let i = index" [formGroupName]="i" class="horario-card">
+          <mat-card-title>{{ getHorarioGroup(i).get('especialidad')?.value }}</mat-card-title>
+
+          <!-- Días de la semana -->
+          <div class="dias-section">
+            <label>Días disponibles:</label>
+            <div class="checkboxes">
+              <mat-checkbox 
+                *ngFor="let dia of diasSemana" 
+                [checked]="isDiaSelected(dia, i)"
+                (change)="onDiaChange($event, i)"
+                [value]="dia">
+                {{ dia }}
+              </mat-checkbox>
+            </div>
+          </div>
+
+          <!-- Horarios -->
+          <div class="horas-section">
+            <label>Horarios disponibles:</label>
+            <div class="checkboxes">
+              <mat-checkbox 
+                *ngFor="let hora of horariosDisponibles" 
+                [checked]="isHoraSelected(hora, i)"
+                (change)="onHoraChange($event, i)"
+                [value]="hora">
+                {{ hora }}
+              </mat-checkbox>
+            </div>
+          </div>
+        </mat-card>
+      </div>
+
+      <div class="actions">
+        <button mat-raised-button color="primary" type="submit" [disabled]="loading || formularioHorarios.invalid">
+          {{ loading ? 'Guardando...' : 'Guardar Horarios' }}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Sección de Historia Clínica (solo para pacientes) -->
+  <div class="historia-clinica-section" *ngIf="esPaciente">
+    <div class="historia-header">
+      <div class="historia-header-text">
+        <h3>Mi Historia Clínica</h3>
+        <p class="historia-resumen" *ngIf="historiasFiltradas.length > 0">
+          Mostrando {{ historiasFiltradas.length }} atención(es)
+          <ng-container *ngIf="especialistaSeleccionado !== 'todos'">
+            con {{ nombreProfesionalSeleccionado() || 'el profesional seleccionado' }}
+          </ng-container>
+        </p>
+      </div>
+
+      <div class="historia-header-actions">
+        <mat-form-field appearance="outline" class="selector-profesional" *ngIf="especialistasDisponibles.length">
+          <mat-label>Filtrar por profesional</mat-label>
+          <mat-select [value]="especialistaSeleccionado" (selectionChange)="seleccionarEspecialista($event.value)">
+            <mat-option value="todos">Todos los profesionales</mat-option>
+            <mat-option
+              *ngFor="let especialista of especialistasDisponibles"
+              [value]="especialista.id">
+              {{ especialista.nombre }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" (click)="descargarPDF()" [disabled]="historiasFiltradas.length === 0">
+        <mat-icon>picture_as_pdf</mat-icon>
+        Descargar PDF
+      </button>
+      </div>
+    </div>
+    <p *ngIf="historiasClinicas.length === 0" class="sin-historias">
+      No hay historias clínicas registradas.
+    </p>
+    
+    <mat-accordion *ngIf="historiasFiltradas.length > 0; else sinResultadosFiltro">
+      <mat-expansion-panel *ngFor="let historia of historiasFiltradas">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            {{ formatearFecha(historia.created_at) }} - {{ historia.especialistaNombre }}
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        
+        <div class="historia-content">
+          <div class="historia-grid">
+            <div class="historia-item">
+              <strong>Fecha de Atención:</strong> {{ historia.fechaAtencion }}
+            </div>
+            <div class="historia-item">
+              <strong>Especialista:</strong> {{ historia.especialistaNombre }}
+            </div>
+            <div class="historia-item">
+              <strong>Altura:</strong> {{ historia.altura }} cm
+            </div>
+            <div class="historia-item">
+              <strong>Peso:</strong> {{ historia.peso }} kg
+            </div>
+            <div class="historia-item">
+              <strong>Temperatura:</strong> {{ historia.temperatura }} °C
+            </div>
+            <div class="historia-item">
+              <strong>Presión:</strong> {{ historia.presion }}
+            </div>
+          </div>
+          
+          <div *ngIf="historia.datos_dinamicos && historia.datos_dinamicos.length > 0" class="datos-dinamicos">
+            <h4>Indicadores adicionales:</h4>
+            <ul>
+              <li *ngFor="let dato of historia.datos_dinamicos">
+                {{ formatDatoDinamico(dato) }}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </mat-expansion-panel>
+    </mat-accordion>
+
+    <ng-template #sinResultadosFiltro>
+      <p class="sin-historias">
+        <ng-container *ngIf="especialistaSeleccionado === 'todos'; else filtroProfesional">
+          No hay historias clínicas registradas.
+        </ng-container>
+        <ng-template #filtroProfesional>
+          No encontramos historias clínicas para el profesional seleccionado.
+        </ng-template>
+      </p>
+    </ng-template>
+  </div>
+</mat-card>
+

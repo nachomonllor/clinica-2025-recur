@@ -1,5 +1,5 @@
 // src/app/components/login-paciente/login-paciente.component.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -7,11 +7,26 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import Swal from 'sweetalert2';
 import { SupabaseService } from '../../../services/supabase.service';
+import { environment } from '../../../environments/environment';
+import { AutoFocusDirective } from '../../../directives/auto-focus.directive';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 type Rol = 'paciente' | 'especialista' | 'admin';
+interface QuickLoginEntry {
+  email: string;
+  password: string;
+  nombre?: string;
+  avatar?: string;
+}
+type QuickLoginsConfig = {
+  paciente: QuickLoginEntry | QuickLoginEntry[];
+  especialista: QuickLoginEntry | QuickLoginEntry[];
+  admin: QuickLoginEntry | QuickLoginEntry[];
+};
 // interface Perfil {
 //   id: string;
 //   rol: Rol;
@@ -23,7 +38,8 @@ type Rol = 'paciente' | 'especialista' | 'admin';
   standalone: true,
   imports: [
     CommonModule, ReactiveFormsModule, RouterModule,
-    MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatProgressSpinnerModule
+    MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatTooltipModule, MatProgressSpinnerModule, MatSnackBarModule,
+    AutoFocusDirective
   ],
   templateUrl: './login-paciente.component.html',
   styleUrls: ['./login-paciente.component.scss']
@@ -32,8 +48,17 @@ export class LoginPacienteComponent implements OnInit {
   formularioLogin!: FormGroup;
   cargando = false;
   error: string = '';
+  quickLogins: QuickLoginsConfig = environment.quickLogins as QuickLoginsConfig;
+  quickSeleccionado?: { nombre: string; rol: Rol; email: string };
 
-  constructor(private fb: FormBuilder, private supa: SupabaseService, private router: Router) { }
+  @ViewChild('passwordInput', { static: false }) passwordInput?: ElementRef<HTMLInputElement>;
+
+  constructor(
+    private fb: FormBuilder,
+    private supa: SupabaseService,
+    private router: Router,
+    private snackBar: MatSnackBar
+  ) { }
 
   ngOnInit(): void {
     this.formularioLogin = this.fb.group({
@@ -43,6 +68,9 @@ export class LoginPacienteComponent implements OnInit {
   }
 
   async iniciarSesion(): Promise<void> {
+    if (this.quickSeleccionado) {
+      this.quickSeleccionado = undefined;
+    }
     if (this.formularioLogin.invalid) {
       this.formularioLogin.markAllAsTouched();
       return;
@@ -62,18 +90,27 @@ export class LoginPacienteComponent implements OnInit {
       const { data: userData, error: eUser } = await this.supa.obtenerUsuarioActual();
       if (eUser || !userData?.user) throw eUser || new Error('No se pudo obtener el usuario.');
       const user = userData.user;
-      if (!user.email_confirmed_at) {
-        await this.supa.cerrarSesion();
-        throw new Error('Debes verificar tu correo antes de ingresar.');
-      }
+      // TEMPORALMENTE DESHABILITADO PARA DESARROLLO - Permitir login sin confirmación de email
+      // if (!user.email_confirmed_at) {
+      //   await this.supa.cerrarSesion();
+      //   throw new Error('Debes verificar tu correo antes de ingresar.');
+      // }
 
       // 3) Perfil (sin seleccionar email en SupabaseService.obtenerPerfil)
       const { data: perfil, error: ePerfil } = await this.supa.obtenerPerfil(user.id);
       if (ePerfil || !perfil) throw ePerfil || new Error('No se encontró el perfil del usuario.');
-      if (perfil.rol !== 'paciente') {
+      
+      // Validación según rol (especialistas requieren aprobación)
+      if (perfil.rol === 'especialista' && !perfil.aprobado) {
         await this.supa.cerrarSesion();
-        throw new Error('No estás registrado como paciente.');
+        throw new Error('Tu cuenta de especialista aún no ha sido aprobada por un administrador.');
       }
+      
+      // Para pacientes, verificar que sea paciente (pero permitir otros roles si vienen de quickLogin)
+      // if (perfil.rol !== 'paciente') {
+      //   await this.supa.cerrarSesion();
+      //   throw new Error('No estás registrado como paciente.');
+      // }
 
       // (OPCIONAL) asegurar fila en profiles 
       // await this.supa.client.from('profiles').upsert(
@@ -82,13 +119,76 @@ export class LoginPacienteComponent implements OnInit {
       // );
 
       await Swal.fire({ icon: 'success', title: 'Bienvenido', timer: 1500, showConfirmButton: false });
-      this.router.navigate(['/mis-turnos-paciente']);
+      
+      // Redirigir según el rol
+      if (perfil.rol === 'paciente') {
+        this.router.navigate(['/mis-turnos-paciente']);
+      } else if (perfil.rol === 'especialista') {
+        this.router.navigate(['/mis-turnos-especialista']);
+      } else if (perfil.rol === 'admin') {
+        // TODO: Definir ruta para admin
+        this.router.navigate(['/bienvenida']);
+      }
     } catch (e) {
       this.error = this.traducirError(e);
       await Swal.fire('Error', this.error || 'Ocurrió un error al iniciar sesión', 'error');
     } finally {
       this.cargando = false;
     }
+  }
+
+  // Login rápido con credenciales predefinidas
+  get accesosRapidos(): Array<{ email: string; password: string; nombre: string; avatar: string; rol: Rol }> {
+    const usuarios: Array<{ email: string; password: string; nombre: string; avatar: string; rol: Rol }> = [];
+    (Array.isArray(this.quickLogins.paciente) ? this.quickLogins.paciente : [this.quickLogins.paciente]).forEach(user => {
+      usuarios.push({
+        email: user.email,
+        password: user.password,
+        nombre: user.nombre ?? user.email,
+        avatar: user.avatar ?? 'assets/img/default-avatar.png',
+        rol: 'paciente'
+      });
+    });
+    (Array.isArray(this.quickLogins.especialista) ? this.quickLogins.especialista : [this.quickLogins.especialista]).forEach(user => {
+      usuarios.push({
+        email: user.email,
+        password: user.password,
+        nombre: user.nombre ?? user.email,
+        avatar: user.avatar ?? 'assets/img/default-avatar.png',
+        rol: 'especialista'
+      });
+    });
+    (Array.isArray(this.quickLogins.admin) ? this.quickLogins.admin : [this.quickLogins.admin]).forEach(user => {
+      usuarios.push({
+        email: user.email,
+        password: user.password,
+        nombre: user.nombre ?? user.email,
+        avatar: user.avatar ?? 'assets/img/default-avatar.png',
+        rol: 'admin'
+      });
+    });
+    return usuarios;
+  }
+
+  async loginRapido(email: string, password: string): Promise<void> {
+    console.log('[LoginPaciente] Quick login seleccionado', email);
+    this.formularioLogin.patchValue({ email, password });
+    this.formularioLogin.markAsDirty();
+    const seleccionado = this.accesosRapidos.find(u => u.email === email);
+    if (seleccionado) {
+      this.quickSeleccionado = { nombre: seleccionado.nombre, rol: seleccionado.rol, email };
+      this.snackBar.open(
+        `Rellenamos las credenciales de ${seleccionado.nombre}. Revisá y presioná Ingresar.`,
+        'Cerrar',
+        { duration: 3500 }
+      );
+    } else {
+      this.quickSeleccionado = undefined;
+    }
+
+    setTimeout(() => {
+      this.passwordInput?.nativeElement.focus({ preventScroll: false });
+    }, 20);
   }
 
 

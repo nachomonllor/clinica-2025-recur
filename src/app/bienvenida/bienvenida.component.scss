@@ -13,7 +13,8 @@
   &::before {
     content: "";
     position: fixed; inset: 0; z-index: -1;
-    background: url("assets/img/consultorio-bg.webp") center/cover no-repeat;
+    // background: url("assets/img/consultorio-bg.webp") center/cover no-repeat;
+    // Imagen comentada temporalmente - agregar cuando exista el archivo
     opacity: .35;
     filter: blur(1.5px) saturate(.9) contrast(1.05);
     /* La imagen queda por encima del gradiente global pero muy suave */

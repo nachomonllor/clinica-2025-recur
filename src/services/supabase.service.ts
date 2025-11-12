@@ -40,6 +40,11 @@ export class SupabaseService {
         persistSession: true,
         autoRefreshToken: true,
         detectSessionInUrl: true, // necesario si usas verificación por email
+        storage: localStorage,
+        // Evita el error de Navigator LockManager en desarrollo
+        // @ts-expect-error: multiTab puede no existir en typings antiguos
+        multiTab: false,
+        storageKey: 'sb-clinica-online-auth-2025',
       }
     });
   }

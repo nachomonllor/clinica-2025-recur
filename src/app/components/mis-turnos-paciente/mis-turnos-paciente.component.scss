@@ -32,6 +32,19 @@ table { width: 100%; background: #fff; }
   padding: .5rem .75rem;
 }
 
+// Estilos para diálogos
+::ng-deep .mat-dialog-container {
+  .full-width {
+    width: 100%;
+  }
+  
+  mat-dialog-content {
+    p {
+      margin: 8px 0;
+    }
+  }
+}
+
 
 
 .mis-turnos-container {

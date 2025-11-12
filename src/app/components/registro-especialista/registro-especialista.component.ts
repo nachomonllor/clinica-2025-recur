@@ -12,6 +12,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatSelectModule } from '@angular/material/select';
 import Swal from 'sweetalert2';
 import { SupabaseService } from '../../../services/supabase.service';
+import { environment } from '../../../environments/environment';
+import { CaptchaComponent } from '../captcha/captcha.component';
 
 @Component({
   selector: 'app-registro-especialista',
@@ -23,7 +25,8 @@ import { SupabaseService } from '../../../services/supabase.service';
     MatInputModule,
     MatSelectModule,
     MatButtonModule,
-    MatCardModule
+    MatCardModule,
+    CaptchaComponent
   ],
   templateUrl: './registro-especialista.component.html',
   styleUrls: ['./registro-especialista.component.scss']
@@ -38,6 +41,8 @@ export class RegistroEspecialistaComponent implements OnInit {
   ];
 
   imagenPrevia: string | null = null;
+  captchaEnabled = environment.captchaEnabled;
+  captchaValido = !environment.captchaEnabled; // Si está deshabilitado, siempre válido
 
   registroForm!: FormGroup<{
     nombre:            FormControl<string | null>;
@@ -82,6 +87,10 @@ export class RegistroEspecialistaComponent implements OnInit {
     });
   }
 
+  onCaptchaValid(esValido: boolean): void {
+    this.captchaValido = esValido;
+  }
+
   onFileChange(ev: Event): void {
     const input = ev.target as HTMLInputElement;
     if (!input.files?.length) return;
@@ -92,6 +101,16 @@ export class RegistroEspecialistaComponent implements OnInit {
     const reader = new FileReader();
     reader.onload = () => this.imagenPrevia = reader.result as string;
     reader.readAsDataURL(file);
+  }
+
+  private calcEdadFromISO(iso: string): number {
+    const [y, m, d] = iso.split('-').map(Number);
+    const today = new Date();
+    let edad = today.getFullYear() - y;
+    const month = today.getMonth() + 1;
+    const day = today.getDate();
+    if (month < m || (month === m && day < d)) edad--;
+    return edad;
   }
     
   // // DB
@@ -134,7 +153,10 @@ export class RegistroEspecialistaComponent implements OnInit {
       // 3) Subir avatar al bucket avatars/<uid>/**
       const avatarUrl = await this.supa.uploadAvatar(userId, fv.imagenPerfil!, 1);
 
-      // 4) Upsert en profiles (rol especialista, pendiente de aprobación)
+      // 4) Calcular edad desde fecha de nacimiento
+      const edadCalculada = this.calcEdadFromISO(fv.fechaNacimiento!);
+
+      // 5) Upsert en profiles (rol especialista, pendiente de aprobación)
       await this.supa.upsertPerfil({
         id: userId,
         rol: 'especialista',
@@ -147,8 +169,25 @@ export class RegistroEspecialistaComponent implements OnInit {
         avatar_url: avatarUrl,
         imagen2_url: null,                 // no usamos segunda imagen para especialista
         aprobado: false                  // <===== requiere aprobación de Admin
-        //especialidades                     // <=== array de especialidades
       });
+
+      // 6) Insertar en tabla especialistas (una fila por cada especialidad)
+      // Como la tabla tiene especialidad como TEXT, guardamos la primera especialidad
+      // o podríamos crear múltiples registros si fuera necesario
+      const primeraEspecialidad = especialidades[0] || 'Sin especialidad';
+      const { error: especialistaError } = await this.supa.client
+        .from('especialistas')
+        .insert({
+          id: userId,
+          nombre: fv.nombre!,
+          apellido: fv.apellido!,
+          edad: edadCalculada,
+          fecha_nacimiento: fv.fechaNacimiento!,
+          dni: fv.dni!,
+          especialidad: primeraEspecialidad, // Guardamos la primera, o podríamos hacer múltiples inserts
+          email: fv.email!
+        });
+      if (especialistaError) throw especialistaError;
 
       Swal.fire({
         icon: 'success',

@@ -1,4 +1,4 @@
-<mat-card class="mis-turnos-container">
+<mat-card class="mis-turnos-container" appElevateOnHover>
     <mat-card-header>
         <mat-card-title>Mis Turnos (Especialista)</mat-card-title>
     </mat-card-header>
@@ -64,42 +64,51 @@
         <!-- Estado -->
         <ng-container matColumnDef="estado">
             <th mat-header-cell *matHeaderCellDef> Estado </th>
-            <td mat-cell *matCellDef="let t"> {{ t.estado | titlecase }} </td>
+            <td mat-cell *matCellDef="let t">
+                <span [appStatusBadge]="t.estado">
+                    {{ t.estado | statusLabel }}
+                </span>
+            </td>
         </ng-container>
 
         <!-- Acciones -->
         <ng-container matColumnDef="acciones">
             <th mat-header-cell *matHeaderCellDef> Acciones </th>
             <td mat-cell *matCellDef="let t">
-                <!-- Aceptar -->
+                <!-- Aceptar: Solo visible si no está Aceptado, Realizado, Cancelado o Rechazado -->
                 <button mat-icon-button color="primary"
-                    *ngIf="t.estado !== 'realizado' && t.estado !== 'cancelado' && t.estado !== 'rechazado'"
+                    *ngIf="puedeAceptar(t)"
                     (click)="aceptarTurno(t)" matTooltip="Aceptar turno">
                     <mat-icon>check_circle</mat-icon>
                 </button>
 
-                <!-- Rechazar -->
+                <!-- Rechazar: Solo visible si no está Aceptado, Realizado o Cancelado -->
                 <button mat-icon-button color="warn"
-                    *ngIf="t.estado !== 'aceptado' && t.estado !== 'realizado' && t.estado !== 'cancelado'"
+                    *ngIf="puedeRechazar(t)"
                     (click)="rechazarTurno(t)" matTooltip="Rechazar turno">
                     <mat-icon>block</mat-icon>
                 </button>
 
-                <!-- Cancelar -->
+                <!-- Cancelar: Solo visible si no está Aceptado, Realizado o Rechazado -->
                 <button mat-icon-button color="warn"
-                    *ngIf="t.estado !== 'aceptado' && t.estado !== 'realizado' && t.estado !== 'rechazado'"
+                    *ngIf="puedeCancelar(t)"
                     (click)="cancelarTurno(t)" matTooltip="Cancelar turno">
                     <mat-icon>cancel</mat-icon>
                 </button>
 
-                <!-- Finalizar -->
-                <button mat-icon-button color="accent" *ngIf="t.estado === 'aceptado'" (click)="finalizarTurno(t)"
+                <!-- Finalizar: Solo visible si fue Aceptado -->
+                <button mat-icon-button color="accent" 
+                    *ngIf="puedeFinalizar(t)" 
+                    (click)="finalizarTurno(t)"
                     matTooltip="Finalizar turno">
                     <mat-icon>event_available</mat-icon>
                 </button>
 
-                <!-- Ver reseña -->
-                <button mat-icon-button color="primary" *ngIf="t.resena" (click)="verResena(t)" matTooltip="Ver reseña">
+                <!-- Ver reseña: Solo visible si tiene reseña -->
+                <button mat-icon-button color="primary" 
+                    *ngIf="puedeVerResena(t)" 
+                    (click)="verResena(t)" 
+                    matTooltip="Ver reseña">
                     <mat-icon>visibility</mat-icon>
                 </button>
             </td>
@@ -115,7 +124,7 @@
     </p>
 </mat-card>
 
-<!-- diálogo de confirmación / comentario / reseña -->
+<!-- Diálogo de confirmación -->
 <ng-template #confirmDialog let-data>
     <h2 mat-dialog-title>Confirmar</h2>
     <mat-dialog-content>{{ data.message }}</mat-dialog-content>
@@ -123,6 +132,173 @@
         <button mat-button mat-dialog-close="false">Cancelar</button>
         <button mat-raised-button color="primary" [mat-dialog-close]="true">
             Aceptar
+        </button>
+    </mat-dialog-actions>
+</ng-template>
+
+<!-- Diálogo de rechazo con comentario -->
+<ng-template #rechazarDialog let-data>
+    <h2 mat-dialog-title>Rechazar Turno</h2>
+    <mat-dialog-content>
+        <p>¿Estás seguro de que deseas rechazar este turno?</p>
+        <p><strong>Paciente:</strong> {{ data?.turno?.paciente }}</p>
+        <p><strong>Especialidad:</strong> {{ data?.turno?.especialidad }}</p>
+        <p><strong>Fecha:</strong> {{ data?.turno?.fecha }} a las {{ data?.turno?.hora }}</p>
+        
+        <form [formGroup]="data?.form" style="margin-top: 16px;">
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Motivo de rechazo</mat-label>
+                <textarea matInput formControlName="comentario" rows="4" 
+                    placeholder="Indica el motivo del rechazo (mínimo 10 caracteres)"></textarea>
+                <mat-error *ngIf="data?.form?.get('comentario')?.hasError('required')">
+                    El motivo es obligatorio
+                </mat-error>
+                <mat-error *ngIf="data?.form?.get('comentario')?.hasError('minlength')">
+                    Debe tener al menos 10 caracteres
+                </mat-error>
+            </mat-form-field>
+        </form>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+        <button mat-button mat-dialog-close>Cancelar</button>
+        <button mat-raised-button color="warn" 
+            [disabled]="!data?.form?.valid"
+            [mat-dialog-close]="true">
+            Confirmar Rechazo
+        </button>
+    </mat-dialog-actions>
+</ng-template>
+
+<!-- Diálogo de cancelación con comentario -->
+<ng-template #cancelarDialog let-data>
+    <h2 mat-dialog-title>Cancelar Turno</h2>
+    <mat-dialog-content>
+        <p>¿Estás seguro de que deseas cancelar este turno?</p>
+        <p><strong>Paciente:</strong> {{ data?.turno?.paciente }}</p>
+        <p><strong>Especialidad:</strong> {{ data?.turno?.especialidad }}</p>
+        <p><strong>Fecha:</strong> {{ data?.turno?.fecha }} a las {{ data?.turno?.hora }}</p>
+        
+        <form [formGroup]="data?.form" style="margin-top: 16px;">
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Motivo de cancelación</mat-label>
+                <textarea matInput formControlName="comentario" rows="4" 
+                    placeholder="Indica el motivo de la cancelación (mínimo 10 caracteres)"></textarea>
+                <mat-error *ngIf="data?.form?.get('comentario')?.hasError('required')">
+                    El motivo es obligatorio
+                </mat-error>
+                <mat-error *ngIf="data?.form?.get('comentario')?.hasError('minlength')">
+                    Debe tener al menos 10 caracteres
+                </mat-error>
+            </mat-form-field>
+        </form>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+        <button mat-button mat-dialog-close>Cancelar</button>
+        <button mat-raised-button color="warn" 
+            [disabled]="!data?.form?.valid"
+            [mat-dialog-close]="true">
+            Confirmar Cancelación
+        </button>
+    </mat-dialog-actions>
+</ng-template>
+
+<!-- Diálogo de Historia Clínica -->
+<ng-template #historiaClinicaDialog let-data>
+    <h2 mat-dialog-title>Historia Clínica - Finalizar Turno</h2>
+    <mat-dialog-content>
+        <p><strong>Paciente:</strong> {{ data?.turno?.paciente }}</p>
+        <p><strong>Especialidad:</strong> {{ data?.turno?.especialidad }}</p>
+        <p><strong>Fecha:</strong> {{ data?.turno?.fecha }} a las {{ data?.turno?.hora }}</p>
+        
+        <form [formGroup]="data?.form" style="margin-top: 16px;">
+            <!-- Datos fijos -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                <mat-form-field appearance="outline">
+                    <mat-label>Altura (cm)</mat-label>
+                    <input matInput type="number" formControlName="altura" placeholder="Ej: 175" min="0" step="0.01">
+                    <mat-error *ngIf="data?.form?.get('altura')?.hasError('required')">
+                        La altura es obligatoria
+                    </mat-error>
+                    <mat-error *ngIf="data?.form?.get('altura')?.hasError('min')">
+                        Debe ser un valor positivo
+                    </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                    <mat-label>Peso (kg)</mat-label>
+                    <input matInput type="number" formControlName="peso" placeholder="Ej: 70" min="0" step="0.01">
+                    <mat-error *ngIf="data?.form?.get('peso')?.hasError('required')">
+                        El peso es obligatorio
+                    </mat-error>
+                    <mat-error *ngIf="data?.form?.get('peso')?.hasError('min')">
+                        Debe ser un valor positivo
+                    </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                    <mat-label>Temperatura (°C)</mat-label>
+                    <input matInput type="number" formControlName="temperatura" placeholder="Ej: 36.5" min="0" step="0.1">
+                    <mat-error *ngIf="data?.form?.get('temperatura')?.hasError('required')">
+                        La temperatura es obligatoria
+                    </mat-error>
+                    <mat-error *ngIf="data?.form?.get('temperatura')?.hasError('min')">
+                        Debe ser un valor positivo
+                    </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                    <mat-label>Presión</mat-label>
+                    <input matInput formControlName="presion" placeholder="Ej: 120/80">
+                    <mat-error *ngIf="data?.form?.get('presion')?.hasError('required')">
+                        La presión es obligatoria
+                    </mat-error>
+                </mat-form-field>
+            </div>
+
+            <!-- Datos dinámicos -->
+            <div style="margin-top: 24px; display: grid; gap: 20px;">
+                <div>
+                    <h3 style="margin-bottom: 12px;">Indicadores adicionales</h3>
+                    <div class="indicadores-grid">
+                        <div class="indicador-item">
+                            <label class="indicador-label">
+                                Índice de riesgo (%): <strong>{{ data?.form?.get('riesgo')?.value }}%</strong>
+                            </label>
+                            <mat-slider
+                                formControlName="riesgo"
+                                min="0"
+                                max="100"
+                                step="1"
+                                thumbLabel
+                                tickInterval="10">
+                            </mat-slider>
+                        </div>
+
+                        <mat-form-field appearance="outline">
+                            <mat-label>Nivel de glucosa (mg/dL)</mat-label>
+                            <input matInput type="number" formControlName="nivelGlucosa" min="0" step="0.1">
+                            <mat-error *ngIf="data?.form?.get('nivelGlucosa')?.hasError('required')">
+                                Campo obligatorio
+                            </mat-error>
+                            <mat-error *ngIf="data?.form?.get('nivelGlucosa')?.hasError('min')">
+                                Debe ser un valor positivo
+                            </mat-error>
+                        </mat-form-field>
+
+                        <mat-slide-toggle formControlName="requiereSeguimiento">
+                            Requiere seguimiento adicional
+                        </mat-slide-toggle>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+        <button mat-button mat-dialog-close>Cancelar</button>
+        <button mat-raised-button color="primary" 
+            [disabled]="!data?.form?.valid"
+            [mat-dialog-close]="true">
+            Guardar Historia Clínica
         </button>
     </mat-dialog-actions>
 </ng-template>

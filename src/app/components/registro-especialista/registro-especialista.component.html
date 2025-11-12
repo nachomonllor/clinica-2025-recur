@@ -73,7 +73,13 @@
       </mat-error>
     </div>
 
-    <button mat-raised-button color="accent" class="full-width" [disabled]="f.invalid" type="submit">
+    <!-- Captcha -->
+    <app-captcha 
+      [enabled]="captchaEnabled" 
+      (captchaValid)="onCaptchaValid($event)">
+    </app-captcha>
+
+    <button mat-raised-button color="accent" class="full-width" [disabled]="f.invalid || !captchaValido" type="submit">
       Registrarse
     </button>
   </form>

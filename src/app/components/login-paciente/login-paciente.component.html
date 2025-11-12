@@ -7,17 +7,23 @@
 
         <mat-form-field appearance="outline" class="full-width">
             <mat-label>Correo electrónico</mat-label>
-            <input matInput type="email" formControlName="email" />
+            <input matInput type="email" formControlName="email" [appAutoFocus]="0" />
             <mat-error *ngIf="f.get('email')?.hasError('required')">El correo es obligatorio.</mat-error>
             <mat-error *ngIf="f.get('email')?.hasError('email')">Formato inválido.</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
             <mat-label>Contraseña</mat-label>
-            <input matInput type="password" formControlName="password" />
+            <input #passwordInput matInput type="password" formControlName="password" />
             <mat-error *ngIf="f.get('password')?.hasError('required')">La contraseña es obligatoria.</mat-error>
             <mat-error *ngIf="f.get('password')?.hasError('minlength')">Mínimo 6 caracteres.</mat-error>
         </mat-form-field>
+
+        <mat-card class="quick-reminder" *ngIf="quickSeleccionado">
+          <strong>{{ quickSeleccionado.nombre }}</strong>
+          ({{ quickSeleccionado.rol | titlecase }}) completado.
+          Revisá los campos y tocá <em>Ingresar</em>.
+        </mat-card>
 
         <button mat-raised-button color="primary" class="full-width" type="submit" [disabled]="f.invalid || cargando">
             <ng-container *ngIf="!cargando; else spinner">Ingresar</ng-container>
@@ -26,4 +32,30 @@
             </ng-template>
         </button>
     </form>
+
 </mat-card>
+
+<!-- Accesos rápidos flotantes -->
+<div class="quick-access-container">
+  <div class="quick-access-hint" matTooltip="Completa automáticamente el formulario con un perfil demo">
+    <span>Accesos rápidos</span>
+  </div>
+  <div class="quick-access-grid">
+    <button
+      *ngFor="let user of accesosRapidos"
+      class="fav-button"
+      type="button"
+      [class.rol-paciente]="user.rol === 'paciente'"
+      [class.rol-especialista]="user.rol === 'especialista'"
+      [class.rol-admin]="user.rol === 'admin'"
+      [disabled]="cargando"
+      (click)="loginRapido(user.email, user.password)"
+      matTooltip="{{ user.nombre }} ({{ user.rol }})"
+      [attr.title]="user.nombre + ' (' + (user.rol | titlecase) + ')'"
+      [attr.aria-label]="user.nombre + ' (' + (user.rol | titlecase) + ')'">
+      <img [src]="user.avatar" [alt]="user.nombre" />
+      <span class="fav-button-name">{{ user.nombre }}</span>
+      <span class="fav-button-role">{{ user.rol | titlecase }}</span>
+    </button>
+  </div>
+</div>

@@ -1,0 +1,47 @@
+:host { display:block; }
+mat-card { margin: 1rem; }
+
+.toolbar {
+  margin: .5rem 0 1rem;
+  display: flex;
+  gap: .75rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.table-wrap {
+  overflow: auto;
+  border: 1px solid #eee;
+  border-radius: 8px;
+}
+
+table { width: 100%; background: #fff; }
+.header th { background: #fafafa; }
+
+.chip {
+  border: 1px solid #ddd;
+  border-radius: 999px;
+  padding: .1rem .5rem;
+  background: #f7f7f7;
+  text-transform: capitalize;
+}
+.chip.ok   { border-color: #2e7d32; color:#2e7d32; background: #e8f5e9; }
+.chip.warn { border-color: #f9a825; color:#f9a825; background: #fff8e1; }
+.chip.bad  { border-color: #c62828; color:#c62828; background: #ffebee; }
+.row td, .header th {
+  padding: .5rem .75rem;
+}
+
+// Estilos para diálogos
+::ng-deep .mat-dialog-container {
+  .full-width {
+    width: 100%;
+  }
+  
+  mat-dialog-content {
+    p {
+      margin: 8px 0;
+    }
+  }
+}
+

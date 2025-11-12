@@ -1,0 +1,21 @@
+.indicadores-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.indicador-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  background: rgba(236, 239, 241, 0.45);
+  border-radius: 12px;
+}
+
+.indicador-label {
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+

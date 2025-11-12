@@ -1,0 +1,114 @@
+<mat-card>
+  <mat-card-title>Turnos de la Clínica</mat-card-title>
+
+  <div class="toolbar">
+    <mat-form-field appearance="outline">
+      <mat-label>Buscar</mat-label>
+      <input matInput #f (input)="applyFilter(f.value)" placeholder="Especialidad, especialista, paciente o estado" />
+    </mat-form-field>
+  </div>
+
+  <div class="table-wrap">
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z1">
+
+      <!-- ID -->
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef>#</th>
+        <td mat-cell *matCellDef="let t">{{ t.id | slice:0:8 }}</td>
+      </ng-container>
+
+      <!-- Fecha -->
+      <ng-container matColumnDef="fecha">
+        <th mat-header-cell *matHeaderCellDef>Fecha</th>
+        <td mat-cell *matCellDef="let t">{{ t.fecha | date:'shortDate' }}</td>
+      </ng-container>
+
+      <!-- Hora -->
+      <ng-container matColumnDef="hora">
+        <th mat-header-cell *matHeaderCellDef>Hora</th>
+        <td mat-cell *matCellDef="let t">{{ t.hora }}</td>
+      </ng-container>
+
+      <!-- Especialidad -->
+      <ng-container matColumnDef="especialidad">
+        <th mat-header-cell *matHeaderCellDef>Especialidad</th>
+        <td mat-cell *matCellDef="let t">{{ t.especialidad }}</td>
+      </ng-container>
+
+      <!-- Especialista -->
+      <ng-container matColumnDef="especialista">
+        <th mat-header-cell *matHeaderCellDef>Especialista</th>
+        <td mat-cell *matCellDef="let t">{{ t.especialista }}</td>
+      </ng-container>
+
+      <!-- Paciente -->
+      <ng-container matColumnDef="paciente">
+        <th mat-header-cell *matHeaderCellDef>Paciente</th>
+        <td mat-cell *matCellDef="let t">{{ t.paciente }}</td>
+      </ng-container>
+
+      <!-- Estado -->
+      <ng-container matColumnDef="estado">
+        <th mat-header-cell *matHeaderCellDef>Estado</th>
+        <td mat-cell *matCellDef="let t">
+          <span class="chip" [class.ok]="t.estado==='realizado'"
+            [class.warn]="t.estado==='pendiente' || t.estado==='aceptado'"
+            [class.bad]="t.estado==='cancelado' || t.estado==='rechazado'">
+            {{ t.estado }}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- Acciones -->
+      <ng-container matColumnDef="acciones">
+        <th mat-header-cell *matHeaderCellDef>Acciones</th>
+        <td mat-cell *matCellDef="let t">
+          <!-- Cancelar: Solo visible si no está Aceptado, Realizado o Rechazado -->
+          <button mat-button color="warn" (click)="cancelarTurno(t)" 
+            [disabled]="!puedeCancelar(t)"
+            *ngIf="puedeCancelar(t)">
+            <mat-icon>event_busy</mat-icon> Cancelar
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns" class="header"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </div>
+</mat-card>
+
+<!-- Diálogo de cancelación con comentario -->
+<ng-template #cancelDialog let-data>
+  <h2 mat-dialog-title>Cancelar Turno</h2>
+  <mat-dialog-content>
+    <p>¿Estás seguro de que deseas cancelar este turno?</p>
+    <p><strong>Paciente:</strong> {{ data?.turno?.paciente }}</p>
+    <p><strong>Especialista:</strong> {{ data?.turno?.especialista }}</p>
+    <p><strong>Especialidad:</strong> {{ data?.turno?.especialidad }}</p>
+    <p><strong>Fecha:</strong> {{ data?.turno?.fecha | date:'shortDate' }} a las {{ data?.turno?.hora }}</p>
+    
+    <form [formGroup]="data?.form" style="margin-top: 16px;">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Motivo de cancelación</mat-label>
+        <textarea matInput formControlName="comentario" rows="4" 
+          placeholder="Indica el motivo de la cancelación (mínimo 10 caracteres)"></textarea>
+        <mat-error *ngIf="data?.form?.get('comentario')?.hasError('required')">
+          El motivo es obligatorio
+        </mat-error>
+        <mat-error *ngIf="data?.form?.get('comentario')?.hasError('minlength')">
+          Debe tener al menos 10 caracteres
+        </mat-error>
+      </mat-form-field>
+    </form>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Cancelar</button>
+    <button mat-raised-button color="warn" 
+      [disabled]="!data?.form?.valid"
+      [mat-dialog-close]="true">
+      Confirmar Cancelación
+    </button>
+  </mat-dialog-actions>
+</ng-template>
+

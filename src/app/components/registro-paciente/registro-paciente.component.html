@@ -72,7 +72,40 @@
       </mat-error>
     </mat-form-field>
 
-    <button mat-raised-button color="accent" class="full-width" [disabled]="loading || registroPacienteForm.invalid"
+    <!-- Imágenes de perfil -->
+    <div class="full-width file-group">
+      <button mat-raised-button color="primary" type="button" (click)="fileInput1.click()">
+        Seleccionar Imagen 1
+      </button>
+      <input #fileInput1 type="file" hidden (change)="onFileChange($event, 1)" accept="image/*" />
+      <mat-error *ngIf="registroPacienteForm.get('imagenPerfil1')?.hasError('required') && registroPacienteForm.get('imagenPerfil1')?.touched">
+        La primera imagen es obligatoria.
+      </mat-error>
+      <div class="preview" *ngIf="imagenPrevia1">
+        <img [src]="imagenPrevia1" alt="Previsualización 1" />
+      </div>
+    </div>
+
+    <div class="full-width file-group">
+      <button mat-raised-button color="primary" type="button" (click)="fileInput2.click()">
+        Seleccionar Imagen 2
+      </button>
+      <input #fileInput2 type="file" hidden (change)="onFileChange($event, 2)" accept="image/*" />
+      <mat-error *ngIf="registroPacienteForm.get('imagenPerfil2')?.hasError('required') && registroPacienteForm.get('imagenPerfil2')?.touched">
+        La segunda imagen es obligatoria.
+      </mat-error>
+      <div class="preview" *ngIf="imagenPrevia2">
+        <img [src]="imagenPrevia2" alt="Previsualización 2" />
+      </div>
+    </div>
+
+    <!-- Captcha -->
+    <app-captcha 
+      [enabled]="captchaEnabled" 
+      (captchaValid)="onCaptchaValid($event)">
+    </app-captcha>
+
+    <button mat-raised-button color="accent" class="full-width" [disabled]="loading || registroPacienteForm.invalid || !captchaValido"
       type="submit">
       {{ loading ? 'Registrando...' : 'Registrarse' }}
     </button>
