@@ -176,6 +176,21 @@ export class UsuariosComponent {
       avatarUrl: 'assets/avatars/moria.jpg'
 
     },
+
+    {
+      id: 'u7',
+      nombre: 'Chavo',
+      apellido: 'Del 8',
+      edad: 12,
+      rol: 'paciente',
+      email: 'chavito@hotmail.com',
+      dni: '40912908',
+      obraSocial: 'VECINDAD',
+      habilitado: true,
+      color: 'pink',
+      avatarUrl: 'assets/avatars/chavo.jpg'
+
+    },
   ];
 
   get filtered(): Usuario[] {
