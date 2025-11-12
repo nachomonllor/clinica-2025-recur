@@ -27,6 +27,14 @@ type QuickLoginsConfig = {
   especialista: QuickLoginEntry | QuickLoginEntry[];
   admin: QuickLoginEntry | QuickLoginEntry[];
 };
+
+interface QuickAccessUser {
+  email: string;
+  password: string;
+  nombre: string;
+  avatar: string;
+  rol: Rol;
+}
 // interface Perfil {
 //   id: string;
 //   rol: Rol;
@@ -138,8 +146,8 @@ export class LoginPacienteComponent implements OnInit {
   }
 
   // Login rápido con credenciales predefinidas
-  get accesosRapidos(): Array<{ email: string; password: string; nombre: string; avatar: string; rol: Rol }> {
-    const usuarios: Array<{ email: string; password: string; nombre: string; avatar: string; rol: Rol }> = [];
+  get accesosRapidos(): QuickAccessUser[] {
+    const usuarios: QuickAccessUser[] = [];
     (Array.isArray(this.quickLogins.paciente) ? this.quickLogins.paciente : [this.quickLogins.paciente]).forEach(user => {
       usuarios.push({
         email: user.email,
@@ -170,6 +178,11 @@ export class LoginPacienteComponent implements OnInit {
     return usuarios;
   }
 
+  activarQuick(user: QuickAccessUser, ev?: Event): void {
+    console.log('[LoginPaciente] activarQuick', user.email, ev?.type);
+    this.loginRapido(user.email, user.password);
+  }
+
   async loginRapido(email: string, password: string): Promise<void> {
     console.log('[LoginPaciente] Quick login seleccionado', email);
     this.formularioLogin.patchValue({ email, password });
@@ -190,7 +203,6 @@ export class LoginPacienteComponent implements OnInit {
       this.passwordInput?.nativeElement.focus({ preventScroll: false });
     }, 20);
   }
-
 
   private traducirError(e: unknown): string {
     const texto = ((): string => {

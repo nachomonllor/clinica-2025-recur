@@ -1,3 +1,34 @@
+.quick-access-inline {
+  margin-top: 20px;
+  text-align: center;
+  h4 {
+    margin: 0 0 12px;
+    font-weight: 600;
+    color: #0f172a;
+  }
+}
+
+.quick-inline-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.inline-quick {
+  border: none;
+  border-radius: 999px;
+  padding: 8px 16px;
+  cursor: pointer;
+  background: rgba(226, 232, 240, 0.9);
+  transition: transform 160ms ease, box-shadow 160ms ease;
+  font-weight: 600;
+}
+
+.inline-quick:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.18);
+}
 /* Centrar el contenido del componente en la pantalla */
 :host {
   display: grid;
@@ -79,101 +110,94 @@ mat-progress-spinner {
   color: rgba(15, 23, 42, .55);
 }
 
-.quick-access-container {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  z-index: 10;
+.quick-access-inline {
+  margin-top: 24px;
+  text-align: center;
+
+  h4 {
+    margin: 0 0 16px;
+    font-weight: 600;
+    color: #0f172a;
+    letter-spacing: .2px;
+  }
+
+  &.note {
+    margin-top: 14px;
+    font-size: 0.82rem;
+    color: rgba(15, 23, 42, 0.7);
+  }
+}
+
+.quick-inline-grid {
   display: grid;
-  justify-items: end;
-  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 18px 16px;
+  justify-items: center;
 }
 
-.quick-access-grid {
-  display: grid;
-  gap: 12px;
-}
-
-.quick-access-hint {
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: rgba(15, 23, 42, 0.7);
-  background: rgba(255, 255, 255, 0.9);
-  padding: 6px 12px;
-  border-radius: 999px;
-  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.12);
-}
-
-.fav-button {
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
+.inline-fav {
+  width: 120px;
   border: none;
-  outline: none;
-  background: rgba(255, 255, 255, 0.92);
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.24);
+  border-radius: 18px;
+  padding: 16px 12px 14px;
   cursor: pointer;
-  padding: 0;
-  position: relative;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.14);
+  display: grid;
+  justify-items: center;
+  gap: 8px;
   transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.inline-fav:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 30px rgba(15, 23, 42, 0.22);
+}
+
+.inline-avatar {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid transparent;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
 }
 
-.fav-button:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 16px 28px rgba(15, 23, 42, 0.3);
-}
-
-.fav-button img {
+.inline-avatar img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.fav-button-name,
-.fav-button-role {
-  position: absolute;
-  right: 85px;
-  background: rgba(15, 23, 42, 0.86);
-  color: #f8fafc;
-  padding: 6px 10px;
-  border-radius: 12px;
-  font-size: 0.75rem;
-  white-space: nowrap;
-  transform: translateX(12px);
-  opacity: 0;
-  transition: opacity 160ms ease, transform 160ms ease;
-}
-
-.fav-button-name {
-  top: 18px;
+.inline-name {
   font-weight: 600;
+  font-size: 0.95rem;
+  color: #0f172a;
 }
 
-.fav-button-role {
-  top: 44px;
-  background: rgba(59, 130, 246, 0.92);
+.inline-role {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: .3px;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(59, 130, 246, 0.12);
+  color: rgba(37, 99, 235, 0.9);
 }
 
-.fav-button:hover .fav-button-name,
-.fav-button:hover .fav-button-role {
-  opacity: 1;
-  transform: translateX(0);
+.inline-fav.rol-paciente .inline-avatar {
+  border-color: rgba(56, 189, 248, 0.8);
 }
 
-.fav-button.rol-paciente {
-  border: 2px solid rgba(56, 189, 248, 0.8);
+.inline-fav.rol-especialista .inline-avatar {
+  border-color: rgba(129, 140, 248, 0.85);
 }
 
-.fav-button.rol-especialista {
-  border: 2px solid rgba(129, 140, 248, 0.8);
-}
-
-.fav-button.rol-admin {
-  border: 2px solid rgba(249, 115, 22, 0.85);
+.inline-fav.rol-admin .inline-avatar {
+  border-color: rgba(249, 115, 22, 0.9);
 }
 
 .quick-reminder {
@@ -192,16 +216,8 @@ mat-progress-spinner {
 @media (max-width: 480px) {
   .login-card { padding: 16px 16px 20px; }
   mat-card-title { font-size: 1.2rem; }
-  .quick-access-container {
-    right: 12px;
-    bottom: 12px;
-    justify-items: stretch;
-  }
-  .fav-button-name,
-  .fav-button-role {
-    display: none;
-  }
-  .quick-access-hint {
-    display: none;
+  .quick-inline-grid {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 14px;
   }
 }

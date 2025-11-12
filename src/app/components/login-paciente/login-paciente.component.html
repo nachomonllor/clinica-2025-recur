@@ -31,31 +31,31 @@
                 <mat-progress-spinner diameter="20" mode="indeterminate"></mat-progress-spinner>
             </ng-template>
         </button>
+
+        <div class="quick-access-inline" *ngIf="accesosRapidos.length">
+            <h4>Accesos rápidos</h4>
+            <div class="quick-inline-grid">
+                <button
+                    type="button"
+                    class="inline-fav"
+                    *ngFor="let user of accesosRapidos"
+                    [class.rol-paciente]="user.rol === 'paciente'"
+                    [class.rol-especialista]="user.rol === 'especialista'"
+                    [class.rol-admin]="user.rol === 'admin'"
+                    (click)="activarQuick(user, $event)"
+                    [attr.title]="user.nombre + ' (' + (user.rol | titlecase) + ')'">
+                    <div class="inline-avatar">
+                        <img [src]="user.avatar" [alt]="user.nombre" />
+                    </div>
+                    <span class="inline-name">{{ user.nombre }}</span>
+                    <span class="inline-role">{{ user.rol | titlecase }}</span>
+                </button>
+            </div>
+        </div>
     </form>
 
-</mat-card>
+    <div class="quick-access-inline note">
+        <p>Usá estos accesos para rellenar el login automáticamente con perfiles demo.</p>
+    </div>
 
-<!-- Accesos rápidos flotantes -->
-<div class="quick-access-container">
-  <div class="quick-access-hint" matTooltip="Completa automáticamente el formulario con un perfil demo">
-    <span>Accesos rápidos</span>
-  </div>
-  <div class="quick-access-grid">
-    <button
-      *ngFor="let user of accesosRapidos"
-      class="fav-button"
-      type="button"
-      [class.rol-paciente]="user.rol === 'paciente'"
-      [class.rol-especialista]="user.rol === 'especialista'"
-      [class.rol-admin]="user.rol === 'admin'"
-      [disabled]="cargando"
-      (click)="loginRapido(user.email, user.password)"
-      matTooltip="{{ user.nombre }} ({{ user.rol }})"
-      [attr.title]="user.nombre + ' (' + (user.rol | titlecase) + ')'"
-      [attr.aria-label]="user.nombre + ' (' + (user.rol | titlecase) + ')'">
-      <img [src]="user.avatar" [alt]="user.nombre" />
-      <span class="fav-button-name">{{ user.nombre }}</span>
-      <span class="fav-button-role">{{ user.rol | titlecase }}</span>
-    </button>
-  </div>
-</div>
+</mat-card>

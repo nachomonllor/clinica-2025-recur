@@ -1,403 +1,165 @@
-# Clínica Online - Sistema de Gestión de Turnos Médicos
+# Clínica Online · Gestión de Turnos Médicos
 
-## 📋 Descripción del Proyecto
-
-**Clínica Online** es una aplicación web desarrollada en Angular 18 que permite gestionar turnos médicos de forma digital. El sistema está diseñado para facilitar la interacción entre pacientes, especialistas y administradores, proporcionando una plataforma completa para la solicitud, gestión y seguimiento de turnos médicos.
-
-### Características Principales
-
-- **Gestión de usuarios**: Registro y administración de pacientes, especialistas y administradores
-- **Sistema de turnos**: Solicitud, aceptación, rechazo y cancelación de turnos
-- **Perfiles de usuario**: Gestión de datos personales y horarios de disponibilidad
-- **Historia clínica**: Registro de atenciones y controles médicos
-- **Encuestas y calificaciones**: Sistema de evaluación de la atención recibida
-- **Estadísticas**: Informes y gráficos de la actividad de la clínica
-- **UI dinámica**: Pipes y directivas personalizadas para badges, foco automático y efectos visuales
+Aplicación Angular 18 para administrar turnos, historias clínicas y estadísticas de una clínica digital usando Supabase como backend (auth, base de datos y storage).
 
 ---
 
-## 🏥 Sobre la Clínica
+## 📌 Estado del Proyecto
 
-**Clínica Mondani** es una institución de salud que ofrece atención médica de calidad con tecnología, compromiso y calidez humana. La clínica cuenta con múltiples especialidades médicas y un sistema de turnos online que permite a los pacientes gestionar sus citas de manera sencilla y eficiente.
-
-### Especialidades Disponibles
-
-- Clínica Médica
-- Pediatría
-- Cardiología
-- Dermatología
-- Nutrición
-- Psicología
-- Y más...
-
-### Horarios de Atención
-
-- **Lunes a Viernes**: 8:00 a 19:00 h
-- **Sábados**: 9:00 a 14:00 h
+- ✅ Login y registro (paciente / especialista / admin)
+- ✅ Gestión de turnos por rol
+- ✅ Historia clínica, reseñas y encuestas
+- ✅ Dashboard de estadísticas con exportes (PDF / Excel)
+- ✅ UI con favbuttons, pipes y directivas personalizadas
+- 🔄 Roadmap de consignas eliminado del repo (se trabaja directo desde Supabase + README)
 
 ---
 
-## 🚀 Inicio Rápido
+## 🧰 Stack principal
 
-### Requisitos Previos
+| Área | Tecnologías |
+|------|-------------|
+| Frontend | Angular 18, Angular Material, RxJS, Tailwind utilities puntuales |
+| Backend | Supabase (PostgreSQL + Auth + Storage + Edge Functions opcionales) |
+| Visualización | Chart.js, jsPDF, xlsx |
+| UX | SweetAlert2, directivas personalizadas (AutoFocus, ElevateOnHover, StatusBadge) |
 
-- Node.js (v18 o superior)
-- npm o yarn
-- Supabase (local o cloud)
+---
 
-### Instalación
+## 🚀 Puesta en marcha
 
+### Requisitos
+- Node.js ≥ 18
+- npm (v10 recomendado)
+- Cuenta Supabase (o Supabase CLI en local)
+
+### Instalación y arranque
 ```bash
-# Clonar el repositorio
-git clone <url-del-repositorio>
-
-# Instalar dependencias
+git clone <url-del-repo>
+cd clinica-2025-recur
 npm install
 
-# Configurar variables de entorno
-# Editar src/environments/environment.ts con tus credenciales de Supabase
+# Configurar credenciales en src/environments/environment*.ts
+# (ver sección Supabase más abajo)
 
-# Iniciar servidor de desarrollo
-npm start  # por defecto http://localhost:4200
-# Si el puerto está ocupado:
-# npm start -- --port 4201
+npm start           # http://localhost:4200
+# o un puerto específico
+npm start -- --port 4201
 ```
 
-La aplicación estará disponible en `http://localhost:4200` (o en el puerto que definas con `--port`).
-
-#### Datos de ejemplo
-
-El proyecto cloud contiene turnos demo e historias clínicas para que `/estadisticas` muestre gráficos desde el primer inicio. Si necesitás regenerarlos:
-
-Ejecutá `supabase/seeds/seed_estadisticas.sql` desde el SQL Editor o mediante:
-
-```bash
-supabase db execute --file supabase/seeds/seed_estadisticas.sql   # requiere service_role
+### Quick logins (solo dev)
+Los accesos flotantes del login se alimentan de `environment.quickLogins`.
+```ts
+// src/environments/environment.ts
+quickLogins: {
+  paciente: [{ email: 'paciente@test.com', password: 'Paciente123', nombre: 'Paciente Demo' }],
+  especialista: [{ ... }],
+  admin: [{ ... }]
+}
 ```
+Al hacer clic se completan los campos y se muestra un recordatorio para presionar “Ingresar”.
 
 ---
 
-## 📱 Pantallas y Secciones
+## ⚙️ Configuración Supabase
 
-### Página de Bienvenida (`/bienvenida`)
-
-**Acceso**: Público (sin autenticación)
-
-**Contenido**:
-- Información sobre la clínica
-- Listado de especialidades disponibles
-- Horarios de atención
-- Enlaces de acceso a login y registro
-
-**Acciones disponibles**:
-- Navegar a login de pacientes
-- Navegar a registro de pacientes
-- Navegar a registro de especialistas
-
----
-
-### Login (`/login-paciente`)
-
-**Acceso**: Público
-
-**Contenido**:
-- Formulario de inicio de sesión (email y contraseña)
-- Botones de acceso rápido para desarrollo (Paciente, Especialista, Admin)
-
-**Funcionalidad**:
-- Autenticación de usuarios
-- Redirección según rol del usuario:
-  - **Paciente** → `/mis-turnos-paciente`
-  - **Especialista** → `/mis-turnos-especialista`
-  - **Admin** → `/bienvenida`
-
-**Validaciones**:
-- Especialistas requieren aprobación de administrador
-- Verificación de email (temporalmente deshabilitada en desarrollo)
+1. Crear proyecto en [supabase.com](https://supabase.com) o levantar Supabase CLI (`supabase start`).
+2. Copiar URL y claves Anon/ServiceRole en:
+   - `src/environments/environment.ts`
+   - `src/environments/environment.prod.ts`
+3. Ejecutar migraciones y seeds si se requiere datos demo:
+   ```bash
+   # Con CLI configurada (reemplazar project-id si aplica)
+   supabase db push
+   # ó cargar scripts desde SQL Editor
+   ```
+4. Variables esperadas en los environments:
+   ```ts
+   supabaseUrl: 'https://xxxx.supabase.co',
+   supabaseKey: '<anon key>',
+   captchaEnabled: true,
+   quickLogins: { ... }
+   ```
 
 ---
 
-### Registro de Paciente (`/registro-paciente`)
+## 🧑‍💻 Scripts npm
 
-**Acceso**: Público
-
-**Contenido**:
-- Formulario de registro con los siguientes campos:
-  - Nombre
-  - Apellido
-  - Fecha de nacimiento
-  - DNI
-  - Obra Social
-  - Correo electrónico
-  - Contraseña
-  - 2 imágenes de perfil (obligatorias)
-- Captcha de seguridad
-
-**Funcionalidad**:
-- Creación de cuenta de paciente
-- Validación de todos los campos
-- Cálculo automático de edad desde fecha de nacimiento
-- Subida de imágenes a Supabase Storage
-- Creación de perfil en base de datos
+| Comando | Descripción |
+|---------|-------------|
+| `npm start` | Servidor de desarrollo (Angular CLI) |
+| `npm run build` | Compilación producción |
+| `npm test` | Unit tests (Karma) |
+| `npm run lint` | Lint con ESLint |
+| `npm run format` | Formatea con Prettier |
 
 ---
 
-### Registro de Especialista (`/registro-especialista`)
+## 👥 Roles y flujos resumidos
 
-**Acceso**: Público
+### Paciente
+- Solicitar / cancelar turnos (`/mis-turnos-paciente`)
+- Completar encuestas y calificar atención
+- Descargar historia clínica en PDF (`/mi-perfil`)
 
-**Contenido**:
-- Formulario de registro con los siguientes campos:
-  - Nombre
-  - Apellido
-  - DNI
-  - Fecha de nacimiento
-  - Especialidades (múltiple selección)
-  - Campo para agregar especialidad personalizada
-  - Correo electrónico
-  - Contraseña
-  - Imagen de perfil (obligatoria)
-- Captcha de seguridad
+### Especialista
+- Aceptar / rechazar / finalizar turnos (`/mis-turnos-especialista`)
+- Cargar reseñas e indicadores dinámicos en historia clínica
+- Configurar horarios disponibles (`/mi-perfil`)
 
-**Funcionalidad**:
-- Creación de cuenta de especialista
-- Selección múltiple de especialidades
-- Posibilidad de agregar especialidades nuevas
-- El especialista queda pendiente de aprobación por administrador
+### Administrador
+- Alta y aprobación de usuarios (`/usuarios-admin`)
+- Gestión global de turnos (`/turnos-admin`, `/turnos-especialidad`)
+- Dashboard de estadísticas con exportes (`/estadisticas`)
 
 ---
 
-### Mis Turnos - Paciente (`/mis-turnos-paciente`)
-
-**Acceso**: Solo usuarios con rol **Paciente**
-
-**Contenido**:
-- Tabla con todos los turnos solicitados por el paciente
-- Columnas: ID, Fecha, Hora, Especialidad, Especialista, Estado, Acciones
-- Filtro único para buscar por especialidad o especialista (sin Combobox)
-
-**Acciones disponibles** (según estado del turno):
-- **Cancelar turno**: Solo visible si el turno no fue realizado
-  - Requiere comentario explicando el motivo
-- **Ver reseña**: Solo visible si el turno tiene reseña del especialista
-- **Completar encuesta**: Solo visible si el turno fue realizado y tiene reseña
-- **Calificar atención**: Solo visible si el turno fue realizado
-  - Permite dejar comentario sobre la atención recibida
-
-**Estados de turno**:
-- Pendiente
-- Aceptado
-- Realizado
-- Cancelado
-- Rechazado
-
----
-
-### Mis Turnos - Especialista (`/mis-turnos-especialista`)
-
-**Acceso**: Solo usuarios con rol **Especialista**
-
-**Contenido**:
-- Tabla con todos los turnos asignados al especialista
-- Columnas: ID, Fecha, Hora, Especialidad, Paciente, Estado, Acciones
-- Filtro único para buscar por especialidad o paciente (sin Combobox)
-
-**Acciones disponibles** (según estado del turno):
-- **Cancelar turno**: Solo visible si no está Aceptado, Realizado o Rechazado
-  - Requiere comentario explicando el motivo
-- **Rechazar turno**: Solo visible si no está Aceptado, Realizado o Cancelado
-  - Requiere comentario explicando el motivo
-- **Aceptar turno**: Solo visible si no está Realizado, Cancelado o Rechazado
-- **Finalizar Turno**: Solo visible si el turno fue Aceptado
-  - Requiere dejar reseña o comentario de la consulta y diagnóstico
-- **Ver Reseña**: Solo visible si el turno tiene reseña o comentario
-
----
-
-### Turnos - Administrador (`/turnos-especialidad`)
-
-**Acceso**: Solo usuarios con rol **Administrador**
-
-**Contenido**:
-- Tabla con todos los turnos de la clínica
-- Filtro único para buscar por especialidad o especialista (sin Combobox)
-
-**Acciones disponibles**:
-- **Cancelar turno**: Solo visible si no está Aceptado, Realizado o Rechazado
-  - Requiere comentario explicando el motivo
-
----
-
-### Solicitar Turno (`/turnos-especialidad` o ruta específica)
-
-**Acceso**: Usuarios con rol **Paciente** o **Administrador**
-
-**Contenido**:
-- Formulario para solicitar un nuevo turno
-- Campos:
-  - Especialidad (selección)
-  - Especialista (selección basada en especialidad)
-  - Día y horario del turno
-  - Si es administrador: selección del paciente
-
-**Restricciones**:
-- Los pacientes solo pueden elegir turnos dentro de los próximos 15 días
-- Las fechas disponibles están relacionadas con la disponibilidad horaria del especialista seleccionado
-- **NO se utiliza Datepicker** (según consigna)
-
----
-
-### Usuarios - Administrador (`/usuarios-admin`)
-
-**Acceso**: Solo usuarios con rol **Administrador**
-
-**Contenido**:
-- Tabla con todos los usuarios del sistema
-- Columnas: Avatar, Nombre, Apellido, Email, Rol, Estado, Acciones
-- Filtro de búsqueda por nombre, apellido, email o rol
-- Paginación y ordenamiento
-
-**Funcionalidades**:
-- **Ver información de usuarios**: Listado completo con datos básicos
-- **Aprobar/Desaprobar especialistas**: Toggle para habilitar o inhabilitar acceso
-- **Crear nuevos usuarios**: Formulario para crear usuarios de cualquier rol:
-  - Paciente (con obra social)
-  - Especialista (con especialidad)
-  - Administrador
-
-**Campos para creación de usuarios**:
-- Rol (Paciente, Especialista, Administrador)
-- Nombre
-- Apellido
-- Fecha de nacimiento
-- DNI
-- Obra Social (solo para pacientes)
-- Email
-- Contraseña
-- Imagen de perfil
-
----
-
-### Mi Perfil (`/mi-perfil` o ruta específica)
-
-**Acceso**: Usuarios autenticados
-
-**Contenido**:
-- Datos del usuario:
-  - Nombre y Apellido
-  - DNI
-  - Email
-  - Imágenes de perfil (pacientes tienen 2)
-  - Obra Social (solo pacientes)
-  - Especialidades (solo especialistas)
-
-**Sección "Mis Horarios"** (solo Especialistas):
-- Permite al especialista marcar su disponibilidad horaria
-- Considera que un especialista puede tener múltiples especialidades asociadas
-- Los horarios se utilizan para mostrar disponibilidad al solicitar turnos
-
----
-
-### Estadísticas (Administrador) (`/estadisticas`)
-
-**Acceso**: Solo usuarios con rol **Administrador**
-
-**Contenido**:
-- Dashboard con 4 gráficos Chart.js:
-  - Ingresos recientes al sistema (línea con gradiente)
-  - Turnos por especialidad (doughnut)
-  - Turnos solicitados por día (barras)
-  - Comparativa de turnos solicitados vs. finalizados por profesional (barras agrupadas)
-- Tarjetas-resumen con top de especialidades, profesionales y últimas sesiones.
-
-**Funcionalidades**:
-- Descarga de reportes en Excel y PDF.
-- Mensaje informativo cuando todavía no existen datos estadísticos.
-- Estética personalizada (gradientes, tooltips legibles, leyendas inferiores).
-
----
-
-## 🔐 Sistema de Autenticación
-
-### Roles de Usuario
-
-1. **Paciente**
-   - Puede solicitar turnos
-   - Ver sus turnos
-   - Cancelar turnos pendientes
-   - Completar encuestas
-   - Calificar atención
-
-2. **Especialista**
-   - Requiere aprobación de administrador para acceder
-   - Ver turnos asignados
-   - Aceptar/rechazar/cancelar turnos
-   - Finalizar turnos con reseña
-   - Gestionar horarios de disponibilidad
-
-3. **Administrador**
-   - Acceso completo al sistema
-   - Gestión de usuarios
-   - Aprobar especialistas
-   - Ver todos los turnos
-   - Crear turnos para cualquier paciente
-
-### Acceso y verificación
-
-- Botones de acceso rápido en el login (`environment.quickLogins`) para probar roles sin crear cuentas adicionales.
-- La verificación de email (`email_confirmed_at`) está temporalmente deshabilitada en desarrollo; recordar reactivarla antes del despliegue.
-
-### Protección de Rutas
-
-- Las rutas protegidas utilizan guards de Angular
-- `adminGuard`: Protege rutas que solo pueden acceder administradores
-- Redirección automática según rol si se intenta acceder sin permisos
-
----
-
-## 🛠️ Tecnologías Utilizadas
-
-- **Angular 18**: Framework principal
-- **Angular Material**: Componentes UI
-- **Supabase**: Backend (Autenticación, Base de datos, Storage)
-- **TypeScript**: Lenguaje de programación
-- **RxJS**: Programación reactiva
-- **SweetAlert2**: Alertas y diálogos
-- **Chart.js**: Gráficos estadísticos
-- **jsPDF / jspdf-autotable**: Exportación de reportes en PDF
-- **xlsx**: Exportación de reportes en Excel
-- **@ngx-translate**: Preparado para internacionalización
-- **Reactive Forms**: Formularios reactivos
-
----
-
-## 📦 Estructura del Proyecto
+## 🗂️ Estructura relevante
 
 ```
 src/
 ├── app/
-│   ├── components/          # Componentes de la aplicación
+│   ├── animations.ts
+│   ├── app.routes.ts
+│   ├── components/
 │   │   ├── login-paciente/
-│   │   ├── registro-paciente/
-│   │   ├── registro-especialista/
-│   │   ├── mis-turnos-paciente/
-│   │   ├── mis-turnos-especialista/
 │   │   ├── usuarios-admin/
-│   │   └── captcha/
-│   ├── services/           # Servicios (Supabase, Turnos, etc.)
-│   ├── models/             # Modelos de datos
-│   ├── directives/         # AutoFocus, ElevateOnHover, StatusBadge
-│   ├── pipes/              # LocalDate, StatusLabel, RoleLabel
-│   └── app.routes.ts       # Configuración de rutas
-├── environments/          # Variables de entorno
-└── assets/               # Recursos estáticos
+│   │   ├── estadisticas/
+│   │   └── ...
+│   ├── directives/
+│   ├── pipes/
+│   └── services/
+├── environments/
+└── assets/
 ```
 
 ---
 
-## 🔧 Configuración
+## 🧪 Testing rápido
 
-### Variables de Entorno
+| Escenario | Pasos |
+|-----------|-------|
+| Acceso rápido | 1) ir a `/login-paciente` · 2) clic en un favbutton · 3) confirmar campos completados y snackbar |
+| Flujo paciente | 1) Login paciente demo · 2) Solicitar turno · 3) Ver en “Mis turnos” y cancelar/reseñar |
+| Flujo especialista | 1) Login especialista demo · 2) Aceptar turno pendiente · 3) Finalizar con reseña |
+| Dashboard | 1) Login admin demo · 2) Visitar `/estadisticas` · 3) Exportar PDF/Excel |
+
+---
+
+## 🛠️ Troubleshooting
+
+- **`NavigatorLockAcquireTimeoutError` en login**  
+  Se debe a múltiples pestañas usando Supabase auth en modo dev. Cerrar pestañas duplicadas o reintentar tras recargar.
+- **No se completan los accesos rápidos**  
+  El navegador puede estar sirviendo un bundle antiguo. Ejecutar `npx kill-port 4201`, reiniciar `npm start` y abrir en incógnito / limpiar “Clear site data”.
+- **Errores NG8107 en build**  
+  Ya se normalizaron las plantillas (`as seleccionado`). Reinstalar dependencias si reaparece.
+
+---
+
+## 📄 Licencia
+
+Proyecto académico. Uso interno para prácticas de Angular + Supabase 2025. Ajustar licencias de librerías externas según corresponda.
 
 Editar `src/environments/environment.ts`:
 
