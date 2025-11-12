@@ -70,8 +70,14 @@
             <div class="card-body" [ngClass]="{'is-paciente': u.rol === 'paciente'}">
                 <div class="info">
                     <div class="info-row">
-                        <span class="label">Email</span>
-                        <span class="value">{{ u.email }}</span>
+                        <!-- <span class="label">Email</span>
+                        <span class="value">{{ u.email }}</span> -->
+
+
+                            <span class="label">Email</span>
+                            <a class="value email" [href]="'mailto:' + u.email">{{ u.email }}</a>
+
+
                     </div>
 
                     <div class="info-row" *ngIf="u.dni">
