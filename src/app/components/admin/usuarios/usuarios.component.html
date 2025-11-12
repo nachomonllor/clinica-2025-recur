@@ -1,11 +1,143 @@
-<section class="usuarios">
+<div class="page">
+    <!-- Header / Filtros -->
+    <header class="header glass">
+        <div class="brand">
+            <div class="brand-logo">🏥</div>
+            <div class="brand-text">
+                <strong>Clínica Buena Salud</strong>
+                <small>Usuarios</small>
+            </div>
+        </div>
+
+        <div class="filters">
+            <div class="search glass">
+                <svg class="icon" viewBox="0 0 20 20" aria-hidden="true">
+                    <path
+                        d="M12.9 14.32a7 7 0 1 1 1.41-1.41l3.9 3.9a1 1 0 1 1-1.41 1.41l-3.9-3.9zM14 8a6 6 0 1 0-12 0 6 6 0 0 0 12 0z" />
+                </svg>
+                <input type="search" placeholder="Buscar por nombre, email, obra social o especialidad..."
+                    [(ngModel)]="search" />
+            </div>
+
+            <div class="chips">
+                <button class="chip" [class.active]="filtroRol === 'todos'" (click)="filtroRol = 'todos'">
+                    Todos
+                </button>
+                <button class="chip" [class.active]="filtroRol === 'especialista'" (click)="filtroRol = 'especialista'">
+                    Especialistas
+                </button>
+                <button class="chip" [class.active]="filtroRol === 'paciente'" (click)="filtroRol = 'paciente'">
+                    Pacientes
+                </button>
+            </div>
+
+            <label class="only-enabled">
+                <input type="checkbox" [(ngModel)]="soloHabilitados" />
+                <span>Solo habilitados</span>
+            </label>
+        </div>
+    </header>
+
+    <!-- Grilla de tarjetas -->
+    <section class="grid" [@listStagger]>
+        <article class="user-card" [@cardInOut] *ngFor="let u of filtered; trackBy: trackById"
+            [ngClass]="[u.color, u.rol === 'paciente' ? 'card-lg' : 'card-sm']">
+            <!-- Cinta de color superior -->
+            <div class="accent"></div>
+
+            <!-- Cabecera -->
+            <div class="card-header">
+                <div class="avatar" [class.has-img]="u.avatarUrl">
+                    <img *ngIf="u.avatarUrl" [src]="u.avatarUrl" [alt]="u.nombre + ' ' + u.apellido" />
+                    <span *ngIf="!u.avatarUrl">{{ initials(u) }}</span>
+                </div>
+
+                <div class="title">
+                    <h3>{{ u.nombre }} {{ u.apellido }}</h3>
+                    <div class="sub">
+                        <span class="role">{{ rolChip(u) }}</span>
+                        <span class="dot" *ngIf="u.edad !== undefined"></span>
+                        <span *ngIf="u.edad !== undefined">{{ u.edad }} años</span>
+                    </div>
+                </div>
+
+                <span class="status" [@statusChanged]="u.habilitado">
+                    {{ u.habilitado ? 'HABILITADO' : 'DESHABILITADO' }}
+                </span>
+            </div>
+
+            <!-- Cuerpo -->
+            <div class="card-body" [ngClass]="{'is-paciente': u.rol === 'paciente'}">
+                <div class="info">
+                    <div class="info-row">
+                        <span class="label">Email</span>
+                        <span class="value">{{ u.email }}</span>
+                    </div>
+
+                    <div class="info-row" *ngIf="u.dni">
+                        <span class="label">DNI</span>
+                        <span class="value">{{ u.dni }}</span>
+                    </div>
+
+                    <div class="info-row" *ngIf="u.rol === 'paciente' && u.obraSocial">
+                        <span class="label">Obra social</span>
+                        <span class="value tag">{{ u.obraSocial }}</span>
+                    </div>
+
+                    <div class="info-row" *ngIf="u.rol === 'especialista' && u.especialidades?.length">
+                        <span class="label">Especialidades</span>
+                        <span class="chips-line">
+                            <span class="chip sm" *ngFor="let e of u.especialidades">{{ e }}</span>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Acciones -->
+                <div class="actions" *ngIf="u.rol === 'paciente'; else accionesEspecialista">
+                    <button class="btn primary ripple" (click)="verHistoria(u)">
+                        <svg class="icon" viewBox="0 0 24 24">
+                            <path d="M4 6a2 2 0 012-2h8l6 6v10a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 4v4h4" />
+                        </svg>
+                        Ver historia clínica
+                    </button>
+                    <button class="btn ghost ripple" (click)="descargarTurnos(u)">
+                        <svg class="icon" viewBox="0 0 24 24">
+                            <path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                        </svg>
+                        Descargar turnos
+                    </button>
+                </div>
+
+                <ng-template #accionesEspecialista>
+                    <div class="actions">
+                        <button class="btn danger ripple" (click)="toggleHabilitado(u)"
+                            [attr.aria-pressed]="!u.habilitado">
+                            <svg class="icon" viewBox="0 0 24 24">
+                                <path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                            {{ u.habilitado ? 'Deshabilitar' : 'Habilitar' }}
+                        </button>
+                    </div>
+                </ng-template>
+            </div>
+        </article>
+    </section>
+</div>
+
+
+
+
+
+
+<!-- <section class="usuarios">
     <header class="header">
         <h1>Usuarios</h1>
 
         <div class="actions">
             <div class="buscador">
-                <!-- input type="search" [value]="searchTerm" (input)="setSearch(($event.target as HTMLInputElement).value)"
-                    placeholder="Buscar por nombre, DNI, mail o especialidad" aria-label="Buscar usuarios" / -->
+                input type="search" [value]="searchTerm" (input)="setSearch(($event.target as HTMLInputElement).value)"
+                    placeholder="Buscar por nombre, DNI, mail o especialidad" aria-label="Buscar usuarios" 
 
                 <input type="search" #q [value]="searchTerm" (input)="setSearch(q.value)">
 
@@ -19,7 +151,7 @@
         </div>
     </header>
 
-    <!-- Filtros -->
+    Filtros 
     <div class="filters">
         <div class="group">
             <span class="label">Rol</span>
@@ -58,12 +190,12 @@
         </div>
     </div>
 
-    <!-- Estado de error -->
+Estado de error 
     <div class="estado" *ngIf="(error$ | async) as err">
         <div class="error">{{ err }}</div>
     </div>
 
-    <!-- Tabla -->
+    Tabla 
     <div class="tabla-wrapper" *ngIf="filtrados$ | async as usuarios; else loading">
         <table class="tabla">
             <thead>
@@ -82,7 +214,7 @@
                     [class.inhabilitado]="u.rol === 'especialista' && u.habilitado === false">
 
                     <td class="usuario-cell">
-                        <!-- cerrar el atributo y usar el campo correcto del VM -->
+                         cerrar el atributo y usar el campo correcto del VM 
                         <img [src]="u.avatarUrl || 'assets/avatar.svg'" (error)="onImgError($event)"
                             [alt]="u.apellido + ', ' + u.nombre" />
 
@@ -107,8 +239,8 @@
                     <td>
                         <ng-container *ngIf="u.rol === 'especialista'; else verif">
                             <label class="switch" title="Habilitar/Inhabilitar acceso">
-                                <!-- input type="checkbox" [checked]="u.habilitado"
-                                    (change)="onToggleHabilitado(u, ($event.target as HTMLInputElement).checked)" / -->
+                                 input type="checkbox" [checked]="u.habilitado"
+                                    (change)="onToggleHabilitado(u, ($event.target as HTMLInputElement).checked)" 
 
                                 <input type="checkbox" #chk [checked]="u.habilitado"
                                     (change)="onToggleHabilitado(u, chk.checked)" />
@@ -156,4 +288,4 @@
     <ng-template #loading>
         <div class="loading">Cargando…</div>
     </ng-template>
-</section>
+</section> -->

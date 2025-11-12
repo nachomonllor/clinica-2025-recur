@@ -29,6 +29,9 @@ export interface Usuario {
   apellido: string;
   email: string;
 
+  edad?:number;
+  color?: string;
+
   // Opcionales por rol:
   dni?: string | null;
   obraSocial?: string | null;       // paciente
