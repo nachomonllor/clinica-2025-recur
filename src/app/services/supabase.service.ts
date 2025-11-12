@@ -167,6 +167,25 @@ export class SupabaseService {
     return { data: data as PerfilRow | null, error };
   }
 
+  // src/app/services/supabase.service.ts
+  // async upsertMyProfile(partial: { rol?: 'paciente'|'especialista'|'admin'; nombre?: string; apellido?: string }) {
+  //   const { data: { session }, error: sErr } = await this.client.auth.getSession();
+  //   if (sErr) throw sErr;
+  //   if (!session) throw new Error('No hay sesión. Iniciá sesión y reintentá.');
+
+  //   const uid = session.user.id;
+  //   const { error } = await this.client.from('profiles').upsert({
+  //     id: uid,
+  //     rol: partial.rol ?? 'especialista',
+  //     aprobado: false,                 // lo cambia un admin
+  //     nombre: partial.nombre ?? session.user.user_metadata?.nombre ?? null,
+  //     apellido: partial.apellido ?? session.user.user_metadata?.apellido ?? null,
+  //   }, { onConflict: 'id' });
+
+  //   if (error) throw error;
+  // }
+
+
   /* ========================= STORAGE ========================= */
 
   async uploadAvatar(userId: string, file: File, idx: 1 | 2) {

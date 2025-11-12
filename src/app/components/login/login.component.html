@@ -1,5 +1,131 @@
+<section class="login-hero" aria-label="Acceso a la plataforma">
+  <!-- Fondo -->
+  <!-- div class="bg" aria-hidden="true"></div -->
 
-<div class="login-wrapper">
+  <!-- Imagen de fondo (debajo de todo) -->
+  <img class="bg-img" src="assets/medical.jpg" alt="" loading="lazy" aria-hidden="true" />
+
+  <!-- Topbar (igual estética de bienvenida) -->
+  <header class="app-bar">
+    <div class="brand">Clínica Buena Salud</div>
+    <button class="menu" aria-label="Abrir menú"><span></span><span></span><span></span></button>
+  </header>
+
+  <!-- Accesos rápidos -->
+  <section class="quick" aria-labelledby="accTitle">
+    <h2 id="accTitle">Accesos Rápidos</h2>
+
+    <div class="chip-row" role="list">
+      <button class="chip" *ngFor="let a of accesos" role="listitem" [class.paciente]="a.rol === 'paciente'"
+        [class.especialista]="a.rol === 'especialista'" [class.admin]="a.rol === 'admin'" (click)="prefill(a)"
+        [title]="'Prefill: ' + a.nombre">
+        <span class="avatar">
+          <img [src]="a.avatar || 'assets/avatars/placeholder.png'" [alt]="a.nombre" loading="lazy">
+        </span>
+        <span class="col">
+          <strong class="name">{{ a.nombre }}</strong>
+          <small class="role">{{ labelRol(a.rol) }}</small>
+        </span>
+      </button>
+    </div>
+  </section>
+
+  <!-- Panel de Login -->
+  <section class="panel" aria-labelledby="loginTitle">
+    <div class="panel__head">
+      <h2 id="loginTitle">Iniciar Sesión</h2>
+      <p>Ingresa tus credenciales para acceder</p>
+    </div>
+
+    <form class="panel__body" [formGroup]="form" (ngSubmit)="ingresar()" novalidate>
+      <div class="grid">
+        <!-- Email -->
+        <div class="field">
+          <label for="email">Email</label>
+          <div class="input">
+            <span class="i" aria-hidden="true">
+              <!-- mail icon -->
+              <svg viewBox="0 0 24 24">
+                <path
+                  d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Zm0 4-8 5L4 8V6l8 5 8-5Z" />
+              </svg>
+            </span>
+            <input id="email" type="email" placeholder="Ingrese su email" formControlName="email"
+              autocomplete="username" />
+          </div>
+          <small class="error" *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
+            Ingrese un email válido.
+          </small>
+        </div>
+
+        <!-- Botones (columna derecha) -->
+        <div class="actions">
+          <button class="btn primary" type="submit" [disabled]="form.invalid || loading">
+            <span class="ico" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path d="M10 17l5-5-5-5v10z" />
+                <path d="M4 4h7v2H6v12h5v2H4z" />
+              </svg>
+            </span>
+            {{ loading ? 'Ingresando…' : 'Ingresar' }}
+          </button>
+
+          <button class="btn ghost" type="button" (click)="limpiar()">
+            <span class="ico" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path d="M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V9H6v10zm13-13h-3.5l-1-1h-5l-1 1H5v2h14V6z" />
+              </svg>
+            </span>
+            Limpiar
+          </button>
+
+          <a class="btn alt" routerLink="/seleccionar-usuario-registro">
+            <span class="ico" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm-9 9a8 8 0 0 1 16 0z" />
+              </svg>
+            </span>
+            Registrarse
+          </a>
+        </div>
+
+        <!-- Password -->
+        <div class="field">
+          <label for="password">Contraseña</label>
+          <div class="input">
+            <span class="i" aria-hidden="true">
+              <!-- lock icon -->
+              <svg viewBox="0 0 24 24">
+                <path
+                  d="M17 8h-1V6a4 4 0 0 0-8 0v2H7a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2Zm-6 0V6a2 2 0 0 1 4 0v2h-4Z" />
+              </svg>
+            </span>
+            <input id="password" [type]="verPassword ? 'text' : 'password'" placeholder="Ingrese su contraseña"
+              formControlName="password" autocomplete="current-password" />
+            <button type="button" class="eye" (click)="toggleVer()" [attr.aria-pressed]="verPassword">
+              <svg viewBox="0 0 24 24" *ngIf="!verPassword">
+                <path
+                  d="M12 5C7 5 2.73 8.11 1 12c1.73 3.89 6 7 11 7s9.27-3.11 11-7c-1.73-3.89-6-7-11-7Zm0 12a5 5 0 1 1 5-5 5 5 0 0 1-5 5Z" />
+              </svg>
+              <svg viewBox="0 0 24 24" *ngIf="verPassword">
+                <path
+                  d="M2 5.27 3.28 4 20 20.72 18.73 22l-3.09-3.09A11.43 11.43 0 0 1 12 19c-5 0-9.27-3.11-11-7a12.1 12.1 0 0 1 5.21-5.72L2 5.27ZM9.52 7.8A5 5 0 0 1 17 12a5 5 0 0 1-.82 2.73l-1.51-1.51a3 3 0 0 0-3.9-3.9L9.52 7.8Z" />
+              </svg>
+            </button>
+          </div>
+          <small class="error" *ngIf="form.get('password')?.invalid && form.get('password')?.touched">
+            Mínimo 4 caracteres.
+          </small>
+        </div>
+      </div>
+    </form>
+  </section>
+</section>
+
+
+
+
+<!-- <div class="login-wrapper">
   <div class="card">
     <h1>Ingresar</h1>
 
@@ -22,8 +148,7 @@
     </form>
   </div>
 
-  <!-- Accesos rápidos flotantes -->
+   Accesos rápidos flotantes 
   <app-quick-access-panel [items]="quickItems"></app-quick-access-panel>
 </div>
-
-
+ -->
