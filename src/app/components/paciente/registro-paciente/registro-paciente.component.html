@@ -72,6 +72,18 @@
       </mat-error>
     </mat-form-field>
 
+
+      <!-- <label class="mt-2">Validación anti‑bots</label>
+      <div
+        appCaptcha
+        [appCaptchaEnabled]="captchaEnabled"
+        (appCaptchaSolved)="onCaptcha($event)"
+        [formControl]="registroPacienteForm.controls.captcha">
+      </div>
+      <div class="error" *ngIf="registroPacienteForm.controls.captcha.invalid && registroPacienteForm.controls.captcha.touched">
+        Responda correctamente el captcha.
+      </div> -->
+
     <button mat-raised-button color="accent" class="full-width" [disabled]="loading || registroPacienteForm.invalid"
       type="submit">
       {{ loading ? 'Registrando...' : 'Registrarse' }}

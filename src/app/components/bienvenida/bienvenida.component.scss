@@ -1,134 +1,188 @@
+/* ===== Paleta ===== */
+$bg-deep: #071a28;      /* azul noche */
+$accent:  #11e0c5;      /* turquesa principal */
+$accent-2:#07bba3;      /* turquesa oscuro */
+$text-1:  #e7f7f5;      /* texto claro */
+$text-2:  #c7d9e1;      /* texto secundario */
 
-:host { display:block; min-height:100dvh; position: relative; }
-
-/* Capa de fondo fija, por detrás del contenido */
-.bg {
-  position: fixed;      /* queda clavado al viewport */
-  inset: 0;
-  z-index: -1;          /* detrás de todo el contenido del componente */
-  pointer-events: none; /* no intercepta clicks */
-}
-
-.bg img {
-  width: 100%;
-  height: 100%;
+/* ===== Reset pequeño del host ===== */
+:host {
   display: block;
-  object-fit: cover;    /* cubre toda la pantalla */
-  object-position: center;
+  min-height: 100vh;
+  background: $bg-deep;
+  color: $text-1;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
 }
 
-/* Suaviza y sube contraste si hace falta (opcional) */
-.bg-overlay {
-  position: absolute; inset: 0;
-  /* AJUSTAR VALORES A GUSTO */
-  background: rgba(255,255,255,0.25);
-  /* O un degradé sutil:
-  background: linear-gradient(180deg, rgba(255,255,255,0.35), rgba(255,255,255,0.15));
-  */
+/* ===== Top bar ===== */
+.app-bar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 22px;
+  background: rgba(5, 26, 40, 0.66);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-/* Topbar */
-.topbar {
-  display:flex; align-items:center; justify-content:space-between;
-  padding: 12px 18px;
-  .brand { display:flex; align-items:center; gap:8px; font-weight:700; letter-spacing:.3px; font-size:1.05rem; }
-  mat-icon { color:#90caf9; }
+.brand__title {
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  font-size: 1.15rem;
 }
 
-/* Contenedor: limita el ancho y centra */
-.wrapper {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: clamp(16px, 4vw, 40px);
+/* Botón hamburguesa */
+.menu {
+  inline-size: 44px;
+  block-size: 44px;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  background: linear-gradient(180deg, $accent, $accent-2);
+  box-shadow: 0 6px 18px rgba($accent, 0.35), 0 0 0 2px rgba(6, 55, 59, 0.3) inset;
+  display: grid;
+  place-items: center;
 }
+.menu:focus-visible { outline: 3px solid rgba($accent, .9); outline-offset: 2px; }
 
-/* Layout principal */
-.hero-grid {
-  display:grid;
-  grid-template-columns: 1.1fr .9fr;
-  gap: clamp(16px, 3vw, 32px);
-  align-items: start;
-
-  @media (max-width: 980px) {
-    grid-template-columns: 1fr;
-    .photo-card { order:-1; margin-inline:auto; }
-  }
+.menu__bars,
+.menu__bars::before,
+.menu__bars::after {
+  content: "";
+  display: block;
+  inline-size: 18px;
+  block-size: 2px;
+  border-radius: 2px;
+  background: #05383c;
 }
+.menu__bars { position: relative; }
+.menu__bars::before { position: absolute; inset-inline-start: 0; inset-block-start: -6px; }
+.menu__bars::after  { position: absolute; inset-inline-start: 0; inset-block-start: 6px; }
 
-/* Bloque de texto */
-.copy {
-  h1 {
-    margin: 0 0 8px;
-    font-size: clamp(1.8rem, 1rem + 3vw, 3rem);
-    color: #2f855a;              /* verde más oscuro, legible */
-    text-shadow: none;
-  }
-  .lead {
-    margin: 0 0 18px;
-    color: #374151;              /* texto oscuro */
-    max-width: 56ch;
-    line-height: 1.5;
-  }
-}
-
-/* Cards translúcidas claras (glass estable) */
-.glass {
-  background: rgba(255,255,255,0.78);
-  border: 1px solid rgba(0,0,0,0.06);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: 16px;
-  box-shadow: 0 10px 24px rgba(15,23,42,0.08);
-  padding: 16px;                 /* IMPORTANTE para que no parezcan barras */
-  color: #1f2937;                /* texto oscuro dentro */
-}
-
-/* Grilla de chips */
-.chips {
-  display:grid; gap:14px;
-  grid-template-columns: 1fr 1fr;
-
-  @media (max-width: 720px) { grid-template-columns: 1fr; }
-
-  .chip {
-    h3 {
-      margin: 0 0 6px;
-      display:flex; align-items:center; gap:8px;
-      font-size: 1.05rem; font-weight:700; color:#1f2937;
-      mat-icon { color:#2e7d32; } /* icono verde oscuro */
-    }
-    ul { margin:0; padding-left:18px; color:#374151; }
-  }
-}
-
-/* CTA */
-.cta-row {
-  display:flex; flex-wrap:wrap; gap:12px; margin-top:14px;
-  a mat-icon, button mat-icon { margin-right:6px; }
-}
-
-/* Tarjeta de foto derecha */
-.photo-card {
-  width: min(520px, 90vw);
-  padding: 10px;
-  border-radius: 22px;
-  background: rgba(255,255,255,0.78);
-  border: 1px solid rgba(0,0,0,0.06);
-  box-shadow: 0 12px 28px rgba(15,23,42,0.10);
+/* ===== Hero con imagen ===== */
+.hero {
+  position: relative;
+  min-height: calc(100vh - 64px);
+  display: grid;
+  place-items: center;
+  padding: clamp(24px, 5vw, 56px) 16px;
   overflow: hidden;
-
-  img {
-    width: 100%; height: auto; display:block;
-    border-radius: 16px;
-    object-fit: cover;
-    filter: saturate(1.0) contrast(0.98) brightness(0.98);
-  }
-
-  &:hover { transform: translateY(-2px); box-shadow: 0 16px 40px rgba(15,23,42,.14); }
-  @media (prefers-reduced-motion: reduce) { &:hover { transform:none; } }
 }
 
-/* Footer minimal */
-.foot { opacity:.75; font-size:.85rem; text-align:center; padding: 10px 0 16px; }
+/* Cambia la ruta si usas otro nombre de imagen */
+.bg {
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(180deg, rgba(7,26,40,.35), rgba(7,26,40,.85)),
+    url('/assets/bg-medical.jpg') center / cover no-repeat fixed;
+  filter: saturate(105%);
+}
 
+/* ===== Cards ===== */
+.cards {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(280px, 420px));
+  gap: clamp(18px, 3vw, 36px);
+}
 
+/* Frosted-glass card */
+.card {
+  background: rgba(6, 24, 38, 0.68);
+  backdrop-filter: blur(10px) saturate(120%);
+  border-radius: 22px;
+  padding: 28px 24px 24px;
+  box-shadow:
+    0 22px 44px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+  text-align: center;
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow:
+    0 26px 60px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(255, 255, 255, 0.07) inset;
+}
+
+.card__title {
+  margin: 10px 0 6px;
+  font-size: clamp(1.3rem, 2.1vw, 1.75rem);
+  color: lighten($accent, 20%);
+  text-shadow: 0 1px 0 rgba(0,0,0,.35);
+  font-weight: 800;
+  letter-spacing: 0.2px;
+}
+
+.card__text {
+  color: $text-2;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  min-height: 48px;
+  margin: 0 0 16px 0;
+  opacity: 0.96;
+}
+
+/* Icono circular con halo turquesa */
+.icon {
+  inline-size: clamp(140px, 22vw, 180px);
+  block-size: clamp(140px, 22vw, 180px);
+  margin-inline: auto;
+  margin-block-end: 16px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+
+  /* halo + anillo */
+  background:
+    radial-gradient(closest-side, rgba($accent, .14), rgba($accent, .08) 58%, transparent 59%) padding-box,
+    conic-gradient(from 0deg, rgba($accent, .55), rgba($accent, .08) 57%, rgba($accent, .55)) border-box;
+  border: 8px solid transparent;
+  box-shadow:
+    0 0 30px rgba($accent, 0.25),
+    0 0 0 8px rgba(8, 24, 36, 0.75) inset;
+}
+.icon svg {
+  inline-size: 64%;
+  block-size: 64%;
+  filter: drop-shadow(0 6px 10px rgba(0,0,0,.35));
+}
+
+/* Botón CTA con glow */
+.cta {
+  display: inline-block;
+  padding: 12px 28px;
+  border: none;
+  border-radius: 999px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  color: #05383c;
+  cursor: pointer;
+  background: linear-gradient(180deg, $accent, $accent-2);
+  box-shadow:
+    0 12px 26px rgba($accent, .35),
+    0 0 0 2px rgba(10, 58, 59, .28) inset;
+  transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+}
+.cta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 16px 30px rgba($accent, .48);
+}
+.cta:active { transform: translateY(0); }
+.cta:focus-visible {
+  outline: 3px solid rgba($accent, .9);
+  outline-offset: 2px;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 900px) {
+  .cards { grid-template-columns: 1fr; max-inline-size: 460px; margin-inline: auto; }
+  .app-bar { padding-inline: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition-duration: 0ms !important; animation: none !important; }
+}

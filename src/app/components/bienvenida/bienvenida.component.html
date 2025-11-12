@@ -1,111 +1,67 @@
-<!-- Fondo de la pantalla (cubre todo) -->
-<div class="bg" aria-hidden="true">
-  <img src="assets/hero-bg.jpg" alt="" loading="eager" />
-  <!-- Overlay opcional para mejorar contraste -->
-  <!-- <div class="bg-overlay"></div> -->
-</div>
-
-
-<div class="topbar">
-  <div class="brand"><mat-icon>add_box</mat-icon> Clínica Monllor</div>
-  <a routerLink="/login" class="ingresar"><mat-icon>login</mat-icon> Ingresar</a>
-</div>
-
-<div class="wrapper">
-  <div class="hero-grid">
-    <section class="copy">
-      <h1>Clínica Monllor</h1>
-      <p class="lead">Cuidamos tu salud con tecnología, seguimiento personalizado y atención profesional.</p>
-
-      <div class="chips">
-        <div class="chip glass">
-          <h3><mat-icon>local_offer</mat-icon> Especialidades</h3>
-          <ul>
-            <li>Clínica Médica · Pediatría · Cardiología</li>
-            <li>Dermatología · Nutrición · Psicología</li>
-          </ul>
-        </div>
-
-        <div class="chip glass">
-          <h3><mat-icon>schedule</mat-icon> Horarios de Atención</h3>
-          <ul>
-            <li>Lunes a Viernes: 8:00 a 19:00 hs</li>
-            <li>Sábados: 9:00 a 14:00 hs</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="cta-row">
-        <button mat-raised-button color="primary"><mat-icon>login</mat-icon> Iniciar Sesión</button>
-        <button mat-stroked-button><mat-icon>person_add</mat-icon> Registrarse</button>
-      </div>
-    </section>
-
-    <aside class="photo-card">
-      <img src="assets/clinica-team.jpg" alt="Equipo médico de la clínica" />
-    </aside>
+<header class="app-bar" aria-label="Barra superior">
+  <div class="brand">
+    <span class="brand__title">Clínica Buena Salud</span>
   </div>
-</div>
 
-<footer class="foot">Clínica Online – UTN</footer>
+  <button class="menu" type="button" aria-label="Abrir menú">
+    <span class="menu__bars"></span>
+  </button>
+</header>
 
+<main class="hero" role="main">
+  <!-- Fondo con imagen + overlay -->
+  <div class="bg"></div>
 
+  <section class="cards" aria-label="Acciones principales">
+    <!-- CARD: Iniciar sesión -->
+    <article class="card">
+      <div class="icon" aria-hidden="true">
+        <!-- Ícono persona con tilde -->
+        <svg viewBox="0 0 64 64" focusable="false" aria-hidden="true">
+          <!-- Silueta -->
+          <path d="M32 34c6.6 0 12-5.4 12-12S38.6 10 32 10 20 15.4 20 22s5.4 12 12 12z" fill="#EAFDFC"/>
+          <path d="M16 52c0-9.4 7.6-16 16-16s16 6.6 16 16v0.5H16V52z" fill="#EAFDFC"/>
+          <!-- Tilde -->
+          <path d="M44 26l-7.5 7.5-3.5-3.5" fill="none" stroke="#0CE3C7" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
 
-<!-- <section class="hero">
-  <img class="hero-bg" src="assets/img/consultorio-bg.jpg" alt="" />
-
-  <header class="topbar" aria-label="Clínica Online">
-    <div class="brand">
-      <mat-icon>local_hospital</mat-icon>
-      <span>Clínica Monllor</span>
-    </div>
-    <nav class="top-actions">
-      <a mat-button color="primary" routerLink="/login-paciente">
-        <mat-icon>login</mat-icon> Ingresar
-      </a>
-    </nav>
-  </header>
-
-  <div class="hero-grid">
-
-    <div class="copy">
-      <h1>Clínica Monllor</h1>
-      <p class="lead">
-        Cuidamos tu salud con tecnología, seguimiento personalizado y atención profesional.
+      <h2 class="card__title">Iniciar Sesión</h2>
+      <p class="card__text">
+        Para poder comenzar con las gestiones, deberá ingresar con su usuario y contraseña.
       </p>
+      <button class="cta" type="button" (click)="onLogin()" aria-label="Ingresar">
+        INGRESAR
+      </button>
+    </article>
 
-      <div class="chips">
-        <div class="chip glass">
-          <h3><mat-icon>local_offer</mat-icon> Especialidades</h3>
-          <ul>
-            <li>Clínica Médica · Pediatría · Cardiología</li>
-            <li>Dermatología · Nutrición · Psicología</li>
-          </ul>
-        </div>
-
-        <div class="chip glass">
-          <h3><mat-icon>schedule</mat-icon> Horarios de Atención</h3>
-          <ul>
-            <li>Lunes a Viernes: 8:00 a 19:00 hs</li>
-            <li>Sábados: 9:00 a 14:00 hs</li>
-          </ul>
-        </div>
+    <!-- CARD: Registrarse -->
+    <article class="card">
+      <div class="icon" aria-hidden="true">
+        <!-- Ícono tablet con dedo (registro) -->
+        <svg viewBox="0 0 64 64" focusable="false" aria-hidden="true">
+          <!-- Tablet -->
+          <rect x="14" y="8" rx="6" ry="6" width="36" height="48" fill="#EAFDFC"/>
+          <rect x="19" y="14" width="26" height="28" rx="2" ry="2" fill="#0A4A56"/>
+          <rect x="22" y="18" width="20" height="4" rx="1" fill="#7EF6E6"/>
+          <rect x="22" y="24" width="20" height="4" rx="1" fill="#7EF6E6"/>
+          <rect x="22" y="30" width="14" height="4" rx="1" fill="#7EF6E6"/>
+          <!-- Botón inferior de tablet -->
+          <circle cx="32" cy="44.5" r="2" fill="#0A4A56"/>
+          <!-- Dedo tocando -->
+          <path d="M43 40c-2.2 0-4 1.8-4 4v8c0 1.1.9 2 2 2h2c1.1 0 2-.9 2-2v-8h.5c1.4 0 2.5-1.1 2.5-2.5S45.9 40 44.5 40H43z" fill="#FBE9D0"/>
+        </svg>
       </div>
 
-      <div class="cta-row">
-        <a mat-flat-button color="primary" routerLink="/login-paciente">
-          <mat-icon>login</mat-icon> Iniciar Sesión
-        </a>
-        <a mat-raised-button color="accent" routerLink="/registro-paciente">
-          <mat-icon>person_add</mat-icon> Registrarse
-        </a>
-      </div>
-    </div>
+      <h2 class="card__title">Registrarse</h2>
+      <p class="card__text">
+        En caso de no contar con un usuario creado, podrá generarlo aquí.
+      </p>
+      <button class="cta" type="button" (click)="onRegister()" aria-label="Registrarse">
+        REGISTRARSE
+      </button>
+    </article>
+  </section>
+</main>
 
-    <div class="photo-card glass">
-      <img src="assets/img/staff.webp" alt="Equipo médico de la clínica" />
-    </div>
-  </div>
 
-  <footer class="foot"> Clínica Online — UTN</footer>
-</section> -->

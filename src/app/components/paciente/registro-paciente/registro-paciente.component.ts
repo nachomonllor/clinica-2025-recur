@@ -18,6 +18,7 @@ import { MatCardModule } from '@angular/material/card';
 
 import Swal from 'sweetalert2';
 import { SupabaseService } from '../../../services/supabase.service';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-registro-paciente',
@@ -50,6 +51,9 @@ export class RegistroPacienteComponent implements OnInit {
   // Para limitar el <input type="date">
   maxDateISO!: string;        // hoy
   readonly minDateISO = '1900-01-01';
+
+  captchaEnabled = environment.captchaEnabled; // opción global para deshabilitar
+
 
   constructor(
     private fb: FormBuilder,

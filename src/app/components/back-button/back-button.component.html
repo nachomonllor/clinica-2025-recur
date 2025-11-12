@@ -1,0 +1,11 @@
+<!-- <p>back-button works!</p>
+
+<button type="button" (click)="back()" class="btn-back">← Volver</button>
+ -->
+
+ <button type="button"
+            [attr.aria-label]="label"
+            (click)="back()"
+            *ngIf="!hideOnHome || !isAtFeatureHome()">
+      ← {{ label }}
+    </button>

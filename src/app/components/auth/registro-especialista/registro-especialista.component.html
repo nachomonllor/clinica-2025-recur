@@ -1,4 +1,3 @@
-<!-- src/app/components/registro-especialista/registro-especialista.component.html -->
 <mat-card class="registro-container" *ngIf="registroForm as f">
   <mat-card-title>Registro de Especialista</mat-card-title>
 
@@ -68,12 +67,39 @@
       </mat-error>
     </div>
 
+    <!-- === CAPTCHA === -->
+    <div class="full-width mt-2">
+      <label class="block mb-1">Validación anti-bots</label>
+      <!-- <div
+        appCaptcha
+        [appCaptchaEnabled]="captchaEnabled"
+        (appCaptchaSolved)="onCaptcha($event)"
+        formControlName="captcha">
+      </div> -->
+
+
+       <!-- <div appCaptcha
+          [appCaptchaEnabled]="captchaEnabled"
+          (appCaptchaSolved)="onCaptcha($event)"
+          formControlName="captcha">
+      </div>
+      <div class="error" *ngIf="f.controls.captcha.invalid && f.controls.captcha.touched">
+        Responda correctamente el captcha.
+      </div> -->
+ 
+
+
+      <div class="error" *ngIf="f.controls.captcha.invalid && f.controls.captcha.touched">
+        Responda correctamente el captcha.
+      </div>
+    </div>
+
     <button mat-raised-button color="accent" class="full-width" [disabled]="f.invalid" type="submit">
       Registrarse
     </button>
+
   </form>
 </mat-card>
-
 
 
 

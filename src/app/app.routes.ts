@@ -31,7 +31,7 @@ export const routes: Routes = [
   { path: 'seleccionar-usuario-login', component: SeleccionarUsuarioLoginComponent },
   { path: 'seleccionar-usuario-registro', component: SeleccionarUsuarioRegistroComponent },
 
-    // Auth (públicas)
+  // Auth (públicas)
   {
     path: 'auth',
     children: [
@@ -46,125 +46,83 @@ export const routes: Routes = [
     ]
   },
 
-  // Paciente (privadas)
+  // PACIENTE
   {
     path: 'paciente',
-    // canMatch: [authGuard('paciente'), emailVerificadoGuard],
     children: [
       { path: '', component: PacienteHomeComponent },
       {
         path: 'turnos',
-        loadComponent: () =>
-          import('./components/paciente/mis-turnos-paciente/mis-turnos-paciente.component')
-            .then(m => m.MisTurnosPacienteComponent)  // ✔ FIX
+        data: { backTo: ['/paciente'] },
+        loadComponent: () => import('./components/paciente/mis-turnos-paciente/mis-turnos-paciente.component')
+          .then(m => m.MisTurnosPacienteComponent)
       },
       {
         path: 'turno/:id',
-        loadComponent: () =>
-          import('./components/paciente/turno-detalle/turno-detalle.component')
-            .then(m => m.TurnoDetalleComponent)
+        data: { backTo: ['/paciente/turnos'] }, // ← detalle de turno vuelve a lista
+        loadComponent: () => import('./components/paciente/turno-detalle/turno-detalle.component')
+          .then(m => m.TurnoDetalleComponent)
       },
-      { path: 'historia-clinica', component: HistoriaClinicaComponent },
+      { path: 'historia-clinica', component: HistoriaClinicaComponent, data: { backTo: ['/paciente'] } },
       {
         path: 'encuestas',
-        loadComponent: () =>
-          import('./components/paciente/encuesta-atencion/encuesta-atencion.component')
-            .then(m => m.EncuestaAtencionComponent)
+        data: { backTo: ['/paciente'] },
+        loadComponent: () => import('./components/paciente/encuesta-atencion/encuesta-atencion.component')
+          .then(m => m.EncuestaAtencionComponent)
       },
       {
         path: 'estudios',
-        loadComponent: () =>
-          import('./components/paciente/estudios/estudios.component')
-            .then(m => m.EstudiosComponent)
+        data: { backTo: ['/paciente'] },
+        loadComponent: () => import('./components/paciente/estudios/estudios.component')
+          .then(m => m.EstudiosComponent)
       },
       {
         path: 'estudios/subir',
-        loadComponent: () =>
-          import('./components/paciente/estudios-subir/estudios-subir.component')
-            .then(m => m.EstudiosSubirComponent)
+        data: { backTo: ['/paciente/estudios'] }, // ← vuelve a la lista de estudios
+        loadComponent: () => import('./components/paciente/estudios-subir/estudios-subir.component')
+          .then(m => m.EstudiosSubirComponent)
       },
     ]
   },
 
-  // Especialista (privadas)
+  // ESPECIALISTA
   {
     path: 'especialista',
-    // canMatch: [authGuard('especialista'), emailVerificadoGuard, especialistaAprobadoGuard],
     children: [
       { path: '', component: EspecialistaHomeComponent },
-      {
-        path: 'agenda',
-        loadComponent: () =>
-          import('./components/especialista/agenda/agenda.component')
-            .then(m => m.AgendaComponent)
-      },
-      {
-        path: 'turnos',
-        loadComponent: () =>
-          import('./components/especialista/mis-turnos-especialista/mis-turnos-especialista.component')
-            .then(m => m.MisTurnosEspecialistaComponent)
-      },
-      {
-        path: 'pacientes',
-        loadComponent: () =>
-          import('./components/especialista/pacientes/pacientes.component')
-            .then(m => m.PacientesComponent)
-      },
+      { path: 'agenda', data: { backTo: ['/especialista'] }, loadComponent: () => import('./components/especialista/agenda/agenda.component').then(m => m.AgendaComponent) },
+      { path: 'turnos', data: { backTo: ['/especialista'] }, loadComponent: () => import('./components/especialista/mis-turnos-especialista/mis-turnos-especialista.component').then(m => m.MisTurnosEspecialistaComponent) },
+      { path: 'pacientes', data: { backTo: ['/especialista'] }, loadComponent: () => import('./components/especialista/pacientes/pacientes.component').then(m => m.PacientesComponent) },
       {
         path: 'paciente/:id',
-        loadComponent: () =>
-          import('./components/especialista/paciente-detalle/paciente-detalle.component')
-            .then(m => m.PacienteDetalleComponent)
+        data: { backTo: ['/especialista/pacientes'] }, // ← detalle vuelve a lista
+        loadComponent: () => import('./components/especialista/paciente-detalle/paciente-detalle.component').then(m => m.PacienteDetalleComponent)
       },
       {
         path: 'turno/:id',
-        loadComponent: () =>
-          import('./components/especialista/turno-detalle-esp/turno-detalle-esp.component')
-            .then(m => m.TurnoDetalleEspComponent)
+        data: { backTo: ['/especialista/turnos'] }, // ← detalle vuelve a lista
+        loadComponent: () => import('./components/especialista/turno-detalle-esp/turno-detalle-esp.component').then(m => m.TurnoDetalleEspComponent)
       },
-      {
-        path: 'resenias',
-        loadComponent: () =>
-          import('./components/especialista/resenias/resenias.component')
-            .then(m => m.ReseniasComponent)
-      },
+      { path: 'resenias', data: { backTo: ['/especialista'] }, loadComponent: () => import('./components/especialista/resenias/resenias.component').then(m => m.ReseniasComponent) },
       {
         path: 'resenia/:id',
-        loadComponent: () =>
-          import('./components/especialista/resenia/resenia.component')
-            .then(m => m.ReseniaComponent)
+        data: { backTo: ['/especialista/resenias'] }, // ← detalle vuelve a lista
+        loadComponent: () => import('./components/especialista/resenia/resenia.component').then(m => m.ReseniaComponent)
       },
-
     ]
   },
 
-  // Admin (privadas)
+  // ADMIN (todas vuelven al home de Admin, no hay :id)
   {
     path: 'admin',
-    // canMatch: [authGuard('admin')],
     children: [
       { path: '', component: AdminHomeComponent },
-      {
-        path: 'usuarios',
-        loadComponent: () =>
-          import('./components/admin/usuarios/usuarios.component')
-            .then(m => m.UsuariosComponent),
-      },
-      {
-        path: 'turnos',
-        loadComponent: () =>
-          import('./components/admin/turnos-admin/turnos-admin.component')
-            .then(m => m.TurnosAdminComponent),
-      },
-      {
-        path: 'reportes',
-        loadComponent: () =>
-          import('./components/admin/reportes/reportes.component')
-            .then(m => m.ReportesComponent),
-      },
-      { path: 'estadisticas', component: EstadisticasComponent },
-      { path: 'logs', component: LogTableComponent },
-    ],
+      { path: 'usuarios', data: { backTo: ['/admin'] }, loadComponent: () => import('./components/admin/usuarios/usuarios.component').then(m => m.UsuariosComponent) },
+      { path: 'turnos', data: { backTo: ['/admin'] }, loadComponent: () => import('./components/admin/turnos-admin/turnos-admin.component').then(m => m.TurnosAdminComponent) },
+      { path: 'reportes', data: { backTo: ['/admin'] }, loadComponent: () => import('./components/admin/reportes/reportes.component').then(m => m.ReportesComponent) },
+      { path: 'estadisticas', data: { backTo: ['/admin'] }, component: EstadisticasComponent },
+      { path: 'logs', data: { backTo: ['/admin'] }, component: LogTableComponent },
+    ]
   },
 
 
@@ -182,6 +140,8 @@ export const routes: Routes = [
   { path: '**', redirectTo: 'bienvenida' }
 
 ];
+
+
 
 
 
