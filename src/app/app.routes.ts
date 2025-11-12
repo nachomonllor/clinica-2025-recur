@@ -30,7 +30,7 @@ export const routes: Routes = [
   { path: 'registro-especialista', component: RegistroEspecialistaComponent },
   { path: 'seleccionar-usuario-login', component: SeleccionarUsuarioLoginComponent },
   { path: 'seleccionar-usuario-registro', component: SeleccionarUsuarioRegistroComponent },
-
+  { path: 'historia-clinica', component: HistoriaClinicaComponent },
   // Auth (públicas)
   {
     path: 'auth',

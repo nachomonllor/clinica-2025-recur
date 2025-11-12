@@ -227,8 +227,21 @@ export interface HistoriaClinica {
   temperatura: number;
   presion: string;
   resumen: string;
+  fiebre?: boolean;
+  infartos?: number;
   datosDinamicos?: DatoDinamico[];
 }
+
+
+// export interface HistoriaClinica {
+//   altura: number; // en metros
+//   peso: number; // en kg
+//   presion: string; // ejemplo: 120/80
+//   temperatura: number; // en °C
+//   fiebre: boolean;
+//   infartos: number;
+// }
+
 
 // ========= Turnos: Forma de BD (canónica) =========
 export interface TurnoRow {

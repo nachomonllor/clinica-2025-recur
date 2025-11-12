@@ -1,4 +1,61 @@
-<mat-card class="historia-card">
+<div class="historia-container">
+  <h2>Historia Clínica</h2>
+
+    <img class="bg-img" src="assets/medical.jpg" alt="" loading="lazy" aria-hidden="true" />
+
+  <form [formGroup]="form" (ngSubmit)="guardar()" class="card">
+    <div class="row">
+      <div class="field">
+        <label>Altura:</label>
+        <input type="number" formControlName="altura" step="0.01" /> m
+      </div>
+
+      <div class="field">
+        <label>Peso:</label>
+        <input type="number" formControlName="peso" /> kg
+      </div>
+
+      <div class="field">
+        <label>Presión:</label>
+        <input type="text" formControlName="presion" placeholder="120/80" />
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="field">
+        <label>Temperatura:</label>
+        <input type="number" formControlName="temperatura" step="0.1" /> °C
+      </div>
+    </div>
+
+    <h3>Más Datos</h3>
+    <div class="row">
+      <div class="field">
+        <label>Fiebre:</label>
+        <select formControlName="fiebre">
+          <option [value]="true">Sí</option>
+          <option [value]="false">No</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Infartos:</label>
+        <input type="number" formControlName="infartos" min="0" />
+      </div>
+    </div>
+
+    <div class="buttons">
+      <button type="button" class="btn" (click)="verResenia()">Ver Reseña</button>
+      <button type="button" class="btn" (click)="calificarAtencion()">Calificar Atención</button>
+      <button type="button" class="btn" (click)="completarEncuesta()">Completar Encuesta</button>
+      <button type="submit" class="btn-primary">Guardar</button>
+    </div>
+  </form>
+</div>
+
+
+
+<!-- <mat-card class="historia-card">
   <mat-card-header>
     <mat-card-title>Historia Clínica</mat-card-title>
   </mat-card-header>
@@ -6,7 +63,7 @@
   <mat-card-content>
     <form [formGroup]="historiaForm" (ngSubmit)="onSubmit()">
 
-      <!-- Datos fijos -->
+      Datos fijos 
       <div class="section">
         <mat-form-field appearance="fill" class="full-width">
           <mat-label>Altura (cm)</mat-label>
@@ -50,7 +107,7 @@
         </mat-form-field>
       </div>
 
-      <!-- Datos dinámicos existentes -->
+      Datos dinámicos existentes 
       <div formArrayName="datosDinamicos" class="section">
         <h3>Datos Dinámicos</h3>
         <button
@@ -82,7 +139,7 @@
         </div>
       </div>
 
-      <!-- Nuevos datos dinámicos -->
+       Nuevos datos dinámicos 
       <div formGroupName="nuevosDatos" class="section">
         <h3>Nuevos Datos</h3>
 
@@ -102,7 +159,7 @@
         </div>
       </div>
 
-      <!-- Botón de envío -->
+       Botón de envío 
       <div class="actions">
         <button mat-raised-button color="primary" type="submit" [disabled]="historiaForm.invalid">
           Guardar Historia Clinica
@@ -114,94 +171,4 @@
 
 
 
-
-
-<!-- <div class="historia-clinica-container">
-  <h2>Historia Clínica</h2>
-  <form [formGroup]="historiaForm" (ngSubmit)="onSubmit()">
-    Datos fijos 
-    <div class="form-group">
-      <label for="altura">Altura (cm)</label>
-      <input id="altura" type="number" formControlName="altura" placeholder="Ingrese altura" />
-      <div *ngIf="historiaForm.get('altura')?.touched && historiaForm.get('altura')?.invalid">
-        <small *ngIf="(historiaForm.get('altura')?.errors || {})['required']">La altura es obligatoria.</small>
-        <small *ngIf="(historiaForm.get('altura')?.errors || {})['min']">La altura debe ser positiva.</small>
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label for="peso">Peso (kg)</label>
-      <input id="peso" type="number" formControlName="peso" placeholder="Ingrese peso" />
-      <div *ngIf="historiaForm.get('peso')?.touched && historiaForm.get('peso')?.invalid">
-        <small *ngIf="(historiaForm.get('peso')?.errors || {})['required']">El peso es obligatorio.</small>
-        <small *ngIf="(historiaForm.get('peso')?.errors || {})['min']">El peso debe ser positivo.</small>
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label for="temperatura">Temperatura (°C)</label>
-      <input id="temperatura" type="number" formControlName="temperatura" placeholder="Ingrese temperatura" />
-      <div *ngIf="historiaForm.get('temperatura')?.touched && historiaForm.get('temperatura')?.invalid">
-        <small *ngIf="(historiaForm.get('temperatura')?.errors || {})['required']">La temperatura es obligatoria.</small>
-        <small *ngIf="(historiaForm.get('temperatura')?.errors || {})['min']">La temperatura debe ser positiva.</small>
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label for="presion">Presión</label>
-      <input id="presion" type="text" formControlName="presion" placeholder="Ej: 120/80" />
-      <div *ngIf="historiaForm.get('presion')?.touched && historiaForm.get('presion')?.invalid">
-        <small *ngIf="(historiaForm.get('presion')?.errors || {})['required']">La presión es obligatoria.</small>
-      </div>
-    </div>
-
-    Datos dinámicos existentes (clave/valor) 
-    <div class="datos-dinamicos">
-      <h3>Datos Dinámicos (máximo 3)</h3>
-      <button type="button" (click)="addDatoDinamico()" [disabled]="datosDinamicos.length >= 3">
-        Agregar dato dinámico
-      </button>
-      <div formArrayName="datosDinamicos">
-        <div *ngFor="let dato of datosDinamicos.controls; let i = index" [formGroupName]="i" class="dato-dinamico">
-          <div class="form-group">
-            <label for="clave-{{i}}">Clave</label>
-            <input id="clave-{{i}}" type="text" formControlName="clave" placeholder="Ingrese clave" />
-          </div>
-          <div class="form-group">
-            <label for="valor-{{i}}">Valor</label>
-            <input id="valor-{{i}}" type="text" formControlName="valor" placeholder="Ingrese valor" />
-          </div>
-          <button type="button" (click)="removeDatoDinamico(i)">Eliminar</button>
-        </div>
-      </div>
-    </div>
-
-    Nuevos datos dinámicos específicos 
-    <div formGroupName="nuevosDatos" class="nuevos-datos">
-      <h3>Nuevos Datos Dinámicos</h3>
-      Control de rango 
-      <div class="form-group">
-        <label for="rango">Control de Rango (0-100)</label>
-        <input id="rango" type="range" formControlName="rango" min="0" max="100" />
-        <span>{{ historiaForm.get('nuevosDatos')?.get('rango')?.value }}</span>
-      </div>
-      Cuadro de texto numérico 
-      <div class="form-group">
-        <label for="valorNumerico">Valor Numérico</label>
-        <input id="valorNumerico" type="number" formControlName="valorNumerico" placeholder="Ingrese valor numérico" />
-      </div>
-      Switch con "Sí" o "No" 
-      <div class="form-group">
-        <label for="switchSiNo">Switch (Sí/No)</label>
-        <label class="switch">
-          <input id="switchSiNo" type="checkbox" formControlName="switchSiNo" />
-          <span class="slider round"></span>
-        </label>
-        <span>{{ historiaForm.get('nuevosDatos')?.get('switchSiNo')?.value ? 'Sí' : 'No' }}</span>
-      </div>
-    </div>
-
-    <button type="submit" [disabled]="historiaForm.invalid">Guardar Historia Clínica</button>
-  </form>
-</div> -->
-
+ -->

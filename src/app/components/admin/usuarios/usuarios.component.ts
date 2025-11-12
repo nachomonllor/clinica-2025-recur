@@ -191,6 +191,19 @@ export class UsuariosComponent {
       avatarUrl: 'assets/avatars/chavo.jpg'
 
     },
+    {
+      id: 'u8',
+      nombre: 'Ignacio',
+      apellido: 'Monllor',
+      edad: 88,
+      rol: 'especialista',
+      email: 'nachomon@hotmail.com',
+      dni: '3000000',
+      especialidades: ['clínica', 'cardiología', 'dermatología'],
+      habilitado: true,
+      color: 'pink',
+      avatarUrl: 'assets/avatars/nacho.jpg'
+    },
   ];
 
   get filtered(): Usuario[] {

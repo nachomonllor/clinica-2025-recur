@@ -333,6 +333,6 @@
   height: 100%;
   object-fit: cover;        /* cover como antes */
   object-position: center;  /* ajusta si querés enfocar otra zona */
-  filter: saturate(105%);
+  filter: saturate(90%);
   pointer-events: none;     /* no bloquea clicks */
 }
