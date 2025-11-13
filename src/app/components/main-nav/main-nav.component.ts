@@ -38,6 +38,8 @@ export class MainNavComponent implements OnInit, OnDestroy {
   protected readonly rol = signal<Rol | null>(null);
   protected readonly navItems = signal<NavItem[]>([]);
   protected readonly nombreVisible = signal<string>('');
+  protected readonly avatarUrl = signal<string | null>(null);
+  protected readonly avatarError = signal(false);
 
   protected readonly tieneLinkPerfil = computed(() =>
     this.navItems().some(item => item.route === '/mi-perfil')
@@ -85,6 +87,10 @@ export class MainNavComponent implements OnInit, OnDestroy {
     }
   }
 
+  protected onAvatarError(): void {
+    this.avatarError.set(true);
+  }
+
   private async actualizarDesdeSesion(): Promise<void> {
     try {
       const { data } = await this.supabase.getSession();
@@ -102,6 +108,8 @@ export class MainNavComponent implements OnInit, OnDestroy {
       this.rol.set(null);
       this.navItems.set([]);
       this.nombreVisible.set('');
+      this.avatarUrl.set(null);
+      this.avatarError.set(false);
       this.cargando.set(false);
       return;
     }
@@ -115,11 +123,19 @@ export class MainNavComponent implements OnInit, OnDestroy {
       this.navItems.set(this.construirMenu(rol));
       const nombre = `${perfil?.nombre ?? ''} ${perfil?.apellido ?? ''}`.trim();
       this.nombreVisible.set(nombre || session.user.email || 'Mi cuenta');
+      // Obtener la URL del avatar si está disponible
+      const avatarUrl = perfil?.avatar_url && String(perfil.avatar_url).trim() !== '' 
+        ? perfil.avatar_url 
+        : null;
+      this.avatarUrl.set(avatarUrl);
+      this.avatarError.set(false);
     } catch (error) {
       console.error('[MainNav] Error al cargar perfil', error);
       this.rol.set(null);
       this.navItems.set([]);
       this.nombreVisible.set(session.user.email ?? 'Mi cuenta');
+      this.avatarUrl.set(null);
+      this.avatarError.set(false);
     } finally {
       this.cargando.set(false);
     }

@@ -133,16 +133,43 @@ export class LoginPacienteComponent implements OnInit {
 
       // Verificar si el perfil está incompleto (sin imágenes)
       // Esto puede pasar si el usuario se registró pero no completó el registro después de verificar su email
-      const perfilIncompleto = perfil.rol === 'paciente' && (!perfil.avatar_url || !perfil.imagen2_url) ||
-                               perfil.rol === 'especialista' && !perfil.avatar_url;
+      // Verificamos que las URLs no sean null, undefined, o strings vacíos
+      const tieneAvatar = perfil.avatar_url && String(perfil.avatar_url).trim() !== '';
+      const tieneImagen2 = perfil.imagen2_url && String(perfil.imagen2_url).trim() !== '';
+      
+      // Solo mostrar advertencia si realmente faltan imágenes críticas
+      // Para pacientes: ambas imágenes son requeridas
+      // Para especialistas: solo avatar es requerido
+      const faltaAvatar = !tieneAvatar;
+      const faltaImagen2 = perfil.rol === 'paciente' && !tieneImagen2;
+      const perfilIncompleto = faltaAvatar || faltaImagen2;
+
+      // Log para debugging
+      console.log('[Login] Estado del perfil:', {
+        rol: perfil.rol,
+        avatar_url: perfil.avatar_url ? 'presente' : 'faltante',
+        imagen2_url: perfil.imagen2_url ? 'presente' : 'faltante',
+        tieneAvatar,
+        tieneImagen2,
+        perfilIncompleto
+      });
 
       if (perfilIncompleto) {
+        let mensajeFaltante = '';
+        if (faltaAvatar && faltaImagen2) {
+          mensajeFaltante = 'Faltan ambas imágenes de perfil.';
+        } else if (faltaAvatar) {
+          mensajeFaltante = 'Falta la primera imagen de perfil.';
+        } else if (faltaImagen2) {
+          mensajeFaltante = 'Falta la segunda imagen de perfil.';
+        }
+
         await Swal.fire({
           icon: 'info',
           title: 'Completar perfil',
           html: `
-            <p>Tu perfil está incompleto. Por favor, completa tu registro subiendo tus imágenes de perfil.</p>
-            <p>Podés hacerlo desde la sección "Mi Perfil" después de ingresar.</p>
+            <p>${mensajeFaltante}</p>
+            <p>Podés completar tu registro subiendo las imágenes desde la sección "Mi Perfil".</p>
           `,
           confirmButtonText: 'Entendido'
         });

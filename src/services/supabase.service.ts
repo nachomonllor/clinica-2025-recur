@@ -177,12 +177,33 @@ export class SupabaseService {
 
   /* ========================= STORAGE ========================= */
 
-  async uploadAvatar(userId: string, file: File, idx: 1 | 2) {
+  async uploadAvatar(userId: string, file: File, idx: 1 | 2): Promise<string> {
     const path = `${userId}/${Date.now()}_${idx}_${file.name}`;
-    const { error } = await this.client.storage.from('avatars').upload(path, file);
-    if (error) throw error;
-    const { data: pub } = this.client.storage.from('avatars').getPublicUrl(path);
-    return pub.publicUrl as string;
+
+    // Subir archivo
+    const { data: uploadData, error: uploadError } = await this.client.storage
+      .from('avatars')
+      .upload(path, file, {
+        cacheControl: '3600',
+        upsert: false
+      });
+
+    if (uploadError) {
+      throw uploadError;
+    }
+
+    // Obtener URL pública
+    const { data: pubData } = this.client.storage
+      .from('avatars')
+      .getPublicUrl(path);
+
+    const publicUrl = pubData.publicUrl;
+
+    if (!publicUrl) {
+      throw new Error('No se pudo obtener la URL pública de la imagen');
+    }
+
+    return publicUrl;
   }
 
   /* ========================= Acceso directo (alias opcional) ========================= */

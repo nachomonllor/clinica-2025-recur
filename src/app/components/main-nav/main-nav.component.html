@@ -28,8 +28,19 @@
     [matMenuTriggerFor]="userMenu"
     aria-label="Menú de usuario"
     matTooltip="Opciones de cuenta"
+    class="avatar-button"
   >
-    <mat-icon>account_circle</mat-icon>
+    <img 
+      *ngIf="avatarUrl() && !avatarError()" 
+      [src]="avatarUrl()" 
+      alt="Foto de perfil" 
+      class="avatar-img"
+      (error)="onAvatarError()"
+    />
+    <mat-icon 
+      class="avatar-icon"
+      [style.display]="(avatarUrl() && !avatarError()) ? 'none' : 'block'"
+    >account_circle</mat-icon>
   </button>
 
   <mat-menu #userMenu="matMenu">

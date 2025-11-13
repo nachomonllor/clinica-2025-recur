@@ -223,6 +223,12 @@ export class RegistroPacienteComponent implements OnInit {
     const supabase = this.sb.client;
     const fv = this.registroPacienteForm.value!;
 
+    if (!fv.imagenPerfil1 || !fv.imagenPerfil2) {
+      Swal.fire('Error', 'Por favor, seleccioná ambas imágenes de perfil.', 'error');
+      this.loading = false;
+      return;
+    }
+
     try {
       // 1) Crear usuario en Auth con todos los datos en metadata
       // El trigger leerá estos datos y creará el perfil automáticamente
@@ -278,14 +284,16 @@ export class RegistroPacienteComponent implements OnInit {
       const url2 = await this.sb.uploadAvatar(user.id, file2, 2);
 
       // 4) Actualizar perfil en 'profiles' con las imágenes (el trigger ya creó el perfil básico)
-      const { error: perfilError } = await supabase
+      const { data: updateData, error: perfilError } = await supabase
         .from('profiles')
         .update({
           avatar_url: url1,
           imagen2_url: url2,
           aprobado: true // Pacientes no requieren aprobación
         })
-        .eq('id', user.id);
+        .eq('id', user.id)
+        .select();
+      
       if (perfilError) throw perfilError;
 
       // 5) Insertar en la tabla 'pacientes' (sin guardar password)
