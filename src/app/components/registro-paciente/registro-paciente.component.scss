@@ -26,29 +26,11 @@ mat-form-field { margin-bottom: 12px; display: block; }
 }
 
 .file-group {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 16px;
-  width: 100%;
-}
-
-.file-group button {
-  width: 100%;
-  max-width: 300px;
-}
-
-.preview {
-  display: flex;
-  justify-content: center;
-  margin-top: 8px;
+  display: flex; gap: 16px; align-items: center; flex-wrap: wrap;
+  margin: 12px 0 20px;
 }
 
 .preview img {
-  width: 150px;
-  height: 150px;
-  object-fit: cover;
-  border-radius: 10px;
-  border: 2px solid #dbe2ea;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  width: 110px; height: 110px; object-fit: cover;
+  border-radius: 10px; border: 1px solid #dbe2ea;
 }
