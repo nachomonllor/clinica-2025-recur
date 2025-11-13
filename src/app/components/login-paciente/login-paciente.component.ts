@@ -112,8 +112,65 @@ export class LoginPacienteComponent implements OnInit {
         await this.supa.cerrarSesion();
         throw new Error('Debes verificar tu correo antes de ingresar.');
       }
-      
+
+      // Completar registro en tabla especialistas si falta (para especialistas que se registraron con email confirmation)
+      // Esto debe hacerse ANTES de la validación de aprobación para que el registro esté completo
+      if (perfil.rol === 'especialista') {
+        const { data: especialistaExistente } = await this.supa.client
+          .from('especialistas')
+          .select('id')
+          .eq('id', user.id)
+          .maybeSingle();
+
+        if (!especialistaExistente) {
+          // El registro no existe, intentar completarlo desde metadata
+          const userMetadata = user.user_metadata || {};
+          const rawAppMetaData = (user as any).app_metadata || {};
+          
+          // Obtener datos de metadata (pueden estar en user_metadata o app_metadata)
+          const nombre = userMetadata['nombre'] || rawAppMetaData['nombre'] || perfil.nombre;
+          const apellido = userMetadata['apellido'] || rawAppMetaData['apellido'] || perfil.apellido;
+          const dni = userMetadata['dni'] || rawAppMetaData['dni'] || null;
+          const fechaNacimiento = userMetadata['fecha_nacimiento'] || rawAppMetaData['fecha_nacimiento'] || null;
+          const especialidad = userMetadata['especialidad'] || rawAppMetaData['especialidad'] || 'Sin especialidad';
+
+          if (nombre && apellido && dni && fechaNacimiento) {
+            // Calcular edad desde fecha de nacimiento
+            const fechaNac = new Date(fechaNacimiento);
+            const hoy = new Date();
+            let edad = hoy.getFullYear() - fechaNac.getFullYear();
+            const mes = hoy.getMonth() - fechaNac.getMonth();
+            if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNac.getDate())) {
+              edad--;
+            }
+
+            // Insertar en especialistas
+            const { error: especialistaError } = await this.supa.client
+              .from('especialistas')
+              .insert({
+                id: user.id,
+                nombre,
+                apellido,
+                edad,
+                fecha_nacimiento: fechaNacimiento,
+                dni,
+                especialidad,
+                email: user.email || ''
+              });
+
+            if (especialistaError) {
+              console.warn('[Login] No se pudo completar registro en especialistas:', especialistaError);
+            } else {
+              console.log('[Login] Registro completado en tabla especialistas');
+            }
+          } else {
+            console.warn('[Login] Faltan datos en metadata para completar registro en especialistas');
+          }
+        }
+      }
+
       // Validación específica para especialistas (requieren aprobación de admin)
+      // Esta validación va DESPUÉS de completar el registro para que los datos estén completos
       if (perfil.rol === 'especialista' && !perfil.aprobado) {
         await this.supa.cerrarSesion();
         throw new Error('Tu cuenta de especialista aún no ha sido aprobada por un administrador.');

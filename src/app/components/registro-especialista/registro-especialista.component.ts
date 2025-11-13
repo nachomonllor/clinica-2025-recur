@@ -36,10 +36,13 @@ export class RegistroEspecialistaComponent implements OnInit {
 
   // private supa = inject(SupabaseService).client; // 👈 acá queda “el cliente”
 
-  // EXTEERNDER LA LISTA CUANDO SEA NECESARI
-  especialidadesBase = [
-    'Cardiología', 'Dermatología', 'Ginecología', 'Pediatría', 'Neurología', 'Otro'
+  // Especialidades base (siempre disponibles)
+  especialidadesBaseFijas = [
+    'Cardiología', 'Dermatología', 'Ginecología', 'Pediatría', 'Neurología'
   ];
+  
+  // Lista completa de especialidades (base + las que vienen de la BD)
+  especialidadesBase: string[] = [];
 
   imagenPrevia: string | null = null;
   captchaEnabled = environment.captchaEnabled;
@@ -63,12 +66,12 @@ export class RegistroEspecialistaComponent implements OnInit {
     private router: Router
   ) {}
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.registroForm = this.fb.group({
       nombre:           this.fb.control<string | null>(null, Validators.required),
       apellido:         this.fb.control<string | null>(null, Validators.required),
       dni:              this.fb.control<string | null>(null, Validators.required),
-      fechaNacimiento:  this.fb.control<string | null>(null, Validators.required), // ← reemplaza “edad”
+      fechaNacimiento:  this.fb.control<string | null>(null, Validators.required), // ← reemplaza "edad"
       email:            this.fb.control<string | null>(null, [Validators.required, Validators.email]),
       password:         this.fb.control<string | null>(null, Validators.required),
       especialidades:   this.fb.control<string[] | null>([], Validators.required),
@@ -87,6 +90,62 @@ export class RegistroEspecialistaComponent implements OnInit {
       }
       ctrl.updateValueAndValidity();
     });
+
+    // Cargar especialidades desde la BD y combinarlas con las base
+    await this.cargarEspecialidades();
+  }
+
+  /**
+   * Carga las especialidades desde la BD y las combina con las especialidades base.
+   * Esto asegura que las especialidades nuevas agregadas por otros especialistas
+   * aparezcan en el combo para futuros registros.
+   */
+  async cargarEspecialidades(): Promise<void> {
+    try {
+      // Obtener especialidades únicas de la BD
+      const { data, error } = await this.supa.client
+        .from('especialistas')
+        .select('especialidad')
+        .not('especialidad', 'is', null);
+
+      if (error) {
+        console.error('[RegistroEspecialista] Error al cargar especialidades', error);
+        // Si hay error, usar solo las especialidades base
+        this.especialidadesBase = [...this.especialidadesBaseFijas, 'Otro'];
+        return;
+      }
+
+      // Extraer especialidades únicas de la BD
+      const especialidadesBD = new Set<string>();
+      if (data && Array.isArray(data)) {
+        data.forEach((item: any) => {
+          if (item.especialidad && typeof item.especialidad === 'string') {
+            especialidadesBD.add(item.especialidad.trim());
+          }
+        });
+      }
+
+      // Combinar especialidades base con las de la BD
+      const todasLasEspecialidades = new Set<string>();
+      
+      // Agregar las especialidades base
+      this.especialidadesBaseFijas.forEach(esp => todasLasEspecialidades.add(esp));
+      
+      // Agregar las especialidades de la BD (que no estén ya en las base)
+      especialidadesBD.forEach(esp => {
+        if (!this.especialidadesBaseFijas.includes(esp)) {
+          todasLasEspecialidades.add(esp);
+        }
+      });
+
+      // Ordenar alfabéticamente y agregar "Otro" al final
+      this.especialidadesBase = Array.from(todasLasEspecialidades).sort();
+      this.especialidadesBase.push('Otro');
+    } catch (err) {
+      console.error('[RegistroEspecialista] Error al cargar especialidades', err);
+      // Si hay error, usar solo las especialidades base
+      this.especialidadesBase = [...this.especialidadesBaseFijas, 'Otro'];
+    }
   }
 
   onCaptchaValid(esValido: boolean): void {
@@ -194,7 +253,17 @@ export class RegistroEspecialistaComponent implements OnInit {
     //this._toggleLoading(true);
 
     try {
-      // 1) Alta en Auth con todos los datos en metadata
+      // 2) Normalizamos especialidades (multi + "Otro") ANTES del signUp para guardarlas en metadata
+      const seleccion = (fv.especialidades ?? []).filter(Boolean);
+      let especialidades = seleccion.filter(e => e !== 'Otro');
+      if (seleccion.includes('Otro') && fv.otraEspecialidad) {
+        especialidades.push(fv.otraEspecialidad.trim());
+      }
+      // deduplicar + limpiar vacíos
+      especialidades = Array.from(new Set(especialidades.map(s => s?.trim()))).filter(Boolean) as string[];
+      const primeraEspecialidad = especialidades[0] || 'Sin especialidad';
+
+      // 1) Alta en Auth con todos los datos en metadata (incluyendo especialidad)
       // El trigger leerá estos datos y creará el perfil automáticamente
       const { data, error }: any = await this.supa.client.auth.signUp({
         email: fv.email!,
@@ -205,7 +274,9 @@ export class RegistroEspecialistaComponent implements OnInit {
             nombre: fv.nombre,
             apellido: fv.apellido,
             dni: fv.dni,
-            fecha_nacimiento: fv.fechaNacimiento
+            fecha_nacimiento: fv.fechaNacimiento,
+            especialidad: primeraEspecialidad, // Guardar especialidad en metadata
+            especialidades: especialidades.join(',') // Guardar todas las especialidades como string separado por comas
           }
         }
       });
@@ -214,8 +285,34 @@ export class RegistroEspecialistaComponent implements OnInit {
 
       // Si no hay sesión automática (confirmación de email activa)
       if (!data.session) {
-        // El trigger ya creó el perfil básico con los datos de metadata
-        // Las imágenes y datos adicionales se completarán cuando el usuario verifique su email
+        // Intentar insertar en especialistas usando una función con SECURITY DEFINER
+        // O guardar los datos para completarlos después de la verificación
+        try {
+          // Calcular edad desde fecha de nacimiento
+          const edadCalculada = this.calcEdadFromISO(fv.fechaNacimiento!);
+          
+          // Intentar insertar en especialistas (puede fallar por RLS si no hay sesión)
+          const { error: especialistaError } = await this.supa.client
+            .from('especialistas')
+            .insert({
+              id: userId,
+              nombre: fv.nombre!,
+              apellido: fv.apellido!,
+              edad: edadCalculada,
+              fecha_nacimiento: fv.fechaNacimiento!,
+              dni: fv.dni!,
+              especialidad: primeraEspecialidad,
+              email: fv.email!
+            });
+          
+          // Si falla por RLS, los datos están en metadata y se completarán después
+          if (especialistaError) {
+            console.warn('[RegistroEspecialista] No se pudo insertar en especialistas (RLS), se completará después:', especialistaError);
+          }
+        } catch (err) {
+          console.warn('[RegistroEspecialista] Error al insertar especialista sin sesión:', err);
+        }
+
         await Swal.fire({
           icon: 'info',
           title: 'Verifica tu correo',
@@ -233,15 +330,6 @@ export class RegistroEspecialistaComponent implements OnInit {
       }
 
       // Si hay sesión automática, continuar con el flujo completo
-
-      // 2) Normalizamos especialidades (multi + “Otro”)
-      const seleccion = (fv.especialidades ?? []).filter(Boolean);
-      let especialidades = seleccion.filter(e => e !== 'Otro');
-      if (seleccion.includes('Otro') && fv.otraEspecialidad) {
-        especialidades.push(fv.otraEspecialidad.trim());
-      }
-      // deduplicar + limpiar vacíos
-      especialidades = Array.from(new Set(especialidades.map(s => s?.trim()))).filter(Boolean) as string[];
 
       // 3) Subir avatar al bucket avatars/<uid>/**
       const avatarUrl = await this.supa.uploadAvatar(userId, fv.imagenPerfil!, 1);
@@ -264,7 +352,6 @@ export class RegistroEspecialistaComponent implements OnInit {
       // 6) Insertar en tabla especialistas (una fila por cada especialidad)
       // Como la tabla tiene especialidad como TEXT, guardamos la primera especialidad
       // o podríamos crear múltiples registros si fuera necesario
-      const primeraEspecialidad = especialidades[0] || 'Sin especialidad';
       const { error: especialistaError } = await this.supa.client
         .from('especialistas')
         .insert({
