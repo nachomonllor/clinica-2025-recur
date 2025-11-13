@@ -10,6 +10,7 @@ import {
   AbstractControl,
   ValidationErrors
 } from '@angular/forms';
+import { Router } from '@angular/router';
 
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -62,7 +63,8 @@ export class RegistroPacienteComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private sb: SupabaseService
+    private sb: SupabaseService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -154,22 +156,59 @@ export class RegistroPacienteComponent implements OnInit {
   }
 
   private mapPgError(err: any): string {
-    const msg: string = err?.message || '';
+    const msg: string = (err?.message || '').toLowerCase();
     const code: string | undefined = err?.code;
+    const status: number | undefined = err?.status;
+
+    // Log para debugging - ver qué error exacto estamos recibiendo
+    console.log('[mapPgError] Analizando error:', { msg, code, status, fullError: err });
+
+    // Errores de Supabase Auth - Email ya registrado
+    // IMPORTANTE: Solo marcar como "ya registrado" si realmente es ese el caso
+    // Supabase puede devolver 422 por otras razones también
+    const esEmailDuplicado = (
+      code === 'signup_disabled' ||
+      code === 'email_address_not_authorized' ||
+      /user already registered/i.test(msg) ||
+      /already registered/i.test(msg) ||
+      /email.*already.*exists/i.test(msg) ||
+      /user.*already.*exists/i.test(msg) ||
+      msg.includes('already registered') ||
+      msg.includes('already exists') ||
+      (status === 422 && (msg.includes('already') || msg.includes('exists') || msg.includes('registered')))
+    );
+
+    if (esEmailDuplicado) {
+      return 'Este correo electrónico ya está registrado. Si ya tenés una cuenta, intentá iniciar sesión o recuperar tu contraseña.';
+    }
 
     // Duplicados en Postgres (unique_violation)
     if (code === '23505') {
-      if (msg.toLowerCase().includes('email')) return 'El correo ya está registrado.';
-      if (msg.toLowerCase().includes('dni')) return 'El DNI ya existe en el sistema.';
+      if (msg.includes('email')) return 'El correo ya está registrado en el sistema.';
+      if (msg.includes('dni')) return 'El DNI ya existe en el sistema.';
       return 'Registro duplicado.';
     }
 
-    // Usuario ya existe en Auth
-    if (err?.status === 422 || /already registered|exists/i.test(msg)) {
-      return 'El correo ya está registrado en el sistema.';
+    // Errores de validación de email
+    if (msg.includes('invalid email') || msg.includes('email not valid')) {
+      return 'El correo electrónico no es válido.';
     }
 
-    return msg || 'Ocurrió un error inesperado.';
+    // Errores de contraseña
+    if (msg.includes('password') && (msg.includes('weak') || msg.includes('at least'))) {
+      return 'La contraseña debe tener al menos 6 caracteres.';
+    }
+
+    // Rate limit
+    if (status === 429 || msg.includes('rate limit') || msg.includes('too many')) {
+      return 'Demasiados intentos. Por favor, esperá unos minutos e intentá nuevamente.';
+    }
+
+    // Si llegamos aquí, mostrar el mensaje original del error para debugging
+    // Esto ayuda a identificar errores que no estamos manejando correctamente
+    const mensajeOriginal = err?.message || String(err) || 'Ocurrió un error inesperado.';
+    console.warn('[mapPgError] Error no manejado específicamente:', mensajeOriginal);
+    return mensajeOriginal;
   }
 
   // ---- SUBMIT ----
@@ -185,12 +224,20 @@ export class RegistroPacienteComponent implements OnInit {
     const fv = this.registroPacienteForm.value!;
 
     try {
-      // 1) Crear usuario en Auth
+      // 1) Crear usuario en Auth con todos los datos en metadata
+      // El trigger leerá estos datos y creará el perfil automáticamente
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email: fv.email!,
         password: fv.password!,
         options: {
-          data: { rol: 'paciente', nombre: fv.nombre, apellido: fv.apellido }
+          data: {
+            rol: 'paciente',
+            nombre: fv.nombre,
+            apellido: fv.apellido,
+            dni: fv.dni,
+            fecha_nacimiento: fv.fechaNacimiento,
+            obra_social: fv.obraSocial
+          }
         }
       });
       if (signUpError) throw signUpError;
@@ -198,17 +245,27 @@ export class RegistroPacienteComponent implements OnInit {
       const user = signUpData.user;
       if (!user) throw new Error('No se pudo crear el usuario.');
 
-      // TEMPORALMENTE DESHABILITADO PARA DESARROLLO - Continuar registro aunque no haya sesión
-      // Si tienes confirmación de email activa, no habrá session aquí (RLS bloquea insert).
-      // if (!signUpData.session) {
-      //   Swal.fire({
-      //     icon: 'info',
-      //     title: 'Confirma tu correo',
-      //     text: 'Te enviamos un email. Confírmalo para iniciar sesión y completar tu registro.',
-      //     confirmButtonText: 'Entendido'
-      //   });
-      //   return;
-      // }
+      // Si no hay sesión automática (confirmación de email activa)
+      if (!signUpData.session) {
+        // El trigger ya creó el perfil básico con los datos de metadata
+        // Las imágenes y datos adicionales se completarán cuando el usuario verifique su email
+        await Swal.fire({
+          icon: 'info',
+          title: 'Verifica tu correo',
+          html: `
+            <p>Te enviamos un email de verificación a <strong>${fv.email}</strong>.</p>
+            <p>Confírmalo para iniciar sesión y completar tu registro (subir imágenes).</p>
+          `,
+          confirmButtonText: 'Entendido'
+        });
+        this.registroPacienteForm.reset();
+        this.imagenPrevia1 = null;
+        this.imagenPrevia2 = null;
+        this.router.navigate(['/bienvenida']);
+        return;
+      }
+
+      // Si hay sesión automática, continuar con el flujo completo
 
       // 2) Calcular edad desde la fecha de nacimiento
       const edadCalculada = this.calcEdadFromISO(fv.fechaNacimiento!);
@@ -220,20 +277,15 @@ export class RegistroPacienteComponent implements OnInit {
       const url1 = await this.sb.uploadAvatar(user.id, file1, 1);
       const url2 = await this.sb.uploadAvatar(user.id, file2, 2);
 
-      // 4) Crear perfil en 'profiles' (requerido para el login)
+      // 4) Actualizar perfil en 'profiles' con las imágenes (el trigger ya creó el perfil básico)
       const { error: perfilError } = await supabase
         .from('profiles')
-        .upsert({
-          id: user.id,
-          rol: 'paciente',
-          nombre: fv.nombre!,
-          apellido: fv.apellido!,
-          dni: fv.dni!,
-          email: fv.email!,
+        .update({
           avatar_url: url1,
           imagen2_url: url2,
-          aprobado: true, // Pacientes no requieren aprobación
-        }, { onConflict: 'id' });
+          aprobado: true // Pacientes no requieren aprobación
+        })
+        .eq('id', user.id);
       if (perfilError) throw perfilError;
 
       // 5) Insertar en la tabla 'pacientes' (sin guardar password)
@@ -252,7 +304,7 @@ export class RegistroPacienteComponent implements OnInit {
       if (insertError) throw insertError;
 
       // 6) Éxito
-      Swal.fire({
+      await Swal.fire({
         icon: 'success',
         title: 'Paciente registrado con éxito',
         showConfirmButton: false,
@@ -261,10 +313,21 @@ export class RegistroPacienteComponent implements OnInit {
       this.registroPacienteForm.reset();
       this.imagenPrevia1 = null;
       this.imagenPrevia2 = null;
+      this.router.navigate(['/bienvenida']);
 
     } catch (err: any) {
-      console.error(err);
-      Swal.fire('Error', this.mapPgError(err), 'error');
+      // Log detallado del error para debugging
+      console.error('[Registro Paciente] Error completo:', {
+        error: err,
+        message: err?.message,
+        code: err?.code,
+        status: err?.status,
+        name: err?.name,
+        stack: err?.stack
+      });
+      
+      const mensajeError = this.mapPgError(err);
+      Swal.fire('Error', mensajeError, 'error');
     } finally {
       this.loading = false;
     }

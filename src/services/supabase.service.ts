@@ -160,7 +160,7 @@ export class SupabaseService {
   async obtenerPerfil(uid: string) {
     const { data, error } = await this.client
       .from('profiles')
-      .select('id, rol, aprobado, nombre, apellido, avatar_url') // /////
+      .select('id, rol, aprobado, nombre, apellido, avatar_url, imagen2_url')
       .eq('id', uid)
       .single();
     return { data, error };

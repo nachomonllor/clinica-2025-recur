@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import {
   FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators
 } from '@angular/forms';
+import { Router } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -58,7 +59,8 @@ export class RegistroEspecialistaComponent implements OnInit {
 
   constructor(
     public fb: FormBuilder,
-    public supa: SupabaseService
+    public supa: SupabaseService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -112,6 +114,62 @@ export class RegistroEspecialistaComponent implements OnInit {
     if (month < m || (month === m && day < d)) edad--;
     return edad;
   }
+
+  private mapPgError(err: any): string {
+    const msg: string = (err?.message || '').toLowerCase();
+    const code: string | undefined = err?.code;
+    const status: number | undefined = err?.status;
+
+    // Log para debugging - ver qué error exacto estamos recibiendo
+    console.log('[mapPgError] Analizando error:', { msg, code, status, fullError: err });
+
+    // Errores de Supabase Auth - Email ya registrado
+    // IMPORTANTE: Solo marcar como "ya registrado" si realmente es ese el caso
+    // Supabase puede devolver 422 por otras razones también
+    const esEmailDuplicado = (
+      code === 'signup_disabled' ||
+      code === 'email_address_not_authorized' ||
+      /user already registered/i.test(msg) ||
+      /already registered/i.test(msg) ||
+      /email.*already.*exists/i.test(msg) ||
+      /user.*already.*exists/i.test(msg) ||
+      msg.includes('already registered') ||
+      msg.includes('already exists') ||
+      (status === 422 && (msg.includes('already') || msg.includes('exists') || msg.includes('registered')))
+    );
+
+    if (esEmailDuplicado) {
+      return 'Este correo electrónico ya está registrado. Si ya tenés una cuenta, intentá iniciar sesión o recuperar tu contraseña.';
+    }
+
+    // Duplicados en Postgres (unique_violation)
+    if (code === '23505') {
+      if (msg.includes('email')) return 'El correo ya está registrado en el sistema.';
+      if (msg.includes('dni')) return 'El DNI ya existe en el sistema.';
+      return 'Registro duplicado.';
+    }
+
+    // Errores de validación de email
+    if (msg.includes('invalid email') || msg.includes('email not valid')) {
+      return 'El correo electrónico no es válido.';
+    }
+
+    // Errores de contraseña
+    if (msg.includes('password') && (msg.includes('weak') || msg.includes('at least'))) {
+      return 'La contraseña debe tener al menos 6 caracteres.';
+    }
+
+    // Rate limit
+    if (status === 429 || msg.includes('rate limit') || msg.includes('too many')) {
+      return 'Demasiados intentos. Por favor, esperá unos minutos e intentá nuevamente.';
+    }
+
+    // Si llegamos aquí, mostrar el mensaje original del error para debugging
+    // Esto ayuda a identificar errores que no estamos manejando correctamente
+    const mensajeOriginal = err?.message || String(err) || 'Ocurrió un error inesperado.';
+    console.warn('[mapPgError] Error no manejado específicamente:', mensajeOriginal);
+    return mensajeOriginal;
+  }
     
   // // DB
   // async upsertPerfil(profile: any) {
@@ -136,10 +194,45 @@ export class RegistroEspecialistaComponent implements OnInit {
     //this._toggleLoading(true);
 
     try {
-      // 1) Alta en Auth (envía mail de verificación)
-      const { data, error }: any = await this.supa.signUp(fv.email!, fv.password!);
+      // 1) Alta en Auth con todos los datos en metadata
+      // El trigger leerá estos datos y creará el perfil automáticamente
+      const { data, error }: any = await this.supa.client.auth.signUp({
+        email: fv.email!,
+        password: fv.password!,
+        options: {
+          data: {
+            rol: 'especialista',
+            nombre: fv.nombre,
+            apellido: fv.apellido,
+            dni: fv.dni,
+            fecha_nacimiento: fv.fechaNacimiento
+          }
+        }
+      });
       if (error) throw error;
       const userId = data.user.id as string;
+
+      // Si no hay sesión automática (confirmación de email activa)
+      if (!data.session) {
+        // El trigger ya creó el perfil básico con los datos de metadata
+        // Las imágenes y datos adicionales se completarán cuando el usuario verifique su email
+        await Swal.fire({
+          icon: 'info',
+          title: 'Verifica tu correo',
+          html: `
+            <p>Te enviamos un email de verificación a <strong>${fv.email}</strong>.</p>
+            <p>Confírmalo para iniciar sesión y completar tu registro (subir imagen).</p>
+            <p><strong>Importante:</strong> Un administrador debe aprobar tu cuenta antes de poder ingresar.</p>
+          `,
+          confirmButtonText: 'Entendido'
+        });
+        this.registroForm.reset();
+        this.imagenPrevia = null;
+        this.router.navigate(['/bienvenida']);
+        return;
+      }
+
+      // Si hay sesión automática, continuar con el flujo completo
 
       // 2) Normalizamos especialidades (multi + “Otro”)
       const seleccion = (fv.especialidades ?? []).filter(Boolean);
@@ -156,20 +249,15 @@ export class RegistroEspecialistaComponent implements OnInit {
       // 4) Calcular edad desde fecha de nacimiento
       const edadCalculada = this.calcEdadFromISO(fv.fechaNacimiento!);
 
-      // 5) Upsert en profiles (rol especialista, pendiente de aprobación)
-      await this.supa.upsertPerfil({
-        id: userId,
-        rol: 'especialista',
-        nombre: fv.nombre!,
-        apellido: fv.apellido!,
-        dni: fv.dni!,
-        obra_social: null,                 // no usamos obra social para especialista
-        fecha_nacimiento: fv.fechaNacimiento!,
-        email: fv.email!,
-        avatar_url: avatarUrl,
-        imagen2_url: null,                 // no usamos segunda imagen para especialista
-        aprobado: false                  // <===== requiere aprobación de Admin
-      });
+      // 5) Actualizar perfil en profiles con la imagen (el trigger ya creó el perfil básico)
+      const { error: perfilError } = await this.supa.client
+        .from('profiles')
+        .update({
+          avatar_url: avatarUrl,
+          aprobado: false                  // <===== requiere aprobación de Admin
+        })
+        .eq('id', userId);
+      if (perfilError) throw perfilError;
 
       // 6) Insertar en tabla especialistas (una fila por cada especialidad)
       // Como la tabla tiene especialidad como TEXT, guardamos la primera especialidad
@@ -189,7 +277,7 @@ export class RegistroEspecialistaComponent implements OnInit {
         });
       if (especialistaError) throw especialistaError;
 
-      Swal.fire({
+      await Swal.fire({
         icon: 'success',
         title: 'Registro enviado',
         text: 'Verificá tu email. Un administrador debe aprobar tu cuenta antes de ingresar.',
@@ -198,9 +286,21 @@ export class RegistroEspecialistaComponent implements OnInit {
       });
       this.registroForm.reset();
       this.imagenPrevia = null;
+      this.router.navigate(['/bienvenida']);
 
     } catch (e: any) {
-      Swal.fire('Error', e.message || e, 'error');
+      // Log detallado del error para debugging
+      console.error('[Registro Especialista] Error completo:', {
+        error: e,
+        message: e?.message,
+        code: e?.code,
+        status: e?.status,
+        name: e?.name,
+        stack: e?.stack
+      });
+      
+      const mensajeError = this.mapPgError(e);
+      Swal.fire('Error', mensajeError, 'error');
     } finally {
       //this._toggleLoading(false);
     }

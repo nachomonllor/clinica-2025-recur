@@ -98,17 +98,22 @@ export class LoginPacienteComponent implements OnInit {
       const { data: userData, error: eUser } = await this.supa.obtenerUsuarioActual();
       if (eUser || !userData?.user) throw eUser || new Error('No se pudo obtener el usuario.');
       const user = userData.user;
-      // TEMPORALMENTE DESHABILITADO PARA DESARROLLO - Permitir login sin confirmación de email
-      // if (!user.email_confirmed_at) {
-      //   await this.supa.cerrarSesion();
-      //   throw new Error('Debes verificar tu correo antes de ingresar.');
-      // }
 
       // 3) Perfil (sin seleccionar email en SupabaseService.obtenerPerfil)
       const { data: perfil, error: ePerfil } = await this.supa.obtenerPerfil(user.id);
       if (ePerfil || !perfil) throw ePerfil || new Error('No se encontró el perfil del usuario.');
       
-      // Validación según rol (especialistas requieren aprobación)
+      // 4) Validaciones según requisitos del Sprint 1:
+      // - Pacientes: solo pueden ingresar si verificaron su mail
+      // - Especialistas: solo pueden ingresar si verificaron su mail Y fueron aprobados por admin
+      
+      // Verificar email confirmado (requisito para todos los roles)
+      if (!user.email_confirmed_at) {
+        await this.supa.cerrarSesion();
+        throw new Error('Debes verificar tu correo antes de ingresar.');
+      }
+      
+      // Validación específica para especialistas (requieren aprobación de admin)
       if (perfil.rol === 'especialista' && !perfil.aprobado) {
         await this.supa.cerrarSesion();
         throw new Error('Tu cuenta de especialista aún no ha sido aprobada por un administrador.');
@@ -126,7 +131,24 @@ export class LoginPacienteComponent implements OnInit {
       //   { onConflict: 'id' }
       // );
 
-      await Swal.fire({ icon: 'success', title: 'Bienvenido', timer: 1500, showConfirmButton: false });
+      // Verificar si el perfil está incompleto (sin imágenes)
+      // Esto puede pasar si el usuario se registró pero no completó el registro después de verificar su email
+      const perfilIncompleto = perfil.rol === 'paciente' && (!perfil.avatar_url || !perfil.imagen2_url) ||
+                               perfil.rol === 'especialista' && !perfil.avatar_url;
+
+      if (perfilIncompleto) {
+        await Swal.fire({
+          icon: 'info',
+          title: 'Completar perfil',
+          html: `
+            <p>Tu perfil está incompleto. Por favor, completa tu registro subiendo tus imágenes de perfil.</p>
+            <p>Podés hacerlo desde la sección "Mi Perfil" después de ingresar.</p>
+          `,
+          confirmButtonText: 'Entendido'
+        });
+      } else {
+        await Swal.fire({ icon: 'success', title: 'Bienvenido', timer: 1500, showConfirmButton: false });
+      }
       
       // Redirigir según el rol
       if (perfil.rol === 'paciente') {
@@ -134,7 +156,6 @@ export class LoginPacienteComponent implements OnInit {
       } else if (perfil.rol === 'especialista') {
         this.router.navigate(['/mis-turnos-especialista']);
       } else if (perfil.rol === 'admin') {
-        // TODO: Definir ruta para admin
         this.router.navigate(['/bienvenida']);
       }
     } catch (e) {
