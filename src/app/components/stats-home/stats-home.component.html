@@ -1,0 +1,69 @@
+<p>stats-home works!</p>
+
+<section class="estadisticas">
+  <!-- Fondo: usa tu imagen en assets o deja solo los gradientes -->
+  <div class="bg"></div>
+
+  <div class="container">
+    <h1 class="title">Estadísticas</h1>
+
+    <div class="card-grid">
+      <a
+        *ngFor="let opt of options; trackBy: trackByTitle"
+        class="stat-card"
+        [routerLink]="opt.route"
+        [style.--accent]="opt.accent"
+        [attr.aria-label]="'Ir a ' + opt.title"
+      >
+        <div class="icon" aria-hidden="true">
+          <ng-container [ngSwitch]="opt.icon">
+            <!-- Login -->
+            <svg *ngSwitchCase="'login'" viewBox="0 0 24 24">
+              <path fill="white"
+                d="M14 4h5a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-5v-2h4V6h-4V4z"/>
+              <path fill="white"
+                d="M3 12a1 1 0 0 0 1 1h8l-2.3 2.3a1 1 0 1 0 1.4 1.4l4-4a1 1 0 0 0 0-1.4l-4-4a1 1 0 1 0-1.4 1.4L12 11H4a1 1 0 0 0-1 1z"/>
+            </svg>
+
+            <!-- Lista -->
+            <svg *ngSwitchCase="'list'" viewBox="0 0 24 24">
+              <rect x="4" y="4" width="16" height="16" rx="2" fill="white" opacity=".18"/>
+              <path fill="white" d="M7 8h10v2H7zM7 12h10v2H7zM7 16h10v2H7z"/>
+            </svg>
+
+            <!-- Grupo -->
+            <svg *ngSwitchCase="'group'" viewBox="0 0 24 24">
+              <circle cx="9" cy="9" r="3" fill="white"/>
+              <circle cx="16.5" cy="10" r="2.2" fill="white" opacity=".9"/>
+              <path fill="white"
+                d="M3.5 18c.5-2.9 3.1-5 5.9-5s5.4 2.1 5.9 5H3.5z"/>
+              <path fill="white" opacity=".85"
+                d="M14.2 18c.3-1.7 1.8-3 3.6-3s3.3 1.3 3.6 3h-7.2z"/>
+            </svg>
+
+            <!-- Calendario -->
+            <svg *ngSwitchCase="'calendar'" viewBox="0 0 24 24">
+              <rect x="3" y="5" width="18" height="16" rx="2" fill="white"/>
+              <rect x="3" y="5" width="18" height="4" fill="white" opacity=".35"/>
+              <rect x="7" y="2" width="2" height="4" rx="1" fill="white"/>
+              <rect x="15" y="2" width="2" height="4" rx="1" fill="white"/>
+              <rect x="7" y="11" width="4" height="4" rx="1" fill="#0f172a" opacity=".2"/>
+            </svg>
+          </ng-container>
+        </div>
+
+        <h3 class="card-title">{{ opt.title }}</h3>
+        <p class="card-subtitle">{{ opt.subtitle }}</p>
+
+        <span class="go" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M13.5 5.5l6 6-6 6M4.5 11.5h14" fill="none" stroke="currentColor"
+                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+      </a>
+    </div>
+  </div>
+</section>
+
+

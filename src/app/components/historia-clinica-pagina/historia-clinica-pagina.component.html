@@ -1,0 +1,94 @@
+<p>historia-clinica-pagina works!</p>
+
+<div class="history-wrapper">
+  <header class="hero" role="banner">
+    <!-- Imagen en HTML -->
+    <img class="hero__bg" src="assets/historia-clinica-paciente.jpg" alt="Fondo historia clinica" loading="lazy">
+    <div class="hero__overlay"></div>
+
+    <div class="hero__content" *ngIf="(vm$ | async) as vm">
+      <h1 class="hero__title">Historia Clinica</h1>
+
+      <div class="hero__patient">
+        <div class="hero__name">{{ vm.pacienteNombre }}</div>
+        <div class="hero__meta">
+          <span class="meta__item"><mat-icon>badge</mat-icon> DNI: {{ vm.pacienteDni }}</span>
+          <span class="meta__item" *ngIf="vm.edadAnios !== null"><mat-icon>cake</mat-icon> Edad: {{ vm.edadAnios }} anios</span>
+        </div>
+
+        <div class="hero__actions">
+          <mat-form-field appearance="fill" class="hero__filter" floatLabel="never">
+            <mat-label>Filtrar por especialidad</mat-label>
+            <mat-select [formControl]="filtroEspecialidad">
+              <mat-option *ngFor="let e of vm.especialidades" [value]="e">{{ e === 'todas' ? 'Todas las especialidades' : e }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <button mat-raised-button color="primary" class="hero__btn" (click)="descargarPdf()">
+            <mat-icon>download</mat-icon>
+            Descargar PDF
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main id="historyContent" class="content" *ngIf="(vm$ | async) as vm">
+    <section class="consult-card" *ngFor="let c of vm.items; trackBy: trackById">
+      <div class="consult-card__header">
+        <div class="header__left">
+          <mat-icon>medical_services</mat-icon>
+          <span class="header__title">Consulta #{{ c.idConsulta ?? '—' }}</span>
+        </div>
+        <div class="header__tags">
+          <span class="chip" *ngIf="c.fecha"><mat-icon>event</mat-icon>{{ c.fecha | date:'dd/MM/yyyy' }}</span>
+          <span class="chip" *ngIf="c.especialidad"><mat-icon>vaccines</mat-icon>{{ c.especialidad }}</span>
+          <span class="chip" *ngIf="c.medico"><mat-icon>person</mat-icon>{{ c.medico }}</span>
+        </div>
+      </div>
+
+      <div class="consult-card__body">
+        <h3 class="section-title"><mat-icon>favorite</mat-icon> Datos Vitales</h3>
+        <div class="vitals-grid">
+          <div class="metric">
+            <div class="metric__icon"><mat-icon>straighten</mat-icon></div>
+            <div class="metric__label">ALTURA</div>
+            <div class="metric__value">{{ c.altura | number:'1.2-2' }} m</div>
+          </div>
+          <div class="metric">
+            <div class="metric__icon"><mat-icon>scale</mat-icon></div>
+            <div class="metric__label">PESO</div>
+            <div class="metric__value">{{ c.peso }} kg</div>
+          </div>
+          <div class="metric">
+            <div class="metric__icon"><mat-icon>device_thermostat</mat-icon></div>
+            <div class="metric__label">TEMPERATURA</div>
+            <div class="metric__value">{{ c.temperatura }} °C</div>
+          </div>
+          <div class="metric">
+            <div class="metric__icon"><mat-icon>monitor_heart</mat-icon></div>
+            <div class="metric__label">PRESION</div>
+            <div class="metric__value">{{ c.presion }}</div>
+          </div>
+        </div>
+
+        <h3 class="section-title"><mat-icon>dataset</mat-icon> Datos Adicionales</h3>
+        <div class="extras">
+          <span class="extra-chip" *ngIf="c.fiebre !== undefined"><span class="extra-chip__label">Fiebre:</span><strong>{{ c.fiebre ? 'si' : 'no' }}</strong></span>
+          <span class="extra-chip" *ngIf="c.infartos !== undefined"><span class="extra-chip__label">Infartos:</span><strong>{{ c.infartos }}</strong></span>
+          <span class="extra-chip" *ngFor="let d of c.datosDinamicos">
+            <span class="extra-chip__label">{{ d.etiqueta ?? d.clave }}:</span>
+            <strong>{{ d.valor }}</strong>
+            <span *ngIf="d.unidad">&nbsp;{{ d.unidad }}</span>
+          </span>
+        </div>
+
+        <div class="notes" *ngIf="c.resumen">
+          <mat-icon>notes</mat-icon>
+          <p>{{ c.resumen }}</p>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+

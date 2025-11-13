@@ -1,3 +1,83 @@
+// import { ChangeDetectionStrategy, Component } from '@angular/core';
+// import { CommonModule } from '@angular/common';
+// import { FormControl, ReactiveFormsModule } from '@angular/forms';
+// import { ActivatedRoute, RouterModule } from '@angular/router';
+// import { MatButtonModule } from '@angular/material/button';
+// import { MatIconModule } from '@angular/material/icon';
+// import { MatSelectModule } from '@angular/material/select';
+// import { combineLatest, map, startWith, switchMap } from 'rxjs';
+
+// import {
+//   Consulta,
+//   Especialidad,
+//   HistoriaClinica
+// } from '../../core/modelos/historia-clinica.model';
+// import { HistoriaClinicaService } from '../../core/servicios/historia-clinica.service';
+
+// @Component({
+//   selector: 'app-historia-clinica-pagina',
+//   standalone: true,
+//   imports: [
+//     CommonModule,
+//     RouterModule,
+//     ReactiveFormsModule,
+//     MatButtonModule,
+//     MatIconModule,
+//     MatSelectModule
+//   ],
+//   templateUrl: './historia-clinica-pagina.component.html',
+//   styleUrls: ['./historia-clinica-pagina.component.scss'],
+//   changeDetection: ChangeDetectionStrategy.OnPush
+// })
+// export class HistoriaClinicaPaginaComponent {
+//   especialidadControl = new FormControl<'todas' | Especialidad>('todas', { nonNullable: true });
+
+//   vm$ = combineLatest({
+//     pacienteId: this.route.paramMap.pipe(map(pm => pm.get('id') ?? 'paciente-1')),
+//     seleccion: this.especialidadControl.valueChanges.pipe(startWith<'todas' | Especialidad>('todas')),
+//   }).pipe(
+//     switchMap(({ pacienteId, seleccion }) =>
+//       this.service.getPorPacienteId(pacienteId).pipe(
+//         map((historia: HistoriaClinica) => {
+//           const lista = [...new Set(historia.consultas.map(c => c.especialidad))] as Especialidad[];
+//           const especialidades = [{ value: 'todas' as const, label: 'Todas las especialidades' },
+//             ...lista.map(e => ({ value: e, label: e }))];
+
+//           const consultas = (seleccion === 'todas')
+//             ? historia.consultas
+//             : historia.consultas.filter(c => c.especialidad === seleccion);
+
+//           return {
+//             historia,
+//             especialidades,
+//             consultas: consultas.sort((a, b) => a.fecha < b.fecha ? 1 : -1),
+//             edad: this.calcularEdad(historia.paciente.fechaNacimiento)
+//           };
+//         })
+//       )
+//     )
+//   );
+
+//   constructor(
+//     private route: ActivatedRoute,
+//     private service: HistoriaClinicaService
+//   ) {}
+
+//   private calcularEdad(fechaIso: string): number {
+//     const f = new Date(fechaIso);
+//     const hoy = new Date();
+//     let edad = hoy.getFullYear() - f.getFullYear();
+//     const m = hoy.getMonth() - f.getMonth();
+//     if (m < 0 || (m === 0 && hoy.getDate() < f.getDate())) edad--;
+//     return edad;
+//   }
+
+//   trackByConsulta = (_: number, c: Consulta) => c.id;
+// }
+
+// -----------------------------------------------------------------------------------------------
+
+
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HistoriaClinicaService } from '../../services/historia-clinica.service';

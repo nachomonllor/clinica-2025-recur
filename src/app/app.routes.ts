@@ -5,7 +5,6 @@ import { LoginComponent } from './components/login/login.component';
 
 import { LogTableComponent } from './components/log-table/log-table.component';
 import { EstadisticasComponent } from './components/estadisticas/estadisticas.component';
-import { HistoriaClinicaComponent } from './components/historia-clinica/historia-clinica.component';
 
 import { SeleccionarUsuarioLoginComponent } from './components/seleccionar-usuario-login/seleccionar-usuario-login.component';
 import { SeleccionarUsuarioRegistroComponent } from './components/seleccionar-usuario-registro/seleccionar-usuario-registro.component';
@@ -16,6 +15,7 @@ import { RegistroPacienteComponent } from './components/paciente/registro-pacien
 import { EspecialistaHomeComponent } from './components/especialista/especialista-home/especialista-home.component';
 import { RegistroEspecialistaComponent } from './components/auth/registro-especialista/registro-especialista.component';
 import { AdminHomeComponent } from './components/admin/admin-home/admin-home.component';
+import { StatsHomeComponent } from './components/stats-home/stats-home.component';
 
 export const routes: Routes = [
   // Raíz
@@ -30,7 +30,8 @@ export const routes: Routes = [
   { path: 'registro-especialista', component: RegistroEspecialistaComponent },
   { path: 'seleccionar-usuario-login', component: SeleccionarUsuarioLoginComponent },
   { path: 'seleccionar-usuario-registro', component: SeleccionarUsuarioRegistroComponent },
-  { path: 'historia-clinica', component: HistoriaClinicaComponent },
+ // { path: 'historia-clinica', component: HistoriaClinicaComponent },
+  { path: 'stats-home', component: StatsHomeComponent },
   // Auth (públicas)
   {
     path: 'auth',
@@ -63,7 +64,7 @@ export const routes: Routes = [
         loadComponent: () => import('./components/paciente/turno-detalle/turno-detalle.component')
           .then(m => m.TurnoDetalleComponent)
       },
-      { path: 'historia-clinica', component: HistoriaClinicaComponent, data: { backTo: ['/paciente'] } },
+     //   { path: 'historia-clinica', component: HistoriaClinicaComponent, data: { backTo: ['/paciente'] } },
       {
         path: 'encuestas',
         data: { backTo: ['/paciente'] },

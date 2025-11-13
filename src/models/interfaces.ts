@@ -108,11 +108,6 @@ export type IngresoRow = {
   timestamp: string;         // timestamptz (ISO)
 };
 
-// ========= Misceláneos =========
-export interface DatoDinamico {
-  clave: string;
-  valor: string;
-}
 
 export interface QuickItem {
   label: string;
@@ -220,27 +215,113 @@ export interface Paciente {
   password?: string;               // TODO: eliminar
 }
 
-// ========= Historia Clínica =========
+// // ========= Historia Clínica =========
+// export interface HistoriaClinica {
+//   altura: number;
+//   peso: number;
+//   temperatura: number;
+//   presion: string;
+//   resumen: string;
+//   fiebre?: boolean;
+//   infartos?: number;
+//   datosDinamicos?: DatoDinamico[];
+// }
+
+
+// // ========= Misceláneos =========
+// export interface DatoDinamico {
+//   clave: string;
+//   valor: string;
+// }
+
+// Si ya tenes DatoDinamico, conservá tu versión.
+// Acá propongo una mínima por si la necesitas.
+export interface DatoDinamico {
+  clave: string;
+  valor: string | number | boolean;
+  tipo?: 'texto' | 'numero' | 'boolean';
+  etiqueta?: string;
+  unidad?: string;
+}
+
+// ========= Historia Clinica (unica) =========
 export interface HistoriaClinica {
+  // Requeridos (tu definición)
   altura: number;
   peso: number;
   temperatura: number;
   presion: string;
   resumen: string;
+
+  // Opcionales (tuyos)
   fiebre?: boolean;
   infartos?: number;
   datosDinamicos?: DatoDinamico[];
+
+  // Opcionales extra para UI (encabezado, filtros, etc.)
+  idConsulta?: string;      // ej: "6"
+  fecha?: string;           // ISO ej: "2025-11-10"
+  especialidad?: string;    // ej: "pediatria"
+  medico?: string;          // ej: "Augusto Morelli"
+  // Si queres mostrar datos de paciente sin otro tipo:
+  pacienteNombre?: string;
+  pacienteDni?: string;
+  pacienteFechaNacimiento?: string; // ISO
 }
 
 
+
+//-------------------------------------------
+
+
+export type Especialidad =
+  | 'clinica'
+  | 'pediatria'
+  | 'cardiologia'
+  | 'dermatologia'
+  | 'traumatologia'
+  | 'ginecologia'
+  | 'otorrinolaringologia'
+  | 'neurologia';
+
+export interface Paciente {
+  id: string;
+  nombreCompleto: string;
+  dni: string;
+  fechaNacimiento: string; // ISO
+}
+
+export interface DatosVitales {
+  alturaCm: number;
+  pesoKg: number;
+  temperaturaC: number;
+  presion: string; // ej: '120/80 mmHg'
+}
+
+export interface DatoAdicional {
+  clave: string;                   // ej: 'fiebre'
+  etiqueta?: string;               // ej: 'Fiebre'
+  tipo?: 'boolean' | 'number' | 'text';
+  valor: boolean | number | string;
+}
+
+export interface Consulta {
+  id: string;
+  fecha: string;                   // ISO
+  especialidad: Especialidad;
+  medico: string;
+  datosVitales: DatosVitales;
+  datosAdicionales: DatoAdicional[];
+  notas?: string;
+}
+
 // export interface HistoriaClinica {
-//   altura: number; // en metros
-//   peso: number; // en kg
-//   presion: string; // ejemplo: 120/80
-//   temperatura: number; // en °C
-//   fiebre: boolean;
-//   infartos: number;
+//   paciente: Paciente;
+//   consultas: Consulta[];
 // }
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 // ========= Turnos: Forma de BD (canónica) =========
