@@ -8,7 +8,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Router, RouterModule } from '@angular/router';
-import { from, map, switchMap } from 'rxjs';
+import { from, map, switchMap, firstValueFrom } from 'rxjs';
 import { SupabaseService } from '../../../services/supabase.service';
 import Swal from 'sweetalert2';
 
@@ -61,13 +61,17 @@ export class SolicitarTurnoComponent implements OnInit {
   esAdmin = false;
   pacienteId: string | null = null;
   loading = false;
+  formularioInicializado = false;
 
   constructor(
     private fb: FormBuilder,
     private supa: SupabaseService,
     public router: Router,
     private snackBar: MatSnackBar
-  ) { }
+  ) {
+    // Inicializar formulario básico inmediatamente
+    this.inicializarFormularioBasico();
+  }
 
   async ngOnInit(): Promise<void> {
     // Verificar si es admin
@@ -81,28 +85,40 @@ export class SolicitarTurnoComponent implements OnInit {
       }
     }
 
+    // Reinicializar formulario con validaciones correctas según el rol
     this.inicializarFormulario();
     await this.cargarEspecialidades();
     if (this.esAdmin) {
       await this.cargarPacientes();
     }
     this.generarDiasDisponibles();
+    this.formularioInicializado = true;
   }
 
-  inicializarFormulario(): void {
+  inicializarFormularioBasico(): void {
+    // Formulario básico para evitar errores de renderizado
     this.formularioTurno = this.fb.group({
       especialidad: this.fb.control<string | null>(null, Validators.required),
       especialista: this.fb.control<string | null>(null, Validators.required),
-      paciente: this.fb.control<string | null>(null, this.esAdmin ? Validators.required : null),
+      paciente: this.fb.control<string | null>(null),
       dia: this.fb.control<string | null>(null, Validators.required),
       hora: this.fb.control<string | null>(null, Validators.required)
     });
+    
+    // Configurar listeners básicos para evitar errores
+    this.configurarListeners();
+  }
 
+  configurarListeners(): void {
     // Cuando cambia la especialidad, filtrar especialistas
     const especialidadCtrl = this.formularioTurno.get('especialidad') as FormControl<string | null>;
     const especialistaCtrl = this.formularioTurno.get('especialista') as FormControl<string | null>;
     const diaCtrl = this.formularioTurno.get('dia') as FormControl<string | null>;
     const horaCtrl = this.formularioTurno.get('hora') as FormControl<string | null>;
+
+    if (!especialidadCtrl || !especialistaCtrl || !diaCtrl || !horaCtrl) {
+      return;
+    }
 
     especialistaCtrl.disable({ emitEvent: false });
     diaCtrl.disable({ emitEvent: false });
@@ -110,7 +126,15 @@ export class SolicitarTurnoComponent implements OnInit {
 
     especialidadCtrl.valueChanges.subscribe(esp => {
       if (esp) {
+        // Filtrar especialistas por la especialidad seleccionada
         this.especialistasFiltrados = this.especialistas.filter(e => e.especialidad === esp);
+        console.log(`[SolicitarTurno] Especialidad seleccionada: ${esp}, Especialistas encontrados: ${this.especialistasFiltrados.length}`);
+        
+        if (this.especialistasFiltrados.length === 0) {
+          console.warn(`[SolicitarTurno] No hay especialistas disponibles para la especialidad: ${esp}`);
+          this.snackBar.open(`No hay especialistas disponibles para ${esp}`, 'Cerrar', { duration: 3000 });
+        }
+        
         especialistaCtrl.reset();
         especialistaCtrl.enable({ emitEvent: false });
       } else {
@@ -145,36 +169,89 @@ export class SolicitarTurnoComponent implements OnInit {
     });
   }
 
+  inicializarFormulario(): void {
+    // Actualizar validaciones según el rol
+    const pacienteControl = this.formularioTurno.get('paciente');
+    if (pacienteControl) {
+      if (this.esAdmin) {
+        pacienteControl.setValidators(Validators.required);
+      } else {
+        pacienteControl.clearValidators();
+      }
+      pacienteControl.updateValueAndValidity();
+    }
+    
+    // Asegurar que los controles estén en el estado correcto inicial
+    const especialistaCtrl = this.formularioTurno.get('especialista') as FormControl<string | null>;
+    const diaCtrl = this.formularioTurno.get('dia') as FormControl<string | null>;
+    const horaCtrl = this.formularioTurno.get('hora') as FormControl<string | null>;
+    
+    if (especialistaCtrl && diaCtrl && horaCtrl) {
+      especialistaCtrl.disable({ emitEvent: false });
+      diaCtrl.disable({ emitEvent: false });
+      horaCtrl.disable({ emitEvent: false });
+    }
+  }
+
   async cargarEspecialidades(): Promise<void> {
-    // Primero obtener especialistas aprobados
-    from(
-      this.supa.client
+    try {
+      // Obtener IDs de especialistas aprobados
+      const { data: perfilesData, error: perfilesError } = await this.supa.client
         .from('profiles')
         .select('id')
         .eq('rol', 'especialista')
-        .eq('aprobado', true)
-    ).pipe(
-      switchMap(({ data: perfilesAprobados }) => {
-        const idsAprobados = (perfilesAprobados || []).map((p: any) => p.id);
-        return from(
-          this.supa.client
-            .from('especialistas')
-            .select('id, nombre, apellido, especialidad')
-            .in('id', idsAprobados)
-            .order('especialidad', { ascending: true })
-        );
-      }),
-      map(({ data, error }) => {
-        if (error) throw error;
-        return data || [];
-      })
-    ).subscribe({
-      next: (data: any[]) => {
-        // Obtener especialidades únicas
-        const especialidadesSet = new Set<string>();
-        const especialistasList: EspecialistaOption[] = [];
-        
-        data.forEach((e: any) => {
+        .eq('aprobado', true);
+
+      if (perfilesError) {
+        throw perfilesError;
+      }
+
+      const idsAprobados = (perfilesData || []).map((p: any) => p.id);
+      console.log('[SolicitarTurno] IDs de especialistas aprobados:', idsAprobados);
+      console.log('[SolicitarTurno] Cantidad de IDs:', idsAprobados.length);
+
+      if (idsAprobados.length === 0) {
+        console.warn('[SolicitarTurno] No hay especialistas aprobados en profiles');
+        this.especialidades = [];
+        this.especialistas = [];
+        this.especialistasFiltrados = [];
+        this.snackBar.open('No hay especialistas disponibles. Un administrador debe aprobar las cuentas primero.', 'Cerrar', { duration: 4000 });
+        return;
+      }
+
+      // Obtener datos de especialistas
+      console.log('[SolicitarTurno] Consultando especialistas con IDs:', idsAprobados);
+      const { data: especialistasData, error: especialistasError } = await this.supa.client
+        .from('especialistas')
+        .select('id, nombre, apellido, especialidad')
+        .in('id', idsAprobados);
+      
+      console.log('[SolicitarTurno] Respuesta de especialistas:', { data: especialistasData, error: especialistasError });
+
+      if (especialistasError) {
+        console.error('[SolicitarTurno] Error al consultar especialistas:', especialistasError);
+        throw especialistasError;
+      }
+
+      console.log('[SolicitarTurno] Especialistas encontrados en BD:', especialistasData?.length || 0);
+      console.log('[SolicitarTurno] Datos completos:', especialistasData);
+
+      if (!especialistasData || especialistasData.length === 0) {
+        console.warn('[SolicitarTurno] No se encontraron especialistas en la tabla especialistas');
+        this.especialidades = [];
+        this.especialistas = [];
+        this.especialistasFiltrados = [];
+        this.snackBar.open('No hay especialistas disponibles', 'Cerrar', { duration: 3000 });
+        return;
+      }
+
+      // Obtener especialidades únicas
+      const especialidadesSet = new Set<string>();
+      const especialistasList: EspecialistaOption[] = [];
+      const especialistasSinEspecialidad: any[] = [];
+      
+      especialistasData.forEach((e: any) => {
+        if (e.especialidad && e.especialidad.trim() !== '') {
           especialidadesSet.add(e.especialidad);
           especialistasList.push({
             id: e.id,
@@ -182,44 +259,67 @@ export class SolicitarTurnoComponent implements OnInit {
             apellido: e.apellido || '',
             especialidad: e.especialidad
           });
-        });
+        } else {
+          especialistasSinEspecialidad.push(e);
+          console.warn(`[SolicitarTurno] Especialista ${e.nombre} ${e.apellido} (${e.id}) no tiene especialidad asignada`);
+        }
+      });
 
-        this.especialidades = Array.from(especialidadesSet).sort();
-        this.especialistas = especialistasList;
-      },
-      error: (e) => {
-        console.error('[SolicitarTurno] Error al cargar especialidades', e);
-        this.snackBar.open('Error al cargar especialidades', 'Cerrar', { duration: 2500 });
+      if (especialistasSinEspecialidad.length > 0) {
+        console.warn(`[SolicitarTurno] ${especialistasSinEspecialidad.length} especialistas sin especialidad asignada`);
       }
-    });
+
+      this.especialidades = Array.from(especialidadesSet).sort();
+      this.especialistas = especialistasList;
+      this.especialistasFiltrados = []; // Inicializar vacío hasta que se seleccione una especialidad
+
+      console.log('[SolicitarTurno] Especialidades únicas cargadas:', this.especialidades);
+      console.log('[SolicitarTurno] Total especialistas con especialidad:', this.especialistas.length);
+      
+      if (this.especialidades.length === 0) {
+        this.snackBar.open('Los especialistas aprobados no tienen especialidad asignada', 'Cerrar', { duration: 4000 });
+      }
+    } catch (e: any) {
+      console.error('[SolicitarTurno] Error al cargar especialidades', e);
+      this.especialidades = [];
+      this.especialistas = [];
+      this.especialistasFiltrados = [];
+      this.snackBar.open(
+        `Error al cargar especialidades: ${e.message || 'Error desconocido'}`,
+        'Cerrar',
+        { duration: 4000 }
+      );
+    }
   }
 
   async cargarPacientes(): Promise<void> {
-    from(
-      this.supa.client
-        .from('profiles')
-        .select('id, nombre, apellido')
-        .eq('rol', 'paciente')
-        .order('apellido', { ascending: true })
-    ).pipe(
-      map(({ data, error }) => {
-        if (error) throw error;
-        return (data || []).map((p: any) => ({
-          id: p.id,
-          nombre: p.nombre || '',
-          apellido: p.apellido || ''
-        })) as PacienteOption[];
-      })
-    ).subscribe({
-      next: (pacientes) => {
-        this.pacientes = pacientes;
-      },
-      error: (e) => {
-        console.error('[SolicitarTurno] Error al cargar pacientes', e);
-        this.snackBar.open('Error al cargar pacientes', 'Cerrar', { duration: 2500 });
-      }
-    });
+    try {
+      const pacientes = await firstValueFrom(
+        from(
+          this.supa.client
+            .from('profiles')
+            .select('id, nombre, apellido')
+            .eq('rol', 'paciente')
+            .order('apellido', { ascending: true })
+        ).pipe(
+          map(({ data, error }) => {
+            if (error) throw error;
+            return (data || []).map((p: any) => ({
+              id: p.id,
+              nombre: p.nombre || '',
+              apellido: p.apellido || ''
+            })) as PacienteOption[];
+          })
+        )
+      );
+      
+      this.pacientes = pacientes;
+    } catch (e) {
+      console.error('[SolicitarTurno] Error al cargar pacientes', e);
+      this.snackBar.open('Error al cargar pacientes', 'Cerrar', { duration: 2500 });
+    }
   }
+
 
   generarDiasDisponibles(): void {
     const hoy = new Date();

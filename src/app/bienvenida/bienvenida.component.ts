@@ -1,5 +1,5 @@
 
-import { Component, OnInit, OnDestroy, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, ElementRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 
@@ -33,15 +33,52 @@ import { SupabaseService } from '../../services/supabase.service';
     ])
   ]
 })
-export class BienvenidaComponent implements OnInit, OnDestroy {
+export class BienvenidaComponent implements OnInit, OnDestroy, AfterViewInit {
   protected readonly autenticado = signal(false);
   private unsubscribeAuthChange?: () => void;
 
   constructor(
     private supabase: SupabaseService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private el: ElementRef
   ) {}
+
+  ngAfterViewInit(): void {
+    // Aplicar la imagen de fondo directamente al elemento hero
+    // Usamos setTimeout para asegurarnos de que el DOM esté completamente renderizado
+    setTimeout(() => {
+      const heroElement = this.el.nativeElement.querySelector('.hero') as HTMLElement;
+      if (heroElement) {
+        // Aplicar el fondo directamente al elemento hero (no al ::before)
+        heroElement.style.backgroundImage = `linear-gradient(180deg, rgba(7,26,40,.05), rgba(7,26,40,.15)), url('/assets/medical.jpg')`;
+        heroElement.style.backgroundPosition = 'center';
+        heroElement.style.backgroundSize = 'cover';
+        heroElement.style.backgroundRepeat = 'no-repeat';
+        heroElement.style.backgroundAttachment = 'fixed';
+        
+        // También aplicar al ::before para asegurar que funcione
+        const styleId = 'bienvenida-bg-style';
+        let existingStyle = document.getElementById(styleId);
+        if (existingStyle) {
+          existingStyle.remove();
+        }
+        
+        const style = document.createElement('style');
+        style.id = styleId;
+        style.textContent = `
+          .hero::before {
+            background-image: url('/assets/medical.jpg'), linear-gradient(180deg, rgba(7,26,40,.05), rgba(7,26,40,.15)) !important;
+            background-position: center !important;
+            background-size: cover !important;
+            background-repeat: no-repeat !important;
+            background-attachment: fixed !important;
+          }
+        `;
+        document.head.appendChild(style);
+      }
+    }, 100);
+  }
 
   async ngOnInit(): Promise<void> {
     // Verificar si hay tokens de verificación en la URL (viene del email)
