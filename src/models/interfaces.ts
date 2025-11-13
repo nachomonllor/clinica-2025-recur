@@ -408,3 +408,8 @@ export interface TurnoEspecialista {
   resena?: string;
 }
 
+
+export interface prueba {
+  
+   a: string;
+}
