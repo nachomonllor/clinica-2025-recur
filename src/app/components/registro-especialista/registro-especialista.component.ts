@@ -250,13 +250,15 @@ export class RegistroEspecialistaComponent implements OnInit {
       const edadCalculada = this.calcEdadFromISO(fv.fechaNacimiento!);
 
       // 5) Actualizar perfil en profiles con la imagen (el trigger ya creó el perfil básico)
-      const { error: perfilError } = await this.supa.client
+      const { data: updateData, error: perfilError } = await this.supa.client
         .from('profiles')
         .update({
           avatar_url: avatarUrl,
           aprobado: false                  // <===== requiere aprobación de Admin
         })
-        .eq('id', userId);
+        .eq('id', userId)
+        .select();
+      
       if (perfilError) throw perfilError;
 
       // 6) Insertar en tabla especialistas (una fila por cada especialidad)
