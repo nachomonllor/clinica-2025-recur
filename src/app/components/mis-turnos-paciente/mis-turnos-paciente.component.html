@@ -2,10 +2,17 @@
   <mat-card-title>Mis turnos</mat-card-title>
 
   <div class="toolbar">
-    <mat-form-field appearance="outline">
+    <mat-form-field appearance="outline" class="toolbar__filtro">
       <mat-label>Buscar</mat-label>
       <input matInput #f (input)="applyFilter(f.value)" placeholder="Especialidad, especialista o estado" />
     </mat-form-field>
+
+    <span class="toolbar__spacer"></span>
+
+    <button mat-flat-button color="primary" routerLink="/solicitar-turno">
+      <mat-icon>add_circle</mat-icon>
+      Solicitar turno
+    </button>
   </div>
 
   <!-- antes -->

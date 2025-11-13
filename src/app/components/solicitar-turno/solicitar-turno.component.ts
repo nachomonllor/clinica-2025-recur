@@ -99,12 +99,48 @@ export class SolicitarTurnoComponent implements OnInit {
     });
 
     // Cuando cambia la especialidad, filtrar especialistas
-    this.formularioTurno.get('especialidad')?.valueChanges.subscribe(esp => {
+    const especialidadCtrl = this.formularioTurno.get('especialidad') as FormControl<string | null>;
+    const especialistaCtrl = this.formularioTurno.get('especialista') as FormControl<string | null>;
+    const diaCtrl = this.formularioTurno.get('dia') as FormControl<string | null>;
+    const horaCtrl = this.formularioTurno.get('hora') as FormControl<string | null>;
+
+    especialistaCtrl.disable({ emitEvent: false });
+    diaCtrl.disable({ emitEvent: false });
+    horaCtrl.disable({ emitEvent: false });
+
+    especialidadCtrl.valueChanges.subscribe(esp => {
       if (esp) {
         this.especialistasFiltrados = this.especialistas.filter(e => e.especialidad === esp);
-        this.formularioTurno.get('especialista')?.setValue(null);
+        especialistaCtrl.reset();
+        especialistaCtrl.enable({ emitEvent: false });
       } else {
         this.especialistasFiltrados = [];
+        especialistaCtrl.reset();
+        especialistaCtrl.disable({ emitEvent: false });
+        diaCtrl.reset();
+        diaCtrl.disable({ emitEvent: false });
+        horaCtrl.reset();
+        horaCtrl.disable({ emitEvent: false });
+      }
+    });
+
+    especialistaCtrl.valueChanges.subscribe(especialista => {
+      if (especialista) {
+        diaCtrl.enable({ emitEvent: false });
+      } else {
+        diaCtrl.reset();
+        diaCtrl.disable({ emitEvent: false });
+        horaCtrl.reset();
+        horaCtrl.disable({ emitEvent: false });
+      }
+    });
+
+    diaCtrl.valueChanges.subscribe(dia => {
+      if (dia) {
+        horaCtrl.enable({ emitEvent: false });
+      } else {
+        horaCtrl.reset();
+        horaCtrl.disable({ emitEvent: false });
       }
     });
   }

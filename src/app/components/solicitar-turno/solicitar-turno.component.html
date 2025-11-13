@@ -19,7 +19,7 @@
     <!-- Especialista -->
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Especialista</mat-label>
-      <mat-select formControlName="especialista" [disabled]="!formularioTurno.get('especialidad')?.value">
+      <mat-select formControlName="especialista">
         <mat-option *ngFor="let esp of especialistasFiltrados" [value]="esp.id">
           {{ esp.apellido }}, {{ esp.nombre }}
         </mat-option>
@@ -45,7 +45,7 @@
     <!-- Día (sin Datepicker) -->
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Día</mat-label>
-      <mat-select formControlName="dia" [disabled]="!formularioTurno.get('especialista')?.value">
+      <mat-select formControlName="dia">
         <mat-option *ngFor="let dia of diasDisponibles" [value]="dia">
           {{ dia.split('|')[1] }}
         </mat-option>
@@ -58,7 +58,7 @@
     <!-- Hora -->
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Hora</mat-label>
-      <mat-select formControlName="hora" [disabled]="!formularioTurno.get('dia')?.value">
+      <mat-select formControlName="hora">
         <mat-option *ngFor="let hora of horariosDisponibles" [value]="hora">
           {{ hora }}
         </mat-option>

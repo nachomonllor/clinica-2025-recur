@@ -1,0 +1,51 @@
+.main-nav {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  padding: 0 1.5rem;
+  backdrop-filter: blur(8px);
+
+  .brand {
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    text-transform: none;
+    gap: 0.35rem;
+    display: inline-flex;
+    align-items: center;
+
+    mat-icon {
+      margin-right: 0.25rem;
+    }
+  }
+
+  .links {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-left: 1rem;
+
+    a {
+      text-transform: none;
+      font-weight: 500;
+      gap: 0.35rem;
+
+      &.active-link {
+        background: rgba(255, 255, 255, 0.24);
+      }
+    }
+  }
+
+  .spacer {
+    flex: 1 1 auto;
+  }
+
+  .usuario-nombre {
+    cursor: default;
+    opacity: 0.75;
+
+    mat-icon {
+      margin-right: 0.5rem;
+    }
+  }
+}
+
