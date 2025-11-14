@@ -7,7 +7,7 @@ export const environment = {
   captchaEnabled: true,
   quickLogins: {
     paciente: [
-      { email: 'paciente@test.com', password: 'Paciente123', nombre: 'Paciente Demo', avatar: 'assets/img/default-avatar.png' },
+      { email: 'paciente@test.com', password: 'Paciente123', nombre: 'Paciente Demo', avatar: 'assets/avatars/james.jpg' },
       { email: 'marcela.rodriguez@test.com', password: 'Paciente123', nombre: 'Marcela Rodríguez', avatar: 'assets/img/default-avatar.png' },
       { email: 'andres.lopez@test.com', password: 'Paciente123', nombre: 'Andrés López', avatar: 'assets/img/default-avatar.png' }
     ],

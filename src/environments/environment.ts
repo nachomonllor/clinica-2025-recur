@@ -8,16 +8,16 @@ export const environment = {
   captchaEnabled: true,
   quickLogins: {
     paciente: [
-      { email: 'paciente@test.com', password: 'Paciente123', nombre: 'Paciente Demo', avatar: 'assets/img/default-avatar.png' },
-      { email: 'marcela.rodriguez@test.com', password: 'Paciente123', nombre: 'Marcela Rodríguez', avatar: 'assets/img/default-avatar.png' },
-      { email: 'andres.lopez@test.com', password: 'Paciente123', nombre: 'Andrés López', avatar: 'assets/img/default-avatar.png' }
+      { email: 'james@test.com', password: 'Paciente123', nombre: 'James Hetfield', avatar: 'assets/avatars/james.jpg' },
+      { email: 'marcela.rodriguez@test.com', password: 'Paciente123', nombre: 'Marcela Rodríguez', avatar: 'assets/avatars/avril.jpg' },
+      { email: 'andres.lopez@test.com', password: 'Paciente123', nombre: 'Andrés López', avatar: 'assets/avatars/axl.jpg' }
     ],
     especialista: [
-      { email: 'especialista@test.com', password: 'Especialista123', nombre: 'Dra. Ana Ruiz', avatar: 'assets/img/default-avatar.png' },
-      { email: 'jorge.perez@test.com', password: 'Especialista123', nombre: 'Dr. Jorge Pérez', avatar: 'assets/img/default-avatar.png' }
+      { email: 'especialista@test.com', password: 'Especialista123', nombre: 'Dra. Ana Ruiz', avatar: 'assets/avatars/einstein.jpg' },
+      { email: 'jorge.perez@test.com', password: 'Especialista123', nombre: 'Dr. Jorge Pérez', avatar: 'assets/avatars/mendel.jpg' }
     ],
     admin: [
-      { email: 'admin@test.com', password: 'Admin123', nombre: 'Administrador Demo', avatar: 'assets/img/default-avatar.png' }
+      { email: 'admin@test.com', password: 'Admin123', nombre: 'Administrador Demo', avatar: 'assets/avatars/newton.jpg' }
     ]
   }
 };

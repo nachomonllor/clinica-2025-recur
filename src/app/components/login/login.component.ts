@@ -253,7 +253,7 @@ export class LoginComponent implements OnInit {
         email: user.email,
         password: user.password,
         nombre: user.nombre ?? user.email,
-        avatar: user.avatar ?? 'assets/img/default-avatar.png',
+        avatar: user.avatar ?? 'assets/avatars/james.jpg',
         rol: 'paciente'
       });
     });
@@ -262,7 +262,7 @@ export class LoginComponent implements OnInit {
         email: user.email,
         password: user.password,
         nombre: user.nombre ?? user.email,
-        avatar: user.avatar ?? 'assets/img/default-avatar.png',
+        avatar: user.avatar ?? 'assets/avatars/mendel.jpg',
         rol: 'especialista'
       });
     });
@@ -271,7 +271,7 @@ export class LoginComponent implements OnInit {
         email: user.email,
         password: user.password,
         nombre: user.nombre ?? user.email,
-        avatar: user.avatar ?? 'assets/img/default-avatar.png',
+        avatar: user.avatar ?? 'assets/avatars/jagger.jpg',
         rol: 'admin'
       });
     });
