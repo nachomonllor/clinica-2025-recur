@@ -14,8 +14,8 @@ export const routes: Routes = [
 
   // Auth / público
   { path: 'login-paciente',
-    loadComponent: () => import('./components/login-paciente/login-paciente.component')
-      .then(m => m.LoginPacienteComponent),
+    loadComponent: () => import('./components/login/login.component')
+      .then(m => m.LoginComponent),
     data: { animation: 'login' } },
 
   { path: 'registro-paciente',

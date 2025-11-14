@@ -1,6 +1,6 @@
 <!-- src/app/components/login-paciente/login-paciente.component.html -->
 <mat-card class="login-card" *ngIf="formularioLogin as f">
-    <mat-card-title>Iniciar sesión – Paciente</mat-card-title>
+    <mat-card-title>Iniciar sesión</mat-card-title>
 
     <form [formGroup]="f" (ngSubmit)="iniciarSesion()">
         <div *ngIf="error" class="login-error">{{ error }}</div>

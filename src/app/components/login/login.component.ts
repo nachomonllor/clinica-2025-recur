@@ -42,17 +42,17 @@ interface QuickAccessUser {
 // }
 
 @Component({
-  selector: 'app-login-paciente',
+  selector: 'app-login',
   standalone: true,
   imports: [
     CommonModule, ReactiveFormsModule, RouterModule,
     MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatTooltipModule, MatProgressSpinnerModule, MatSnackBarModule,
     AutoFocusDirective
   ],
-  templateUrl: './login-paciente.component.html',
-  styleUrls: ['./login-paciente.component.scss']
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.scss']
 })
-export class LoginPacienteComponent implements OnInit {
+export class LoginComponent implements OnInit {
   formularioLogin!: FormGroup;
   cargando = false;
   error: string = '';

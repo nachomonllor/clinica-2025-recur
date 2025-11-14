@@ -25,9 +25,9 @@
   isolation: isolate;
 
   /* Fondo fotográfico + overlay oscuro */
-  background:
-    linear-gradient(180deg, rgba(7,26,40,.70) 0%, rgba(7,26,40,.82) 55%, rgba(7,26,40,.92) 100%),
-    url('/assets/medical.jpg') center / cover no-repeat fixed;
+   background:
+    linear-gradient(180deg, rgba(7,26,40,.70) 0%, rgba(7,26,40,.82) 55%, rgba(7,26,40,.92) 100%) center / cover no-repeat fixed,
+    url('/assets/medical.jpg') center / 95% auto no-repeat fixed; /* ← PROBAR OTROS PORCENTAJES */
 }
 
 /* Luces complementarias (cian y naranja) difuminadas */
