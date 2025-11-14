@@ -16,7 +16,8 @@ export const routes: Routes = [
   { path: 'login-paciente',
     loadComponent: () => import('./components/login/login.component')
       .then(m => m.LoginComponent),
-    data: { animation: 'login' } },
+    data: { animation: 'login' } 
+  },
 
   { path: 'registro-paciente',
     loadComponent: () => import('./components/registro-paciente/registro-paciente.component')

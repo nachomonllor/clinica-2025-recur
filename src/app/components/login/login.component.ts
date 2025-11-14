@@ -35,11 +35,6 @@ interface QuickAccessUser {
   avatar: string;
   rol: Rol;
 }
-// interface Perfil {
-//   id: string;
-//   rol: Rol;
-//   aprobado?: boolean | null;
-// }
 
 @Component({
   selector: 'app-login',
