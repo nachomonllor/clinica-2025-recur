@@ -10,7 +10,6 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatIconModule } from '@angular/material/icon';
-import { from, map, switchMap } from 'rxjs';
 import { SupabaseService } from '../../../services/supabase.service';
 import { HistoriaClinica } from '../../../models/historia-clinica.model';
 import { DatoDinamico } from '../../../models/dato-dinamico.model';
