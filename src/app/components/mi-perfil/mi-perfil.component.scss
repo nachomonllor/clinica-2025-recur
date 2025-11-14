@@ -1,231 +1,303 @@
 :host {
-  display: block;
-  padding: 1rem;
+  --surface: #ffffff;
+  --surface-2: #f5f7fb;
+  --brand-1: #2b7fff;         /* acento */
+  --brand-2: #7aa7ff;         /* acento suave */
+  --text-1: #111827;          /* título */
+  --text-2: #4b5563;          /* secundario */
+  --divider: #e5e7eb;         /* líneas suaves */
+  --ok: #10b981;
+  --warn: #f59e0b;
+  --shadow: 0 10px 25px rgba(17, 24, 39, 0.08);
 }
 
+/* === CONTENEDOR PRINCIPAL === */
 mat-card {
-  max-width: 900px;
-  margin: 0 auto;
+  padding: 0; /* nos encargamos del padding por secciones */
+  background: transparent;
+  box-shadow: none;
 }
 
-.perfil-info {
-  display: flex;
-  gap: 24px;
-  margin-bottom: 32px;
+/* === HERO === */
+.perfil-card {
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--surface);
 }
 
-.avatar-section {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  align-items: center;
+.perfil-hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: 120px 1fr auto;
+  gap: 18px;
+  padding: 24px 28px;
+  background: linear-gradient(135deg, #e6f2ff 0%, #f6f8fc 100%);
+  border-bottom: 1px solid var(--divider);
+}
+
+.avatar-wrapper {
+  position: relative;
+  width: 120px;
+  height: 120px;
 }
 
 .avatar {
-  width: 150px;
-  height: 150px;
-  border-radius: 50%;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  border: 3px solid #e0e0e0;
+  border-radius: 14px;
+  border: 3px solid #fff;
+  box-shadow: var(--shadow);
+  background: #eef2ff;
+  display: grid;
+  place-items: center;
 }
 
 .avatar-placeholder {
-  width: 150px;
-  height: 150px;
-  border-radius: 50%;
-  background: #f5f5f5;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 3px solid #e0e0e0;
+  color: var(--text-2);
+  font-size: 56px;
 }
 
-.avatar-placeholder mat-icon {
-  font-size: 80px;
-  width: 80px;
-  height: 80px;
-  color: #999;
-}
-
-.avatar-secondary img {
-  width: 100px;
-  height: 100px;
+.avatar-secondary {
+  position: absolute;
+  right: -8px;
+  bottom: -8px;
+  width: 56px;
+  height: 56px;
   border-radius: 10px;
-  object-fit: cover;
-  border: 2px solid #e0e0e0;
+  overflow: hidden;
+  border: 2px solid #8fa0ec;
+  background: #c673f7;
+  img { width: 100%; height: 100%; object-fit: cover; }
 }
 
-.datos-section {
-  flex: 1;
-}
-
-.datos-section h3 {
-  margin-top: 0;
-  color: #333;
-}
-
-.datos-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 16px;
-}
-
-.dato-item {
-  padding: 8px 0;
-}
-
-.dato-item strong {
-  color: #666;
-  margin-right: 8px;
-}
-
-.chips-container {
+.hero-text {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 8px;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
 }
 
-.horarios-section {
-  margin-top: 32px;
-  padding-top: 32px;
-  border-top: 2px solid #e0e0e0;
-}
-
-.horarios-section h3 {
-  margin-top: 0;
-  color: #333;
-}
-
-.horario-card {
-  margin-bottom: 24px;
-}
-
-.dias-section,
-.horas-section {
-  margin: 16px 0;
-}
-
-.dias-section label,
-.horas-section label {
-  display: block;
-  margin-bottom: 12px;
-  font-weight: 500;
-  color: #666;
-}
-
-.checkboxes {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.checkboxes mat-checkbox {
-  margin-right: 8px;
-}
-
-.actions {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 24px;
-}
-
-.actions button {
-  min-width: 150px;
-}
-
-.historia-clinica-section {
-  margin-top: 32px;
-  padding-top: 32px;
-  border-top: 2px solid #e0e0e0;
-}
-
-.historia-header {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 16px;
-}
-
-.historia-header-text h3 {
-  margin: 0;
-  color: #333;
-}
-
-.historia-resumen {
-  margin: 4px 0 0;
-  color: #5f6368;
-  font-size: 0.95rem;
-}
-
-.historia-header-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  align-items: center;
-}
-
-.selector-profesional {
-  width: 220px;
-}
-
-.sin-historias {
-  margin: 0 0 16px;
-  color: #757575;
-}
-
-.historia-content {
-  padding: 8px 0 16px;
-}
-
-.historia-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-.historia-item {
-  color: #444;
-}
-
-.historia-item strong {
-  color: #333;
-}
-
-.datos-dinamicos {
-  margin-top: 12px;
-}
-
-.datos-dinamicos h4 {
-  margin: 0 0 8px;
-}
-
-.datos-dinamicos ul {
-  margin: 0;
-  padding-left: 20px;
-}
-
-.datos-dinamicos li {
+.bienvenido {
+  color: var(--brand-2);
+  font-weight: 700;
+  letter-spacing: .6px;
+  text-transform: uppercase;
+  font-size: 12px;
   margin-bottom: 4px;
-  color: #555;
 }
 
-@media (max-width: 600px) {
-  .selector-profesional {
-    width: 100%;
+.nombre {
+  color: var(--text-1);
+  font-size: 28px;
+  line-height: 1.1;
+  margin: 0 0 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rol {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #7d8db8;
+  color: #091b4e;
+}
+.rol.especialista { background: #02ff95; color: #0b7a55; }
+.rol.paciente     { background: #496ccf; color: #3754aa; }
+
+.menu-fab {
+  align-self: start;
+  margin-top: 4px;
+}
+
+/* === BODY: DOS TARJETAS === */
+.perfil-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  padding: 18px 20px 22px;
+  background: var(--surface);
+}
+
+.panel {
+  background: #109fff;
+  border-radius: 14px;
+  padding: 18px 18px 14px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--divider);
+
+  h3 {
+    margin: 0 0 10px;
+    color: var(--text-1);
+    font-size: 16px;
+    font-weight: 700;
   }
 
-  .historia-header-actions {
+  .divider {
+    height: 2px;
     width: 100%;
-    flex-direction: column;
-    align-items: stretch;
+    background: linear-gradient(90deg, var(--brand-1), transparent);
+    opacity: .5;
+    margin-bottom: 12px;
   }
 
-  .historia-header-actions button {
-    width: 100%;
+  .rows {
+    margin: 0 0 8px;
   }
+
+  .row {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 8px;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px dashed var(--divider);
+
+    &:last-child { border-bottom: 0; }
+
+    dt {
+      color: var(--text-2);
+      font-weight: 600;
+    }
+    dd {
+      margin: 0;
+      color: var(--text-1);
+      word-break: break-word;
+    }
+    .email { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; }
+    .capitalize { text-transform: capitalize; }
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    ::ng-deep .mat-mdc-chip {
+      --mdc-chip-elevated-container-color: #2e406d;
+      --mdc-chip-label-text-color: #274b9f;
+      font-weight: 600;
+    }
+  }
+
+  .link-historia { margin-top: 10px; }
+}
+
+/* === HORARIOS (tu sección actual, solo estilos) === */
+.horarios-section {
+  margin-top: 18px;
+  padding: 14px 20px 6px;
+  background: var(--surface-2);
+  border-radius: 14px;
+  border: 1px solid var(--divider);
+
+  h3 {
+    margin: 0 0 5px;
+  }
+  p { color: var(--text-2); margin: 0 0 14px; }
+
+  .horario-card {
+    margin-bottom: 16px;
+    border-radius: 12px;
+    border: 1px solid var(--divider);
+    background: #c4c7e6;
+
+    .dias-section, .horas-section {
+      margin-top: 8px;
+
+      label {
+        display: block;
+        font-weight: 700;
+        color: var(--text-1);
+        margin-bottom: 6px;
+      }
+
+      .checkboxes {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+        gap: 4px 10px;
+
+        ::ng-deep .mdc-form-field>label { color: var(--text-2); }
+      }
+    }
+  }
+
+  .actions {
+    margin: 8px 0 10px;
+  }
+}
+
+/* === HISTORIA CLÍNICA (tu sección actual, solo estilos) === */
+.historia-clinica-section {
+  margin-top: 18px;
+  padding: 14px 20px 20px;
+  background: var(--surface-2);
+  border-radius: 14px;
+  border: 1px solid var(--divider);
+
+  .historia-header {
+    display: flex;
+    gap: 16px;
+    align-items: end;
+    justify-content: space-between;
+    margin-bottom: 8px;
+
+    .historia-resumen { color: var(--text-2); margin: 4px 0 0; }
+    .selector-profesional { width: 260px; }
+  }
+
+  .sin-historias { color: var(--text-2); }
+
+  ::ng-deep .mat-expansion-panel {
+    border: 1px solid var(--divider);
+    border-radius: 12px !important;
+    background: #00aeff;
+    margin-bottom: 10px;
+  }
+
+  .historia-content {
+    padding: 10px 16px 16px;
+
+    .historia-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 6px 14px;
+      margin-bottom: 8px;
+
+      .historia-item strong { color: var(--text-2); }
+    }
+
+    .datos-dinamicos {
+      border-top: 1px dashed var(--divider);
+      padding-top: 8px;
+    }
+  }
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 960px) {
+  .perfil-hero {
+    grid-template-columns: 96px 1fr 40px;
+    padding: 18px;
+  }
+
+  .avatar-wrapper { width: 96px; height: 96px; }
+  .nombre { font-size: 22px; }
+
+  .perfil-body {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    padding: 14px;
+  }
+}
+
+@media (max-width: 599px) {
+  .perfil-hero { grid-template-columns: 72px 1fr 32px; }
+  .avatar-wrapper { width: 72px; height: 72px; }
+  .nombre { font-size: 20px; }
+  .row { grid-template-columns: 140px 1fr !important; }
 }
 

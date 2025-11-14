@@ -1,4 +1,95 @@
-<mat-card>
+ 
+ <!-- HEADER / HERO DE PERFIL -->
+<div class="perfil-card mat-elevation-z4" *ngIf="perfil">
+  <div class="perfil-hero">
+    <div class="avatar-wrapper">
+      <img *ngIf="perfil.avatar_url" [src]="perfil.avatar_url" alt="Avatar" class="avatar" />
+      <div *ngIf="!perfil.avatar_url" class="avatar avatar-placeholder">
+        <mat-icon>person</mat-icon>
+      </div>
+
+      <!-- Foto secundaria para paciente (como en la captura) -->
+      <div *ngIf="perfil.rol === 'paciente' && perfil.imagen2_url" class="avatar-secondary mat-elevation-z2">
+        <img [src]="perfil.imagen2_url" alt="Imagen secundaria" />
+      </div>
+    </div>
+
+    <div class="hero-text">
+      <div class="bienvenido">¡BIENVENIDO/A!</div>
+      <h2 class="nombre">{{ perfil.nombre }} {{ perfil.apellido }}</h2>
+      <span class="rol" [class.especialista]="esEspecialista" [class.paciente]="esPaciente">
+        {{ esPaciente ? 'Paciente' : 'Especialista' }}
+      </span>
+    </div>
+
+    <!-- Icono de menú flotante (decorativo como en la imagen) -->
+    <button mat-mini-fab color="primary" class="menu-fab" aria-label="Menú">
+      <mat-icon>menu</mat-icon>
+    </button>
+  </div>
+
+  <!-- CUERPO: DOS TARJETAS -->
+  <div class="perfil-body">
+    <!-- Datos personales -->
+    <section class="panel mat-elevation-z2">
+      <h3>Datos Personales</h3>
+      <div class="divider"></div>
+
+      <dl class="rows">
+        <div class="row">
+          <dt>Edad:</dt>
+          <dd>{{ calcularEdad(perfil.fecha_nacimiento) }}</dd>
+        </div>
+        <div class="row">
+          <dt>DNI:</dt>
+          <dd>{{ perfil.dni }}</dd>
+        </div>
+        <div class="row" *ngIf="perfil.obra_social">
+          <dt>Obra Social:</dt>
+          <dd class="capitalize">{{ perfil.obra_social }}</dd>
+        </div>
+        <div class="row" *ngIf="perfil.fecha_nacimiento">
+          <dt>Fecha de nacimiento:</dt>
+          <dd>{{ perfil.fecha_nacimiento | date:'dd/MM/yyyy' }}</dd>
+        </div>
+
+        <div class="row" *ngIf="perfil.especialidades?.length">
+          <dt>Especialidades:</dt>
+          <dd>
+            <div class="chips">
+              <mat-chip *ngFor="let esp of perfil.especialidades">{{ esp }}</mat-chip>
+            </div>
+          </dd>
+        </div>
+      </dl>
+
+      <button
+        mat-raised-button
+        color="primary"
+        class="link-historia"
+        (click)="scrollToHistoria()">
+        Ver Historial Clínico
+      </button>
+    </section>
+
+    <!-- Información de contacto -->
+    <section class="panel mat-elevation-z2">
+      <h3>Información de Contacto</h3>
+      <div class="divider"></div>
+
+      <dl class="rows">
+        <div class="row">
+          <dt>Correo electrónico:</dt>
+          <dd class="email">{{ perfil.email }}</dd>
+        </div>
+      </dl>
+    </section>
+  </div>
+</div>
+
+
+ 
+ <!-- <mat-card>
   <mat-card-title>Mi Perfil</mat-card-title>
 
   <div class="perfil-info" *ngIf="perfil">
@@ -43,7 +134,7 @@
     </div>
   </div>
 
-  <!-- Sección de Horarios (solo para especialistas) -->
+   Sección de Horarios (solo para especialistas) 
   <div class="horarios-section" *ngIf="esEspecialista && formularioHorarios">
     <h3>Mis Horarios</h3>
     <p>Configura tu disponibilidad horaria por especialidad</p>
@@ -53,7 +144,7 @@
         <mat-card *ngFor="let grupo of horariosArray.controls; let i = index" [formGroupName]="i" class="horario-card">
           <mat-card-title>{{ getHorarioGroup(i).get('especialidad')?.value }}</mat-card-title>
 
-          <!-- Días de la semana -->
+           Días de la semana 
           <div class="dias-section">
             <label>Días disponibles:</label>
             <div class="checkboxes">
@@ -67,7 +158,7 @@
             </div>
           </div>
 
-          <!-- Horarios -->
+           Horarios 
           <div class="horas-section">
             <label>Horarios disponibles:</label>
             <div class="checkboxes">
@@ -91,7 +182,7 @@
     </form>
   </div>
 
-  <!-- Sección de Historia Clínica (solo para pacientes) -->
+   Sección de Historia Clínica (solo para pacientes) 
   <div class="historia-clinica-section" *ngIf="esPaciente">
     <div class="historia-header">
       <div class="historia-header-text">
@@ -181,4 +272,4 @@
     </ng-template>
   </div>
 </mat-card>
-
+  -->

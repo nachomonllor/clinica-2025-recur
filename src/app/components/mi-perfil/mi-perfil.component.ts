@@ -63,7 +63,7 @@ export class MiPerfilComponent implements OnInit {
   historiasClinicas: (HistoriaClinica & { especialistaNombre?: string; fechaAtencion?: string })[] = [];
   especialistasDisponibles: { id: string; nombre: string }[] = [];
   especialistaSeleccionado: 'todos' | string = 'todos';
-  
+
   formularioHorarios!: FormGroup<{
     horarios: FormArray<FormGroup<{
       especialidad: FormControl<string | null>;
@@ -126,7 +126,7 @@ export class MiPerfilComponent implements OnInit {
         .eq('id', userId);
 
       const especialidades = especialidadesData?.map((e: any) => e.especialidad) || [];
-      
+
       this.perfil = {
         ...perfilBase,
         especialidades
@@ -169,7 +169,7 @@ export class MiPerfilComponent implements OnInit {
     const grupo = this.getHorarioGroup(index);
     const diasControl = grupo.get('dias') as FormControl<string[]>;
     const diasActuales = diasControl.value || [];
-    
+
     if (event.checked) {
       diasControl.setValue([...diasActuales, event.source.value]);
     } else {
@@ -181,7 +181,7 @@ export class MiPerfilComponent implements OnInit {
     const grupo = this.getHorarioGroup(index);
     const horasControl = grupo.get('horas') as FormControl<string[]>;
     const horasActuales = horasControl.value || [];
-    
+
     if (event.checked) {
       horasControl.setValue([...horasActuales, event.source.value]);
     } else {
@@ -426,7 +426,7 @@ export class MiPerfilComponent implements OnInit {
           doc.text('Datos adicionales:', 20, yPos);
           yPos += 6;
           doc.setFont('helvetica', 'normal');
-        historia.datos_dinamicos.forEach((dato: DatoDinamico) => {
+          historia.datos_dinamicos.forEach((dato: DatoDinamico) => {
             doc.text(formatearDatoDinamico(dato), 25, yPos);
             yPos += 6;
           });
@@ -442,7 +442,7 @@ export class MiPerfilComponent implements OnInit {
       });
 
       // Generar nombre de archivo
-      const nombrePaciente = this.perfil 
+      const nombrePaciente = this.perfil
         ? `${this.perfil.apellido}_${this.perfil.nombre}`.replace(/\s+/g, '_')
         : 'historia_clinica';
       const fecha = new Date().toISOString().split('T')[0];
@@ -452,11 +452,11 @@ export class MiPerfilComponent implements OnInit {
         const profesional = this.especialistasDisponibles.find(e => e.id === this.especialistaSeleccionado);
         const slugProfesional = profesional
           ? profesional.nombre
-              .toLowerCase()
-              .normalize('NFD')
-              .replace(/[\u0300-\u036f]/g, '')
-              .replace(/[^a-z0-9]+/g, '_')
-              .replace(/^_+|_+$/g, '')
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/[^a-z0-9]+/g, '_')
+            .replace(/^_+|_+$/g, '')
           : 'profesional';
         nombreArchivo = `historia_clinica_${nombrePaciente}_${slugProfesional}_${fecha}.pdf`;
       }
@@ -480,5 +480,22 @@ export class MiPerfilComponent implements OnInit {
   formatDatoDinamico(dato: DatoDinamico): string {
     return formatearDatoDinamico(dato);
   }
+
+
+  // Devuelve "N años" (o "—" si no hay fecha)
+  calcularEdad(fecha?: string): string {
+    if (!fecha) return '—';
+    const birth = new Date(fecha);
+    if (Number.isNaN(birth.getTime())) return '—';
+    const diff = Date.now() - birth.getTime();
+    const age = Math.max(0, new Date(diff).getUTCFullYear() - 1970);
+    return `${age} años`;
+  }
+
+  scrollToHistoria(): void {
+    const el = document.getElementById('historiaClinica');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
 }
 
