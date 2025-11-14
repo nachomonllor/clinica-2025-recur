@@ -11,8 +11,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 
 // Animaciones
 import { trigger, transition, style, animate } from '@angular/animations';
-
-import { SupabaseService } from '../../services/supabase.service';
+import { SupabaseService } from '../../../services/supabase.service';
 
 @Component({
   selector: 'app-bienvenida',
@@ -40,8 +39,6 @@ export class BienvenidaComponent implements OnInit, OnDestroy {
   constructor(
     private supabase: SupabaseService,
     private router: Router,
-    private route: ActivatedRoute,
-    private el: ElementRef
   ) {}
 
   // ngAfterViewInit(): void {

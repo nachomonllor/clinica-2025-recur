@@ -8,8 +8,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatCardModule } from '@angular/material/card';
-import { SupabaseService } from '../../../services/supabase.service';
-import { TurnoVM, EstadoTurno } from '../../../models/turno.model';
+import { EstadoTurno, TurnoVM } from '../../../../models/turno.model';
+import { SupabaseService } from '../../../../services/supabase.service';
 
 type TurnoUI = TurnoVM & {
   paciente: string;
