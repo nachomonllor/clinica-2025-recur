@@ -18,9 +18,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { Router } from '@angular/router';
 import { TurnoService } from '../../../services/turno.service';
 import { TurnoEspecialista } from '../../../models/turno-especialista.model';
-import { Turno } from '../../../models/turno.model';
 import { SupabaseService } from '../../../services/supabase.service';
-import { HistoriaClinica } from '../../../models/historia-clinica.model';
 import { DatoDinamico } from '../../../models/dato-dinamico.model';
 import Swal from 'sweetalert2';
 import { StatusLabelPipe } from '../../../pipes/status-label.pipe';
@@ -31,7 +29,10 @@ import { ElevateOnHoverDirective } from '../../../directives/elevate-on-hover.di
   selector: 'app-mis-turnos-especialista',
   standalone: true,
   templateUrl: './mis-turnos-especialista.component.html',
-  styleUrl: './mis-turnos-especialista.component.scss',
+ // styleUrl: './mis-turnos-especialista.component.scss',
+
+  styleUrls: ['./mis-turnos-especialista.component.scss'],
+
   imports: [
     CommonModule,
     FormsModule,

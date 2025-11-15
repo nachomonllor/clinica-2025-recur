@@ -135,6 +135,15 @@
   color:#e5f0ff !important;
 }
 
+/* compacta el header nativo de mat-card */
+::ng-deep .mat-mdc-card-header {
+  padding: 8px 12px !important;
+  background: linear-gradient(135deg, #040914, #0a1326);
+  border-bottom: 1px solid rgba(148,163,184,.28);
+}
+::ng-deep .mat-mdc-card-header .mat-mdc-card-title {
+  margin: 0 !important; color: #eaf2ff; font-weight: 800; font-size: 20px;
+}
 
 /* Responsive */
 @media (max-width:768px){

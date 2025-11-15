@@ -1,8 +1,12 @@
 <div class="profile-page" [@pageIn]>
 
   <!-- HERO -->
-  <section class="hero">
-    <div class="hero-bg" [class.has-banner]="usuario.bannerUrl" [style.--banner-url]="'url(' + usuario.bannerUrl + ')'"></div>
+
+  <!-- section class="hero" -->
+
+
+    <!-- <div class="hero-bg" [class.has-banner]="usuario.bannerUrl" [style.--banner-url]="'url(' + usuario.bannerUrl + ')'">
+    </div> -->
 
     <div class="hero-content glass">
       <div class="hero-left">
@@ -22,24 +26,33 @@
       </div>
 
       <div class="hero-right">
-        <span class="status" [class.on]="usuario.habilitado">{{ usuario.habilitado ? 'HABILITADO' : 'DESHABILITADO' }}</span>
+        <span class="status" [class.on]="usuario.habilitado">{{ usuario.habilitado ? 'HABILITADO' : 'DESHABILITADO'
+          }}</span>
         <div class="hero-actions">
           <a routerLink="/usuarios" class="btn ghost ripple" aria-label="Volver">
-            <svg class="icon" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <svg class="icon" viewBox="0 0 24 24">
+              <path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
             Volver
           </a>
           <button class="btn primary ripple" (click)="enviarMail()">
-            <svg class="icon" viewBox="0 0 24 24"><path d="M4 6l8 6 8-6M4 18h16V6H4v12z"/></svg>
+            <svg class="icon" viewBox="0 0 24 24">
+              <path d="M4 6l8 6 8-6M4 18h16V6H4v12z" />
+            </svg>
             Mensaje
           </button>
           <button class="btn danger ripple" (click)="toggleHabilitado()">
-            <svg class="icon" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <svg class="icon" viewBox="0 0 24 24">
+              <path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
             {{ usuario.habilitado ? 'Deshabilitar' : 'Habilitar' }}
           </button>
         </div>
       </div>
     </div>
-  </section>
+
+
+  <!-- /section -->
 
   <!-- CONTENIDO -->
   <section class="content-grid">
@@ -79,7 +92,10 @@
           <span class="label">Email</span>
           <a class="value email" [href]="'mailto:' + usuario.email">{{ usuario.email }}</a>
           <button class="icon-btn ripple" (click)="copiar(usuario.email)" aria-label="Copiar email">
-            <svg class="icon" viewBox="0 0 24 24"><path d="M8 7h10a2 2 0 012 2v9a2 2 0 01-2 2H8a2 2 0 01-2-2V9a2 2 0 012-2z"/><path d="M16 3H6a2 2 0 00-2 2v9"/></svg>
+            <svg class="icon" viewBox="0 0 24 24">
+              <path d="M8 7h10a2 2 0 012 2v9a2 2 0 01-2 2H8a2 2 0 01-2-2V9a2 2 0 012-2z" />
+              <path d="M16 3H6a2 2 0 00-2 2v9" />
+            </svg>
           </button>
         </div>
 
@@ -87,13 +103,17 @@
           <span class="label">Teléfono</span>
           <a class="value" [href]="'tel:' + usuario.telefono">{{ usuario.telefono }}</a>
           <button class="icon-btn ripple" (click)="llamar()" aria-label="Llamar">
-            <svg class="icon" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2A19.8 19.8 0 013 5.18 2 2 0 015 3h3a2 2 0 012 1.72c.12.9.3 1.78.57 2.63a2 2 0 01-.45 2L9 10a16 16 0 007 7l.65-.74a2 2 0 012-.45c.85.27 1.73.45 2.63.57A2 2 0 0122 16.92z"/></svg>
+            <svg class="icon" viewBox="0 0 24 24">
+              <path
+                d="M22 16.92v3a2 2 0 01-2.18 2A19.8 19.8 0 013 5.18 2 2 0 015 3h3a2 2 0 012 1.72c.12.9.3 1.78.57 2.63a2 2 0 01-.45 2L9 10a16 16 0 007 7l.65-.74a2 2 0 012-.45c.85.27 1.73.45 2.63.57A2 2 0 0122 16.92z" />
+            </svg>
           </button>
         </div>
 
         <div class="info-row" *ngIf="usuario.direccion || usuario.ciudad">
           <span class="label">Dirección</span>
-          <span class="value">{{ usuario.direccion }} <ng-container *ngIf="usuario.ciudad">- {{ usuario.ciudad }}</ng-container></span>
+          <span class="value">{{ usuario.direccion }} <ng-container *ngIf="usuario.ciudad">- {{ usuario.ciudad
+              }}</ng-container></span>
         </div>
       </div>
     </article>
@@ -123,14 +143,20 @@
 
     <!-- Atajos -->
     <article class="panel actions-panel">
-      <header class="panel-h"><h2>Acciones rápidas</h2></header>
+      <header class="panel-h">
+        <h2>Acciones rápidas</h2>
+      </header>
       <div class="panel-b quick-actions">
         <button class="btn primary ripple" (click)="descargarHistoria()">
-          <svg class="icon" viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <svg class="icon" viewBox="0 0 24 24">
+            <path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
           Descargar historia
         </button>
         <button class="btn ghost ripple" (click)="verTurnos()">
-          <svg class="icon" viewBox="0 0 24 24"><path d="M8 7h8M7 11h10M6 15h12M6 19h12"/></svg>
+          <svg class="icon" viewBox="0 0 24 24">
+            <path d="M8 7h8M7 11h10M6 15h12M6 19h12" />
+          </svg>
           Ver turnos
         </button>
       </div>
@@ -138,7 +164,9 @@
 
     <!-- Timeline -->
     <article class="panel span-2">
-      <header class="panel-h"><h2>Actividad reciente</h2></header>
+      <header class="panel-h">
+        <h2>Actividad reciente</h2>
+      </header>
       <div class="panel-b">
         <ol class="timeline">
           <li>
@@ -159,5 +187,3 @@
 
   </section>
 </div>
-
-

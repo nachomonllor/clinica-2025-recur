@@ -20,8 +20,11 @@ import { MatCardModule } from '@angular/material/card';
 import Swal from 'sweetalert2';
 import { SupabaseService } from '../../../services/supabase.service';
 import { environment } from '../../../environments/environment';
-import { CaptchaComponent } from '../captcha/captcha.component';
+
 import { CaptchaImagenComponent } from '../captcha-imagen/captcha-imagen.component';
+
+import { RecaptchaModule, RecaptchaFormsModule, ReCaptchaV3Service } from 'ng-recaptcha-2';
+
 
 @Component({
   selector: 'app-registro-paciente',
@@ -34,7 +37,7 @@ import { CaptchaImagenComponent } from '../captcha-imagen/captcha-imagen.compone
     MatButtonModule,
     MatCardModule,
   //  CaptchaComponent,
-    CaptchaImagenComponent
+  CaptchaImagenComponent
 ],
   templateUrl: './registro-paciente.component.html',
   styleUrls: ['./registro-paciente.component.scss']
@@ -63,35 +66,55 @@ export class RegistroPacienteComponent implements OnInit {
   maxDateISO!: string;        // hoy
   readonly minDateISO = '1900-01-01';
 
-  constructor(
-    private fb: FormBuilder,
-    private sb: SupabaseService,
-    private router: Router
-  ) { }
+  // constructor(
+  //   private fb: FormBuilder,
+  //   private sb: SupabaseService,
+  //   private router: Router
+  // ) { }
 
-
-  
   /// ------------------- CAPTCHA ------------------
 
-  //captchaValido = false;
 
-  onCaptchaValido(valido: boolean): void {
-    this.captchaValido = valido;
+ // constructor(private v3: ReCaptchaV3Service) {}
+
+   //registroPacienteForm: FormGroup;
+     siteKey = environment.recaptchaSiteKey;
+
+
+  recaptchaToken: string | null = null;
+
+  constructor(  private fb: FormBuilder,
+    private sb: SupabaseService,
+    private router: Router,
+  private v3: ReCaptchaV3Service) {
+
   }
 
-  // onSubmit(): void {
-  //   if (this.formularioLogin.invalid || !this.captchaValido) {
-  //     this.formularioLogin.markAllAsTouched();
+  // onCaptchaResolved(token: string | null): void {
+  //   this.recaptchaToken = token;
+  // }
 
-  //     if (!this.captchaValido) {
-  //       // opcional: mostrar mensaje
-  //       // this.snackBar.open('Resuelve el captcha', 'Cerrar', { duration: 3000 });
-  //     }
-
+  // async onSubmit(): Promise<void> {
+  //   if (this.registroPacienteForm.invalid || !this.recaptchaToken) {
+  //     this.registroPacienteForm.markAllAsTouched();
   //     return;
   //   }
 
+  //   // registro + envío de token al backend
   // }
+  
+    //siteKey = environment.recaptchaSiteKey;
+  token: string | null = null;
+
+
+
+  onCaptchaResolved(tok: string | null) { this.token = tok; }
+
+  // async onSubmit() {
+  //   if (this.form.invalid || !this.token) { this.form.markAllAsTouched(); return; }
+  //   // Envía también this.token al backend para verificación
+  // }
+
 
   // -----------------------------------------
 
@@ -244,7 +267,13 @@ export class RegistroPacienteComponent implements OnInit {
   // ---- SUBMIT ----
 
   async onSubmit(): Promise<void> {
-    if (this.registroPacienteForm.invalid) {
+    // if (this.registroPacienteForm.invalid) {
+    //   this.registroPacienteForm.markAllAsTouched();
+    //   return;
+    // }
+
+
+     if (this.registroPacienteForm.invalid || !this.recaptchaToken) {
       this.registroPacienteForm.markAllAsTouched();
       return;
     }

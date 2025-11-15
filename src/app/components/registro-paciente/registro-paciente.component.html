@@ -105,17 +105,31 @@
     <!-- <app-captcha [enabled]="captchaEnabled" (captchaValid)="onCaptchaValid($event)">
     </app-captcha> -->
 
-    <div class="captcha-wrapper">
+    <!-- <div class="captcha-wrapper">
       <app-captcha-imagen (captchaValido)="onCaptchaValido($event)"></app-captcha-imagen>
-    </div>
+    </div> -->
 
-    <button mat-raised-button color="accent" class="full-width"
+    <!-- <button mat-raised-button color="accent" class="full-width"
       [disabled]="loading || registroPacienteForm.invalid || !captchaValido" type="submit">
       {{ loading ? 'Registrando...' : 'Registrarse' }}
+    </button> -->
+
+
+    <!-- <div class="captcha-wrapper">
+      <re-captcha [siteKey]="recaptchaSiteKey" (resolved)="onCaptchaResolved($event)"></re-captcha>
+    </div> -->
+
+
+      <!-- re-captcha [siteKey]="siteKey" (resolved)="onCaptchaResolved($event)"></re-captcha -->
+
+
+    <button mat-raised-button color="primary" type="submit"
+      [disabled]="registroPacienteForm.invalid || !recaptchaToken">
+      Registrarse
     </button>
+
+
   </form>
-
-
 
 
 </mat-card>
