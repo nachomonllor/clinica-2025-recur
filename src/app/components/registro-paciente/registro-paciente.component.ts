@@ -21,7 +21,7 @@ import Swal from 'sweetalert2';
 import { SupabaseService } from '../../../services/supabase.service';
 import { environment } from '../../../environments/environment';
 import { CaptchaComponent } from '../captcha/captcha.component';
-import { CaptchaImagenComponent } from "../../captcha-imagen/captcha-imagen.component";
+import { CaptchaImagenComponent } from '../captcha-imagen/captcha-imagen.component';
 
 @Component({
   selector: 'app-registro-paciente',
@@ -33,7 +33,7 @@ import { CaptchaImagenComponent } from "../../captcha-imagen/captcha-imagen.comp
     MatInputModule,
     MatButtonModule,
     MatCardModule,
-    CaptchaComponent,
+  //  CaptchaComponent,
     CaptchaImagenComponent
 ],
   templateUrl: './registro-paciente.component.html',

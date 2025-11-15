@@ -6,12 +6,11 @@
 import { Routes } from '@angular/router';
 import { adminGuard } from '../services/admin.guard';
 import { BienvenidaComponent } from './components/bienvenida/bienvenida.component';
-import { SeleccionEstadisticasComponent } from './seleccion-estadisticas/seleccion-estadisticas.component';
 import { UsuariosComponent } from './components/usuarios/usuarios.component';
-import { TurnosPorEspecialidadComponent } from './turnos-por-especialidad/turnos-por-especialidad.component';
 import { PerfilUsuarioComponent } from './components/admin/perfil-usuario/perfil-usuario.component';
 import { ReportesComponent } from './components/admin/reportes/reportes.component';
-//import { LogIngresosAdminComponent } from './log-ingresos-admin/log-ingresos-admin.component';
+import { SeleccionEstadisticasComponent } from './components/seleccion-estadisticas/seleccion-estadisticas.component';
+import { TurnosPorEspecialidadComponent } from './components/turnos-por-especialidad/turnos-por-especialidad.component';
 
 export const routes: Routes = [
   // Home (redirige a bienvenida)
@@ -124,7 +123,7 @@ export const routes: Routes = [
    // './log-ingresos-admin/log-ingresos-admin.component'
 
    { path: 'log-ingreso', 
-       loadComponent: () => import( './log-ingresos-admin/log-ingresos-admin.component')  
+       loadComponent: () => import( './components/log-ingresos-admin/log-ingresos-admin.component')  
        .then( m => m.LogIngresosAdminComponent) },  
     
 

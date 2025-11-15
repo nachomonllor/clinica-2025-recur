@@ -22,7 +22,6 @@ import {
 
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
-import { EstadisticasService } from '../../services/estadisticas.service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatRippleModule, MatNativeDateModule } from '@angular/material/core';
@@ -34,6 +33,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { CommonModule } from '@angular/common';
+import { EstadisticasService } from '../../../services/estadisticas.service';
 
 
 export type ChartOptions = {

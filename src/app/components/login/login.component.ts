@@ -15,8 +15,7 @@ import { environment } from '../../../environments/environment';
 import { AutoFocusDirective } from '../../../directives/auto-focus.directive';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { QuickAccessUser, QuickLoginsConfig, Rol } from '../../../models/interfaces';
-import { CaptchaImagenComponent } from "../../captcha-imagen/captcha-imagen.component";
-
+import { CaptchaImagenComponent } from '../captcha-imagen/captcha-imagen.component';
 
 @Component({
   selector: 'app-login',
