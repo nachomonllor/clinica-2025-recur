@@ -1,9 +1,126 @@
+
+  <!-- HERO con buscador inline -->
+  <!-- <header class="hero hero--inline">
+    <div class="hero-left">
+      <h2>Mis turnos (Especialista)</h2>
+      <p>Gestioná solicitudes, confirmá, rechazá o finalizá con historia clínica.</p>
+    </div>
+
+    <div class="hero-right">
+      <mat-form-field appearance="outline" class="toolbar__filtro">
+        <mat-label>Buscar</mat-label>
+        <input
+          matInput
+          #f
+          (input)="applyFilter(f.value)"
+          placeholder="Paciente, especialidad, estado o términos de la historia clínica" />
+      </mat-form-field>
+
+      <span class="toolbar__count" *ngIf="turnos.length">{{ turnos.length }} turno(s)</span>
+    </div>
+  </header> -->
+
+  <!-- LISTA DE CARDS -->
+  <section class="lista" *ngIf="turnos.length; else sinTurnos">
+    <article
+      class="turno-card"
+      *ngFor="let t of turnos"
+      [class.aceptado]="t.estado==='aceptado'"
+      [class.realizado]="t.estado==='realizado'"
+      [class.pendiente]="t.estado==='pendiente'"
+      [class.rechazado]="t.estado==='rechazado'"
+      [class.cancelado]="t.estado==='cancelado'">
+
+      <div class="card-header">
+        <div class="fecha-hora">
+          <!-- Si tu 'fecha' es string, lo muestro directo para evitar pipe inválido -->
+          <div class="fecha">{{ t.fecha }}</div>
+          <div class="hora">{{ t.hora }}</div>
+        </div>
+
+        <span class="estado-chip" [appStatusBadge]="t.estado">
+          {{ t.estado | statusLabel }}
+        </span>
+      </div>
+
+      <div class="card-body">
+        <div class="linea">
+          <span class="label">Paciente</span>
+          <span class="valor">{{ t.paciente }}</span>
+        </div>
+        <div class="linea">
+          <span class="label">Especialidad</span>
+          <span class="valor">{{ t.especialidad }}</span>
+        </div>
+        <div class="linea" *ngIf="t.resena">
+          <span class="label">Reseña</span>
+          <span class="valor">{{ t.resena }}</span>
+        </div>
+      </div>
+
+      <div class="card-actions">
+        <!-- Aceptar -->
+        <button mat-icon-button color="primary"
+                *ngIf="puedeAceptar(t)"
+                (click)="aceptarTurno(t)"
+                matTooltip="Aceptar turno">
+          <mat-icon>check_circle</mat-icon>
+        </button>
+
+        <!-- Rechazar -->
+        <button mat-icon-button color="warn"
+                *ngIf="puedeRechazar(t)"
+                (click)="rechazarTurno(t)"
+                matTooltip="Rechazar turno">
+          <mat-icon>block</mat-icon>
+        </button>
+
+        <!-- Cancelar -->
+        <button mat-icon-button color="warn"
+                *ngIf="puedeCancelar(t)"
+                (click)="cancelarTurno(t)"
+                matTooltip="Cancelar turno">
+          <mat-icon>cancel</mat-icon>
+        </button>
+
+        <!-- Finalizar (Historia Clínica) -->
+        <button mat-icon-button color="accent"
+                *ngIf="puedeFinalizar(t)"
+                (click)="finalizarTurno(t)"
+                matTooltip="Finalizar turno (Historia clínica)">
+          <mat-icon>event_available</mat-icon>
+        </button>
+
+        <!-- Ver reseña -->
+        <button mat-icon-button color="primary"
+                *ngIf="puedeVerResena(t)"
+                (click)="verResena(t)"
+                matTooltip="Ver reseña">
+          <mat-icon>visibility</mat-icon>
+        </button>
+      </div>
+    </article>
+  </section>
+
+
+  
+
+<ng-template #sinTurnos>
+  <div class="empty">
+    <p>No se encontraron turnos.</p>
+  </div>
+</ng-template >
+
+
+
+
+
 <mat-card class="mis-turnos-container" appElevateOnHover>
     <mat-card-header>
         <mat-card-title>Mis Turnos (Especialista)</mat-card-title>
-    </mat-card-header>
+    </mat-card-header >
 
-    <!-- filtro único -->
+  
     <div class="filter-container">
         <mat-form-field appearance="outline" style="width: 60%;">
             <mat-label>Filtra por especialidad o paciente</mat-label>

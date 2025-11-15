@@ -129,7 +129,7 @@ export const routes: Routes = [
 
   
 
-  { path: '**', redirectTo: 'login-paciente' },
+  { path: '**', redirectTo: 'bienvenida' },
 
   
   

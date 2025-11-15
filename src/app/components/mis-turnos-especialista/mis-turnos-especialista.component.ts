@@ -101,8 +101,8 @@ export class MisTurnosEspecialistaComponent implements OnInit {
             if (error) {
               this.snackBar.open(`Error al rechazar: ${error.message}`, 'Cerrar', { duration: 2500 });
             } else {
-        turno.estado = 'rechazado';
-        this.dataSource.data = [...this.dataSource.data];
+              turno.estado = 'rechazado';
+              this.dataSource.data = [...this.dataSource.data];
               this.snackBar.open('Turno rechazado', 'Cerrar', { duration: 2000 });
             }
           });
@@ -135,8 +135,8 @@ export class MisTurnosEspecialistaComponent implements OnInit {
             if (error) {
               this.snackBar.open(`Error al cancelar: ${error.message}`, 'Cerrar', { duration: 2500 });
             } else {
-        turno.estado = 'cancelado';
-        this.dataSource.data = [...this.dataSource.data];
+              turno.estado = 'cancelado';
+              this.dataSource.data = [...this.dataSource.data];
               this.snackBar.open('Turno cancelado', 'Cerrar', { duration: 2000 });
             }
           });
@@ -182,7 +182,7 @@ export class MisTurnosEspecialistaComponent implements OnInit {
 
       const especialistaId = sessionData.session.user.id;
       const fv = form.value;
-      
+
       // Obtener paciente_id del turno
       const { data: turnoData, error: turnoError } = await this.supa.client
         .from('turnos')
@@ -271,18 +271,18 @@ export class MisTurnosEspecialistaComponent implements OnInit {
   // }
 
   ngOnInit(): void {
-  this.turnoService.getTurnosEspecialista$().subscribe({
-    next: (ts) => {
+    this.turnoService.getTurnosEspecialista$().subscribe({
+      next: (ts) => {
         this.dataSource.data = ts;
         // Configurar filtro por especialidad, paciente, estado o historia clínica
         this.dataSource.filterPredicate = (t, f) => {
           const haystack = `${t.especialidad} ${t.paciente} ${t.estado} ${t.historiaBusqueda || ''}`.toLowerCase();
           return haystack.includes(f);
         };
-    },
-    error: (e) => console.error('[MisTurnosEspecialista] Error', e)
-  });
-}
+      },
+      error: (e) => console.error('[MisTurnosEspecialista] Error', e)
+    });
+  }
 
 
   // applyFilter(value: string): void {
@@ -295,18 +295,18 @@ export class MisTurnosEspecialistaComponent implements OnInit {
   }
 
   puedeAceptar(turno: TurnoEspecialista): boolean {
-    return turno.estado !== 'aceptado' && turno.estado !== 'realizado' && 
-           turno.estado !== 'cancelado' && turno.estado !== 'rechazado';
+    return turno.estado !== 'aceptado' && turno.estado !== 'realizado' &&
+      turno.estado !== 'cancelado' && turno.estado !== 'rechazado';
   }
 
   puedeRechazar(turno: TurnoEspecialista): boolean {
-    return turno.estado !== 'aceptado' && turno.estado !== 'realizado' && 
-           turno.estado !== 'cancelado' && turno.estado !== 'rechazado';
+    return turno.estado !== 'aceptado' && turno.estado !== 'realizado' &&
+      turno.estado !== 'cancelado' && turno.estado !== 'rechazado';
   }
 
   puedeCancelar(turno: TurnoEspecialista): boolean {
-    return turno.estado !== 'aceptado' && turno.estado !== 'realizado' && 
-           turno.estado !== 'rechazado' && turno.estado !== 'cancelado';
+    return turno.estado !== 'aceptado' && turno.estado !== 'realizado' &&
+      turno.estado !== 'rechazado' && turno.estado !== 'cancelado';
   }
 
   puedeFinalizar(turno: TurnoEspecialista): boolean {
@@ -332,8 +332,8 @@ export class MisTurnosEspecialistaComponent implements OnInit {
             if (error) {
               this.snackBar.open(`Error al aceptar: ${error.message}`, 'Cerrar', { duration: 2500 });
             } else {
-    turno.estado = 'aceptado';
-    this.dataSource.data = [...this.dataSource.data];
+              turno.estado = 'aceptado';
+              this.dataSource.data = [...this.dataSource.data];
               this.snackBar.open('Turno aceptado', 'Cerrar', { duration: 2000 });
             }
           });
@@ -345,18 +345,12 @@ export class MisTurnosEspecialistaComponent implements OnInit {
     this.snackBar.open(turno.resena ?? 'Sin reseña', 'Cerrar', { duration: 4000 });
   }
 
+
+  get turnos(): TurnoEspecialista[] {
+    const ds = this.dataSource as MatTableDataSource<TurnoEspecialista>;
+    return (ds.filteredData?.length ? ds.filteredData : ds.data) || [];
+  }
+
+
 }
 
-
-
-// import { Component } from '@angular/core';
-
-// @Component({
-//   selector: 'app-mis-turnos-especialista',
-//   imports: [],
-//   templateUrl: './mis-turnos-especialista.component.html',
-//   styleUrl: './mis-turnos-especialista.component.scss'
-// })
-// export class MisTurnosEspecialistaComponent {
-
-// }
