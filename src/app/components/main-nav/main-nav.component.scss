@@ -1,0 +1,125 @@
+/* Barra totalmente transparente, con contraste asegurado */
+.main-nav {
+  /* Fondo y caja */
+  background: transparent !important;   /* clave: sin color de fondo */
+  box-shadow: none !important;          /* anulamos mat-elevation si lo tuviera */
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  padding-inline: clamp(8px, 2vw, 16px);
+
+  /* Tinta por defecto (podés ajustarla si tu fondo es ultra claro) */
+  --nav-ink: #ffffff;
+  --nav-ink-muted: rgba(255,255,255,.82);
+
+  color: var(--nav-ink);
+
+  /* Mejora de legibilidad: halo para textos y drop-shadow para íconos */
+  /* Aplica a todo texto dentro del toolbar (excepto menús desplegados) */
+  .brand span,
+  .links a span,
+  .usuario-nombre span {
+    text-shadow:
+      0 2px 8px rgba(0,0,0,.45),
+      0 1px 2px rgba(0,0,0,.35);
+  }
+
+  mat-icon,
+  .avatar-icon {
+    color: var(--nav-ink);
+    /* Sombras suaves para que se lean sobre claros y oscuros */
+    filter:
+      drop-shadow(0 2px 6px rgba(0,0,0,.40))
+      drop-shadow(0 1px 1px rgba(0,0,0,.30));
+  }
+
+  /* Marca / Home */
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+
+    mat-icon {
+      font-size: 22px;
+      width: 22px;
+      height: 22px;
+    }
+
+    span {
+      color: var(--nav-ink);
+    }
+  }
+
+  /* Navegación principal */
+  .links {
+    display: flex;
+    gap: 6px;
+    margin-left: 8px;
+
+    a[mat-button] {
+      /* Botón “fantasma” (sin fondo), con padding cómodo */
+      color: var(--nav-ink);
+      text-transform: none;
+      font-weight: 600;
+      line-height: 36px;
+      padding: 0 10px;
+      border-radius: 10px;
+
+      /* Evita que Angular Material aplique un bg al focus */
+      background: transparent;
+    }
+
+    /* Hover/active con velo translúcido para no perder transparencia */
+    a[mat-button]:hover,
+    .active-link {
+      background: rgba(255,255,255,.12);
+    }
+  }
+
+  .spacer { flex: 1 1 auto; }
+
+  /* Botón de avatar */
+  .avatar-button {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,.28);
+    display: grid; place-items: center;
+    padding: 0;
+  }
+
+  .avatar-img {
+    width: 100%; height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  /* Ítem del menú con el nombre del usuario (disabled) */
+  .usuario-nombre {
+    opacity: .95;
+    span { color: var(--nav-ink-muted); }
+  }
+}
+
+/* Si dejaste la clase de elevación, la apagamos para que no “pinte caja” */
+.main-nav.mat-elevation-z4 {
+  box-shadow: none !important;
+}
+
+/* (Opcional) Modo “blend” para fondos MUY variables:
+   invierte el color según el fondo y garantiza contraste máximo.
+   Activalo añadiendo la clase .blend al toolbar si lo necesitás. */
+.main-nav.blend,
+.main-nav.blend .brand,
+.main-nav.blend .links a,
+.main-nav.blend .avatar-icon {
+  mix-blend-mode: difference;
+  color: #ffffff;
+  text-shadow: none; /* con blend no hace falta sombra */
+}
+
+/* (Opcional) Reducir movimiento: respetamos accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+  .main-nav * { transition: none !important; }
+}

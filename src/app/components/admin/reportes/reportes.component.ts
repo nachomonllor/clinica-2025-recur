@@ -3,7 +3,11 @@ import { Component, ChangeDetectionStrategy, ViewChild, ElementRef, OnInit } fro
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Chart } from 'chart.js/auto';
+<<<<<<< HEAD
 import { SupabaseService } from '../../../services/supabase.service';
+=======
+import { SupabaseService } from '../../../../services/supabase.service';
+>>>>>>> 1-6-mas-estilos
 
 @Component({
   selector: 'app-reportes',
@@ -37,8 +41,13 @@ export class ReportesComponent implements OnInit {
   }
 
   ngOnInit(): void {
+<<<<<<< HEAD
     this.form.valueChanges.subscribe(() => this.load());
     this.load();
+=======
+   // this.form.valueChanges.subscribe(() => this.load());
+   // this.load();
+>>>>>>> 1-6-mas-estilos
   }
 
   // Datos
@@ -72,6 +81,7 @@ export class ReportesComponent implements OnInit {
   //   this.load(); // primera carga
   // }
 
+<<<<<<< HEAD
   // ====> Y AQUÍ VA load() (dentro de la clase)
   async load() {
     this.loading = true;
@@ -93,6 +103,29 @@ export class ReportesComponent implements OnInit {
       this.loading = false;
     }
   }
+=======
+  // ====>  LOAD DENTRO DE LA CLASE 
+  // async load() {
+  //   this.loading = true;
+  //   try {
+  //     const desde = new Date(this.form.value.desde! + 'T00:00:00');
+  //     const hasta = new Date(this.form.value.hasta! + 'T23:59:59');
+
+  //     // usamos las funciones que ya agregaste en tu SupabaseService
+  //     [this.turnos, this.ingresos] = await Promise.all([
+  //       this.supa.fetchTurnos(desde, hasta),
+  //       this.supa.fetchIngresos(desde, hasta),
+  //     ]);
+
+  //     this.computeKpis();
+  //     this.renderAllCharts();
+  //   } catch (e) {
+  //     console.error('Error cargando reportes', e);
+  //   } finally {
+  //     this.loading = false;
+  //   }
+  // }
+>>>>>>> 1-6-mas-estilos
 
   // ====== Charts ======
   renderAllCharts() {

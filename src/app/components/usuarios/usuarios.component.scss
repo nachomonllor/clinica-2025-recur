@@ -1,0 +1,338 @@
+:host {
+  --bg-1: #0a1020;
+  --bg-2: #0b152b;
+  --glass: rgba(255, 255, 255, 0.06);
+  --glass-strong: rgba(255, 255, 255, 0.12);
+  --border: rgba(255, 255, 255, 0.14);
+  --text: #e9eef8;
+  --muted: #aeb6c7;
+
+  --success: #22c55e;
+  --danger: #ef4444;
+
+  --purple: #7c3aed;
+  --teal: #06b6d4;
+  --blue: #2563eb;
+  --pink: #ec4899;
+}
+
+* { box-sizing: border-box; }
+
+/* ---------- Página ---------- */
+.page {
+  min-height: 100vh;
+  color: var(--text);
+  background:
+    radial-gradient(1200px 700px at 10% -10%, #0ea5ea22, transparent),
+    radial-gradient(1000px 600px at 110% 120%, #a78bfa22, transparent),
+    linear-gradient(180deg, var(--bg-1), var(--bg-2));
+  padding: clamp(16px, 3vw, 32px);
+}
+
+/* ---------- Header / Filtros ---------- */
+.header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 16px 24px;
+  align-items: center;
+  position: sticky;
+  top: 16px;
+  z-index: 2;
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--glass);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  .brand-logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(135deg, #60a5fa33, #c084fc33);
+    border: 1px solid var(--border);
+  }
+  .brand-text {
+    line-height: 1.1;
+    small { display: block; color: var(--muted); }
+  }
+}
+
+.filters {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.glass {
+  background: var(--glass);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(6px);
+}
+
+.search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  min-width: 340px;
+
+  .icon {
+    width: 18px; height: 18px;
+    fill: var(--muted);
+    flex: 0 0 auto;
+  }
+  input {
+    width: 100%;
+    color: var(--text);
+    border: 0; outline: 0; background: transparent;
+    font-size: 14px;
+  }
+}
+
+.chips { display: flex; gap: 8px; }
+.chip {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 12px;
+  color: var(--muted);
+  background: transparent;
+  transition: all 160ms ease;
+  cursor: pointer;
+
+  &.sm { padding: 4px 8px; font-size: 11px; }
+  &:hover { color: var(--text); border-color: #ffffff33; transform: translateY(-1px); }
+  &.active {
+    color: var(--text);
+    background: linear-gradient(135deg, #60a5fa33, #a78bfa33);
+    border-color: #ffffff3d;
+  }
+}
+
+.only-enabled {
+  display: flex; align-items: center; gap: 8px; color: var(--muted);
+  input { accent-color: var(--success); transform: translateY(1px); }
+}
+
+/* ---------- Grilla de tarjetas ---------- */
+.grid {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+  gap: 22px;
+}
+
+/* ---------- Tarjetas ---------- */
+.user-card {
+  position: relative;
+  border: 1px solid var(--border);
+  background: var(--glass);
+  backdrop-filter: blur(6px);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.32);
+  transform-style: preserve-3d;
+  transition: transform 280ms cubic-bezier(.2,.8,.2,1), box-shadow 280ms ease;
+
+  /* Habilita container queries (clave para el layout adaptativo de acciones/info) */
+  container-type: inline-size;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 46px rgba(0, 0, 0, 0.42);
+  }
+}
+
+.accent { height: 6px; width: 100%; background: linear-gradient(90deg, #60a5fa55, #a78bfa55); }
+.purple .accent { background: linear-gradient(90deg, #7c3aed88, #a78bfa88); }
+.teal   .accent { background: linear-gradient(90deg, #06b6d488, #22d3ee88); }
+.blue   .accent { background: linear-gradient(90deg, #2563eb88, #60a5fa88); }
+.pink   .accent { background: linear-gradient(90deg, #ec489988, #f472b688); }
+
+/* Cabecera tarjeta */
+.card-header {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 12px;
+  padding: 16px 16px 8px;
+  align-items: center;
+}
+
+.avatar {
+  width: 54px; height: 54px;
+  border-radius: 16px;
+  display: grid; place-items: center;
+  border: 1px solid var(--border);
+  background: linear-gradient(135deg, #1e293b, #0f172a);
+  color: #93c5fd; font-weight: 700;
+  user-select: none; overflow: hidden;
+
+  &.has-img {
+    background: #000;
+    img { width: 100%; height: 100%; object-fit: cover; }
+  }
+}
+
+.title {
+  min-width: 0;
+  h3 {
+    margin: 0; font-size: 18px; line-height: 1.1;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .sub {
+    margin-top: 4px; display: flex; align-items: center; gap: 8px;
+    color: var(--muted); font-size: 12px;
+    .role { letter-spacing: .4px; font-weight: 600; }
+    .dot::before { content: '•'; color: #64748b; }
+  }
+}
+
+.status {
+  padding: 6px 10px; border-radius: 999px; font-size: 11px;
+  border: 1px solid #ffffff22;
+  transition: transform 180ms ease;
+  will-change: background-color;
+  @media (prefers-reduced-motion: no-preference) {
+    .user-card:hover & { transform: translateY(-2px); }
+  }
+}
+
+/* ---------- Cuerpo tarjeta ---------- */
+.card-body {
+  padding: 8px 16px 16px;
+
+  /* Layout por defecto (tarjeta angosta): info arriba, acciones abajo */
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    "info"
+    "actions";
+  gap: 14px;
+  align-items: start;
+}
+
+/* Coloca cada bloque en su área de grid */
+.info    { grid-area: info;    min-width: 0; display: grid; gap: 10px; }
+.actions { grid-area: actions; display: flex; gap: 10px; align-items: center; justify-content: flex-start; flex-wrap: wrap; min-width: 0; }
+
+/* Cuando la tarjeta es lo suficientemente ancha, acciones pasa a la derecha */
+@container (min-width: 620px) {
+  .card-body {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: "info actions";
+  }
+  .actions { justify-content: flex-end; }
+}
+
+/* Fallback para navegadores sin container queries (basado en viewport) */
+@supports not (container-type: inline-size) {
+  @media (min-width: 900px) {
+    .card-body {
+      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-areas: "info actions";
+    }
+    .actions { justify-content: flex-end; }
+  }
+}
+
+/* Filas de información */
+.info-row {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr); /* etiqueta fija + valor flexible */
+  gap: 10px;
+  align-items: center;
+
+  .label { color: var(--muted); font-size: 12px; }
+  .value {
+    font-size: 14px;
+    /* Evita “una letra por línea” y sólo rompe cuando es necesario */
+    white-space: normal;
+    overflow-wrap: break-word;
+    word-break: break-word;
+
+    &.tag {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--glass-strong);
+      background: #ffffff14;
+    }
+  }
+
+  .chips-line { display: flex; flex-wrap: wrap; gap: 6px; }
+}
+
+/* Acciones y botones */
+.btn {
+  position: relative;
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-weight: 600;
+  border: 1px solid var(--border);
+  background: #ffffff10;
+  color: var(--text);
+  cursor: pointer;
+  transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+  white-space: nowrap;        /* no partir textos de botones */
+  flex-shrink: 0;             /* que no aplasten la columna de info */
+
+  .icon {
+    width: 18px; height: 18px;
+    fill: none; stroke: currentColor; stroke-width: 2;
+  }
+  &:hover { transform: translateY(-1px); background: #ffffff14; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.28); }
+
+  &.primary { background: linear-gradient(135deg, #2563eb66, #7c3aed66); border-color: #ffffff33; }
+  &.ghost   { background: transparent; }
+  &.danger  { background: linear-gradient(135deg, #ef444466, #f59e0b33); border-color: #ffffff33; }
+}
+
+/* Ripple CSS (micro-interacción) */
+.ripple { overflow: hidden; }
+.ripple:after {
+  content: '';
+  position: absolute; inset: 0; border-radius: inherit;
+  transform: scale(0);
+  background: radial-gradient(circle, #ffffff55 10%, transparent 10.01%) center/10px 10px;
+  opacity: 0;
+  transition: transform 450ms, opacity 600ms;
+}
+.ripple:active:after { transform: scale(30); opacity: 1; transition: 0s; }
+
+/* Enlaces de email (si usás <a>) */
+.value.email { text-decoration: none; color: inherit; }
+.value.email:hover { text-decoration: underline; }
+
+/* Accesibilidad: reducir movimiento */
+@media (prefers-reduced-motion: reduce) {
+  .user-card, .btn, .status { transition: none !important; }
+}
+
+
+/* Imagen de fondo (debajo de todo) */
+.bg-img {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;        /* cover como antes */
+  object-position: center;  /* ajusta si querés enfocar otra zona */
+  filter: saturate(90%);
+  pointer-events: none;     /* no bloquea clicks */
+}

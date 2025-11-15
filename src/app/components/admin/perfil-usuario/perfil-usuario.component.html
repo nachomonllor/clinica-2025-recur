@@ -1,0 +1,189 @@
+<div class="profile-page" [@pageIn]>
+
+  <!-- HERO -->
+
+  <!-- section class="hero" -->
+
+
+    <!-- <div class="hero-bg" [class.has-banner]="usuario.bannerUrl" [style.--banner-url]="'url(' + usuario.bannerUrl + ')'">
+    </div> -->
+
+    <div class="hero-content glass">
+      <div class="hero-left">
+        <div class="avatar" [class.has-img]="usuario.avatarUrl">
+          <img *ngIf="usuario.avatarUrl" [src]="usuario.avatarUrl" [alt]="nombreCompleto" />
+          <span *ngIf="!usuario.avatarUrl">{{ usuario.nombre[0] }}{{ usuario.apellido[0] }}</span>
+        </div>
+
+        <div class="title">
+          <h1>{{ nombreCompleto }}</h1>
+          <div class="sub">
+            <span class="chip role">{{ usuario.rol | uppercase }}</span>
+            <span class="dot" *ngIf="usuario.edad"></span>
+            <span *ngIf="usuario.edad">{{ usuario.edad }} años</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-right">
+        <span class="status" [class.on]="usuario.habilitado">{{ usuario.habilitado ? 'HABILITADO' : 'DESHABILITADO'
+          }}</span>
+        <div class="hero-actions">
+          <a routerLink="/usuarios" class="btn ghost ripple" aria-label="Volver">
+            <svg class="icon" viewBox="0 0 24 24">
+              <path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            Volver
+          </a>
+          <button class="btn primary ripple" (click)="enviarMail()">
+            <svg class="icon" viewBox="0 0 24 24">
+              <path d="M4 6l8 6 8-6M4 18h16V6H4v12z" />
+            </svg>
+            Mensaje
+          </button>
+          <button class="btn danger ripple" (click)="toggleHabilitado()">
+            <svg class="icon" viewBox="0 0 24 24">
+              <path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            {{ usuario.habilitado ? 'Deshabilitar' : 'Habilitar' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+
+  <!-- /section -->
+
+  <!-- CONTENIDO -->
+  <section class="content-grid">
+
+    <!-- Info Personal -->
+    <article class="panel">
+      <header class="panel-h">
+        <h2>Información Personal</h2>
+      </header>
+      <div class="panel-b info">
+        <div class="info-row">
+          <span class="label">Nombre</span>
+          <span class="value">{{ nombreCompleto }}</span>
+        </div>
+        <div class="info-row" *ngIf="usuario.edad">
+          <span class="label">Edad</span>
+          <span class="value">{{ usuario.edad }} años</span>
+        </div>
+        <div class="info-row" *ngIf="usuario.dni">
+          <span class="label">DNI</span>
+          <span class="value">{{ usuario.dni }}</span>
+        </div>
+        <div class="info-row" *ngIf="usuario.bio">
+          <span class="label">Acerca</span>
+          <span class="value">{{ usuario.bio }}</span>
+        </div>
+      </div>
+    </article>
+
+    <!-- Contacto -->
+    <article class="panel">
+      <header class="panel-h">
+        <h2>Información de Contacto</h2>
+      </header>
+      <div class="panel-b info">
+        <div class="info-row">
+          <span class="label">Email</span>
+          <a class="value email" [href]="'mailto:' + usuario.email">{{ usuario.email }}</a>
+          <button class="icon-btn ripple" (click)="copiar(usuario.email)" aria-label="Copiar email">
+            <svg class="icon" viewBox="0 0 24 24">
+              <path d="M8 7h10a2 2 0 012 2v9a2 2 0 01-2 2H8a2 2 0 01-2-2V9a2 2 0 012-2z" />
+              <path d="M16 3H6a2 2 0 00-2 2v9" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="info-row" *ngIf="usuario.telefono">
+          <span class="label">Teléfono</span>
+          <a class="value" [href]="'tel:' + usuario.telefono">{{ usuario.telefono }}</a>
+          <button class="icon-btn ripple" (click)="llamar()" aria-label="Llamar">
+            <svg class="icon" viewBox="0 0 24 24">
+              <path
+                d="M22 16.92v3a2 2 0 01-2.18 2A19.8 19.8 0 013 5.18 2 2 0 015 3h3a2 2 0 012 1.72c.12.9.3 1.78.57 2.63a2 2 0 01-.45 2L9 10a16 16 0 007 7l.65-.74a2 2 0 012-.45c.85.27 1.73.45 2.63.57A2 2 0 0122 16.92z" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="info-row" *ngIf="usuario.direccion || usuario.ciudad">
+          <span class="label">Dirección</span>
+          <span class="value">{{ usuario.direccion }} <ng-container *ngIf="usuario.ciudad">- {{ usuario.ciudad
+              }}</ng-container></span>
+        </div>
+      </div>
+    </article>
+
+    <!-- Profesional / Obra social -->
+    <article class="panel">
+      <header class="panel-h">
+        <h2>{{ usuario.rol === 'especialista' ? 'Información Profesional' : 'Cobertura' }}</h2>
+      </header>
+      <div class="panel-b info">
+        <ng-container *ngIf="usuario.rol === 'especialista'; else cobertura">
+          <div class="info-row">
+            <span class="label">Especialidades</span>
+            <span class="value chips-line">
+              <span class="chip sm" *ngFor="let e of usuario.especialidades">{{ e }}</span>
+            </span>
+          </div>
+        </ng-container>
+        <ng-template #cobertura>
+          <div class="info-row" *ngIf="usuario.obraSocial">
+            <span class="label">Obra social</span>
+            <span class="value tag">{{ usuario.obraSocial }}</span>
+          </div>
+        </ng-template>
+      </div>
+    </article>
+
+    <!-- Atajos -->
+    <article class="panel actions-panel">
+      <header class="panel-h">
+        <h2>Acciones rápidas</h2>
+      </header>
+      <div class="panel-b quick-actions">
+        <button class="btn primary ripple" (click)="descargarHistoria()">
+          <svg class="icon" viewBox="0 0 24 24">
+            <path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          Descargar historia
+        </button>
+        <button class="btn ghost ripple" (click)="verTurnos()">
+          <svg class="icon" viewBox="0 0 24 24">
+            <path d="M8 7h8M7 11h10M6 15h12M6 19h12" />
+          </svg>
+          Ver turnos
+        </button>
+      </div>
+    </article>
+
+    <!-- Timeline -->
+    <article class="panel span-2">
+      <header class="panel-h">
+        <h2>Actividad reciente</h2>
+      </header>
+      <div class="panel-b">
+        <ol class="timeline">
+          <li>
+            <div class="time">Hoy 10:42</div>
+            <div class="event">Actualizó su foto de perfil</div>
+          </li>
+          <li>
+            <div class="time">Ayer 18:20</div>
+            <div class="event">Inicio de sesión exitoso</div>
+          </li>
+          <li>
+            <div class="time">08/11 09:10</div>
+            <div class="event">Descargó reporte de turnos</div>
+          </li>
+        </ol>
+      </div>
+    </article>
+
+  </section>
+</div>

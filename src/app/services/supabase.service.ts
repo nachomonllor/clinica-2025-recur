@@ -37,6 +37,11 @@ export class SupabaseService {
         persistSession: true,
         autoRefreshToken: true,
         detectSessionInUrl: true, // necesario si usas verificación por email
+        storage: localStorage,
+        // Evita el error de Navigator LockManager en desarrollo
+        // @ts-expect-error: multiTab puede no existir en typings antiguos
+        multiTab: false,
+        storageKey: 'sb-clinica-online-auth-2025',
       }
     });
   }
@@ -152,7 +157,7 @@ export class SupabaseService {
   async obtenerPerfil(uid: string) {
     const { data, error } = await this.client
       .from('profiles')
-      .select('id, rol, aprobado, nombre, apellido, avatar_url') // /////
+      .select('id, rol, aprobado, nombre, apellido, avatar_url, imagen2_url')
       .eq('id', uid)
       .single();
     return { data, error };
@@ -188,12 +193,33 @@ export class SupabaseService {
 
   /* ========================= STORAGE ========================= */
 
-  async uploadAvatar(userId: string, file: File, idx: 1 | 2) {
+  async uploadAvatar(userId: string, file: File, idx: 1 | 2): Promise<string> {
     const path = `${userId}/${Date.now()}_${idx}_${file.name}`;
-    const { error } = await this.client.storage.from('avatars').upload(path, file);
-    if (error) throw error;
-    const { data: pub } = this.client.storage.from('avatars').getPublicUrl(path);
-    return pub.publicUrl as string;
+
+    // Subir archivo
+    const { data: uploadData, error: uploadError } = await this.client.storage
+      .from('avatars')
+      .upload(path, file, {
+        cacheControl: '3600',
+        upsert: false
+      });
+
+    if (uploadError) {
+      throw uploadError;
+    }
+
+    // Obtener URL pública
+    const { data: pubData } = this.client.storage
+      .from('avatars')
+      .getPublicUrl(path);
+
+    const publicUrl = pubData.publicUrl;
+
+    if (!publicUrl) {
+      throw new Error('No se pudo obtener la URL pública de la imagen');
+    }
+
+    return publicUrl;
   }
 
   /* ========================= Acceso directo (alias opcional) ========================= */
@@ -203,6 +229,7 @@ export class SupabaseService {
     return this.client;
   }
 
+<<<<<<< HEAD:src/app/services/supabase.service.ts
   // TURNOS: lee por rango (usa la columna que tengas indexada: creado_el o fecha)
   async fetchTurnos(desde: Date, hasta: Date): Promise<any[]> {
     const d1 = desde.toISOString();
@@ -249,6 +276,20 @@ export class SupabaseService {
     }));
   }
 
+=======
+
+
+
+  // --------------------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------------------------------------------
+
+
+
+  
+
+
+>>>>>>> 1-6-mas-estilos:src/services/supabase.service.ts
 
 }
 

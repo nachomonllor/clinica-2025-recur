@@ -1,5 +1,6 @@
 
 
+<<<<<<< HEAD
  <div class="app-shell">
 
   <app-back></app-back>
@@ -11,3 +12,11 @@
   <app-back></app-back>
   <h2>Título</h2>
 </header> -->
+=======
+<div class="app-shell">
+  <app-main-nav></app-main-nav>
+  <div class="app-shell__content" [@routeAnimations]="prepareRoute(outlet)">
+    <router-outlet #outlet="outlet" />
+  </div>
+</div>
+>>>>>>> 1-6-mas-estilos

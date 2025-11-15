@@ -1,0 +1,107 @@
+<mat-card class="pacientes-container">
+  <mat-card-header>
+    <mat-card-title>Mis pacientes</mat-card-title>
+    <mat-card-subtitle>Solo se muestran las personas que atendiste al menos una vez</mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content class="pacientes-layout">
+    <section class="panel panel-listado">
+      <mat-form-field appearance="outline" class="buscador">
+        <mat-label>Buscar pacientes</mat-label>
+        <input matInput #f (input)="aplicarFiltro(f.value)" placeholder="Nombre, apellido, DNI o email" />
+        <button mat-icon-button matSuffix *ngIf="f.value" (click)="f.value=''; aplicarFiltro('')" aria-label="Limpiar filtro">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <div class="paciente-grid" *ngIf="pacientesFiltrados.length; else sinPacientes">
+        <button
+          type="button"
+          class="paciente-card"
+          *ngFor="let paciente of pacientesFiltrados; trackBy: trackPaciente"
+          [class.activo]="pacienteSeleccionado?.id === paciente.id"
+          (click)="seleccionarPaciente(paciente)"
+          matTooltip="{{ paciente.nombre }} {{ paciente.apellido }}">
+          <div class="avatar">
+            <img [src]="paciente.avatar_url || 'assets/img/default-avatar.png'"
+                 [alt]="(paciente.nombre || '') + ' ' + (paciente.apellido || '')"
+                 loading="lazy">
+          </div>
+          <div class="texto">
+            <span class="nombre">{{ paciente.apellido }} {{ paciente.nombre }}</span>
+            <span class="meta">{{ paciente.dni || 'DNI no cargado' }}</span>
+            <span class="meta">{{ paciente.email }}</span>
+          </div>
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+      </div>
+    </section>
+
+    <section class="panel panel-detalle" *ngIf="pacienteSeleccionado; else placeholderDetalle">
+      <header class="detalle-header">
+        <div>
+          <h3>{{ pacienteSeleccionado!.apellido }} {{ pacienteSeleccionado!.nombre }}</h3>
+          <p class="meta">
+            <mat-icon>badge</mat-icon>
+            {{ pacienteSeleccionado!.dni || 'DNI no cargado' }}
+          </p>
+          <p class="meta">
+            <mat-icon>mail</mat-icon>
+            {{ pacienteSeleccionado!.email }}
+          </p>
+        </div>
+        <button mat-stroked-button color="primary"
+                (click)="verHistoriaClinica(pacienteSeleccionado!.id, nombreCompletoSeleccionado)">
+          <mat-icon>description</mat-icon>
+          Ver historia clínica
+        </button>
+      </header>
+
+      <ng-container *ngIf="cargandoDetalle; else listaTurnos">
+        <div class="detalle-cargando">
+          <mat-progress-spinner diameter="40" mode="indeterminate"></mat-progress-spinner>
+          <span>Cargando atenciones...</span>
+        </div>
+      </ng-container>
+
+      <ng-template #listaTurnos>
+        <div class="turno-lista" *ngIf="turnosPaciente.length; else sinTurnos">
+          <article class="turno-item" *ngFor="let turno of turnosPaciente">
+            <div class="turno-info">
+              <span class="especialidad">{{ turno.especialidad }}</span>
+              <span class="fecha">{{ turno.fechaTexto }}</span>
+              <span class="estado" [class]="'estado-' + turno.estado">{{ turno.estado | titlecase }}</span>
+            </div>
+            <div class="turno-acciones">
+              <button mat-stroked-button color="primary"
+                      (click)="verHistoriaClinica(pacienteSeleccionado!.id, nombreCompletoSeleccionado)">
+                Historia
+              </button>
+              <button mat-button color="accent"
+                      *ngIf="turno.resena"
+                      (click)="mostrarResena(turno.resena!)">
+                Ver reseña
+              </button>
+            </div>
+          </article>
+        </div>
+      </ng-template>
+
+      <ng-template #sinTurnos>
+        <p class="sin-datos">No tenés atenciones registradas con este paciente todavía.</p>
+      </ng-template>
+    </section>
+
+    <ng-template #sinPacientes>
+      <p class="sin-datos">Todavía no atendiste pacientes. Finalizá turnos para verlos aquí.</p>
+    </ng-template>
+
+    <ng-template #placeholderDetalle>
+      <section class="panel panel-detalle detalle-placeholder">
+        <mat-icon>group</mat-icon>
+        <h3>Seleccioná un paciente</h3>
+        <p>Podrás ver la lista de turnos que atendiste y acceder a sus reseñas.</p>
+      </section>
+    </ng-template>
+  </mat-card-content>
+</mat-card>

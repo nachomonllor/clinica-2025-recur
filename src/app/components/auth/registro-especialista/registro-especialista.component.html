@@ -67,6 +67,7 @@
       </mat-error>
     </div>
 
+<<<<<<< HEAD:src/app/components/auth/registro-especialista/registro-especialista.component.html
     <!-- === CAPTCHA === -->
     <div class="full-width mt-2">
       <label class="block mb-1">Validación anti-bots</label>
@@ -95,6 +96,15 @@
     </div>
 
     <button mat-raised-button color="accent" class="full-width" [disabled]="f.invalid" type="submit">
+=======
+    <!-- Captcha -->
+    <app-captcha 
+      [enabled]="captchaEnabled" 
+      (captchaValid)="onCaptchaValid($event)">
+    </app-captcha>
+
+    <button mat-raised-button color="accent" class="full-width" [disabled]="f.invalid || !captchaValido" type="submit">
+>>>>>>> 1-6-mas-estilos:src/app/components/registro-especialista/registro-especialista.component.html
       Registrarse
     </button>
 

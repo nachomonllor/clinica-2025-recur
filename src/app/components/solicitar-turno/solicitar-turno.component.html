@@ -1,0 +1,260 @@
+<mat-card class="st-shell mat-elevation-z6">
+  <!-- Hero con degradado azul y acento naranja -->
+  <header class="st-hero">
+    <div class="hero-text">
+      <h2>{{ esAdmin ? 'Solicitar Turno (Admin)' : 'Solicitar Turno' }}</h2>
+      <p>Seleccioná especialidad, profesional, día y horario.</p>
+    </div>
+    <div class="hero-badge">
+      <span class="dot"></span> Atención Online
+    </div>
+  </header>
+
+  <!-- Pasos (resaltan progreso) -->
+  <nav class="st-steps">
+    <div class="step" [class.done]="formularioTurno.get('especialidad')?.valid"
+      [class.active]="!formularioTurno.get('especialidad')?.valid">
+      <span>1</span> Especialidad
+    </div>
+    <div class="step" [class.disabled]="!formularioTurno.get('especialidad')?.valid"
+      [class.done]="formularioTurno.get('especialista')?.valid"
+      [class.active]="formularioTurno.get('especialidad')?.valid && !formularioTurno.get('especialista')?.valid">
+      <span>2</span> Especialista
+    </div>
+    <div class="step" [class.disabled]="!formularioTurno.get('especialista')?.valid"
+      [class.done]="formularioTurno.get('dia')?.valid"
+      [class.active]="formularioTurno.get('especialista')?.valid && !formularioTurno.get('dia')?.valid">
+      <span>3</span> Día
+    </div>
+    <div class="step" [class.disabled]="!formularioTurno.get('dia')?.valid"
+      [class.done]="formularioTurno.get('hora')?.valid"
+      [class.active]="formularioTurno.get('dia')?.valid && !formularioTurno.get('hora')?.valid">
+      <span>4</span> Hora
+    </div>
+  </nav>
+
+  <form [formGroup]="formularioTurno" (ngSubmit)="onSubmit()" class="st-grid">
+    <!-- Columna izquierda: formulario -->
+    <section class="st-column form">
+      <!-- Especialidad -->
+      <mat-form-field appearance="outline" class="full">
+        <mat-label>Especialidad</mat-label>
+        <mat-select formControlName="especialidad">
+          <mat-option *ngFor="let esp of especialidades" [value]="esp">{{ esp }}</mat-option>
+        </mat-select>
+        <mat-error *ngIf="formularioTurno.get('especialidad')?.hasError('required')">
+          La especialidad es obligatoria
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Especialista -->
+      <mat-form-field appearance="outline" class="full">
+        <mat-label>Especialista</mat-label>
+        <mat-select formControlName="especialista">
+          <mat-option *ngFor="let esp of especialistasFiltrados" [value]="esp.id">
+            {{ esp.apellido }}, {{ esp.nombre }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="formularioTurno.get('especialista')?.hasError('required')">
+          El especialista es obligatorio
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Paciente (solo admin) -->
+      <mat-form-field appearance="outline" class="full" *ngIf="esAdmin">
+        <mat-label>Paciente</mat-label>
+        <mat-select formControlName="paciente">
+          <mat-option *ngFor="let pac of pacientes" [value]="pac.id">
+            {{ pac.apellido }}, {{ pac.nombre }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="formularioTurno.get('paciente')?.hasError('required')">
+          El paciente es obligatorio
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Día: grilla “quick-pick” + (opcional) selector -->
+      <div class="field-title">Día</div>
+      <div class="days-grid" *ngIf="diasDisponibles.length">
+        <button type="button" class="day-card" *ngFor="let d of diasDisponibles" [class.selected]="isDiaSelected(d)"
+          (click)="selectDia(d)">
+          <span class="day-label">{{ d.split('|')[1] }}</span>
+        </button>
+      </div>
+
+      <!-- Selector alternativo (por accesibilidad / mobile). Si querés, podés quitarlo -->
+      <mat-form-field appearance="outline" class="full">
+        <mat-label>Día</mat-label>
+        <mat-select formControlName="dia">
+          <mat-option *ngFor="let d of diasDisponibles" [value]="d">{{ d.split('|')[1] }}</mat-option>
+        </mat-select>
+        <mat-error *ngIf="formularioTurno.get('dia')?.hasError('required')">
+          El día es obligatorio
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Hora: grilla de “pills” + (opcional) selector -->
+      <div class="field-title">Hora</div>
+      <div class="hours-grid">
+        <button type="button" class="time-pill" *ngFor="let h of horariosDisponibles"
+          [class.selected]="isHoraSelected(h)" (click)="selectHora(h)">
+          {{ h }}
+        </button>
+      </div>
+
+      <mat-form-field appearance="outline" class="full">
+        <mat-label>Hora</mat-label>
+        <mat-select formControlName="hora">
+          <mat-option *ngFor="let h of horariosDisponibles" [value]="h">{{ h }}</mat-option>
+        </mat-select>
+        <mat-error *ngIf="formularioTurno.get('hora')?.hasError('required')">
+          La hora es obligatoria
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Botones -->
+      <div class="actions">
+        <button mat-raised-button type="button" class="btn-secondary" (click)="router.navigate(['/bienvenida'])">
+          Cancelar
+        </button>
+        <button mat-raised-button color="primary" type="submit" class="btn-primary"
+          [disabled]="loading || formularioTurno.invalid">
+          {{ loading ? 'Solicitando…' : 'Solicitar Turno' }}
+        </button>
+      </div>
+    </section>
+
+    <!-- Columna derecha: preview/resumen -->
+    <aside class="st-column preview">
+      <h3>Resumen</h3>
+      <div class="summary">
+        <div class="row">
+          <span>Especialidad</span>
+          <strong>{{ formularioTurno.get('especialidad')?.value || '—' }}</strong>
+        </div>
+        <div class="row">
+          <span>Especialista</span>
+
+          <!-- {{
+              (especialistasFiltrados | json) && formularioTurno.get('especialista')?.value
+              ? (especialistasFiltrados.find(e => e.id === formularioTurno.get('especialista')?.value)?.apellido + ', ' +
+                 especialistasFiltrados.find(e => e.id === formularioTurno.get('especialista')?.value)?.nombre)
+              : '—'
+            }} -->
+
+          <!-- strong>{{ especialistaLabel(formularioTurno.value.especialista) || '—' }}</strong -->
+
+          <strong>{{ especialistaLabel($any(formularioTurno.get('especialista'))?.value) || '—' }}</strong>
+
+        </div>
+        <div class="row">
+          <span>Día</span>
+
+          <!-- <strong>{{ formularioTurno.get('dia')?.value ? formularioTurno.get('dia')?.value.split('|')[1] : '—' }}</strong> -->
+
+          <strong>
+            {{
+            formularioTurno.value.dia
+            ? $any(formularioTurno.value.dia).split('|')[1]
+            : '—'
+            }}
+          </strong>
+
+        </div>
+        <div class="row">
+          <span>Hora</span>
+          <strong>{{ formularioTurno.get('hora')?.value || '—' }}</strong>
+        </div>
+      </div>
+
+      <div class="note">
+        <mat-icon>info</mat-icon>
+        Los turnos se confirman por email. Si no recibís el correo en 5 min, revisá tu carpeta de spam.
+      </div>
+    </aside>
+  </form>
+</mat-card>
+
+
+<!-- <mat-card>
+  <mat-card-title>{{ esAdmin ? 'Solicitar Turno (Admin)' : 'Solicitar Turno' }}</mat-card-title>
+
+  <form [formGroup]="formularioTurno" (ngSubmit)="onSubmit()">
+    
+     Especialidad 
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Especialidad</mat-label>
+      <mat-select formControlName="especialidad">
+        <mat-option *ngFor="let esp of especialidades" [value]="esp">
+          {{ esp }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="formularioTurno.get('especialidad')?.hasError('required')">
+        La especialidad es obligatoria
+      </mat-error>
+    </mat-form-field>
+
+     Especialista 
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Especialista</mat-label>
+      <mat-select formControlName="especialista">
+        <mat-option *ngFor="let esp of especialistasFiltrados" [value]="esp.id">
+          {{ esp.apellido }}, {{ esp.nombre }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="formularioTurno.get('especialista')?.hasError('required')">
+        El especialista es obligatorio
+      </mat-error>
+    </mat-form-field>
+
+   Paciente (solo para admin) 
+    <mat-form-field appearance="outline" class="full-width" *ngIf="esAdmin">
+      <mat-label>Paciente</mat-label>
+      <mat-select formControlName="paciente">
+        <mat-option *ngFor="let pac of pacientes" [value]="pac.id">
+          {{ pac.apellido }}, {{ pac.nombre }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="formularioTurno.get('paciente')?.hasError('required')">
+        El paciente es obligatorio
+      </mat-error>
+    </mat-form-field>
+
+    Día (sin Datepicker) 
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Día</mat-label>
+      <mat-select formControlName="dia">
+        <mat-option *ngFor="let dia of diasDisponibles" [value]="dia">
+          {{ dia.split('|')[1] }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="formularioTurno.get('dia')?.hasError('required')">
+        El día es obligatorio
+      </mat-error>
+    </mat-form-field>
+
+   Hora 
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Hora</mat-label>
+      <mat-select formControlName="hora">
+        <mat-option *ngFor="let hora of horariosDisponibles" [value]="hora">
+          {{ hora }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="formularioTurno.get('hora')?.hasError('required')">
+        La hora es obligatoria
+      </mat-error>
+    </mat-form-field>
+
+    Botones 
+    <div class="actions">
+      <button mat-raised-button type="button" (click)="router.navigate(['/bienvenida'])">
+        Cancelar
+      </button>
+      <button mat-raised-button color="primary" type="submit" [disabled]="loading || formularioTurno.invalid">
+        {{ loading ? 'Solicitando...' : 'Solicitar Turno' }}
+      </button>
+    </div>
+  </form>
+</mat-card>
+ -->

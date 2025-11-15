@@ -1,0 +1,156 @@
+
+<section class="ingresos-page" *ngIf="isAdmin; else noAdmin">
+  <header class="topbar">
+    <button class="btn ghost" routerLink="/dashboard" aria-label="Volver al Dashboard">
+      <span class="icon icon-back" aria-hidden="true"></span>
+      <span>Volver al Dashboard</span>
+    </button>
+
+    <h1 class="title">Registro de Ingresos</h1>
+
+    <ng-container *ngIf="(logs$ | async) as all">
+      <button class="btn success" (click)="exportarExcel(all)">
+        Exportar Excel
+      </button>
+    </ng-container>
+  </header>
+
+  <main class="table-wrap" *ngIf="vm$ | async as vm; else loading">
+    <div class="table">
+      <!-- Cabecera -->
+      <div class="row head">
+        <div class="col user">
+          <span class="icon icon-user" aria-hidden="true"></span>
+          <span>Usuario</span>
+        </div>
+        <div class="col date">
+          <span class="icon icon-calendar" aria-hidden="true"></span>
+          <span>Fecha y Hora</span>
+        </div>
+      </div>
+
+      <!-- Filas de la página actual -->
+      <div class="row" *ngFor="let log of vm.items; trackBy: trackByIndex">
+        <div class="col user">
+          <span class="badge icon-mail" aria-hidden="true"></span>
+          <span class="email" [title]="log.email">{{ log.email }}</span>
+        </div>
+        <div class="col date">
+          <span class="dot" aria-hidden="true"></span>
+          <span class="when">{{ formatDate(log.createdAt) }}</span>
+        </div>
+      </div>
+
+      <div class="empty" *ngIf="!vm.items.length">No hay ingresos para mostrar.</div>
+    </div>
+
+    <!-- Paginación -->
+    <nav class="paginator" *ngIf="vm.pageCount > 1" aria-label="Paginación de registros">
+      <button class="pg square" [disabled]="vm.pageIndex === 0" (click)="first()" aria-label="Primera página">«</button>
+      <button class="pg" [disabled]="vm.pageIndex === 0" (click)="prev()">
+        <span class="chev left" aria-hidden="true"></span><span>Anterior</span>
+      </button>
+
+      <ng-container *ngFor="let p of vm.pages">
+        <ng-container *ngIf="p !== '…'; else dots">
+          <button
+            class="page"
+            [class.active]="(p - 1) === vm.pageIndex"
+            (click)="setPage(p - 1)"
+            [attr.aria-current]="(p - 1) === vm.pageIndex ? 'page' : null">
+            {{ p }}
+          </button>
+        </ng-container>
+        <ng-template #dots><span class="dots">…</span></ng-template>
+      </ng-container>
+
+      <button class="pg" [disabled]="vm.pageIndex === vm.pageCount - 1" (click)="next(vm.pageCount)">
+        <span>Siguiente</span><span class="chev right" aria-hidden="true"></span>
+      </button>
+      <button class="pg square" [disabled]="vm.pageIndex === vm.pageCount - 1" (click)="last(vm.pageCount)" aria-label="Última página">»</button>
+    </nav>
+  </main>
+</section>
+
+<ng-template #loading>
+  <div class="loading">Cargando registros…</div>
+</ng-template>
+
+<ng-template #noAdmin>
+  <section class="ingresos-page">
+    <div class="not-allowed">No tenés permisos para ver este recurso.</div>
+  </section>
+</ng-template>
+
+
+
+
+
+<!-- 
+
+<section class="ingresos-page" *ngIf="isAdmin; else noAdmin">
+  <header class="topbar">
+    <button class="btn ghost" routerLink="/dashboard" aria-label="Volver al Dashboard">
+      <span class="icon icon-back" aria-hidden="true"></span>
+      <span>Volver al Dashboard</span>
+    </button>
+
+    <h1 class="title">Registro de Ingresos</h1>
+
+    <ng-container *ngIf="(logs$ | async) as logs">
+      <button class="btn success" (click)="exportarExcel(logs)">
+        Exportar Excel
+      </button>
+    </ng-container>
+  </header>
+
+  <main class="table-wrap">
+    <div class="table">
+       Cabecera
+      <div class="row head">
+        <div class="col user">
+          <span class="icon icon-user" aria-hidden="true"></span>
+          <span>Usuario</span>
+        </div>
+        <div class="col date">
+          <span class="icon icon-calendar" aria-hidden="true"></span>
+          <span>Fecha y Hora</span>
+        </div>
+      </div>
+
+       Filas 
+      <ng-container *ngIf="(logs$ | async) as logs; else loading">
+        <div class="row"
+             *ngFor="let log of logs; trackBy: trackByIndex">
+          <div class="col user">
+            <span class="badge icon-mail" aria-hidden="true"></span>
+            <span class="email" [title]="log.email">{{ log.email }}</span>
+          </div>
+          <div class="col date">
+            <span class="dot" aria-hidden="true"></span>
+            <span class="when">{{ formatDate(log.createdAt) }}</span>
+          </div>
+        </div>
+
+        <div class="empty" *ngIf="!logs.length">
+          No hay ingresos para mostrar.
+        </div>
+      </ng-container>
+    </div>
+  </main>
+</section>
+
+<ng-template #loading>
+  <div class="loading">Cargando registros…</div>
+</ng-template>
+
+<ng-template #noAdmin>
+  <section class="ingresos-page">
+    <div class="not-allowed">
+      No tenés permisos para ver este recurso.
+    </div>
+  </section>
+</ng-template>
+
+
+ -->

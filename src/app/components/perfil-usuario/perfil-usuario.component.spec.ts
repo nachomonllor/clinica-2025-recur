@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { LogTableComponent } from './log-table.component';
+import { PerfilUsuarioComponent } from './perfil-usuario.component';
 
-describe('LogTableComponent', () => {
-  let component: LogTableComponent;
-  let fixture: ComponentFixture<LogTableComponent>;
+describe('PerfilUsuarioComponent', () => {
+  let component: PerfilUsuarioComponent;
+  let fixture: ComponentFixture<PerfilUsuarioComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [LogTableComponent]
+      imports: [PerfilUsuarioComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(LogTableComponent);
+    fixture = TestBed.createComponent(PerfilUsuarioComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

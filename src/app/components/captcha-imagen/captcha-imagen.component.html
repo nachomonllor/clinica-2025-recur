@@ -1,0 +1,42 @@
+<!-- <p>captcha-imagen works!</p>
+
+<div class="captcha-card">
+  <div class="captcha-header">
+    <div class="titulo">Select all squares with</div>
+    <div class="palabra">{{ captchaActual?.instruccion }}</div>
+  </div>
+
+  <div class="captcha-grid">
+    <div
+      *ngFor="let i of celdas"
+      class="celda"
+      [class.celda-seleccionada]="seleccionadas.has(i)"
+      [ngStyle]="{
+        'background-image': 'url(' + captchaActual.imagenUrl + ')',
+        'background-size': gridSize * 100 + '% ' + gridSize * 100 + '%',
+        'background-position': getBackgroundPosition(i)
+      }"
+      (click)="toggleCelda(i)"
+    ></div>
+  </div>
+
+  <div class="captcha-footer">
+    <button type="button" class="boton-secundario" (click)="recargar()">
+      ↻ Another
+    </button>
+
+    <button
+      type="button"
+      class="boton-primario"
+      (click)="verificar()"
+      [disabled]="seleccionadas.size === 0 || verificado"
+    >
+      VERIFY
+    </button>
+  </div>
+
+  <div class="mensaje" *ngIf="verificado">
+    <span *ngIf="esCorrecto" class="ok">Correct ✔</span>
+    <span *ngIf="!esCorrecto" class="error">Try again ✖</span>
+  </div>
+</div> -->

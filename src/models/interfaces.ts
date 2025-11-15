@@ -13,6 +13,31 @@ export type EstadoTurno =
   | 'pendiente' | 'aceptado' | 'confirmado'
   | 'realizado' | 'rechazado' | 'cancelado';
 
+<<<<<<< HEAD
+=======
+
+export interface QuickLoginEntry {
+  email: string;
+  password: string;
+  nombre?: string;
+  avatar?: string;
+}
+
+export type QuickLoginsConfig = {
+  paciente: QuickLoginEntry | QuickLoginEntry[];
+  especialista: QuickLoginEntry | QuickLoginEntry[];
+  admin: QuickLoginEntry | QuickLoginEntry[];
+};
+
+export interface QuickAccessUser {
+  email: string;
+  password: string;
+  nombre: string;
+  avatar: string;
+  rol: Rol;
+}
+
+>>>>>>> 1-6-mas-estilos
 // Aliases de compatibilidad (no usar en código nuevo)
 export type TurnoEstado = EstadoTurno;
 export type Estado = EstadoTurno;
@@ -29,6 +54,12 @@ export interface Usuario {
   apellido: string;
   email: string;
 
+<<<<<<< HEAD
+=======
+  edad?:number;
+  color?: string;
+
+>>>>>>> 1-6-mas-estilos
   // Opcionales por rol:
   dni?: string | null;
   obraSocial?: string | null;       // paciente
@@ -105,11 +136,14 @@ export type IngresoRow = {
   timestamp: string;         // timestamptz (ISO)
 };
 
+<<<<<<< HEAD
 // ========= Misceláneos =========
 export interface DatoDinamico {
   clave: string;
   valor: string;
 }
+=======
+>>>>>>> 1-6-mas-estilos
 
 export interface QuickItem {
   label: string;
@@ -217,16 +251,126 @@ export interface Paciente {
   password?: string;               // TODO: eliminar
 }
 
+<<<<<<< HEAD
 // ========= Historia Clínica =========
 export interface HistoriaClinica {
+=======
+// // ========= Historia Clínica =========
+// export interface HistoriaClinica {
+//   altura: number;
+//   peso: number;
+//   temperatura: number;
+//   presion: string;
+//   resumen: string;
+//   fiebre?: boolean;
+//   infartos?: number;
+//   datosDinamicos?: DatoDinamico[];
+// }
+
+
+// // ========= Misceláneos =========
+// export interface DatoDinamico {
+//   clave: string;
+//   valor: string;
+// }
+
+// Si ya tenes DatoDinamico, conservá tu versión.
+// Acá propongo una mínima por si la necesitas.
+export interface DatoDinamico {
+  clave: string;
+  valor: string | number | boolean;
+  tipo?: 'texto' | 'numero' | 'boolean';
+  etiqueta?: string;
+  unidad?: string;
+}
+
+// ========= Historia Clinica (unica) =========
+export interface HistoriaClinica {
+  // Requeridos (tu definición)
+>>>>>>> 1-6-mas-estilos
   altura: number;
   peso: number;
   temperatura: number;
   presion: string;
   resumen: string;
+<<<<<<< HEAD
   datosDinamicos?: DatoDinamico[];
 }
 
+=======
+
+  // Opcionales (tuyos)
+  fiebre?: boolean;
+  infartos?: number;
+  datosDinamicos?: DatoDinamico[];
+
+  // Opcionales extra para UI (encabezado, filtros, etc.)
+  idConsulta?: string;      // ej: "6"
+  fecha?: string;           // ISO ej: "2025-11-10"
+  especialidad?: string;    // ej: "pediatria"
+  medico?: string;          // ej: "Augusto Morelli"
+  // Si queres mostrar datos de paciente sin otro tipo:
+  pacienteNombre?: string;
+  pacienteDni?: string;
+  pacienteFechaNacimiento?: string; // ISO
+}
+
+
+
+//-------------------------------------------
+
+
+export type Especialidad =
+  | 'clinica'
+  | 'pediatria'
+  | 'cardiologia'
+  | 'dermatologia'
+  | 'traumatologia'
+  | 'ginecologia'
+  | 'otorrinolaringologia'
+  | 'neurologia';
+
+export interface Paciente {
+  id: string;
+  nombreCompleto: string;
+  dni: string;
+  fechaNacimiento: string; // ISO
+}
+
+export interface DatosVitales {
+  alturaCm: number;
+  pesoKg: number;
+  temperaturaC: number;
+  presion: string; // ej: '120/80 mmHg'
+}
+
+export interface DatoAdicional {
+  clave: string;                   // ej: 'fiebre'
+  etiqueta?: string;               // ej: 'Fiebre'
+  tipo?: 'boolean' | 'number' | 'text';
+  valor: boolean | number | string;
+}
+
+export interface Consulta {
+  id: string;
+  fecha: string;                   // ISO
+  especialidad: Especialidad;
+  medico: string;
+  datosVitales: DatosVitales;
+  datosAdicionales: DatoAdicional[];
+  notas?: string;
+}
+
+// export interface HistoriaClinica {
+//   paciente: Paciente;
+//   consultas: Consulta[];
+// }
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+>>>>>>> 1-6-mas-estilos
 // ========= Turnos: Forma de BD (canónica) =========
 export interface TurnoRow {
   id: UUID;
