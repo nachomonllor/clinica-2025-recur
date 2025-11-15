@@ -80,7 +80,7 @@ export class SeleccionEstadisticasComponent {
       titulo: 'Turnos por Médico',
       subtitulo: 'Estadísticas de turnos por especialista',
       icono: 'local_hospital',
-      ruta: '/estadisticas/por-medico',
+      ruta: '/turnos-por-medico',
       aria: 'Ir a Turnos por Médico'
     },
     {
