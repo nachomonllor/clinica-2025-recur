@@ -1,5 +1,14 @@
 import { Injectable } from '@angular/core';
 import { SupabaseService } from './supabase.service';
+import { HttpClient, HttpParams } from '@angular/common/http';
+
+import { Observable, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
+
+export interface ItemTurnosEspecialidad {
+  especialidad: string;
+  cantidad: number;
+}
 
 export interface TurnoEstadistica {
   id: string;
@@ -21,12 +30,31 @@ export interface PerfilBasico {
 
 @Injectable({ providedIn: 'root' })
 export class EstadisticasService {
-
-  constructor(private readonly supa: SupabaseService) { }
-
   
+   private base = '/api/estadisticas';
 
+  constructor(private readonly supa: SupabaseService, private http: HttpClient) { }
 
+  turnosPorEspecialidad(desde?: string, hasta?: string): Observable<ItemTurnosEspecialidad[]> {
+    let params = new HttpParams();
+    if (desde) params = params.set('desde', desde);
+    if (hasta) params = params.set('hasta', hasta);
+
+    return this.http.get<ItemTurnosEspecialidad[]>(`${this.base}/turnos-por-especialidad`, { params })
+      .pipe(
+        map(arr => arr ?? []),
+        catchError(() => {
+          // Fallback de ejemplo
+          const mock: ItemTurnosEspecialidad[] = [
+            { especialidad: 'Cardiología', cantidad: 5 },
+            { especialidad: 'Pediatría',  cantidad: 5 },
+            { especialidad: 'Neurología', cantidad: 2 },
+            { especialidad: 'Clínica',    cantidad: 1 },
+          ];
+          return of(mock);
+        })
+      );
+  }
 
 
   /**

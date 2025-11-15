@@ -7,6 +7,8 @@ import { Routes } from '@angular/router';
 import { adminGuard } from '../services/admin.guard';
 import { BienvenidaComponent } from './components/bienvenida/bienvenida.component';
 import { SeleccionEstadisticasComponent } from './seleccion-estadisticas/seleccion-estadisticas.component';
+import { UsuariosComponent } from './components/usuarios/usuarios.component';
+import { TurnosPorEspecialidadComponent } from './turnos-por-especialidad/turnos-por-especialidad.component';
 //import { LogIngresosAdminComponent } from './log-ingresos-admin/log-ingresos-admin.component';
 
 export const routes: Routes = [
@@ -112,6 +114,10 @@ export const routes: Routes = [
        .then( m => m.LogIngresosAdminComponent) },  
     
   {path: 'seleccion-estadisticas', component: SeleccionEstadisticasComponent },
+
+  {path: 'usuarios', component: UsuariosComponent},
+
+  {path: 'turnos-por-especialidad', component: TurnosPorEspecialidadComponent},
     
   { path: '**', redirectTo: 'login-paciente' }
   
