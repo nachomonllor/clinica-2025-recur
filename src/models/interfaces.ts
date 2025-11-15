@@ -13,6 +13,28 @@ export type EstadoTurno =
   | 'pendiente' | 'aceptado' | 'confirmado'
   | 'realizado' | 'rechazado' | 'cancelado';
 
+
+export interface QuickLoginEntry {
+  email: string;
+  password: string;
+  nombre?: string;
+  avatar?: string;
+}
+
+export type QuickLoginsConfig = {
+  paciente: QuickLoginEntry | QuickLoginEntry[];
+  especialista: QuickLoginEntry | QuickLoginEntry[];
+  admin: QuickLoginEntry | QuickLoginEntry[];
+};
+
+export interface QuickAccessUser {
+  email: string;
+  password: string;
+  nombre: string;
+  avatar: string;
+  rol: Rol;
+}
+
 // Aliases de compatibilidad (no usar en código nuevo)
 export type TurnoEstado = EstadoTurno;
 export type Estado = EstadoTurno;

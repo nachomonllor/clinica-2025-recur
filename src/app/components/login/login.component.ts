@@ -14,27 +14,8 @@ import { SupabaseService } from '../../../services/supabase.service';
 import { environment } from '../../../environments/environment';
 import { AutoFocusDirective } from '../../../directives/auto-focus.directive';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { QuickAccessUser, QuickLoginsConfig, Rol } from '../../../models/interfaces';
 
-type Rol = 'paciente' | 'especialista' | 'admin';
-interface QuickLoginEntry {
-  email: string;
-  password: string;
-  nombre?: string;
-  avatar?: string;
-}
-type QuickLoginsConfig = {
-  paciente: QuickLoginEntry | QuickLoginEntry[];
-  especialista: QuickLoginEntry | QuickLoginEntry[];
-  admin: QuickLoginEntry | QuickLoginEntry[];
-};
-
-interface QuickAccessUser {
-  email: string;
-  password: string;
-  nombre: string;
-  avatar: string;
-  rol: Rol;
-}
 
 @Component({
   selector: 'app-login',
