@@ -24,6 +24,11 @@ export class EstadisticasService {
 
   constructor(private readonly supa: SupabaseService) { }
 
+  
+
+
+
+
   /**
    * Obtiene todos los turnos (para admin). Se espera que la política RLS permita la lectura.
    */

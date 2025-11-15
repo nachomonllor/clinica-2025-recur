@@ -1,4 +1,6 @@
-// ---------- Paleta ----------
+
+
+//---------- Paleta ----------
 $bg: #0a0f1f;
 $panel: rgba(255, 255, 255, 0.04);
 $panel-line: rgba(255, 255, 255, 0.08);
@@ -8,7 +10,7 @@ $accent-1: #6a42f2;
 $accent-2: #8a54f7;
 $success: #22c55e;
 
-// ---------- Layout general ----------
+ //---------- Layout general ----------
 .ingresos-page {
   min-height: 100vh;
   background:
@@ -22,7 +24,7 @@ $success: #22c55e;
   gap: 20px;
 }
 
-// ---------- Topbar ----------
+//---------- Topbar ----------
 .topbar {
   display: grid;
   align-items: center;
@@ -69,7 +71,7 @@ $success: #22c55e;
   }
 }
 
-// ---------- Tabla / Lista ----------
+//---------- Tabla / Lista ----------
 .table-wrap {
   display: grid;
   place-items: start center;
@@ -128,7 +130,7 @@ $success: #22c55e;
   color: $muted;
 }
 
-// ---------- Elementos visuales ----------
+ //---------- Elementos visuales ----------
 .badge.icon-mail {
   width: 32px; height: 32px; border-radius: 8px;
   display: grid; place-items: center;
@@ -184,7 +186,7 @@ $success: #22c55e;
   }
 }
 
-// ---------- Responsive ----------
+ //---------- Responsive ----------
 @media (max-width: 720px) {
   .row {
     grid-template-columns: 1fr;
@@ -207,3 +209,71 @@ $success: #22c55e;
     .title { grid-area: title; justify-self: center; margin-top: 6px; }
   }
 }
+
+
+
+// -------- Paginación ----------
+.paginator {
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+
+  .pg,
+  .page {
+    border: 1px solid $panel-line;
+    background: #ffffff;
+    color: #2a3652;
+    border-radius: 10px;
+    box-shadow: 0 6px 16px rgba(10, 21, 38, 0.08);
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform .12s ease, filter .15s ease, box-shadow .2s ease;
+    height: 36px;
+
+    &:hover:not(:disabled) { transform: translateY(-1px); }
+    &:disabled { opacity: .55; cursor: not-allowed; }
+  }
+
+  .pg {
+    padding: 0 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    &.square {
+      width: 36px; padding: 0; justify-content: center;
+    }
+  }
+
+  .page {
+    width: 40px; padding: 0; display: inline-grid; place-items: center;
+    &.active {
+      background: linear-gradient(180deg, $accent-2, $accent-1);
+      color: #fff;
+      border-color: transparent;
+      box-shadow: 0 8px 20px rgba(122, 96, 230, .35);
+    }
+  }
+
+  .dots {
+    display: inline-grid; place-items: center;
+    width: 36px; height: 36px; color: $muted; font-weight: 800;
+  }
+
+  .chev {
+    width: 10px; height: 10px; display: inline-block;
+    border: solid currentColor; border-width: 0 2px 2px 0;
+    &.left  { transform: rotate(135deg); }
+    &.right { transform: rotate(-45deg); }
+  }
+}
+
+@media (max-width: 720px) {
+  .paginator { gap: 6px; }
+}
+
+
+
