@@ -215,7 +215,7 @@ export class UsuariosAdminComponent implements OnInit {
       avatarUrl: u.avatar_url ?? undefined,
       obraSocial: u.obra_social ?? undefined,
       edad: u.fecha_nacimiento ? this.calcEdadFromISO(u.fecha_nacimiento) : undefined,
-      // especialidades: opcional — podés rellenar desde tu tabla especialistas si lo unís
+      // especialidades: opcional — RELLENAR DESDE LA TABLA ESPECIALISTAS
       color: this.pickColor(u.id),
     };
   }
