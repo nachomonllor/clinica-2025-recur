@@ -49,10 +49,6 @@ export const routes: Routes = [
     loadComponent: () => import('./components/encuesta-atencion/encuesta-atencion.component')
       .then(m => m.EncuestaAtencionComponent) },
 
-  { path: 'log-table',
-    loadComponent: () => import('./components/log-table/log-table.component')
-      .then(m => m.LogTableComponent) },
-
   { path: 'estadisticas',
     loadComponent: () => import('./components/estadisticas/estadisticas.component')
       .then(m => m.EstadisticasComponent),

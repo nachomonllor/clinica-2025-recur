@@ -63,14 +63,17 @@ export class SeleccionEstadisticasComponent {
       titulo: 'Log de Ingresos',
       subtitulo: 'Visualiza el historial de accesos al sistema',
       icono: 'login',
-      ruta: '/estadisticas/log',
+      //  ruta: '/estadisticas/log',
+      ruta: '/log-ingreso',
+
       aria: 'Ir a Log de Ingresos'
     },
     {
       titulo: 'Turnos por Especialidad',
       subtitulo: 'Análisis de turnos agrupados por especialidad médica',
       icono: 'assignment',
-      ruta: '/estadisticas/por-especialidad',
+      //ruta: '/estadisticas/por-especialidad',
+      ruta: '/turnos-por-especialidad',
       aria: 'Ir a Turnos por Especialidad'
     },
     {
