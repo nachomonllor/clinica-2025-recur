@@ -115,22 +115,11 @@
     </button> -->
 
 
-    <!-- <div class="captcha-wrapper">
-      <re-captcha [siteKey]="recaptchaSiteKey" (resolved)="onCaptchaResolved($event)"></re-captcha>
-    </div> -->
-
-
-      <!-- re-captcha [siteKey]="siteKey" (resolved)="onCaptchaResolved($event)"></re-captcha -->
-
-
-    <button mat-raised-button color="primary" type="submit"
-      [disabled]="registroPacienteForm.invalid || !recaptchaToken">
+    <button mat-raised-button color="primary" type="submit" [disabled]="registroPacienteForm.invalid">
       Registrarse
     </button>
 
-
   </form>
-
 
 </mat-card>
 

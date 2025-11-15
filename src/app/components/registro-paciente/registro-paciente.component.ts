@@ -21,10 +21,6 @@ import Swal from 'sweetalert2';
 import { SupabaseService } from '../../../services/supabase.service';
 import { environment } from '../../../environments/environment';
 
-import { CaptchaImagenComponent } from '../captcha-imagen/captcha-imagen.component';
-
-import { RecaptchaModule, RecaptchaFormsModule, ReCaptchaV3Service } from 'ng-recaptcha-2';
-
 
 @Component({
   selector: 'app-registro-paciente',
@@ -36,8 +32,7 @@ import { RecaptchaModule, RecaptchaFormsModule, ReCaptchaV3Service } from 'ng-re
     MatInputModule,
     MatButtonModule,
     MatCardModule,
-  //  CaptchaComponent,
-  CaptchaImagenComponent
+  
 ],
   templateUrl: './registro-paciente.component.html',
   styleUrls: ['./registro-paciente.component.scss']
@@ -64,6 +59,7 @@ export class RegistroPacienteComponent implements OnInit {
 
   // Para limitar el <input type="date">
   maxDateISO!: string;        // hoy
+
   readonly minDateISO = '1900-01-01';
 
   // constructor(
@@ -78,15 +74,16 @@ export class RegistroPacienteComponent implements OnInit {
  // constructor(private v3: ReCaptchaV3Service) {}
 
    //registroPacienteForm: FormGroup;
-     siteKey = environment.recaptchaSiteKey;
+    // siteKey = environment.recaptchaSiteKey;
 
 
-  recaptchaToken: string | null = null;
+ // recaptchaToken: string | null = null;
 
   constructor(  private fb: FormBuilder,
     private sb: SupabaseService,
     private router: Router,
-  private v3: ReCaptchaV3Service) {
+
+  ) {
 
   }
 
@@ -104,11 +101,11 @@ export class RegistroPacienteComponent implements OnInit {
   // }
   
     //siteKey = environment.recaptchaSiteKey;
-  token: string | null = null;
+  //token: string | null = null;
 
 
 
-  onCaptchaResolved(tok: string | null) { this.token = tok; }
+  //onCaptchaResolved(tok: string | null) { this.token = tok; }
 
   // async onSubmit() {
   //   if (this.form.invalid || !this.token) { this.form.markAllAsTouched(); return; }
@@ -267,22 +264,18 @@ export class RegistroPacienteComponent implements OnInit {
   // ---- SUBMIT ----
 
   async onSubmit(): Promise<void> {
-    // if (this.registroPacienteForm.invalid) {
+
+
+    //  if (this.registroPacienteForm.invalid ) {
     //   this.registroPacienteForm.markAllAsTouched();
     //   return;
     // }
-
-
-     if (this.registroPacienteForm.invalid || !this.recaptchaToken) {
-      this.registroPacienteForm.markAllAsTouched();
-      return;
-    }
 
     this.loading = true;
     const supabase = this.sb.client;
     const fv = this.registroPacienteForm.value!;
 
-    if (!fv.imagenPerfil1 || !fv.imagenPerfil2) {
+    if (!fv.imagenPerfil1 ) { // || !fv.imagenPerfil2) {
       Swal.fire('Error', 'Por favor, seleccioná ambas imágenes de perfil.', 'error');
       this.loading = false;
       return;
@@ -301,7 +294,10 @@ export class RegistroPacienteComponent implements OnInit {
             apellido: fv.apellido,
             dni: fv.dni,
             fecha_nacimiento: fv.fechaNacimiento,
-            obra_social: fv.obraSocial
+            obra_social: fv.obraSocial ,
+
+            avatar_url: fv.imagenPerfil1
+
           }
         }
       });
