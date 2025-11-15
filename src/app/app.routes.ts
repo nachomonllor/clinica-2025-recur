@@ -11,6 +11,7 @@ import { PerfilUsuarioComponent } from './components/admin/perfil-usuario/perfil
 import { ReportesComponent } from './components/admin/reportes/reportes.component';
 import { SeleccionEstadisticasComponent } from './components/seleccion-estadisticas/seleccion-estadisticas.component';
 import { TurnosPorEspecialidadComponent } from './components/turnos-por-especialidad/turnos-por-especialidad.component';
+import { TurnosPorMedicoComponent } from './components/turnos-por-medico/turnos-por-medico.component';
 
 export const routes: Routes = [
   // Home (redirige a bienvenida)
@@ -22,8 +23,11 @@ export const routes: Routes = [
   {path: 'usuarios', component: UsuariosComponent},
 
   {path: 'turnos-por-especialidad', component: TurnosPorEspecialidadComponent},
+
+  {path: 'turnos-por-medico', component: TurnosPorMedicoComponent},
   
   {path: 'perfil-usuario', component: PerfilUsuarioComponent},
+
 
   {path: 'reportes', component: ReportesComponent},
 

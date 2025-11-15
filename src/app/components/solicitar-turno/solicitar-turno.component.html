@@ -82,8 +82,8 @@
         </button>
       </div>
 
-      <!-- Selector alternativo (por accesibilidad / mobile). Si querés, podés quitarlo -->
-      <mat-form-field appearance="outline" class="full">
+      <!-- Selector alternativo   -->
+      <!-- <mat-form-field appearance="outline" class="full">
         <mat-label>Día</mat-label>
         <mat-select formControlName="dia">
           <mat-option *ngFor="let d of diasDisponibles" [value]="d">{{ d.split('|')[1] }}</mat-option>
@@ -91,7 +91,7 @@
         <mat-error *ngIf="formularioTurno.get('dia')?.hasError('required')">
           El día es obligatorio
         </mat-error>
-      </mat-form-field>
+      </mat-form-field> -->
 
       <!-- Hora: grilla de “pills” + (opcional) selector -->
       <div class="field-title">Hora</div>

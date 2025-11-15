@@ -1,0 +1,73 @@
+<section class="pagina-estadisticas">
+  <header class="barra-acciones">
+    <button mat-flat-button color="primary" routerLink="/estadisticas">
+      <mat-icon>arrow_back</mat-icon>
+      Volver al Dashboard
+    </button>
+
+    <form class="filtros" [formGroup]="filtrosForm" (ngSubmit)="aplicarFiltros()">
+      <mat-form-field appearance="outline">
+        <mat-label>Inicio</mat-label>
+        <input matInput [matDatepicker]="dpDesde" formControlName="desde">
+        <mat-datepicker-toggle matSuffix [for]="dpDesde"></mat-datepicker-toggle>
+        <mat-datepicker #dpDesde></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Fin</mat-label>
+        <input matInput [matDatepicker]="dpHasta" formControlName="hasta">
+        <mat-datepicker-toggle matSuffix [for]="dpHasta"></mat-datepicker-toggle>
+        <mat-datepicker #dpHasta></mat-datepicker>
+      </mat-form-field>
+
+      <mat-checkbox formControlName="soloFinalizados">Solo Finalizados</mat-checkbox>
+
+      <button mat-stroked-button color="accent" type="submit">
+        <mat-icon>refresh</mat-icon>
+        Aplicar
+      </button>
+
+      <button mat-flat-button color="warn" type="button" (click)="limpiarFiltros()">
+        <mat-icon>clear</mat-icon>
+        Limpiar
+      </button>
+    </form>
+
+    <span class="espaciador"></span>
+
+    <button mat-flat-button color="accent" (click)="descargarPDF()">
+      <mat-icon>picture_as_pdf</mat-icon>
+      Descargar PDF
+    </button>
+  </header>
+
+  <mat-card class="panel" id="captura-pdf">
+    <h2 class="titulo">Turnos por Médico</h2>
+
+    <div class="chart-wrapper" *ngIf="!cargando; else cargandoTpl">
+      <apx-chart
+        [series]="chartSeries"
+        [chart]="chartOptions.chart"
+        [xaxis]="chartOptions.xaxis"
+        [yaxis]="chartOptions.yaxis"
+        [dataLabels]="chartOptions.dataLabels"
+        [plotOptions]="chartOptions.plotOptions"
+        [tooltip]="chartOptions.tooltip"
+        [grid]="chartOptions.grid"
+        [stroke]="chartOptions.stroke"
+        [fill]="chartOptions.fill"
+        [colors]="chartOptions.colors">
+      </apx-chart>
+    </div>
+
+    <ng-template #cargandoTpl>
+      <div class="loading">
+        <mat-spinner diameter="44"></mat-spinner>
+        <span>Cargando datos…</span>
+      </div>
+    </ng-template>
+
+    <div class="mensaje-error" *ngIf="error">{{ error }}</div>
+  </mat-card>
+</section>
+
