@@ -13,8 +13,6 @@ export type EstadoTurno =
   | 'pendiente' | 'aceptado' | 'confirmado'
   | 'realizado' | 'rechazado' | 'cancelado';
 
-<<<<<<< HEAD
-=======
 
 export interface QuickLoginEntry {
   email: string;
@@ -37,7 +35,6 @@ export interface QuickAccessUser {
   rol: Rol;
 }
 
->>>>>>> 1-6-mas-estilos
 // Aliases de compatibilidad (no usar en código nuevo)
 export type TurnoEstado = EstadoTurno;
 export type Estado = EstadoTurno;
@@ -54,12 +51,9 @@ export interface Usuario {
   apellido: string;
   email: string;
 
-<<<<<<< HEAD
-=======
   edad?:number;
   color?: string;
 
->>>>>>> 1-6-mas-estilos
   // Opcionales por rol:
   dni?: string | null;
   obraSocial?: string | null;       // paciente
@@ -136,14 +130,6 @@ export type IngresoRow = {
   timestamp: string;         // timestamptz (ISO)
 };
 
-<<<<<<< HEAD
-// ========= Misceláneos =========
-export interface DatoDinamico {
-  clave: string;
-  valor: string;
-}
-=======
->>>>>>> 1-6-mas-estilos
 
 export interface QuickItem {
   label: string;
@@ -251,10 +237,6 @@ export interface Paciente {
   password?: string;               // TODO: eliminar
 }
 
-<<<<<<< HEAD
-// ========= Historia Clínica =========
-export interface HistoriaClinica {
-=======
 // // ========= Historia Clínica =========
 // export interface HistoriaClinica {
 //   altura: number;
@@ -287,17 +269,11 @@ export interface DatoDinamico {
 // ========= Historia Clinica (unica) =========
 export interface HistoriaClinica {
   // Requeridos (tu definición)
->>>>>>> 1-6-mas-estilos
   altura: number;
   peso: number;
   temperatura: number;
   presion: string;
   resumen: string;
-<<<<<<< HEAD
-  datosDinamicos?: DatoDinamico[];
-}
-
-=======
 
   // Opcionales (tuyos)
   fiebre?: boolean;
@@ -370,7 +346,6 @@ export interface Consulta {
 //------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
->>>>>>> 1-6-mas-estilos
 // ========= Turnos: Forma de BD (canónica) =========
 export interface TurnoRow {
   id: UUID;

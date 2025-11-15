@@ -1,28 +1,14 @@
 
 
 import { Component, ChangeDetectionStrategy } from '@angular/core';
-<<<<<<< HEAD
-import { CommonModule, NgIf } from '@angular/common';
-import { MatProgressBarModule, MatProgressBar } from '@angular/material/progress-bar';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { LoadingService } from '../../services/loading.service';
-import { FormsModule } from '@angular/forms';
-=======
 import { NgIf } from '@angular/common';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { LoadingService } from '../services/loading.service';
->>>>>>> 1-6-mas-estilos
 
 @Component({
   selector: 'app-loading-overlay',
   standalone: true,
-<<<<<<< HEAD
-   imports: [CommonModule, FormsModule, MatProgressSpinnerModule, MatProgressBar],
-  
-  templateUrl: './loading-overlay.component.html',
-  styleUrl: './loading-overlay.component.scss',
-=======
   imports: [NgIf, MatProgressBarModule, MatProgressSpinnerModule],
   template: `
     <ng-container *ngIf="loader.isLoading$">
@@ -50,7 +36,6 @@ import { LoadingService } from '../services/loading.service';
     }
     .label { font-weight: 500; letter-spacing: .2px; }
     `],
->>>>>>> 1-6-mas-estilos
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LoadingOverlayComponent {

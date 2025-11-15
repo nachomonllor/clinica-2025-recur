@@ -22,16 +22,10 @@
     "@angular/router": "^18.2.0",
     "@ngx-translate/core": "^17.0.0",
     "@ngx-translate/http-loader": "^17.0.0",
-<<<<<<< HEAD
-    "@supabase/supabase-js": "^2.80.0",
-    "chart.js": "^4.5.1",
-    "file-saver": "^2.0.5",
-=======
     "@supabase/supabase-js": "^2.78.0",
     "apexcharts": "^3.54.1",
     "chart.js": "^4.5.1",
     "html2canvas": "^1.4.1",
->>>>>>> 1-6-mas-estilos
     "jspdf": "^3.0.3",
     "jspdf-autotable": "^5.0.2",
     "ng-apexcharts": "^1.12.0",
@@ -46,7 +40,6 @@
     "@angular-devkit/build-angular": "^18.2.21",
     "@angular/cli": "^18.2.21",
     "@angular/compiler-cli": "^18.2.0",
-    "@types/file-saver": "^2.0.7",
     "@types/jasmine": "~5.1.0",
     "jasmine-core": "~5.2.0",
     "karma": "~6.4.0",

@@ -10,7 +10,7 @@ import { MatTableModule } from '@angular/material/table';
 
 import Swal from 'sweetalert2';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { HistoriaClinica } from '../../../models/interfaces';
+import { HistoriaClinica } from '../../../models/historia-clinica.model';
 
 @Component({
   selector: 'app-historia-clinica',
