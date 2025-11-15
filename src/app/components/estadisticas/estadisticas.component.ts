@@ -291,7 +291,7 @@ export class EstadisticasComponent implements AfterViewInit, OnChanges, OnDestro
 
   async exportToExcel() {
     const XLSX = await import('xlsx');
-    const { saveAs } = await import('file-saver');
+    //const { saveAs } = await import('file-saver');
 
     const wb = XLSX.utils.book_new();
 
@@ -311,6 +311,6 @@ export class EstadisticasComponent implements AfterViewInit, OnChanges, OnDestro
     XLSX.utils.book_append_sheet(wb, ws5, 'Ingresos');
 
     const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-    saveAs(new Blob([wbout]), `estadisticas_${this.range.fromISO}_${this.range.toISO}.xlsx`);
+  //  saveAs(new Blob([wbout]), `estadisticas_${this.range.fromISO}_${this.range.toISO}.xlsx`);
   }
 }
