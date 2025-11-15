@@ -92,8 +92,8 @@ export class MisTurnosPacienteComponent implements OnInit {
       comentario: ['', [Validators.required, Validators.minLength(10)]]
     });
 
-    const ref = this.dialog.open(this.cancelDialog, { 
-      data: { 
+    const ref = this.dialog.open(this.cancelDialog, {
+      data: {
         turno: t,
         form: comentarioForm
       },
@@ -103,14 +103,14 @@ export class MisTurnosPacienteComponent implements OnInit {
     ref.afterClosed().subscribe(result => {
       if (result && comentarioForm.valid) {
         // TODO: Guardar comentario en BD (podría agregarse un campo comentario_cancelacion en turnos)
-      this.turnoService.cancelarTurno(t.id).subscribe({
-        next: () => {
-          t.estado = 'cancelado';
-          this.dataSource.data = [...this.dataSource.data];
+        this.turnoService.cancelarTurno(t.id).subscribe({
+          next: () => {
+            t.estado = 'cancelado';
+            this.dataSource.data = [...this.dataSource.data];
             this.snackBar.open(`Turno cancelado`, 'Cerrar', { duration: 2000 });
-        },
-        error: (e) => this.snackBar.open(`Error al cancelar: ${e?.message || e}`, 'Cerrar', { duration: 2500 })
-      });
+          },
+          error: (e) => this.snackBar.open(`Error al cancelar: ${e?.message || e}`, 'Cerrar', { duration: 2500 })
+        });
       }
     });
   }
@@ -176,6 +176,14 @@ export class MisTurnosPacienteComponent implements OnInit {
       }
     });
   }
+
+
+  get turnos(): TurnoVM[] {
+    const ds = this.dataSource as MatTableDataSource<TurnoVM>;
+    const filtered = ds.filteredData;
+    return (filtered && filtered.length ? filtered : ds.data) || [];
+  }
+
 }
 
 

@@ -15,6 +15,7 @@ import { environment } from '../../../environments/environment';
 import { AutoFocusDirective } from '../../../directives/auto-focus.directive';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { QuickAccessUser, QuickLoginsConfig, Rol } from '../../../models/interfaces';
+import { CaptchaImagenComponent } from "../../captcha-imagen/captcha-imagen.component";
 
 
 @Component({
@@ -23,8 +24,9 @@ import { QuickAccessUser, QuickLoginsConfig, Rol } from '../../../models/interfa
   imports: [
     CommonModule, ReactiveFormsModule, RouterModule,
     MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatTooltipModule, MatProgressSpinnerModule, MatSnackBarModule,
-    AutoFocusDirective
-  ],
+    AutoFocusDirective,
+    CaptchaImagenComponent
+],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
@@ -43,6 +45,30 @@ export class LoginComponent implements OnInit {
     private router: Router,
     private snackBar: MatSnackBar
   ) { }
+
+  // /// ------------------- CAPTCHA ------------------
+
+  // captchaValido = false;
+
+  // onCaptchaValido(valido: boolean): void {
+  //   this.captchaValido = valido;
+  // }
+
+  // onSubmit(): void {
+  //   if (this.formularioLogin.invalid || !this.captchaValido) {
+  //     this.formularioLogin.markAllAsTouched();
+
+  //     if (!this.captchaValido) {
+  //       // opcional: mostrar mensaje
+  //       // this.snackBar.open('Resuelve el captcha', 'Cerrar', { duration: 3000 });
+  //     }
+
+  //     return;
+  //   }
+
+  // }
+
+  // // -----------------------------------------
 
   ngOnInit(): void {
     this.formularioLogin = this.fb.group({

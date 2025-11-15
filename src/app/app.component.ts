@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
-import { LoadingOverlayComponent } from './loading-overlay/loading-overlay.component';
 import { slideInAnimation, fadeInAnimation } from './animations';
 import { filter } from 'rxjs/operators';
 import { MainNavComponent } from './components/main-nav/main-nav.component';
@@ -8,7 +7,7 @@ import { MainNavComponent } from './components/main-nav/main-nav.component';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, LoadingOverlayComponent, MainNavComponent],
+  imports: [RouterOutlet, MainNavComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
   animations: [slideInAnimation, fadeInAnimation]

@@ -142,3 +142,37 @@ button[mat-raised-button].full-width:hover{
   }
 }
 
+
+/*  fondo siempre oscuro y texto claro  */
+
+/* Quitar la capa clara que mete Angular Material al hacer foco */
+.registro-container ::ng-deep .mat-mdc-form-field-focus-overlay {
+  background: transparent !important;
+}
+
+/* Mantener fondo oscuro en hover / focus */
+.registro-container ::ng-deep .mat-mdc-form-field .mat-mdc-text-field-wrapper {
+  background: rgba(10, 20, 30, 0.55);
+}
+
+.registro-container ::ng-deep .mat-mdc-form-field:hover .mat-mdc-text-field-wrapper,
+.registro-container ::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-text-field-wrapper {
+  background: rgba(10, 20, 30, 0.85); /* si querés que se note un pelín más en foco */
+}
+
+/* Texto SIEMPRE claro (normal y con foco) */
+.registro-container ::ng-deep .mat-mdc-input-element {
+  color: var(--ink) !important;        /* blanco azulado */
+  caret-color: var(--cyan) !important; /* color del cursor */
+}
+
+/* Placeholder clarito pero legible */
+.registro-container ::ng-deep .mat-mdc-input-element::placeholder {
+  color: var(--ink-2) !important;
+  opacity: 1;
+}
+
+/* Label cuando el campo está enfocado */
+.registro-container ::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-form-field-label {
+  color: var(--cyan) !important;
+}
