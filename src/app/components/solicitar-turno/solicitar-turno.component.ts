@@ -57,7 +57,7 @@ export class SolicitarTurnoComponent implements OnInit {
   pacientes: PacienteOption[] = [];
   diasDisponibles: string[] = [];
   horariosDisponibles: string[] = ['08:00', '09:00', '10:00', '11:00', '12:00', '14:00', '15:00', '16:00', '17:00', '18:00'];
-  
+
   esAdmin = false;
   pacienteId: string | null = null;
   loading = false;
@@ -104,7 +104,7 @@ export class SolicitarTurnoComponent implements OnInit {
       dia: this.fb.control<string | null>(null, Validators.required),
       hora: this.fb.control<string | null>(null, Validators.required)
     });
-    
+
     // Configurar listeners básicos para evitar errores
     this.configurarListeners();
   }
@@ -129,12 +129,12 @@ export class SolicitarTurnoComponent implements OnInit {
         // Filtrar especialistas por la especialidad seleccionada
         this.especialistasFiltrados = this.especialistas.filter(e => e.especialidad === esp);
         console.log(`[SolicitarTurno] Especialidad seleccionada: ${esp}, Especialistas encontrados: ${this.especialistasFiltrados.length}`);
-        
+
         if (this.especialistasFiltrados.length === 0) {
           console.warn(`[SolicitarTurno] No hay especialistas disponibles para la especialidad: ${esp}`);
           this.snackBar.open(`No hay especialistas disponibles para ${esp}`, 'Cerrar', { duration: 3000 });
         }
-        
+
         especialistaCtrl.reset();
         especialistaCtrl.enable({ emitEvent: false });
       } else {
@@ -180,12 +180,12 @@ export class SolicitarTurnoComponent implements OnInit {
       }
       pacienteControl.updateValueAndValidity();
     }
-    
+
     // Asegurar que los controles estén en el estado correcto inicial
     const especialistaCtrl = this.formularioTurno.get('especialista') as FormControl<string | null>;
     const diaCtrl = this.formularioTurno.get('dia') as FormControl<string | null>;
     const horaCtrl = this.formularioTurno.get('hora') as FormControl<string | null>;
-    
+
     if (especialistaCtrl && diaCtrl && horaCtrl) {
       especialistaCtrl.disable({ emitEvent: false });
       diaCtrl.disable({ emitEvent: false });
@@ -225,7 +225,7 @@ export class SolicitarTurnoComponent implements OnInit {
         .from('especialistas')
         .select('id, nombre, apellido, especialidad')
         .in('id', idsAprobados);
-      
+
       console.log('[SolicitarTurno] Respuesta de especialistas:', { data: especialistasData, error: especialistasError });
 
       if (especialistasError) {
@@ -249,7 +249,7 @@ export class SolicitarTurnoComponent implements OnInit {
       const especialidadesSet = new Set<string>();
       const especialistasList: EspecialistaOption[] = [];
       const especialistasSinEspecialidad: any[] = [];
-      
+
       especialistasData.forEach((e: any) => {
         if (e.especialidad && e.especialidad.trim() !== '') {
           especialidadesSet.add(e.especialidad);
@@ -275,7 +275,7 @@ export class SolicitarTurnoComponent implements OnInit {
 
       console.log('[SolicitarTurno] Especialidades únicas cargadas:', this.especialidades);
       console.log('[SolicitarTurno] Total especialistas con especialidad:', this.especialistas.length);
-      
+
       if (this.especialidades.length === 0) {
         this.snackBar.open('Los especialistas aprobados no tienen especialidad asignada', 'Cerrar', { duration: 4000 });
       }
@@ -312,7 +312,7 @@ export class SolicitarTurnoComponent implements OnInit {
           })
         )
       );
-      
+
       this.pacientes = pacientes;
     } catch (e) {
       console.error('[SolicitarTurno] Error al cargar pacientes', e);
@@ -339,14 +339,14 @@ export class SolicitarTurnoComponent implements OnInit {
 
   formatearFecha(fecha: Date): string {
     const diasSemana = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
-    const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
-                   'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-    
+    const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+
     const diaSemana = diasSemana[fecha.getDay()];
     const dia = fecha.getDate();
     const mes = meses[fecha.getMonth()];
     const año = fecha.getFullYear();
-    
+
     return `${diaSemana} ${dia} de ${mes} ${año}`;
   }
 
@@ -364,7 +364,7 @@ export class SolicitarTurnoComponent implements OnInit {
       const especialistaId = fv.especialista!;
       const diaSeleccionado = fv.dia!.split('|')[0]; // YYYY-MM-DD
       const horaSeleccionada = fv.hora!;
-      
+
       // Crear fecha ISO completa (YYYY-MM-DDTHH:mm:ss)
       const fechaISO = `${diaSeleccionado}T${horaSeleccionada}:00`;
 
@@ -414,5 +414,33 @@ export class SolicitarTurnoComponent implements OnInit {
       this.loading = false;
     }
   }
+
+
+  // Porcentaje de progreso (4 pasos, 25% cada uno)
+  progreso(): number {
+    if (!this.formularioTurno) return 0;
+    let p = 0;
+    if (this.formularioTurno.get('especialidad')?.valid) p += 25;
+    if (this.formularioTurno.get('especialista')?.valid) p += 25;
+    if (this.formularioTurno.get('dia')?.valid) p += 25;
+    if (this.formularioTurno.get('hora')?.valid) p += 25;
+    return p;
+  }
+
+  // Mapea ID -> "Apellido, Nombre"
+  especialistaLabel(id: string | null | undefined): string | null {
+    if (!id) return null;
+    const e = this.especialistas.find(x => x.id === id) || this.especialistasFiltrados.find(x => x.id === id);
+    return e ? `${e.apellido}, ${e.nombre}` : null;
+  }
+
+  // De "YYYY-MM-DD|Lunes 1 de Enero 2025" -> "Lunes 1 de Enero 2025"
+  fechaLabel(diaValue: string | null | undefined): string | null {
+    if (!diaValue) return null;
+    const parts = diaValue.split('|');
+    return parts.length > 1 ? parts[1] : diaValue;
+  }
+
+
 }
 

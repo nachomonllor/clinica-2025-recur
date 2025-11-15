@@ -1,9 +1,162 @@
-<mat-card>
+
+<mat-card class="turno-shell mat-elevation-z8">
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-content">
+      <h2>{{ esAdmin ? 'Solicitar Turno (Admin)' : 'Solicitar Turno' }}</h2>
+      <p>Elegí la especialidad, el profesional, el día y la hora. Luego confirmá la reserva.</p>
+    </div>
+  </div>
+
+  <!-- PROGRESO -->
+  <div class="progress">
+    <div class="bar" [style.width.%]="progreso()"></div>
+  </div>
+
+  <!-- FORM + RESUMEN -->
+  <form [formGroup]="formularioTurno" (ngSubmit)="onSubmit()" class="grid">
+    <!-- Columna izquierda: formulario -->
+    <section class="form-col">
+      <!-- Paso 1: Especialidad -->
+      <div class="field-card">
+        <span class="step">Paso 1</span>
+        <div class="field-title">Especialidad</div>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Especialidad</mat-label>
+          <mat-select formControlName="especialidad">
+            <mat-option *ngFor="let esp of especialidades" [value]="esp">
+              {{ esp }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="formularioTurno.get('especialidad')?.hasError('required')">
+            La especialidad es obligatoria
+          </mat-error>
+        </mat-form-field>
+
+        <small class="hint warn" *ngIf="especialidades.length === 0">
+          No hay especialidades disponibles. Un administrador debe aprobar cuentas de especialistas.
+        </small>
+      </div>
+
+      <!-- Paso 2: Especialista -->
+      <div class="field-card">
+        <span class="step">Paso 2</span>
+        <div class="field-title">Especialista</div>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Especialista</mat-label>
+          <mat-select formControlName="especialista">
+            <mat-option *ngFor="let esp of especialistasFiltrados" [value]="esp.id">
+              {{ esp.apellido }}, {{ esp.nombre }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="formularioTurno.get('especialista')?.hasError('required')">
+            El especialista es obligatorio
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Paso 3: Día -->
+      <div class="field-card">
+        <span class="step">Paso 3</span>
+        <div class="field-title">Día</div>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Día</mat-label>
+          <mat-select formControlName="dia">
+            <mat-option *ngFor="let dia of diasDisponibles" [value]="dia">
+              {{ dia.split('|')[1] }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="formularioTurno.get('dia')?.hasError('required')">
+            El día es obligatorio
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Paso 4: Hora -->
+      <div class="field-card">
+        <span class="step">Paso 4</span>
+        <div class="field-title">Hora</div>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Hora</mat-label>
+          <mat-select formControlName="hora">
+            <mat-option *ngFor="let hora of horariosDisponibles" [value]="hora">
+              {{ hora }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="formularioTurno.get('hora')?.hasError('required')">
+            La hora es obligatoria
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Opcional: chips de hora (click rápido). Mantiene el mat-select. -->
+        <div class="hours-grid" *ngIf="formularioTurno.get('dia')?.enabled">
+          <button type="button"
+                  class="hour-chip"
+                  *ngFor="let h of horariosDisponibles"
+                  [class.active]="formularioTurno.get('hora')?.value === h"
+                  (click)="formularioTurno.get('hora')?.setValue(h)">
+            {{ h }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Acciones -->
+      <div class="actions">
+        <button mat-stroked-button type="button" (click)="router.navigate(['/bienvenida'])">
+          Cancelar
+        </button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="loading || formularioTurno.invalid">
+          {{ loading ? 'Solicitando…' : 'Confirmar turno' }}
+        </button>
+      </div>
+    </section>
+
+    <!-- Columna derecha: resumen y (si admin) paciente -->
+    <aside class="summary-col">
+      <div class="summary-card">
+        <h3>Resumen</h3>
+        <ul>
+          <li><span>Especialidad</span><strong>{{ formularioTurno.value.especialidad || '—' }}</strong></li>
+          <li><span>Profesional</span><strong>{{ especialistaLabel(formularioTurno.value.especialista) || '—' }}</strong></li>
+          <li><span>Día</span><strong>{{ fechaLabel(formularioTurno.value.dia) || '—' }}</strong></li>
+          <li><span>Hora</span><strong>{{ formularioTurno.value.hora || '—' }}</strong></li>
+        </ul>
+        <div class="note" *ngIf="!formularioTurno.valid">
+          Completá los pasos para habilitar la confirmación.
+        </div>
+      </div>
+
+      <div class="info-card" *ngIf="esAdmin">
+        <h4>Reservar para un paciente</h4>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Paciente</mat-label>
+          <mat-select formControlName="paciente">
+            <mat-option *ngFor="let pac of pacientes" [value]="pac.id">
+              {{ pac.apellido }}, {{ pac.nombre }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="formularioTurno.get('paciente')?.hasError('required')">
+            El paciente es obligatorio
+          </mat-error>
+        </mat-form-field>
+      </div>
+    </aside>
+  </form>
+</mat-card>
+
+
+
+
+<!-- <mat-card>
   <mat-card-title>{{ esAdmin ? 'Solicitar Turno (Admin)' : 'Solicitar Turno' }}</mat-card-title>
 
   <form [formGroup]="formularioTurno" (ngSubmit)="onSubmit()">
     
-    <!-- Especialidad -->
+     Especialidad 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Especialidad</mat-label>
       <mat-select formControlName="especialidad">
@@ -16,7 +169,7 @@
       </mat-error>
     </mat-form-field>
 
-    <!-- Especialista -->
+     Especialista 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Especialista</mat-label>
       <mat-select formControlName="especialista">
@@ -29,7 +182,7 @@
       </mat-error>
     </mat-form-field>
 
-    <!-- Paciente (solo para admin) -->
+   Paciente (solo para admin) 
     <mat-form-field appearance="outline" class="full-width" *ngIf="esAdmin">
       <mat-label>Paciente</mat-label>
       <mat-select formControlName="paciente">
@@ -42,7 +195,7 @@
       </mat-error>
     </mat-form-field>
 
-    <!-- Día (sin Datepicker) -->
+    Día (sin Datepicker) 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Día</mat-label>
       <mat-select formControlName="dia">
@@ -55,7 +208,7 @@
       </mat-error>
     </mat-form-field>
 
-    <!-- Hora -->
+   Hora 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Hora</mat-label>
       <mat-select formControlName="hora">
@@ -68,7 +221,7 @@
       </mat-error>
     </mat-form-field>
 
-    <!-- Botones -->
+    Botones 
     <div class="actions">
       <button mat-raised-button type="button" (click)="router.navigate(['/bienvenida'])">
         Cancelar
@@ -79,4 +232,4 @@
     </div>
   </form>
 </mat-card>
-
+ -->

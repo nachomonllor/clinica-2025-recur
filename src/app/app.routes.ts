@@ -9,12 +9,26 @@ import { BienvenidaComponent } from './components/bienvenida/bienvenida.componen
 import { SeleccionEstadisticasComponent } from './seleccion-estadisticas/seleccion-estadisticas.component';
 import { UsuariosComponent } from './components/usuarios/usuarios.component';
 import { TurnosPorEspecialidadComponent } from './turnos-por-especialidad/turnos-por-especialidad.component';
+import { PerfilUsuarioComponent } from './components/admin/perfil-usuario/perfil-usuario.component';
+import { ReportesComponent } from './components/admin/reportes/reportes.component';
 //import { LogIngresosAdminComponent } from './log-ingresos-admin/log-ingresos-admin.component';
 
 export const routes: Routes = [
   // Home (redirige a bienvenida)
   { path: '', pathMatch: 'full', redirectTo: 'bienvenida' },
   { path: 'bienvenida', component: BienvenidaComponent, data: { animation: 'bienvenida' } },
+
+    {path: 'seleccion-estadisticas', component: SeleccionEstadisticasComponent },
+
+  {path: 'usuarios', component: UsuariosComponent},
+
+  {path: 'turnos-por-especialidad', component: TurnosPorEspecialidadComponent},
+  
+  {path: 'perfil-usuario', component: PerfilUsuarioComponent},
+
+  {path: 'reportes', component: ReportesComponent},
+
+
 
   // Auth / público
   { path: 'login-paciente',
@@ -113,13 +127,12 @@ export const routes: Routes = [
        loadComponent: () => import( './log-ingresos-admin/log-ingresos-admin.component')  
        .then( m => m.LogIngresosAdminComponent) },  
     
-  {path: 'seleccion-estadisticas', component: SeleccionEstadisticasComponent },
 
-  {path: 'usuarios', component: UsuariosComponent},
+  
 
-  {path: 'turnos-por-especialidad', component: TurnosPorEspecialidadComponent},
-    
-  { path: '**', redirectTo: 'login-paciente' }
+  { path: '**', redirectTo: 'login-paciente' },
+
+  
   
 ];
 
