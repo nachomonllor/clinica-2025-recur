@@ -19,6 +19,9 @@ import { MatTableModule } from '@angular/material/table';
 import { MatExpansionModule } from '@angular/material/expansion';
 import jsPDF from 'jspdf';
 
+import { animate, query, stagger, style, transition, trigger } from '@angular/animations';
+
+
 interface PerfilCompleto {
   id: string;
   rol: string;
@@ -52,7 +55,18 @@ interface PerfilCompleto {
     MatExpansionModule
   ],
   templateUrl: './mi-perfil.component.html',
-  styleUrls: ['./mi-perfil.component.scss']
+  styleUrls: ['./mi-perfil.component.scss'],
+    animations: [
+    trigger('pageIn', [
+      transition(':enter', [
+        query('.hero, .panel', [
+          style({ opacity: 0, transform: 'translateY(12px) scale(.98)' }),
+          stagger(80, animate('420ms cubic-bezier(.2,.8,.2,1)',
+            style({ opacity: 1, transform: 'translateY(0) scale(1)' })))
+        ])
+      ])
+    ])
+  ]
 })
 export class MiPerfilComponent implements OnInit {
   perfil: PerfilCompleto | null = null;
@@ -80,6 +94,21 @@ export class MiPerfilComponent implements OnInit {
     private fb: FormBuilder,
     private snackBar: MatSnackBar
   ) { }
+
+  //------------------------
+   get nombreCompleto(): string {
+    return this.perfil ? `${this.perfil.nombre} ${this.perfil.apellido}` : '';
+  }
+  get rolUpper(): string {
+    return this.esEspecialista ? 'ESPECIALISTA' : (this.esPaciente ? 'PACIENTE' : (this.perfil?.rol || '')).toUpperCase();
+  }
+  get avatarIniciales(): string {
+    const p = this.perfil; if (!p) return '';
+    return (p.nombre?.[0] || '').toUpperCase() + (p.apellido?.[0] || '').toUpperCase();
+  }
+
+
+  // -----------------------
 
   async ngOnInit(): Promise<void> {
     await this.cargarPerfil();

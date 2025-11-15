@@ -1,303 +1,108 @@
-:host {
-  --surface: #ffffff;
-  --surface-2: #f5f7fb;
-  --brand-1: #2b7fff;         /* acento */
-  --brand-2: #7aa7ff;         /* acento suave */
-  --text-1: #111827;          /* título */
-  --text-2: #4b5563;          /* secundario */
-  --divider: #e5e7eb;         /* líneas suaves */
-  --ok: #10b981;
-  --warn: #f59e0b;
-  --shadow: 0 10px 25px rgba(17, 24, 39, 0.08);
+:host{
+  --bg-1:#0a1020; --bg-2:#0b152b;
+  --glass: rgba(255,255,255,.06);
+  --glass-strong: rgba(255,255,255,.12);
+  --border: rgba(255,255,255,.14);
+  --text:#e9eef8; --muted:#aeb6c7;
+  --success:#22c55e; --danger:#ef4444;
+  --blue:#2563eb; --purple:#7c3aed; --teal:#06b6d4; --pink:#ec4899; --orange:#f97316;
+  color:var(--text); display:block;
 }
 
-/* === CONTENEDOR PRINCIPAL === */
-mat-card {
-  padding: 0; /* nos encargamos del padding por secciones */
-  background: transparent;
-  box-shadow: none;
+/* FONDO */
+.profile-page{
+  min-height:100vh;
+  background:
+    radial-gradient(1200px 700px at 10% -10%, #0ea5ea22, transparent),
+    radial-gradient(1000px 600px at 110% 120%, #a78bfa22, transparent),
+    linear-gradient(180deg, var(--bg-1), var(--bg-2));
+  padding: clamp(16px,3vw,32px);
 }
 
-/* === HERO === */
-.perfil-card {
-  border-radius: 16px;
-  overflow: hidden;
-  background: var(--surface);
+/* HERO */
+.hero{ position:relative; margin-bottom:20px; }
+.hero-content{
+  display:grid; grid-template-columns:1fr auto; gap:16px; align-items:center;
+  padding:16px; margin-top:-8px; border-radius:16px; border:1px solid var(--border);
+  box-shadow:0 12px 30px rgba(0,0,0,.32);
+  background: var(--glass); backdrop-filter: blur(8px);
 }
-
-.perfil-hero {
-  position: relative;
-  display: grid;
-  grid-template-columns: 120px 1fr auto;
-  gap: 18px;
-  padding: 24px 28px;
-  background: linear-gradient(135deg, #e6f2ff 0%, #f6f8fc 100%);
-  border-bottom: 1px solid var(--divider);
+.hero-left{ display:grid; grid-template-columns:auto 1fr; gap:12px; align-items:center; }
+.avatar{ width:64px; height:64px; border-radius:16px; display:grid; place-items:center; overflow:hidden;
+  border:1px solid var(--border); background:linear-gradient(135deg,#1e293b,#0f172a); color:#93c5fd; font-weight:700;
 }
+.avatar.has-img img{ width:100%; height:100%; object-fit:cover; }
+.title h1{ margin:0; font-size: clamp(18px,2.2vw,24px); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.title .sub{ margin-top:4px; display:flex; align-items:center; gap:8px; color:var(--muted); font-size:12px; }
+.title .sub .dot::before{ content:'•'; color:#64748b; }
+.hero-right{ display:flex; gap:10px; align-items:center; justify-content:flex-end; flex-wrap:wrap; }
 
-.avatar-wrapper {
-  position: relative;
-  width: 120px;
-  height: 120px;
+/* BOTONES / CHIPS */
+.btn{ position:relative; display:inline-flex; gap:8px; align-items:center; border-radius:12px; padding:10px 12px;
+  font-weight:600; border:1px solid var(--border); background:#ffffff10; color:var(--text);
+  transition:transform 160ms, box-shadow 160ms, background 160ms; cursor:pointer; white-space:nowrap;
 }
+.btn:hover{ transform: translateY(-1px); background:#ffffff14; box-shadow:0 6px 16px rgba(0,0,0,.28);}
+.btn.primary{ background: linear-gradient(135deg, #2563eb66, #7c3aed66); border-color:#ffffff33; }
+.btn.ghost{ background: transparent; }
+.btn .icon{ width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:2; }
 
-.avatar {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 14px;
-  border: 3px solid #fff;
-  box-shadow: var(--shadow);
-  background: #eef2ff;
-  display: grid;
-  place-items: center;
+.chip{ border:1px solid var(--border); border-radius:999px; padding:6px 12px; font-size:12px; background:#ffffff10; }
+.chip.role{ background: linear-gradient(135deg,#2563eb66,#7c3aed66); border-color:#ffffff33; }
+
+/* GRID + PANELS */
+.content-grid{ display:grid; grid-template-columns:repeat(12,1fr); gap:20px; }
+.panel{ grid-column:span 6; border:1px solid var(--border); border-radius:16px; background:var(--glass);
+  backdrop-filter:blur(6px); box-shadow:0 12px 30px rgba(0,0,0,.28); container-type:inline-size;
 }
+.panel.span-2{ grid-column:span 12; }
+@media (max-width:920px){ .panel{ grid-column:span 12; } }
 
-.avatar-placeholder {
-  color: var(--text-2);
-  font-size: 56px;
+.panel-h{ padding:14px 16px 8px; border-bottom:1px solid #ffffff1a; display:flex; align-items:end; justify-content:space-between; gap:12px; }
+.panel-h h2{ margin:0; font-size:16px; }
+.panel-b{ padding:12px 16px 16px; }
+
+/* Info filas */
+.info{ display:grid; gap:10px; min-width:0; }
+.info-row{ display:grid; grid-template-columns:140px minmax(0,1fr); gap:10px; align-items:center; }
+.info-row .label{ color:var(--muted); font-size:12px; }
+.info-row .value{ font-size:14px; overflow-wrap:break-word; }
+.value.tag{ display:inline-block; padding:3px 8px; border-radius:999px; border:1px solid var(--glass-strong); background:#ffffff14; }
+.chips-line{ display:flex; flex-wrap:wrap; gap:6px; }
+.email{ color:inherit; text-decoration:none; } .email:hover{ text-decoration:underline; }
+
+/* Horarios: tarjetas glass */
+.horarios-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:12px; }
+.horario-card{ border-radius:14px; border:1px solid var(--border); background:var(--glass); backdrop-filter:blur(8px); }
+.horario-h{ padding:10px 12px 6px; border-bottom:1px solid #ffffff1a; }
+.horario-h h3{ margin:0; font-size:14px; }
+.horario-b{ padding:10px 12px; }
+.dias-section, .horas-section{ margin-top:8px; }
+.dias-section label, .horas-section label{ display:block; font-weight:700; margin-bottom:6px; color:#dbeafe; }
+.checkboxes{ display:grid; grid-template-columns:repeat(auto-fill, minmax(120px,1fr)); gap:6px 12px; }
+
+/* Historia clínica: acordeón glass */
+.hist-accordion ::ng-deep .mat-expansion-panel{
+  background: var(--glass)!important; border:1px solid var(--border)!important; border-radius:12px!important; color:var(--text)!important; margin-bottom:10px;
 }
+.historia-content{ padding:10px 16px 16px; }
+.historia-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:6px 14px; margin-bottom:8px; }
+.historia-item strong{ color:var(--muted); }
+.datos-dinamicos{ border-top:1px dashed #ffffff1a; padding-top:8px; }
+.muted{ color:var(--muted); }
 
-.avatar-secondary {
-  position: absolute;
-  right: -8px;
-  bottom: -8px;
-  width: 56px;
-  height: 56px;
-  border-radius: 10px;
-  overflow: hidden;
-  border: 2px solid #8fa0ec;
-  background: #c673f7;
-  img { width: 100%; height: 100%; object-fit: cover; }
-}
+/* Material inputs/selects en dark */
+::ng-deep .mat-mdc-form-field-infix, 
+::ng-deep .mat-mdc-select-value{ color:var(--text)!important; }
+::ng-deep .mat-mdc-text-field-wrapper, 
+::ng-deep .mat-mdc-select-panel{ background: #0f172a !important; }
+::ng-deep .mdc-notched-outline__leading,
+::ng-deep .mdc-notched-outline__notch,
+::ng-deep .mdc-notched-outline__trailing{ border-color:#ffffff22 !important; }
+::ng-deep .mdc-text-field--focused .mdc-notched-outline__leading,
+::ng-deep .mdc-text-field--focused .mdc-notched-outline__notch,
+::ng-deep .mdc-text-field--focused .mdc-notched-outline__trailing{ border-color:var(--orange) !important; }
 
-.hero-text {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  min-width: 0;
-}
-
-.bienvenido {
-  color: var(--brand-2);
-  font-weight: 700;
-  letter-spacing: .6px;
-  text-transform: uppercase;
-  font-size: 12px;
-  margin-bottom: 4px;
-}
-
-.nombre {
-  color: var(--text-1);
-  font-size: 28px;
-  line-height: 1.1;
-  margin: 0 0 6px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.rol {
-  display: inline-block;
-  font-size: 13px;
-  font-weight: 600;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: #7d8db8;
-  color: #091b4e;
-}
-.rol.especialista { background: #02ff95; color: #0b7a55; }
-.rol.paciente     { background: #496ccf; color: #3754aa; }
-
-.menu-fab {
-  align-self: start;
-  margin-top: 4px;
-}
-
-/* === BODY: DOS TARJETAS === */
-.perfil-body {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 18px;
-  padding: 18px 20px 22px;
-  background: var(--surface);
-}
-
-.panel {
-  background: #109fff;
-  border-radius: 14px;
-  padding: 18px 18px 14px;
-  box-shadow: var(--shadow);
-  border: 1px solid var(--divider);
-
-  h3 {
-    margin: 0 0 10px;
-    color: var(--text-1);
-    font-size: 16px;
-    font-weight: 700;
-  }
-
-  .divider {
-    height: 2px;
-    width: 100%;
-    background: linear-gradient(90deg, var(--brand-1), transparent);
-    opacity: .5;
-    margin-bottom: 12px;
-  }
-
-  .rows {
-    margin: 0 0 8px;
-  }
-
-  .row {
-    display: grid;
-    grid-template-columns: 180px 1fr;
-    gap: 8px;
-    align-items: center;
-    padding: 6px 0;
-    border-bottom: 1px dashed var(--divider);
-
-    &:last-child { border-bottom: 0; }
-
-    dt {
-      color: var(--text-2);
-      font-weight: 600;
-    }
-    dd {
-      margin: 0;
-      color: var(--text-1);
-      word-break: break-word;
-    }
-    .email { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; }
-    .capitalize { text-transform: capitalize; }
-  }
-
-  .chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    ::ng-deep .mat-mdc-chip {
-      --mdc-chip-elevated-container-color: #2e406d;
-      --mdc-chip-label-text-color: #274b9f;
-      font-weight: 600;
-    }
-  }
-
-  .link-historia { margin-top: 10px; }
-}
-
-/* === HORARIOS (tu sección actual, solo estilos) === */
-.horarios-section {
-  margin-top: 18px;
-  padding: 14px 20px 6px;
-  background: var(--surface-2);
-  border-radius: 14px;
-  border: 1px solid var(--divider);
-
-  h3 {
-    margin: 0 0 5px;
-  }
-  p { color: var(--text-2); margin: 0 0 14px; }
-
-  .horario-card {
-    margin-bottom: 16px;
-    border-radius: 12px;
-    border: 1px solid var(--divider);
-    background: #c4c7e6;
-
-    .dias-section, .horas-section {
-      margin-top: 8px;
-
-      label {
-        display: block;
-        font-weight: 700;
-        color: var(--text-1);
-        margin-bottom: 6px;
-      }
-
-      .checkboxes {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-        gap: 4px 10px;
-
-        ::ng-deep .mdc-form-field>label { color: var(--text-2); }
-      }
-    }
-  }
-
-  .actions {
-    margin: 8px 0 10px;
-  }
-}
-
-/* === HISTORIA CLÍNICA (tu sección actual, solo estilos) === */
-.historia-clinica-section {
-  margin-top: 18px;
-  padding: 14px 20px 20px;
-  background: var(--surface-2);
-  border-radius: 14px;
-  border: 1px solid var(--divider);
-
-  .historia-header {
-    display: flex;
-    gap: 16px;
-    align-items: end;
-    justify-content: space-between;
-    margin-bottom: 8px;
-
-    .historia-resumen { color: var(--text-2); margin: 4px 0 0; }
-    .selector-profesional { width: 260px; }
-  }
-
-  .sin-historias { color: var(--text-2); }
-
-  ::ng-deep .mat-expansion-panel {
-    border: 1px solid var(--divider);
-    border-radius: 12px !important;
-    background: #00aeff;
-    margin-bottom: 10px;
-  }
-
-  .historia-content {
-    padding: 10px 16px 16px;
-
-    .historia-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-      gap: 6px 14px;
-      margin-bottom: 8px;
-
-      .historia-item strong { color: var(--text-2); }
-    }
-
-    .datos-dinamicos {
-      border-top: 1px dashed var(--divider);
-      padding-top: 8px;
-    }
-  }
-}
-
-/* === RESPONSIVE === */
-@media (max-width: 960px) {
-  .perfil-hero {
-    grid-template-columns: 96px 1fr 40px;
-    padding: 18px;
-  }
-
-  .avatar-wrapper { width: 96px; height: 96px; }
-  .nombre { font-size: 22px; }
-
-  .perfil-body {
-    grid-template-columns: 1fr;
-    gap: 14px;
-    padding: 14px;
-  }
-}
-
-@media (max-width: 599px) {
-  .perfil-hero { grid-template-columns: 72px 1fr 32px; }
-  .avatar-wrapper { width: 72px; height: 72px; }
-  .nombre { font-size: 20px; }
-  .row { grid-template-columns: 140px 1fr !important; }
-}
-
+/* Anti‑pozo (por si queda algún mat-card suelto) */
+::ng-deep .mat-mdc-card-content{ padding-top:0!important; padding-bottom:0!important; }
+.profile-page > *{ margin:0 !important; }
