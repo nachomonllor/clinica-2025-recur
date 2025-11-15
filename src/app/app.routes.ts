@@ -6,6 +6,7 @@
 import { Routes } from '@angular/router';
 import { adminGuard } from '../services/admin.guard';
 import { BienvenidaComponent } from './components/bienvenida/bienvenida.component';
+import { SeleccionEstadisticasComponent } from './seleccion-estadisticas/seleccion-estadisticas.component';
 //import { LogIngresosAdminComponent } from './log-ingresos-admin/log-ingresos-admin.component';
 
 export const routes: Routes = [
@@ -110,6 +111,7 @@ export const routes: Routes = [
        loadComponent: () => import( './log-ingresos-admin/log-ingresos-admin.component')  
        .then( m => m.LogIngresosAdminComponent) },  
     
+  {path: 'seleccion-estadisticas', component: SeleccionEstadisticasComponent },
     
   { path: '**', redirectTo: 'login-paciente' }
   
