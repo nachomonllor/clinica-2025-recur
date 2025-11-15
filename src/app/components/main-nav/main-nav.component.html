@@ -1,21 +1,18 @@
-<mat-toolbar
+<mat-toolbar class="main-nav" *ngIf="!cargando() && autenticado()">
+
+  <!-- <mat-toolbar
   color="primary"
   class="main-nav mat-elevation-z4"
   *ngIf="!cargando() && autenticado()"
->
+> -->
   <button mat-button class="brand" (click)="irAHOME()" aria-label="Ir al inicio">
     <mat-icon>local_hospital</mat-icon>
     <span>Clínica Monllor</span>
   </button>
 
   <nav class="links">
-    <a
-      mat-button
-      *ngFor="let item of navItems()"
-      [routerLink]="item.route"
-      routerLinkActive="active-link"
-      aria-current="page"
-    >
+    <a mat-button *ngFor="let item of navItems()" [routerLink]="item.route" routerLinkActive="active-link"
+      aria-current="page">
       <mat-icon>{{ item.icon }}</mat-icon>
       <span>{{ item.label }}</span>
     </a>
@@ -23,24 +20,12 @@
 
   <span class="spacer"></span>
 
-  <button
-    mat-icon-button
-    [matMenuTriggerFor]="userMenu"
-    aria-label="Menú de usuario"
-    matTooltip="Opciones de cuenta"
-    class="avatar-button"
-  >
-    <img 
-      *ngIf="avatarUrl() && !avatarError()" 
-      [src]="avatarUrl()" 
-      alt="Foto de perfil" 
-      class="avatar-img"
-      (error)="onAvatarError()"
-    />
-    <mat-icon 
-      class="avatar-icon"
-      [style.display]="(avatarUrl() && !avatarError()) ? 'none' : 'block'"
-    >account_circle</mat-icon>
+  <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="Menú de usuario" matTooltip="Opciones de cuenta"
+    class="avatar-button">
+    <img *ngIf="avatarUrl() && !avatarError()" [src]="avatarUrl()" alt="Foto de perfil" class="avatar-img"
+      (error)="onAvatarError()" />
+    <mat-icon class="avatar-icon"
+      [style.display]="(avatarUrl() && !avatarError()) ? 'none' : 'block'">account_circle</mat-icon>
   </button>
 
   <mat-menu #userMenu="matMenu">
@@ -58,4 +43,3 @@
     </button>
   </mat-menu>
 </mat-toolbar>
-

@@ -161,7 +161,9 @@ export class MainNavComponent implements OnInit, OnDestroy {
           { label: 'Usuarios', route: '/usuarios-admin', icon: 'supervisor_account' },
           { label: 'Solicitar turno', route: '/solicitar-turno', icon: 'add_circle' },
           { label: 'Estadísticas', route: '/estadisticas', icon: 'insights' },
-          { label: 'Mi perfil', route: '/perfil-usuario', icon: 'account_circle' }
+          { label: 'Mi perfil', route: '/perfil-usuario', icon: 'account_circle' },
+
+          {label: 'Ingresos', route: '/log-ingreso', icon: 'event_note'}
         ];
       default:
         return [];
