@@ -11,6 +11,7 @@ import { Router, RouterModule } from '@angular/router';
 import { from, map, switchMap, firstValueFrom } from 'rxjs';
 import { SupabaseService } from '../../../services/supabase.service';
 import Swal from 'sweetalert2';
+import { MatIconModule } from "@angular/material/icon";
 
 interface EspecialistaOption {
   id: string;
@@ -37,7 +38,8 @@ interface PacienteOption {
     MatInputModule,
     MatSelectModule,
     MatButtonModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatIconModule
   ],
   templateUrl: './solicitar-turno.component.html',
   styleUrls: ['./solicitar-turno.component.scss']
@@ -427,10 +429,18 @@ export class SolicitarTurnoComponent implements OnInit {
     return p;
   }
 
-  // Mapea ID -> "Apellido, Nombre"
+  // // Mapea ID ==== > "Apellido, Nombre"
+  // especialistaLabel(id: string | null | undefined): string | null {
+  //   if (!id) return null;
+  //   const e = this.especialistas.find(x => x.id === id) || this.especialistasFiltrados.find(x => x.id === id);
+  //   return e ? `${e.apellido}, ${e.nombre}` : null;
+  // }
+
   especialistaLabel(id: string | null | undefined): string | null {
     if (!id) return null;
-    const e = this.especialistas.find(x => x.id === id) || this.especialistasFiltrados.find(x => x.id === id);
+    const e =
+      this.especialistasFiltrados?.find(x => x.id === id) ??
+      this.especialistas?.find(x => x.id === id);
     return e ? `${e.apellido}, ${e.nombre}` : null;
   }
 
@@ -440,6 +450,31 @@ export class SolicitarTurnoComponent implements OnInit {
     const parts = diaValue.split('|');
     return parts.length > 1 ? parts[1] : diaValue;
   }
+
+
+  // Helpers visuales para grillas
+  selectDia(d: string): void {
+    const ctrl = this.formularioTurno.get('dia');
+    if (!ctrl?.enabled) ctrl?.enable({ emitEvent: false });
+    ctrl?.setValue(d); // dispara valueChanges y habilita hora
+    this.formularioTurno.get('hora')?.markAsUntouched();
+  }
+
+  isDiaSelected(d: string): boolean {
+    return this.formularioTurno.get('dia')?.value === d;
+  }
+
+  selectHora(h: string): void {
+    const ctrl = this.formularioTurno.get('hora');
+    if (!ctrl?.enabled) ctrl?.enable({ emitEvent: false });
+    ctrl?.setValue(h);
+  }
+
+  isHoraSelected(h: string): boolean {
+    return this.formularioTurno.get('hora')?.value === h;
+  }
+
+
 
 
 }
