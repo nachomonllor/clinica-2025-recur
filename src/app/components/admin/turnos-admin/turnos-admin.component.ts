@@ -8,15 +8,15 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatCardModule } from '@angular/material/card';
-import { EstadoTurno, TurnoVM } from '../../../../models/turno.model';
 import { SupabaseService } from '../../../../services/supabase.service';
+import { EstadoTurno, TurnoVM } from '../../../../models/turno.model';
 
 type TurnoUI = TurnoVM & {
   paciente: string;
   especialista: string;
   fecha: Date;
   hora: string;
-  patologiasText?: string; // texto indexable desde historia clínica
+  patologiasText: string; // texto indexable desde historia clínica
 };
 
 @Component({

@@ -1,0 +1,146 @@
+
+
+:host {
+  --primary-700: #1565C0;  /* azul */
+  --primary-900: #0B1D3A;
+  --accent-600: #FF8F00;   /* naranja */
+  --accent-400: #FFA000;
+
+  --surface: rgba(255,255,255,.08);
+  --on-surface: #EAF2FF;
+  --on-surface-2: rgba(255,255,255,.75);
+}
+
+.pagina-estadisticas{
+  min-height: calc(100vh - 64px);
+  padding: clamp(16px, 3vw, 32px);
+  background:
+    radial-gradient(1000px 500px at -10% 0%, rgba(255,143,0,.18), transparent 60%),
+    radial-gradient(1200px 650px at 120% 20%, rgba(30,136,229,.18), transparent 60%),
+    linear-gradient(180deg, #061126, #0B1D3A 45%, #061126 100%);
+}
+
+.hero{
+  position: relative;
+  margin: 0 0 24px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.hero__contenido h1{
+  margin: 0;
+  font-weight: 800;
+  font-size: clamp(28px, 4vw, 44px);
+  color: var(--on-surface);
+  letter-spacing: .5px;
+}
+.hero__subtitulo{
+  margin: 6px 0 0;
+  color: var(--on-surface-2);
+}
+.hero__fab{
+  --mdc-fab-container-color: var(--accent-600);
+  --mat-fab-foreground-color: #111;
+  box-shadow: 0 8px 24px rgba(0,0,0,.36);
+}
+
+.cuadricula{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px,1fr));
+  gap: clamp(14px, 2vw, 22px);
+}
+
+.tarjeta-estadistica{
+  position: relative;
+  border-radius: 18px;
+  padding: 18px 18px 68px;
+  overflow: hidden;
+  cursor: pointer;
+
+  background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+  border: 1px solid rgba(255,255,255,.12);
+  box-shadow: 0 10px 30px rgba(0,0,0,.35);
+  color: var(--on-surface);
+
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+.tarjeta-estadistica:hover{
+  transform: translateY(-4px);
+  box-shadow: 0 16px 34px rgba(0,0,0,.45);
+  border-color: rgba(255,255,255,.18);
+}
+.tarjeta-estadistica:focus{
+  outline: 3px solid var(--accent-400);
+  outline-offset: 3px;
+}
+
+/* barra de acento superior */
+.tarjeta__acento{
+  position:absolute;
+  inset: 0 0 auto 0;
+  height: 6px;
+  background: linear-gradient(90deg, var(--accent-600), var(--accent-400));
+}
+
+.tarjeta__cuerpo{
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  grid-template-rows: auto auto;
+  gap: 10px 14px;
+  align-items: center;
+}
+
+.insignia-icono{
+  grid-row: span 2;
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, rgba(255,143,0,.2), rgba(255,160,0,.06));
+  border: 1px solid rgba(255,255,255,.2);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.25);
+}
+.insignia-icono mat-icon{
+  font-size: 28px;
+  color: var(--accent-400);
+}
+
+.tarjeta__titulo{
+  margin: 0;
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--on-surface);
+}
+.tarjeta__subtitulo{
+  margin: 0;
+  color: var(--on-surface-2);
+  line-height: 1.35;
+  font-size: 13.5px;
+}
+
+/* botón flotante */
+.tarjeta__ir{
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  --mdc-fab-container-color: var(--accent-600);
+  --mat-fab-foreground-color: #111;
+  box-shadow: 0 10px 24px rgba(255,143,0,.45), 0 3px 6px rgba(0,0,0,.45);
+}
+
+/* card completa clickeable */
+.enlace-estirado{
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+@media (prefers-reduced-motion: reduce){
+  .tarjeta-estadistica, .hero__fab{ transition: none !important; }
+}
+
+

@@ -10,7 +10,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { SupabaseService } from '../../../services/supabase.service';
-import { HistoriaClinicaDialogComponent } from '../usuarios-admin/historia-clinica-dialog.component';
+import { HistoriaClinicaDialogComponent } from '../admin/usuarios-admin/historia-clinica-dialog.component';
 
 interface PacienteAtendido {
   id: string;

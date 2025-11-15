@@ -12,15 +12,17 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { FormBuilder, FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
-import { SupabaseService } from '../../../services/supabase.service';
-import type { Rol, PerfilInsert } from '../../../models/perfil.model';
+
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { HistoriaClinicaDialogComponent } from './historia-clinica-dialog.component';
 import * as XLSX from 'xlsx';
-import { RoleLabelPipe } from '../../../pipes/role-label.pipe';
-import { ElevateOnHoverDirective } from '../../../directives/elevate-on-hover.directive';
-import { StatusBadgeDirective } from '../../../directives/status-badge.directive';
+
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { PerfilInsert, Rol } from '../../../../models/perfil.model';
+import { RoleLabelPipe } from '../../../../pipes/role-label.pipe';
+import { ElevateOnHoverDirective } from '../../../../directives/elevate-on-hover.directive';
+import { StatusBadgeDirective } from '../../../../directives/status-badge.directive';
+import { SupabaseService } from '../../../../services/supabase.service';
 
 interface UsuarioDisplay {
   id: string;

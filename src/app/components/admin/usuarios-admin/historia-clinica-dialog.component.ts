@@ -4,8 +4,8 @@ import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { DatoDinamico } from '../../../models/dato-dinamico.model';
-import { formatearDatoDinamico } from '../../../utils/dato-dinamico.util';
+import { DatoDinamico } from '../../../../models/dato-dinamico.model';
+import { formatearDatoDinamico } from '../../../../utils/dato-dinamico.util';
 
 @Component({
   selector: 'app-historia-clinica-dialog',

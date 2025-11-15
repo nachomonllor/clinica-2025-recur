@@ -4,8 +4,9 @@
 
 // src/app/app.routes.ts
 import { Routes } from '@angular/router';
-import { BienvenidaComponent } from './bienvenida/bienvenida.component';
 import { adminGuard } from '../services/admin.guard';
+import { BienvenidaComponent } from './components/bienvenida/bienvenida.component';
+//import { LogIngresosAdminComponent } from './log-ingresos-admin/log-ingresos-admin.component';
 
 export const routes: Routes = [
   // Home (redirige a bienvenida)
@@ -83,7 +84,7 @@ export const routes: Routes = [
       .then(m => m.TurnosEspecialidadComponent) },
 
   { path: 'turnos-admin',
-    loadComponent: () => import('./components/turnos-admin/turnos-admin.component')
+    loadComponent: () => import('./components/admin/turnos-admin/turnos-admin.component')
       .then(m => m.TurnosAdminComponent),
     canActivate: [adminGuard] },
 
@@ -100,11 +101,18 @@ export const routes: Routes = [
       .then(m => m.PacientesEspecialistaComponent) },
 
   { path: 'usuarios-admin',
-    loadComponent: () => import('./components/usuarios-admin/usuarios-admin.component')
+    loadComponent: () => import('./components/admin/usuarios-admin/usuarios-admin.component')
       .then(m => m.UsuariosAdminComponent),
     canActivate: [adminGuard] },
+   // './log-ingresos-admin/log-ingresos-admin.component'
 
+   { path: 'log-ingreso', 
+       loadComponent: () => import( './log-ingresos-admin/log-ingresos-admin.component')  
+       .then( m => m.LogIngresosAdminComponent) },  
+    
+    
   { path: '**', redirectTo: 'login-paciente' }
+  
 ];
 
 

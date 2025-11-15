@@ -1,0 +1,50 @@
+<p>seleccion-estadisticas works!</p>
+
+
+<section class="pagina-estadisticas" [@entradaCuadricula]="true">
+
+    <header class="hero">
+        <div class="hero__contenido">
+            <h1>Estadísticas</h1>
+            <p class="hero__subtitulo">Seleccioná el tablero que querés ver</p>
+        </div>
+
+        <button mat-fab class="hero__fab" [matMenuTriggerFor]="menuRapido" aria-label="Acciones rápidas">
+            <mat-icon>menu</mat-icon>
+        </button>
+        <mat-menu #menuRapido="matMenu">
+            <button mat-menu-item routerLink="/home">
+                <mat-icon>home</mat-icon><span>Inicio</span>
+            </button>
+            <button mat-menu-item routerLink="/reportes">
+                <mat-icon>download</mat-icon><span>Exportar reportes</span>
+            </button>
+        </mat-menu>
+    </header>
+
+    <div class="cuadricula">
+
+
+        <mat-card class="tarjeta-estadistica" *ngFor="let t of tarjetas" (click)="abrir(t)" role="button" tabindex="0"
+            (keyup.enter)="abrir(t)" [attr.aria-label]="t.aria">
+
+            <div class="tarjeta__acento"></div>
+
+            <div class="tarjeta__cuerpo">
+                <div class="insignia-icono" matRipple [matRippleCentered]="true" [matRippleRadius]="50">
+                    <mat-icon>{{ t.icono }}</mat-icon>
+                </div>
+
+                <h3 class="tarjeta__titulo">{{ t.titulo }}</h3>
+                <p class="tarjeta__subtitulo">{{ t.subtitulo }}</p>
+            </div>
+
+            <button mat-fab color="accent" class="tarjeta__ir" [routerLink]="t.ruta" [attr.aria-label]="t.aria">
+                <mat-icon>arrow_forward</mat-icon>
+            </button>
+
+            <a class="enlace-estirado" [routerLink]="t.ruta" [attr.aria-label]="t.aria"></a>
+        </mat-card>
+
+    </div>
+</section>
