@@ -1,3 +1,4 @@
+
 <section class="pagina-estadisticas">
   <header class="barra-acciones">
     <button mat-flat-button color="primary" routerLink="/seleccion-estadisticas">
@@ -42,7 +43,7 @@
   </header>
 
   <mat-card class="panel" id="captura-pdf">
-    <h2 class="titulo">Turnos por Médico</h2>
+    <h2 class="titulo">Turnos por Día</h2>
 
     <div class="chart-wrapper" *ngIf="!cargando; else cargandoTpl">
       <apx-chart
@@ -70,4 +71,3 @@
     <div class="mensaje-error" *ngIf="error">{{ error }}</div>
   </mat-card>
 </section>
-

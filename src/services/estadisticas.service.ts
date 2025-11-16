@@ -131,7 +131,7 @@ export class EstadisticasService {
     return (data ?? []) as PerfilBasico[];
   }
 
-  
+
   turnosPorMedico(
     desde?: string,
     hasta?: string,
@@ -178,6 +178,25 @@ export class EstadisticasService {
       })
     );
   }
+
+  // estadisticas.service.ts
+// Debe devolver algo como: [{ dia: 'YYYY-MM-DD', cantidad: number }]
+turnosPorDia(desde?: string, hasta?: string, soloFinalizados: boolean = true) {
+  //--- Supabase RPC ---
+  return defer(() =>
+    this.supa.client.rpc('turnos_por_dia', {
+      p_desde: desde ?? null,
+      p_hasta: hasta ?? null,
+      p_solo_finalizados: soloFinalizados
+    }).returns<Array<{ dia: string; cantidad: number }> | { Error: string } | null>()
+  );
+
+ // --- HTTP ---
+  return this.http.get<Array<{ dia: string; cantidad: number }>>('/api/estadisticas/turnos-por-dia', {
+    params: { desde: desde ?? '', hasta: hasta ?? '', soloFinalizados }
+  });
+}
+
 
 
 }

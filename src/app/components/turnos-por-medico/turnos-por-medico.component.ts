@@ -25,6 +25,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 
 import { map } from 'rxjs/operators';
 import { EstadisticasService } from '../../../services/estadisticas.service';
+import { RouterLink } from '@angular/router';
 
 export type ChartOptions = {
   series: ApexAxisChartSeries;
@@ -41,14 +42,12 @@ export type ChartOptions = {
   colors: string[];
 };
 
-
-
-
 @Component({
   selector: 'app-turnos-por-medico',
   standalone: true,
   imports: [
     CommonModule, FormsModule,
+    RouterLink,
     MatCardModule, MatIconModule, MatButtonModule, MatMenuModule, MatRippleModule,
     MatTooltipModule, MatFormFieldModule, MatInputModule,
     MatDatepickerModule, MatNativeDateModule, MatProgressSpinnerModule,
@@ -59,9 +58,6 @@ export type ChartOptions = {
   templateUrl: './turnos-por-medico.component.html',
   styleUrls: ['./turnos-por-medico.component.scss']
 })
-
-
-
 
 export class TurnosPorMedicoComponent implements OnInit {
 

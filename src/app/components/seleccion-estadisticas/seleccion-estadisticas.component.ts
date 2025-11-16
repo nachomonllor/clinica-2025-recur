@@ -87,7 +87,7 @@ export class SeleccionEstadisticasComponent {
       titulo: 'Turnos por Día',
       subtitulo: 'Cantidad de turnos agendados por día',
       icono: 'event',
-      ruta: '/estadisticas/por-dia',
+      ruta: '/turnos-por-dia',
       aria: 'Ir a Turnos por Día'
     }
   ];

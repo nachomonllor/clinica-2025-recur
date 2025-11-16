@@ -2,6 +2,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { BehaviorSubject, Observable, combineLatest, of } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 
@@ -16,7 +17,7 @@ type PageToken = number | '…';
 @Component({
   selector: 'app-log-ingresos-admin',
   standalone: true,
-  imports:[ CommonModule, FormsModule],
+  imports:[ CommonModule, FormsModule, RouterLink],
   templateUrl: './log-ingresos-admin.component.html',
   styleUrls: ['./log-ingresos-admin.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

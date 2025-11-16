@@ -12,26 +12,19 @@ import { ReportesComponent } from './components/admin/reportes/reportes.componen
 import { SeleccionEstadisticasComponent } from './components/seleccion-estadisticas/seleccion-estadisticas.component';
 import { TurnosPorEspecialidadComponent } from './components/turnos-por-especialidad/turnos-por-especialidad.component';
 import { TurnosPorMedicoComponent } from './components/turnos-por-medico/turnos-por-medico.component';
+import { TurnosPorDiaComponent } from './turnos-por-dia/turnos-por-dia.component';
 
 export const routes: Routes = [
   // Home (redirige a bienvenida)
   { path: '', pathMatch: 'full', redirectTo: 'bienvenida' },
   { path: 'bienvenida', component: BienvenidaComponent, data: { animation: 'bienvenida' } },
-
-    {path: 'seleccion-estadisticas', component: SeleccionEstadisticasComponent },
-
-  {path: 'usuarios', component: UsuariosComponent},
-
-  {path: 'turnos-por-especialidad', component: TurnosPorEspecialidadComponent},
-
-  {path: 'turnos-por-medico', component: TurnosPorMedicoComponent},
-  
-  {path: 'perfil-usuario', component: PerfilUsuarioComponent},
-
-
-  {path: 'reportes', component: ReportesComponent},
-
-
+  { path: 'seleccion-estadisticas', component: SeleccionEstadisticasComponent },
+  { path: 'turnos-por-especialidad', component: TurnosPorEspecialidadComponent},
+  { path: 'turnos-por-medico', component: TurnosPorMedicoComponent},
+  { path: 'turnos-por-dia', component: TurnosPorDiaComponent},
+  { path: 'perfil-usuario', component: PerfilUsuarioComponent},  
+  { path: 'usuarios', component: UsuariosComponent},
+  { path: 'reportes', component: ReportesComponent},
 
   // Auth / público
   { path: 'login-paciente',
