@@ -184,7 +184,7 @@ export class LoginComponent implements OnInit {
       // }
 
       // (OPCIONAL) asegurar fila en profiles 
-      // await this.supa.client.from('profiles').upsert(
+      // await this.supa.client.from('perfiles').upsert(
       //   { id: user.id, rol: 'paciente', aprobado: true }, //sin email
       //   { onConflict: 'id' }
       // );

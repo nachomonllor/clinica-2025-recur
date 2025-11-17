@@ -333,7 +333,7 @@ export class UsuariosAdminComponent implements OnInit {
   private async cargarUsuarios(): Promise<void> {
     try {
       const { data, error } = await this.supa.client
-        .from('profiles')
+        .from('perfiles')
         .select('id, rol, aprobado, nombre, apellido, email, dni, avatar_url, obra_social, fecha_nacimiento, created_at')
         .order('apellido', { ascending: true });
 
@@ -527,7 +527,7 @@ export class UsuariosAdminComponent implements OnInit {
 
     try {
       const { error } = await this.supa.client
-        .from('profiles')
+        .from('perfiles')
         .update({ aprobado: nuevoEstado })
         .eq('id', usuario.id);
       if (error) throw error;
@@ -627,7 +627,7 @@ export class UsuariosAdminComponent implements OnInit {
           .single();
 
         const { data: especialista } = await this.supa.client
-          .from('profiles')
+          .from('perfiles')
           .select('nombre, apellido')
           .eq('id', h.especialista_id)
           .single();
@@ -657,7 +657,7 @@ export class UsuariosAdminComponent implements OnInit {
     try {
       // Cargar todos los usuarios con información completa
       const { data: usuarios, error } = await this.supa.client
-        .from('profiles')
+        .from('perfiles')
         .select('*')
         .order('apellido', { ascending: true });
 

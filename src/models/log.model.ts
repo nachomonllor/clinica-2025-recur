@@ -1,6 +1,5 @@
-import { UUID } from "./especialista.model";
+import { UUID } from "./admin.model";
 import { Rol } from "./perfil.model";
-
 
 export interface LogIngreso {
   id?: string;

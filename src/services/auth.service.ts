@@ -41,7 +41,7 @@ export class AuthService {
   // (Opcional) Leer perfil TABLA ‘profiles’
   async getMyProfile(userId: string) {
     return await this.client
-      .from('profiles')
+      .from('perfiles')
       .select('id, first_name, last_name, email, role')
       .eq('id', userId)
       .maybeSingle();
@@ -60,7 +60,7 @@ export class AuthService {
 
     // si querés crear fila en profiles después de signUp:
     if (data.user && profile) {
-      await this.client.from('profiles').insert({
+      await this.client.from('perfiles').insert({
         id: data.user.id,
         email,
         first_name: profile.first_name ?? null,

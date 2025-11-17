@@ -1,5 +1,32 @@
+import { Horario } from "./horario.model";
 
-export type UUID = string;
+// export type UUID = string;
+
+
+export interface Especialista {
+  id: number; // si luego migrás a uuid, lo cambiás
+  nombre: string;
+  apellido: string;
+  dni: string;
+  edad?: number;
+  especialidad?: string | null;
+  mail?: string;        // legacy
+  email?: string;       // preferido
+  avatarUrl?: string | null;
+  imagenPerfil?: string | null;
+  horarios?: Horario[];
+  aprobado?: boolean | null;
+  password?: string;
+}
+
+export interface EspecialistaOption {
+  id: string;
+  nombre: string;
+  apellido: string;
+  especialidad: string;
+}
+
+
 
 export interface EspecialistaOption {
     id: string;
@@ -8,21 +35,21 @@ export interface EspecialistaOption {
     especialidad: string;
 }
 
-export interface Especialista {
-    id: UUID;
-    nombre: string;
-    apellido: string;
-    dni: string;
-    email: string;
-    // Opcionales / legacy:
-    edad?: number;
-    especialidad?: string | null; // si luego normalizás, lo quitás
-    avatarUrl?: string | null;
-    imagenPerfil?: string | null;
-    horarios?: Horario[];
-    aprobado?: boolean | null;
-    password?: string;           // TODO: eliminar (no guardar password en modelos)
-}
+// export interface Especialista {
+//     id: UUID;
+//     nombre: string;
+//     apellido: string;
+//     dni: string;
+//     email: string;
+//     // Opcionales / legacy:
+//     edad?: number;
+//     especialidad?: string | null; // si luego normalizás, lo quitás
+//     avatarUrl?: string | null;
+//     imagenPerfil?: string | null;
+//     horarios?: Horario[];
+//     aprobado?: boolean | null;
+//     password?: string;           // TODO: eliminar (no guardar password en modelos)
+// }
 
 export interface SpecialistCounters {
     pacientes: number;               // atendidos ≥1 vez
@@ -42,9 +69,9 @@ export type Especialidad =
   | 'neurologia';
 
   
-// ========= Especialista =========
-export interface Horario {
-  especialidad: string;
-  dias: string[];   // ["Lunes","Miércoles"]
-  horas: string[];  // ["09:00","10:00"]
-}
+// // ========= Especialista =========
+// export interface Horario {
+//   especialidad: string;
+//   dias: string[];   // ["Lunes","Miércoles"]
+//   horas: string[];  // ["09:00","10:00"]
+// }

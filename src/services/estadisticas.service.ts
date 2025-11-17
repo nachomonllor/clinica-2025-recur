@@ -105,7 +105,7 @@ export class EstadisticasService {
     if (!ids.length) return new Map();
 
     const { data, error } = await this.supa.client
-      .from('profiles')
+      .from('perfiles')
       .select('id, nombre, apellido, email, created_at, updated_at')
       .in('id', ids);
 
@@ -122,7 +122,7 @@ export class EstadisticasService {
    */
   async obtenerLogsDeIngreso(limit = 15): Promise<PerfilBasico[]> {
     const { data, error } = await this.supa.client
-      .from('profiles')
+      .from('perfiles')
       .select('id, nombre, apellido, email, created_at, updated_at')
       .order('updated_at', { ascending: false, nullsFirst: false })
       .limit(limit);

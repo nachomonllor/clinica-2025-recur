@@ -81,7 +81,7 @@ export class PacienteService {
     // src/app/services/pacientes.service.ts
     return from(
       this.supa
-        .from('profiles')
+        .from('perfiles')
         .select('id, nombre, apellido, obra_social, avatar_url, imagen2_url, edad, dni')
         .eq('rol', 'paciente')
         .order('apellido', { ascending: true })

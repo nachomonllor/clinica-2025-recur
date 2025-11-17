@@ -133,7 +133,7 @@ export class MiPerfilComponent implements OnInit {
 
     // Cargar perfil base
     const { data: perfilBase, error: perfilError } = await this.supa.client
-      .from('profiles')
+      .from('perfiles')
       .select('*')
       .eq('id', userId)
       .single();
@@ -287,7 +287,7 @@ export class MiPerfilComponent implements OnInit {
 
         // Obtener nombre del especialista
         const { data: especialista } = await this.supa.client
-          .from('profiles')
+          .from('perfiles')
           .select('nombre, apellido')
           .eq('id', h.especialista_id)
           .single();

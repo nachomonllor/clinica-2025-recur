@@ -240,7 +240,7 @@ export class RegistroEspecialistaComponent implements OnInit {
 
   async upsertPerfil(profile: any) {
     const { error } = await this.supa.client
-      .from('profiles')
+      .from('perfiles')
       .upsert(profile, { onConflict: 'id' });
     if (error) throw error;
   }
@@ -331,7 +331,7 @@ export class RegistroEspecialistaComponent implements OnInit {
       const edadCalculada = this.calcEdadFromISO(fv.fechaNacimiento!);
 
       const { error: perfilError } = await this.supa.client
-        .from('profiles')
+        .from('perfiles')
         .update({
           avatar_url: avatarUrl,
           aprobado: false // especialistas requieren aprobación

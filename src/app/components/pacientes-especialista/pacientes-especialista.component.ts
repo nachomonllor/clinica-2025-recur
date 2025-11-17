@@ -102,7 +102,7 @@ export class PacientesEspecialistaComponent implements OnInit {
       }
 
       const { data: pacientes, error: pacientesError } = await this.supa.client
-        .from('profiles')
+        .from('perfiles')
         .select('id, nombre, apellido, dni, email, avatar_url')
         .in('id', pacienteIds)
         .eq('rol', 'paciente');
@@ -222,7 +222,7 @@ export class PacientesEspecialistaComponent implements OnInit {
           .single();
 
         const { data: especialista } = await this.supa.client
-          .from('profiles')
+          .from('perfiles')
           .select('nombre, apellido')
           .eq('id', h.especialista_id)
           .single();

@@ -46,7 +46,7 @@ export class SupabaseService {
   // =============== PROFILES ===============
   async obtenerPerfil(uid: string): Promise<{ data: PerfilRow | null; error: any }> {
     const { data, error } = await this.supabase
-      .from('profiles')
+      .from('perfiles')
       .select('id, rol, aprobado, nombre, apellido')
       .eq('id', uid)
       .single();
@@ -55,7 +55,7 @@ export class SupabaseService {
 
   async upsertPerfil(perfil: PerfilInsert): Promise<{ data: PerfilRow | null; error: any }> {
     const { data, error } = await this.supabase
-      .from('profiles')
+      .from('perfiles')
       .upsert(perfil, { onConflict: 'id' })
       .select('*')
       .single();
@@ -66,7 +66,7 @@ export class SupabaseService {
     perfil: Omit<PerfilInsert, 'id'> & { user_id: string }
   ): Promise<{ data: PerfilRow | null; error: any }> {
     const { data, error } = await this.supabase
-      .from('profiles')
+      .from('perfiles')
       .upsert(perfil, { onConflict: 'user_id' })
       .select('*')
       .single();

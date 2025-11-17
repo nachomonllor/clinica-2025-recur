@@ -1,7 +1,6 @@
 import { Observable } from "rxjs";
 import { Rol } from "./perfil.model";
-import { UUID } from "./especialista.model";
-
+import { UUID } from "./admin.model";
 
 export interface UsuarioPerfil {
   id: string;

@@ -1,4 +1,5 @@
-import { UUID } from "./especialista.model";
+import { UUID } from "./admin.model";
+
 
 // src/app/models/perfil.model.ts
 export type Rol = 'paciente' | 'especialista' | 'admin';

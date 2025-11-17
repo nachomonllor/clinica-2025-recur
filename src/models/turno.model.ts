@@ -1,4 +1,4 @@
-import { UUID } from "./especialista.model";
+import { UUID } from "./admin.model";
 import { PerfilMin } from "./perfil.model";
 
 export interface Turno {
@@ -143,6 +143,13 @@ export type TurnoUI = TurnoVM & {
   patologiasText: string; // texto indexable desde historia clínica
 };
 
+// export type TurnoUI = TurnoVM & {
+//   paciente: string;
+//   especialista: string;
+//   patologiasText: string; // sin repetir fecha/hora
+// };
+
+
 export interface TurnoSupabase {
   id: string;
   fecha_iso: string | null;
@@ -194,4 +201,44 @@ export interface TurnoRowVM  {
   paciente: { id: string; nombre: string; apellido: string };
   estado: EstadoTurno;
 }
+
+
+// src/models/turno.model.ts
+
+export function mapRowToVM(row: TurnoRow): TurnoVM {
+  const d = new Date(row.fecha_iso);
+  const fecha = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  const hora =
+    String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+
+  return {
+    id: row.id,
+    especialidad: row.especialidad,
+    estado: row.estado,
+
+    // tiempo
+    fechaISO: row.fecha_iso,
+    fecha,
+    hora,
+
+    // ids
+    especialistaId: row.especialista_id,
+    pacienteId: row.paciente_id,
+
+    // extras
+    ubicacion: row.ubicacion ?? null,
+    notas: row.notas ?? null,
+    resenaEspecialista: row.resena_especialista ?? null,
+    resena: row.resena_especialista ?? undefined, // <=====================
+    tieneResena: !!row.resena_especialista,
+    encuesta: !!row.encuesta,
+    calificacion:
+      row.encuesta && typeof row.encuesta.estrellas === 'number'
+        ? row.encuesta.estrellas
+        : undefined,
+  };
+}
+
+
+
 

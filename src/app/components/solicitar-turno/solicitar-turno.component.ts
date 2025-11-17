@@ -201,7 +201,7 @@ export class SolicitarTurnoComponent implements OnInit {
     try {
       // Obtener IDs de especialistas aprobados
       const { data: perfilesData, error: perfilesError } = await this.supa.client
-        .from('profiles')
+        .from('perfiles')
         .select('id')
         .eq('rol', 'especialista')
         .eq('aprobado', true);
@@ -301,7 +301,7 @@ export class SolicitarTurnoComponent implements OnInit {
       const pacientes = await firstValueFrom(
         from(
           this.supa.client
-            .from('profiles')
+            .from('perfiles')
             .select('id, nombre, apellido')
             .eq('rol', 'paciente')
             .order('apellido', { ascending: true })
