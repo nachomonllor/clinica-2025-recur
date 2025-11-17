@@ -28,6 +28,12 @@ export type PerfilInsert = {
   imagen2_url?: string | null;
 };
 
+export interface PerfilMin {
+  nombre?: string | null;
+  apellido?: string | null;
+}
+
+
 
 // // src/app/models/perfil.model.ts
 // export type Rol = 'paciente' | 'especialista' | 'admin';

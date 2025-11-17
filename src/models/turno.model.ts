@@ -1,3 +1,4 @@
+import { PerfilMin } from "./perfil.model";
 
 
 export interface Turno {
@@ -97,4 +98,29 @@ export interface TurnoMock {
   encuesta?: boolean;
   pacienteId: string;
   calificacion?: number;
+}
+
+export type TurnoUI = TurnoVM & {
+  paciente: string;
+  especialista: string;
+  fecha: Date;
+  hora: string;
+  patologiasText: string; // texto indexable desde historia clínica
+};
+
+export interface TurnoSupabase {
+  id: string;
+  fecha_iso: string | null;
+  estado: string | null;
+  especialidad: string | null;
+  paciente?: PerfilMin | null;
+  especialista?: PerfilMin | null;
+}
+
+export interface TurnoResumen {
+  id: string;
+  fechaTexto: string;
+  estado: string;
+  especialidad: string;
+  contraparte: string;
 }
