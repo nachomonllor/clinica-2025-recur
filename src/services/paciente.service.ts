@@ -40,70 +40,73 @@ export class PacienteService {
     return this.http.get<HistoriaClinica>(`/api/historias/${pacienteId}`);
   }
 
+
+  // getPacientes() {
+
+  //   // src/app/services/pacientes.service.ts
+  //   return from(
+  //     this.supa
+  //       .from('perfiles')
+  //       .select('id, nombre, apellido, obra_social, avatar_url, imagen2_url, edad, dni')
+  //       .eq('rol', 'paciente')
+  //       .order('apellido', { ascending: true })
+  //   ).pipe(
+  //     map(({ data, error }) => {
+  //       if (error) throw error;
+  //       return (data || []).map((r: any) => ({
+  //         id: r.id,
+  //         avatarUrl: r.avatar_url ?? '',
+  //         nombre: r.nombre ?? '',
+  //         apellido: r.apellido ?? '',
+  //         edad: Number(r.edad ?? 0),
+  //         dni: r.dni ?? '',
+  //         obraSocial: r.obra_social ?? '',
+  //         email: '',                 // <- si el modelo lo exige, dejalo vacío
+  //         password: '',              // <- idem (no se lee nunca desde BD)
+  //         imagenPerfil1: r.avatar_url ?? '',
+  //         imagenPerfil2: r.imagen2_url ?? ''
+  //       })) as Paciente[];
+  //     })
+  //   );
+
+  // }
+
+
+  // src/services/paciente.service.ts
   getPacientes() {
-    // Traemos SOLO columnas que existen en 'profiles'
-    // Ajustá nombres si tu tabla usa otros campos
-    // return from(
-    //   this.supa
-    //     .from('profiles')
-    //     .select('id, nombre, apellido, email, obra_social, avatar_url, imagen2_url, edad, dni')
-    //     .eq('rol', 'paciente')
-    //     .order('apellido', { ascending: true })
-    // ).pipe(
-    //   map(({ data, error }) => {
-    //     if (error) throw error;
-
-    //     const rows = (data || []).map((r: any): Paciente => ({
-    //       id: r.id,
-    //       avatarUrl: r.avatar_url ?? '',
-
-    //       nombre: r.nombre ?? '',
-    //       apellido: r.apellido ?? '',
-    //       edad: Number(r.edad ?? 0),
-    //       dni: r.dni ?? '',
-    //       obraSocial: r.obra_social ?? '',
-    //       email: r.email ?? '',
-    //       //nNunca LEEREMOS el password real desde BD / Auth.
-    //       // Para cumplir la interfaz LO DEJAMOS VACIO 
-    //       password: '',
-
-    //       // Si no tenés 2 imágenes, reusamos la de avatar para la 1 y
-    //       // dejamos vacía la 2. Cambiá a tus columnas reales si existen.
-    //       imagenPerfil1: r.avatar_url ?? '',
-    //       imagenPerfil2: r.imagen2_url ?? ''
-    //     }));
-
-    //     return rows;
-    //   })
-    // );
-
-
-    // src/app/services/pacientes.service.ts
     return from(
       this.supa
-        .from('profiles')
-        .select('id, nombre, apellido, obra_social, avatar_url, imagen2_url, edad, dni')
+        .from('perfiles')
+        .select('id, nombre, apellido, email, obra_social, avatar_url, imagen2_url, fecha_nacimiento, dni')
         .eq('rol', 'paciente')
         .order('apellido', { ascending: true })
     ).pipe(
       map(({ data, error }) => {
         if (error) throw error;
+
+        const calcEdad = (iso?: string | null) => {
+          if (!iso) return undefined;
+          const d = new Date(iso);
+          const diff = Date.now() - d.getTime();
+          const ageDate = new Date(diff);
+          return Math.abs(ageDate.getUTCFullYear() - 1970);
+        };
+
         return (data || []).map((r: any) => ({
           id: r.id,
           avatarUrl: r.avatar_url ?? '',
           nombre: r.nombre ?? '',
           apellido: r.apellido ?? '',
-          edad: Number(r.edad ?? 0),
+          edad: calcEdad(r.fecha_nacimiento),
           dni: r.dni ?? '',
           obraSocial: r.obra_social ?? '',
-          email: '',                 // <- si el modelo lo exige, dejalo vacío
-          password: '',              // <- idem (no se lee nunca desde BD)
+          email: r.email ?? '',
+          password: '',
           imagenPerfil1: r.avatar_url ?? '',
           imagenPerfil2: r.imagen2_url ?? ''
         })) as Paciente[];
       })
     );
-
   }
 
 

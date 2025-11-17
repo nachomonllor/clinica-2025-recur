@@ -6,27 +6,8 @@ import { RouterModule } from '@angular/router';
 import {
   animate, query, stagger, style, transition, trigger
 } from '@angular/animations';
+import { UsuarioPerfil } from '../../../../models/usuario.model';
 
-type Rol = 'paciente' | 'especialista' | 'administrador';
-
-interface UsuarioPerfil {
-  id: string;
-  nombre: string;
-  apellido: string;
-  rol: Rol;
-  edad?: number;
-  dni?: string;
-  email: string;
-  telefono?: string;
-  direccion?: string;
-  ciudad?: string;
-  obraSocial?: string;             // pacientes
-  especialidades?: string[];       // especialistas
-  habilitado: boolean;
-  avatarUrl?: string;
-  bannerUrl?: string;
-  bio?: string;
-}
 
 @Component({
   selector: 'app-perfil-usuario',
@@ -52,7 +33,7 @@ export class PerfilUsuarioComponent {
     id: 'u123',
     nombre: 'Ignacio',
     apellido: 'Monllor',
-    rol: 'administrador',
+    rol: 'admin',
     edad: 68,
     dni: '32345.21',
     email: 'nachomon@yopmail.com',

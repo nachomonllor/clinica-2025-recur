@@ -1,63 +1,49 @@
 <div class="profile-page" [@pageIn]>
-
-  <!-- HERO -->
-
-  <!-- section class="hero" -->
-
-
-    <!-- <div class="hero-bg" [class.has-banner]="usuario.bannerUrl" [style.--banner-url]="'url(' + usuario.bannerUrl + ')'">
-    </div> -->
-
-    <div class="hero-content glass">
-      <div class="hero-left">
-        <div class="avatar" [class.has-img]="usuario.avatarUrl">
-          <img *ngIf="usuario.avatarUrl" [src]="usuario.avatarUrl" [alt]="nombreCompleto" />
-          <span *ngIf="!usuario.avatarUrl">{{ usuario.nombre[0] }}{{ usuario.apellido[0] }}</span>
-        </div>
-
-        <div class="title">
-          <h1>{{ nombreCompleto }}</h1>
-          <div class="sub">
-            <span class="chip role">{{ usuario.rol | uppercase }}</span>
-            <span class="dot" *ngIf="usuario.edad"></span>
-            <span *ngIf="usuario.edad">{{ usuario.edad }} años</span>
-          </div>
-        </div>
+  <div class="hero-content glass">
+    <div class="hero-left">
+      <div class="avatar" [class.has-img]="usuario.avatarUrl">
+        <img *ngIf="usuario.avatarUrl" [src]="usuario.avatarUrl" [alt]="nombreCompleto" />
+        <span *ngIf="!usuario.avatarUrl">{{ usuario.nombre[0] }}{{ usuario.apellido[0] }}</span>
       </div>
 
-      <div class="hero-right">
-        <span class="status" [class.on]="usuario.habilitado">{{ usuario.habilitado ? 'HABILITADO' : 'DESHABILITADO'
-          }}</span>
-        <div class="hero-actions">
-          <a routerLink="/usuarios" class="btn ghost ripple" aria-label="Volver">
-            <svg class="icon" viewBox="0 0 24 24">
-              <path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-            Volver
-          </a>
-          <button class="btn primary ripple" (click)="enviarMail()">
-            <svg class="icon" viewBox="0 0 24 24">
-              <path d="M4 6l8 6 8-6M4 18h16V6H4v12z" />
-            </svg>
-            Mensaje
-          </button>
-          <button class="btn danger ripple" (click)="toggleHabilitado()">
-            <svg class="icon" viewBox="0 0 24 24">
-              <path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-            {{ usuario.habilitado ? 'Deshabilitar' : 'Habilitar' }}
-          </button>
+      <div class="title">
+        <h1>{{ nombreCompleto }}</h1>
+        <div class="sub">
+          <span class="chip role">{{ usuario.rol | uppercase }}</span>
+          <span class="dot" *ngIf="usuario.edad"></span>
+          <span *ngIf="usuario.edad">{{ usuario.edad }} años</span>
         </div>
       </div>
     </div>
 
+    <div class="hero-right">
+      <span class="status" [class.on]="usuario.habilitado">{{ usuario.habilitado ? 'HABILITADO' : 'DESHABILITADO'
+        }}</span>
+      <div class="hero-actions">
+        <a routerLink="/usuarios" class="btn ghost ripple" aria-label="Volver">
+          <svg class="icon" viewBox="0 0 24 24">
+            <path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          Volver
+        </a>
+        <button class="btn primary ripple" (click)="enviarMail()">
+          <svg class="icon" viewBox="0 0 24 24">
+            <path d="M4 6l8 6 8-6M4 18h16V6H4v12z" />
+          </svg>
+          Mensaje
+        </button>
+        <button class="btn danger ripple" (click)="toggleHabilitado()">
+          <svg class="icon" viewBox="0 0 24 24">
+            <path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          {{ usuario.habilitado ? 'Deshabilitar' : 'Habilitar' }}
+        </button>
+      </div>
+    </div>
+  </div>
 
-  <!-- /section -->
-
-  <!-- CONTENIDO -->
   <section class="content-grid">
 
-    <!-- Info Personal -->
     <article class="panel">
       <header class="panel-h">
         <h2>Información Personal</h2>
@@ -82,7 +68,7 @@
       </div>
     </article>
 
-    <!-- Contacto -->
+
     <article class="panel">
       <header class="panel-h">
         <h2>Información de Contacto</h2>
@@ -118,7 +104,7 @@
       </div>
     </article>
 
-    <!-- Profesional / Obra social -->
+    <!--    Profesional / Obra social  -->
     <article class="panel">
       <header class="panel-h">
         <h2>{{ usuario.rol === 'especialista' ? 'Información Profesional' : 'Cobertura' }}</h2>
@@ -141,7 +127,6 @@
       </div>
     </article>
 
-    <!-- Atajos -->
     <article class="panel actions-panel">
       <header class="panel-h">
         <h2>Acciones rápidas</h2>
@@ -162,7 +147,7 @@
       </div>
     </article>
 
-    <!-- Timeline -->
+    <!-- TIEMPO -->
     <article class="panel span-2">
       <header class="panel-h">
         <h2>Actividad reciente</h2>

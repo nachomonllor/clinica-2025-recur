@@ -32,8 +32,8 @@ import { environment } from '../../../environments/environment';
     MatInputModule,
     MatButtonModule,
     MatCardModule,
-  
-],
+
+  ],
   templateUrl: './registro-paciente.component.html',
   styleUrls: ['./registro-paciente.component.scss']
 })
@@ -62,24 +62,18 @@ export class RegistroPacienteComponent implements OnInit {
 
   readonly minDateISO = '1900-01-01';
 
-  // constructor(
-  //   private fb: FormBuilder,
-  //   private sb: SupabaseService,
-  //   private router: Router
-  // ) { }
-
   /// ------------------- CAPTCHA ------------------
 
 
- // constructor(private v3: ReCaptchaV3Service) {}
+  // constructor(private v3: ReCaptchaV3Service) {}
 
-   //registroPacienteForm: FormGroup;
-    // siteKey = environment.recaptchaSiteKey;
+  //registroPacienteForm: FormGroup;
+  // siteKey = environment.recaptchaSiteKey;
 
 
- // recaptchaToken: string | null = null;
+  // recaptchaToken: string | null = null;
 
-  constructor(  private fb: FormBuilder,
+  constructor(private fb: FormBuilder,
     private sb: SupabaseService,
     private router: Router,
 
@@ -87,34 +81,7 @@ export class RegistroPacienteComponent implements OnInit {
 
   }
 
-  // onCaptchaResolved(token: string | null): void {
-  //   this.recaptchaToken = token;
-  // }
-
-  // async onSubmit(): Promise<void> {
-  //   if (this.registroPacienteForm.invalid || !this.recaptchaToken) {
-  //     this.registroPacienteForm.markAllAsTouched();
-  //     return;
-  //   }
-
-  //   // registro + envío de token al backend
-  // }
-  
-    //siteKey = environment.recaptchaSiteKey;
-  //token: string | null = null;
-
-
-
-  //onCaptchaResolved(tok: string | null) { this.token = tok; }
-
-  // async onSubmit() {
-  //   if (this.form.invalid || !this.token) { this.form.markAllAsTouched(); return; }
-  //   // Envía también this.token al backend para verificación
-  // }
-
-
   // -----------------------------------------
-
 
 
   ngOnInit(): void {
@@ -140,10 +107,10 @@ export class RegistroPacienteComponent implements OnInit {
   onFileChange(event: Event, idx: 1 | 2): void {
     const input = event.target as HTMLInputElement;
     if (!input.files?.length) return;
-    
+
     const file = input.files[0];
     const controlName = idx === 1 ? 'imagenPerfil1' : 'imagenPerfil2';
-    
+
     this.registroPacienteForm.get(controlName)!.setValue(file);
     this.registroPacienteForm.get(controlName)!.markAsDirty();
     this.registroPacienteForm.get(controlName)!.markAsTouched();
@@ -275,7 +242,7 @@ export class RegistroPacienteComponent implements OnInit {
     const supabase = this.sb.client;
     const fv = this.registroPacienteForm.value!;
 
-    if (!fv.imagenPerfil1 ) { // || !fv.imagenPerfil2) {
+    if (!fv.imagenPerfil1) { // || !fv.imagenPerfil2) {
       Swal.fire('Error', 'Por favor, seleccioná ambas imágenes de perfil.', 'error');
       this.loading = false;
       return;
@@ -284,6 +251,26 @@ export class RegistroPacienteComponent implements OnInit {
     try {
       // 1) Crear usuario en Auth con todos los datos en metadata
       // El trigger leerá estos datos y creará el perfil automáticamente
+      // const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+      //   email: fv.email!,
+      //   password: fv.password!,
+      //   options: {
+      //     data: {
+      //       rol: 'paciente',
+      //       nombre: fv.nombre,
+      //       apellido: fv.apellido,
+      //       dni: fv.dni,
+      //       fecha_nacimiento: fv.fechaNacimiento,
+      //       obra_social: fv.obraSocial ,
+
+      //       avatar_url: fv.imagenPerfil1
+
+      //     }
+      //   }
+      // });
+
+
+      // registro-paciente.component.ts (en signUp)
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email: fv.email!,
         password: fv.password!,
@@ -294,13 +281,13 @@ export class RegistroPacienteComponent implements OnInit {
             apellido: fv.apellido,
             dni: fv.dni,
             fecha_nacimiento: fv.fechaNacimiento,
-            obra_social: fv.obraSocial ,
-
-            avatar_url: fv.imagenPerfil1
-
+            obra_social: fv.obraSocial,
+            // avatar_url: fv.imagenPerfil1 <=========== NO mandar Files ACA :<====
           }
         }
       });
+
+
       if (signUpError) throw signUpError;
 
       const user = signUpData.user;
@@ -334,13 +321,13 @@ export class RegistroPacienteComponent implements OnInit {
       // 3) Subir imágenes a Supabase Storage
       const file1 = fv.imagenPerfil1!;
       const file2 = fv.imagenPerfil2!;
-      
+
       const url1 = await this.sb.uploadAvatar(user.id, file1, 1);
       const url2 = await this.sb.uploadAvatar(user.id, file2, 2);
 
       // 4) Actualizar perfil en 'profiles' con las imágenes (el trigger ya creó el perfil básico)
       const { data: updateData, error: perfilError } = await supabase
-        .from('profiles')
+        .from('perfiles')
         .update({
           avatar_url: url1,
           imagen2_url: url2,
@@ -348,7 +335,7 @@ export class RegistroPacienteComponent implements OnInit {
         })
         .eq('id', user.id)
         .select();
-      
+
       if (perfilError) throw perfilError;
 
       // 5) Insertar en la tabla 'pacientes' (sin guardar password)
@@ -388,7 +375,7 @@ export class RegistroPacienteComponent implements OnInit {
         name: err?.name,
         stack: err?.stack
       });
-      
+
       const mensajeError = this.mapPgError(err);
       Swal.fire('Error', mensajeError, 'error');
     } finally {
@@ -396,10 +383,9 @@ export class RegistroPacienteComponent implements OnInit {
     }
   }
 
-
 }
 
-//------------------------------------------------------------------------------------------------------
+
 
 
 

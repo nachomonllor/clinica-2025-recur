@@ -34,28 +34,31 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { CommonModule } from '@angular/common';
 import { EstadisticasService } from '../../../services/estadisticas.service';
+import { RouterLink } from '@angular/router';
+import { ChartOptions } from '../../../models/estadisticas.models';
 
 
-export type ChartOptions = {
-  series: ApexAxisChartSeries;
-  chart: ApexChart;
-  dataLabels: ApexDataLabels;
-  plotOptions: ApexPlotOptions;
-  xaxis: ApexXAxis;
-  yaxis: ApexYAxis;
-  title: ApexTitleSubtitle;
-  tooltip: ApexTooltip;
-  grid: ApexGrid;
-  stroke: ApexStroke;
-  fill: ApexFill;
-  colors: string[];
-};
+// export type ChartOptions = {
+//   series: ApexAxisChartSeries;
+//   chart: ApexChart;
+//   dataLabels: ApexDataLabels;
+//   plotOptions: ApexPlotOptions;
+//   xaxis: ApexXAxis;
+//   yaxis: ApexYAxis;
+//   title: ApexTitleSubtitle;
+//   tooltip: ApexTooltip;
+//   grid: ApexGrid;
+//   stroke: ApexStroke;
+//   fill: ApexFill;
+//   colors: string[];
+// };
 
 @Component({
   selector: 'app-turnos-por-especialidad',
   standalone:true,
   imports: [
     CommonModule, FormsModule,
+    RouterLink,
     // Angular Material
     MatCardModule, MatIconModule, MatButtonModule, MatMenuModule, MatRippleModule,
     MatTooltipModule, MatFormFieldModule, MatInputModule,

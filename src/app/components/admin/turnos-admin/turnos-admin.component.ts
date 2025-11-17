@@ -9,15 +9,15 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatCardModule } from '@angular/material/card';
 import { SupabaseService } from '../../../../services/supabase.service';
-import { EstadoTurno, TurnoVM } from '../../../../models/turno.model';
+import { EstadoTurno, TurnoUI, TurnoVM } from '../../../../models/turno.model';
 
-type TurnoUI = TurnoVM & {
-  paciente: string;
-  especialista: string;
-  fecha: Date;
-  hora: string;
-  patologiasText: string; // texto indexable desde historia clínica
-};
+// type TurnoUI = TurnoVM & {
+//   paciente: string;
+//   especialista: string;
+//   fecha: Date;
+//   hora: string;
+//   patologiasText: string; // texto indexable desde historia clínica
+// };
 
 @Component({
   selector: 'app-turnos-admin',
@@ -76,21 +76,39 @@ export class TurnosAdminComponent implements OnInit {
     this.loading = true;
     try {
       // 1) Turnos + nombres de paciente y especialista
+      // const { data, error } = await this.supa.client
+      //   .from('turnos')
+      //   .select(`
+      //     id,
+      //     paciente_id,
+      //     especialista_id,
+      //     especialidad,
+      //     fecha_iso,
+      //     estado,
+      //     resena_especialista,
+      //     encuesta,
+      //     paciente:profiles!turnos_paciente_id_fkey ( apellido, nombre ),
+      //     especialista:profiles!turnos_especialista_id_fkey ( apellido, nombre )
+      //   `)
+      //   .order('fecha_iso', { ascending: false });
+
+
       const { data, error } = await this.supa.client
-        .from('turnos')
-        .select(`
-          id,
-          paciente_id,
-          especialista_id,
-          especialidad,
-          fecha_iso,
-          estado,
-          resena_especialista,
-          encuesta,
-          paciente:profiles!turnos_paciente_id_fkey ( apellido, nombre ),
-          especialista:profiles!turnos_especialista_id_fkey ( apellido, nombre )
-        `)
-        .order('fecha_iso', { ascending: false });
+      .from('turnos')
+      .select(`
+        id,
+        paciente_id,
+        especialista_id,
+        especialidad,
+        fecha_iso,
+        estado,
+        resena_especialista,
+        encuesta,
+        paciente:perfiles!turnos_paciente_id_fkey ( apellido, nombre ),
+        especialista:perfiles!turnos_especialista_id_fkey ( apellido, nombre )
+      `)
+      .order('fecha_iso', { ascending: false });
+
 
       if (error) throw error;
 

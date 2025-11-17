@@ -11,23 +11,25 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { SupabaseService } from '../../../services/supabase.service';
 import { HistoriaClinicaDialogComponent } from '../admin/usuarios-admin/historia-clinica-dialog.component';
+import { PacienteAtendido } from '../../../models/paciente.model';
+import { TurnoDetalle } from '../../../models/turno.model';
 
-interface PacienteAtendido {
-  id: string;
-  nombre: string;
-  apellido: string;
-  dni: string;
-  email: string;
-  avatar_url?: string;
-}
+// interface PacienteAtendido {
+//   id: string;
+//   nombre: string;
+//   apellido: string;
+//   dni: string;
+//   email: string;
+//   avatar_url?: string;
+// }
 
-interface TurnoDetalle {
-  id: string;
-  especialidad: string;
-  fechaTexto: string;
-  estado: string;
-  resena?: string;
-}
+// interface TurnoDetalle {
+//   id: string;
+//   especialidad: string;
+//   fechaTexto: string;
+//   estado: string;
+//   resena?: string;
+// }
 
 @Component({
   selector: 'app-pacientes-especialista',
@@ -100,7 +102,7 @@ export class PacientesEspecialistaComponent implements OnInit {
       }
 
       const { data: pacientes, error: pacientesError } = await this.supa.client
-        .from('profiles')
+        .from('perfiles')
         .select('id, nombre, apellido, dni, email, avatar_url')
         .in('id', pacienteIds)
         .eq('rol', 'paciente');
@@ -220,7 +222,7 @@ export class PacientesEspecialistaComponent implements OnInit {
           .single();
 
         const { data: especialista } = await this.supa.client
-          .from('profiles')
+          .from('perfiles')
           .select('nombre, apellido')
           .eq('id', h.especialista_id)
           .single();

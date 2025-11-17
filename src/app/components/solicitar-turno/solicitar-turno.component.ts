@@ -12,19 +12,21 @@ import { from, map, switchMap, firstValueFrom } from 'rxjs';
 import { SupabaseService } from '../../../services/supabase.service';
 import Swal from 'sweetalert2';
 import { MatIconModule } from "@angular/material/icon";
+import { EspecialistaOption } from '../../../models/especialista.model';
+import { PacienteOption } from '../../../models/paciente.model';
 
-interface EspecialistaOption {
-  id: string;
-  nombre: string;
-  apellido: string;
-  especialidad: string;
-}
+// interface EspecialistaOption {
+//   id: string;
+//   nombre: string;
+//   apellido: string;
+//   especialidad: string;
+// }
 
-interface PacienteOption {
-  id: string;
-  nombre: string;
-  apellido: string;
-}
+// interface PacienteOption {
+//   id: string;
+//   nombre: string;
+//   apellido: string;
+// }
 
 @Component({
   selector: 'app-solicitar-turno',
@@ -199,7 +201,7 @@ export class SolicitarTurnoComponent implements OnInit {
     try {
       // Obtener IDs de especialistas aprobados
       const { data: perfilesData, error: perfilesError } = await this.supa.client
-        .from('profiles')
+        .from('perfiles')
         .select('id')
         .eq('rol', 'especialista')
         .eq('aprobado', true);
@@ -213,7 +215,7 @@ export class SolicitarTurnoComponent implements OnInit {
       console.log('[SolicitarTurno] Cantidad de IDs:', idsAprobados.length);
 
       if (idsAprobados.length === 0) {
-        console.warn('[SolicitarTurno] No hay especialistas aprobados en profiles');
+        console.warn('[SolicitarTurno] No hay especialistas aprobados en perfiles');
         this.especialidades = [];
         this.especialistas = [];
         this.especialistasFiltrados = [];
@@ -299,7 +301,7 @@ export class SolicitarTurnoComponent implements OnInit {
       const pacientes = await firstValueFrom(
         from(
           this.supa.client
-            .from('profiles')
+            .from('perfiles')
             .select('id, nombre, apellido')
             .eq('rol', 'paciente')
             .order('apellido', { ascending: true })

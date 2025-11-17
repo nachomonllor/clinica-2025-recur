@@ -27,10 +27,11 @@ export class TurnoService {
               estado,
               resena_especialista,
               encuesta,
-              especialista:profiles!turnos_especialista_id_fkey ( apellido, nombre )
+              especialista:perfiles!turnos_especialista_id_fkey ( apellido, nombre )
             `)
             .eq('paciente_id', uid)
             .order('fecha_iso', { ascending: false })
+
         )),
         switchMap(({ data, error }) => {
           if (error) throw error;
@@ -100,33 +101,12 @@ export class TurnoService {
                 estado,
                 resena_especialista,
                 encuesta,
-                paciente:profiles!turnos_paciente_id_fkey ( apellido, nombre )
+                paciente:perfiles!turnos_paciente_id_fkey ( apellido, nombre )
               `)
               .eq('especialista_id', uid)
               .order('fecha_iso', { ascending: false })
-          )),
-          // map(({ data, error }) => {
-          //   if (error) throw error;
-          //   // Mapea a la misma VM que uses en tu tabla de especialista
-          //   return (data || []).map((t: any) => {
-          //     const dt = new Date(t.fecha_iso);
-          //     const hora = dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-          //     const fechaSolo = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate());
-          //     const paciente = t.paciente ? `${t.paciente.apellido || ''}, ${t.paciente.nombre || ''}`.trim() : '-';
-          //     const encuesta = !!t.encuesta;
-          //     return {
-          //       id: t.id,
-          //       fecha: fechaSolo,
-          //       hora,
-          //       especialidad: t.especialidad,
-          //       paciente,
-          //       estado: t.estado,
-          //       resena: t.resena_especialista || '',
-          //       encuesta
-          //     };
-          //   });
-          // })
 
+          )),
           switchMap(({ data, error }) => {
             if (error) throw error;
             // Cargar historias clínicas para cada turno
@@ -176,8 +156,6 @@ export class TurnoService {
               } as TurnoEspecialista;
             });
           })
-
-
     );
   }
 
@@ -192,6 +170,50 @@ export class TurnoService {
         .single()
     );
   }
+
+
+  // === Mapeador centralizado ===
+  private mapearTurno(raw: any): TurnoVM {
+    return {
+      id: raw.id,
+      especialidad: raw.especialidad,
+      estado: raw.estado,
+
+      fechaISO: raw.fecha_iso,
+      fecha: new Date(raw.fecha_iso),
+
+      especialistaId: raw.especialista_id,
+      pacienteId: raw.paciente_id,
+
+      // según cómo los traés del join con profiles
+      especialistaNombre: raw.especialista_nombre ?? this.composeNombre(raw.especialista),
+      pacienteNombre: raw.paciente_nombre ?? this.composeNombre(raw.paciente),
+
+      ubicacion: raw.ubicacion ?? null,
+      notas: raw.notas ?? null,
+      resenaEspecialista: raw.resena_especialista ?? null,
+      tieneResena: !!raw.resena_especialista,
+      encuesta: !!raw.encuesta,
+      calificacion: raw.calificacion ?? undefined,
+      motivo: raw.motivo ?? null,
+
+      // =============>> regla de negocio: si no viene hora, '00:00'
+      hora: (raw.hora as string | null | undefined) ?? '00:00',
+
+      historiaBusqueda: raw.historia_busqueda ?? '',
+    };
+  }
+
+  // opcional: helper para armar "Apellido, Nombre"
+  private composeNombre(p: any): string | undefined {
+    if (!p) return undefined;
+    if (p.apellido && p.nombre) {
+      return `${p.apellido}, ${p.nombre}`;
+    }
+    return p.nombre ?? p.apellido ?? undefined;
+  }
+
+  
 }
 
 

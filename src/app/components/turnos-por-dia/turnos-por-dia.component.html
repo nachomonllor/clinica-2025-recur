@@ -8,22 +8,29 @@
 
     <form class="filtros" [formGroup]="filtrosForm" (ngSubmit)="aplicarFiltros()">
       <mat-form-field appearance="outline">
-        <mat-label>Desde</mat-label>
+        <mat-label>Inicio</mat-label>
         <input matInput [matDatepicker]="dpDesde" formControlName="desde">
         <mat-datepicker-toggle matSuffix [for]="dpDesde"></mat-datepicker-toggle>
         <mat-datepicker #dpDesde></mat-datepicker>
       </mat-form-field>
 
       <mat-form-field appearance="outline">
-        <mat-label>Hasta</mat-label>
+        <mat-label>Fin</mat-label>
         <input matInput [matDatepicker]="dpHasta" formControlName="hasta">
         <mat-datepicker-toggle matSuffix [for]="dpHasta"></mat-datepicker-toggle>
         <mat-datepicker #dpHasta></mat-datepicker>
       </mat-form-field>
 
+      <mat-checkbox formControlName="soloFinalizados">Solo Finalizados</mat-checkbox>
+
       <button mat-stroked-button color="accent" type="submit">
         <mat-icon>refresh</mat-icon>
         Aplicar
+      </button>
+
+      <button mat-flat-button color="warn" type="button" (click)="limpiarFiltros()">
+        <mat-icon>clear</mat-icon>
+        Limpiar
       </button>
     </form>
 
@@ -36,7 +43,7 @@
   </header>
 
   <mat-card class="panel" id="captura-pdf">
-    <h2 class="titulo">Turnos por Especialidad</h2>
+    <h2 class="titulo">Turnos por Día</h2>
 
     <div class="chart-wrapper" *ngIf="!cargando; else cargandoTpl">
       <apx-chart

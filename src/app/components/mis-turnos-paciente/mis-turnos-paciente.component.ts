@@ -10,7 +10,7 @@ import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dial
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatCardModule } from '@angular/material/card';
 import { MatSelectModule } from '@angular/material/select';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { TurnoService } from '../../../services/turno.service';
 import { TurnoVM } from '../../../models/turno.model';
 import { SupabaseService } from '../../../services/supabase.service';
@@ -24,8 +24,10 @@ import { ElevateOnHoverDirective } from '../../../directives/elevate-on-hover.di
   templateUrl: './mis-turnos-paciente.component.html',
   styleUrls: ['./mis-turnos-paciente.component.scss'],
   imports: [
+
     CommonModule,
     FormsModule,
+    RouterLink,
     ReactiveFormsModule,
     MatTableModule,
     MatFormFieldModule,
@@ -76,18 +78,54 @@ export class MisTurnosPacienteComponent implements OnInit {
     this.dataSource.filter = (value || '').trim().toLowerCase();
   }
 
-  /** El paciente puede cancelar si no está realizado y la fecha es futura */
+  // /** El paciente puede cancelar si no está realizado y la fecha es futura */
+  // puedeCancelar(t: TurnoVM): boolean {
+  //   if (t.estado === 'realizado') return false;
+  //   const ahora = new Date();
+  //   const fechaHora = new Date(
+  //     t.fecha.getFullYear(), t.fecha.getMonth(), t.fecha.getDate(),
+  //     Number(t.hora.slice(0, 2)), Number(t.hora.slice(3, 5))
+  //   );
+  //   return fechaHora.getTime() > ahora.getTime();
+  // }
+
+  /** El paciente puede cancelar si:
+ *  - el turno NO está realizado ni cancelado
+ *  - la fecha y hora del turno son futuras
+ */
   puedeCancelar(t: TurnoVM): boolean {
-    if (t.estado === 'realizado') return false;
+    // Estados que ya no se pueden cancelar
+    if (t.estado === 'realizado' || t.estado === 'cancelado') {
+      return false;
+    }
+
     const ahora = new Date();
-    const fechaHora = new Date(
-      t.fecha.getFullYear(), t.fecha.getMonth(), t.fecha.getDate(),
-      Number(t.hora.slice(0, 2)), Number(t.hora.slice(3, 5))
+
+    // `hora` SIEMPRE existe y viene como 'HH:mm' (o '00:00' por defecto)
+    const [hhStr, mmStr] = t.hora.split(':');
+    const hh = Number(hhStr) || 0;
+    const mm = Number(mmStr) || 0;
+
+    const fechaHoraTurno = new Date(
+      t.fecha.getFullYear(),
+      t.fecha.getMonth(),
+      t.fecha.getDate(),
+      hh,
+      mm
     );
-    return fechaHora.getTime() > ahora.getTime();
+
+    return fechaHoraTurno.getTime() > ahora.getTime();
   }
 
   cancelarTurno(t: TurnoVM): void {
+    // Doble seguridad: por si el botón se muestra mal
+    if (!this.puedeCancelar(t)) {
+      this.snackBar.open('Este turno ya no puede cancelarse.', 'Cerrar', {
+        duration: 2500
+      });
+      return;
+    }
+
     const comentarioForm = this.fb.group({
       comentario: ['', [Validators.required, Validators.minLength(10)]]
     });
@@ -100,20 +138,72 @@ export class MisTurnosPacienteComponent implements OnInit {
       width: '500px'
     });
 
-    ref.afterClosed().subscribe(result => {
-      if (result && comentarioForm.valid) {
-        // TODO: Guardar comentario en BD (podría agregarse un campo comentario_cancelacion en turnos)
-        this.turnoService.cancelarTurno(t.id).subscribe({
-          next: () => {
-            t.estado = 'cancelado';
-            this.dataSource.data = [...this.dataSource.data];
-            this.snackBar.open(`Turno cancelado`, 'Cerrar', { duration: 2000 });
-          },
-          error: (e) => this.snackBar.open(`Error al cancelar: ${e?.message || e}`, 'Cerrar', { duration: 2500 })
-        });
+    ref.afterClosed().subscribe((result) => {
+      // `result` debería ser true sólo cuando el usuario confirma
+      if (!result) {
+        return;
       }
+
+      if (comentarioForm.invalid) {
+        this.snackBar.open(
+          'Debes ingresar un motivo de al menos 10 caracteres.',
+          'Cerrar',
+          { duration: 2500 }
+        );
+        return;
+      }
+
+      // Si después querés guardar el comentario en BD, lo tenés acá:
+      const comentario = comentarioForm.value.comentario?.trim() ?? '';
+
+      // Por ahora seguimos usando la versión sin comentario
+      // TODO: extender servicio a cancelarTurno(id, comentario)
+      this.turnoService.cancelarTurno(t.id).subscribe({
+        next: () => {
+          t.estado = 'cancelado';
+          // Fuerza actualización del mat-table
+          this.dataSource.data = [...this.dataSource.data];
+          this.snackBar.open('Turno cancelado', 'Cerrar', { duration: 2000 });
+        },
+        error: (e) => {
+          console.error(e);
+          this.snackBar.open(
+            `Error al cancelar: ${e?.message || e}`,
+            'Cerrar',
+            { duration: 2500 }
+          );
+        }
+      });
     });
   }
+
+  // cancelarTurno(t: TurnoVM): void {
+  //   const comentarioForm = this.fb.group({
+  //     comentario: ['', [Validators.required, Validators.minLength(10)]]
+  //   });
+
+  //   const ref = this.dialog.open(this.cancelDialog, {
+  //     data: {
+  //       turno: t,
+  //       form: comentarioForm
+  //     },
+  //     width: '500px'
+  //   });
+
+  //   ref.afterClosed().subscribe(result => {
+  //     if (result && comentarioForm.valid) {
+  //       // TODO: Guardar comentario en BD (podría agregarse un campo comentario_cancelacion en turnos)
+  //       this.turnoService.cancelarTurno(t.id).subscribe({
+  //         next: () => {
+  //           t.estado = 'cancelado';
+  //           this.dataSource.data = [...this.dataSource.data];
+  //           this.snackBar.open(`Turno cancelado`, 'Cerrar', { duration: 2000 });
+  //         },
+  //         error: (e) => this.snackBar.open(`Error al cancelar: ${e?.message || e}`, 'Cerrar', { duration: 2500 })
+  //       });
+  //     }
+  //   });
+  // }
 
   puedeVerResena(t: TurnoVM): boolean {
     return !!t.resena && t.resena.trim().length > 0;
