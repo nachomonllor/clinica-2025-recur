@@ -20,21 +20,22 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import jsPDF from 'jspdf';
 
 import { animate, query, stagger, style, transition, trigger } from '@angular/animations';
+import { PerfilCompleto } from '../../../models/perfil.model';
 
 
-interface PerfilCompleto {
-  id: string;
-  rol: string;
-  nombre: string;
-  apellido: string;
-  dni: string;
-  email: string;
-  obra_social?: string;
-  fecha_nacimiento?: string;
-  avatar_url?: string;
-  imagen2_url?: string;
-  especialidades?: string[];
-}
+// interface PerfilCompleto {
+//   id: string;
+//   rol: string;
+//   nombre: string;
+//   apellido: string;
+//   dni: string;
+//   email: string;
+//   obra_social?: string;
+//   fecha_nacimiento?: string;
+//   avatar_url?: string;
+//   imagen2_url?: string;
+//   especialidades?: string[];
+// }
 
 @Component({
   selector: 'app-mi-perfil',

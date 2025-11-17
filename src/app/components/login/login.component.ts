@@ -14,8 +14,8 @@ import { SupabaseService } from '../../../services/supabase.service';
 import { environment } from '../../../environments/environment';
 import { AutoFocusDirective } from '../../../directives/auto-focus.directive';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { QuickAccessUser, QuickLoginsConfig, Rol } from '../../../models/interfaces';
-import { CaptchaImagenComponent } from '../captcha-imagen/captcha-imagen.component';
+import { QuickAccessUser, QuickLoginsConfig } from '../../../models/nav.models';
+import { Rol } from '../../../models/perfil.model';
 
 @Component({
   selector: 'app-login',
@@ -24,7 +24,7 @@ import { CaptchaImagenComponent } from '../captcha-imagen/captcha-imagen.compone
     CommonModule, ReactiveFormsModule, RouterModule,
     MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatTooltipModule, MatProgressSpinnerModule, MatSnackBarModule,
     AutoFocusDirective,
-    CaptchaImagenComponent
+    
 ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']

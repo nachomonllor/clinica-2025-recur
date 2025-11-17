@@ -1,3 +1,5 @@
+import { UUID } from "./especialista.model";
+import { EstadoTurno } from "./turno.model";
 
 // src/app/models/turno-especialista.model.ts
 export interface TurnoEspecialista {
@@ -11,6 +13,29 @@ export interface TurnoEspecialista {
   encuesta?: boolean;
   historiaBusqueda?: string;  // string de búsqueda con datos de historia clínica
 }
+
+
+export interface TurnoEspecialistaVM {
+  id: UUID;
+  fechaISO: string;
+  hora?: string;
+  especialidad: string;
+  paciente: string;
+  estado: EstadoTurno;
+  resenaEspecialista?: string | null;
+}
+
+
+// export interface TurnoEspecialista {
+//   id: number;
+//   fecha: string;    // ya formateada o para date pipe
+//   hora: string;
+//   especialidad: string;
+//   paciente: string;
+//   estado: EstadoTurno;  // unificado
+//   resena?: string;
+// }
+
 
 // // DATE PARA LA FECHA
 // export interface TurnoEspecialista {

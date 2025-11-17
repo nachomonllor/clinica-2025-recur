@@ -22,14 +22,15 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { CommonModule } from '@angular/common';
+import { TarjetaEstadistica } from '../../../models/estadisticas.models';
 
-type TarjetaEstadistica = {
-  titulo: string;
-  subtitulo: string;
-  icono: string;
-  ruta: string;
-  aria?: string;
-};
+// type TarjetaEstadistica = {
+//   titulo: string;
+//   subtitulo: string;
+//   icono: string;
+//   ruta: string;
+//   aria?: string;
+// };
 
 @Component({
   selector: 'app-seleccion-estadisticas',

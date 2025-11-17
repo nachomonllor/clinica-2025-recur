@@ -15,7 +15,7 @@ import {
 import { FormsModule } from '@angular/forms';
 
 import { CommonModule } from '@angular/common';
-import { Usuario } from '../../../models/interfaces';
+import { Usuario } from '../../../models/usuario.model';
 
 type Rol = 'paciente' | 'especialista';
 

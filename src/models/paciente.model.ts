@@ -1,7 +1,9 @@
+import { Especialidad } from "./especialista.model";
+import { UUID } from "./interfaces";
 
 // src/app/models/paciente.model.ts
 export interface Paciente {
-  id: string;             // <-- campo para identificarlo
+  id: UUID;             // <-- campo para identificarlo
   avatarUrl: string;      // <-- para la imagen en la lista
 
   nombre: string;
@@ -19,63 +21,75 @@ export interface Paciente {
   imagenPerfil2: string;
 }
 
+// // ========= Paciente =========
 // export interface Paciente {
-//   id: string;
-//   avatarUrl: string;
-//   nombre: string;
-//   apellido: string;
-//   edad: number;
-//   dni: string;
-//   obraSocial: string;
-//   email?: string;      // opcional
-//   password?: string;   // opcional
-//   imagenPerfil1: string;
-//   imagenPerfil2: string;
-// }
-
-
-
-
-/*
-■ Nombre
-■ Apellido
-■ Edad
-■ DNI
-■ Obra Social
-■ Mail
-■ Contraseña
-■ 2 imágenes para su perfil.
-○ Para los Especialistas los datos serán:
-■ Nombre
-■ Apellido
-■ Edad
-■ DNI
-■ Especialidad
-● En este caso se le deberá dar la posibilidad de elegir o agregar alguna que no se
-encuentre entre las posibilidades
-■ Mail
-■ Contraseña
-■ Imagen de perfil
-○ Debemos validar los campos según corresponda.
-*/
-
-
-// export interface PacienteRegistro {
+//   id: UUID;
 //   nombre: string;
 //   apellido: string;
 //   edad: number;
 //   dni: string;
 //   obraSocial: string;
 //   email: string;
-//   password: string;
-//   imagenPerfil1: File;
-//   imagenPerfil2: File;
-// }
-
-// export interface Paciente extends PacienteRegistro {
-//   id: string;
 //   avatarUrl: string;
+//   password: string;
+//   // Opcionales / legacy:
+//   imagenPerfil1?: string | null;
+//   imagenPerfil2?: string | null;
+//   password?: string;               // TODO: eliminar
 // }
 
 
 
+export interface PacienteAtendido {
+  id: string;
+  nombre: string;
+  apellido: string;
+  dni: string;
+  email: string;
+  avatar_url?: string;
+}
+
+export interface PacienteOption {
+  id: string;
+  nombre: string;
+  apellido: string;
+}
+
+export interface PacienteFav {
+  id: UUID;
+  nombre: string;
+  avatarUrl: string;
+  ultimaVisita?: string;           // ISO o texto
+}
+
+
+export interface Paciente {
+  id: string;
+  nombreCompleto: string;
+  dni: string;
+  fechaNacimiento: string; // ISO
+}
+
+export interface DatosVitales {
+  alturaCm: number;
+  pesoKg: number;
+  temperaturaC: number;
+  presion: string; // ej: '120/80 mmHg'
+}
+
+export interface DatoAdicional {
+  clave: string;                   // ej: 'fiebre'
+  etiqueta?: string;               // ej: 'Fiebre'
+  tipo?: 'boolean' | 'number' | 'text';
+  valor: boolean | number | string;
+}
+
+export interface Consulta {
+  id: string;
+  fecha: string;                   // ISO
+  especialidad: Especialidad;
+  medico: string;
+  datosVitales: DatosVitales;
+  datosAdicionales: DatoAdicional[];
+  notas?: string;
+}

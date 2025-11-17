@@ -4,7 +4,7 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { NgIf } from '@angular/common';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { LoadingService } from '../services/loading.service';
+import { LoadingService } from '../../../services/loading.service';
 
 @Component({
   selector: 'app-loading-overlay',

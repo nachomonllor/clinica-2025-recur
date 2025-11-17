@@ -192,6 +192,88 @@ export class TurnoService {
         .single()
     );
   }
+
+
+  // === Mapeador centralizado ===
+  private mapearTurno(raw: any): TurnoVM {
+    return {
+      id: raw.id,
+      especialidad: raw.especialidad,
+      estado: raw.estado,
+
+      fechaISO: raw.fecha_iso,
+      fecha: new Date(raw.fecha_iso),
+
+      especialistaId: raw.especialista_id,
+      pacienteId: raw.paciente_id,
+
+      // según cómo los traés del join con profiles
+      especialistaNombre: raw.especialista_nombre ?? this.composeNombre(raw.especialista),
+      pacienteNombre: raw.paciente_nombre ?? this.composeNombre(raw.paciente),
+
+      ubicacion: raw.ubicacion ?? null,
+      notas: raw.notas ?? null,
+      resenaEspecialista: raw.resena_especialista ?? null,
+      tieneResena: !!raw.resena_especialista,
+      encuesta: !!raw.encuesta,
+      calificacion: raw.calificacion ?? undefined,
+      motivo: raw.motivo ?? null,
+
+      // 👇 regla de negocio: si no viene hora, '00:00'
+      hora: (raw.hora as string | null | undefined) ?? '00:00',
+
+      historiaBusqueda: raw.historia_busqueda ?? '',
+    };
+  }
+
+  // opcional: helper para armar "Apellido, Nombre"
+  private composeNombre(p: any): string | undefined {
+    if (!p) return undefined;
+    if (p.apellido && p.nombre) {
+      return `${p.apellido}, ${p.nombre}`;
+    }
+    return p.nombre ?? p.apellido ?? undefined;
+  }
+
+  // // === Ejemplo de uso: turnos del paciente ===
+  // getTurnosPacienteVM$() {
+  //   return from(this.supa.auth.getUser()).pipe(
+  //     map(res => res.data.user?.id || ''),
+  //     switchMap(uid => from(
+  //       this.supa
+  //         .from(this.tabla)
+  //         .select(`
+  //           id,
+  //           paciente_id,
+  //           especialista_id,
+  //           especialidad,
+  //           fecha_iso,
+  //           estado,
+  //           resena_especialista,
+  //           encuesta,
+  //           hora,
+  //           especialista:profiles!turnos_especialista_id_fkey ( apellido, nombre )
+  //         `)
+  //         .eq('paciente_id', uid)
+  //         .order('fecha_iso', { ascending: false })
+  //     )),
+  //     map(({ data, error }) => {
+  //       if (error) throw error;
+  //       const rows = data || [];
+
+  //       // acá convertís TODO a TurnoVM con tu mapeador
+  //       return rows.map(raw => this.mapearTurno({
+  //         ...raw,
+  //         especialista_nombre: raw.especialista
+  //           ? `${raw.especialista.apellido}, ${raw.especialista.nombre}`
+  //           : null
+  //       }));
+  //     })
+  //   );
+  // }
+
+
+
 }
 
 

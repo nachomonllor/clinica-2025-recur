@@ -12,19 +12,21 @@ import { from, map, switchMap, firstValueFrom } from 'rxjs';
 import { SupabaseService } from '../../../services/supabase.service';
 import Swal from 'sweetalert2';
 import { MatIconModule } from "@angular/material/icon";
+import { EspecialistaOption } from '../../../models/especialista.model';
+import { PacienteOption } from '../../../models/paciente.model';
 
-interface EspecialistaOption {
-  id: string;
-  nombre: string;
-  apellido: string;
-  especialidad: string;
-}
+// interface EspecialistaOption {
+//   id: string;
+//   nombre: string;
+//   apellido: string;
+//   especialidad: string;
+// }
 
-interface PacienteOption {
-  id: string;
-  nombre: string;
-  apellido: string;
-}
+// interface PacienteOption {
+//   id: string;
+//   nombre: string;
+//   apellido: string;
+// }
 
 @Component({
   selector: 'app-solicitar-turno',
