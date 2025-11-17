@@ -12,7 +12,7 @@ import { ReportesComponent } from './components/admin/reportes/reportes.componen
 import { SeleccionEstadisticasComponent } from './components/seleccion-estadisticas/seleccion-estadisticas.component';
 import { TurnosPorEspecialidadComponent } from './components/turnos-por-especialidad/turnos-por-especialidad.component';
 import { TurnosPorMedicoComponent } from './components/turnos-por-medico/turnos-por-medico.component';
-import { TurnosPorDiaComponent } from './turnos-por-dia/turnos-por-dia.component';
+import { TurnosPorDiaComponent } from './components/turnos-por-dia/turnos-por-dia.component';
 
 export const routes: Routes = [
   // Home (redirige a bienvenida)

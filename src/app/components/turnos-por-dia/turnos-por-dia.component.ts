@@ -3,8 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import {
-  ApexAxisChartSeries, ApexChart, ApexDataLabels, ApexFill, ApexGrid,
-  ApexPlotOptions, ApexStroke, ApexTitleSubtitle, ApexTooltip, ApexXAxis, ApexYAxis,
+  ApexAxisChartSeries, 
   NgApexchartsModule
 } from 'ng-apexcharts';
 
@@ -24,9 +23,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { EstadisticasService } from '../../services/estadisticas.service';
 import { RouterLink } from '@angular/router';
-import { ChartOptions } from '../../models/estadisticas.models';
+import { ChartOptions } from '../../../models/estadisticas.models';
+import { EstadisticasService } from '../../../services/estadisticas.service';
 
 
 // export type ChartOptions = {
