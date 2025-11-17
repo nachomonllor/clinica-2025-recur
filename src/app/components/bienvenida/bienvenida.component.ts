@@ -1,7 +1,7 @@
 
-import { Component, OnInit, OnDestroy, signal, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Router, ActivatedRoute } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 
 // Angular Material
 import { MatButtonModule } from '@angular/material/button';

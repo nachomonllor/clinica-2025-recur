@@ -26,59 +26,6 @@ import { HistoriaClinicaDialogComponent } from './historia-clinica-dialog.compon
 import { AccentColor, UsuarioCardVM, UsuarioDisplay } from '../../../../models/usuario.model';
 import { TurnoResumen, TurnoSupabase } from '../../../../models/turno.model';
 
-// interface UsuarioDisplay {
-//   id: string;
-//   rol: Rol;
-//   aprobado: boolean;
-//   nombre: string;
-//   apellido: string;
-//   email: string;
-//   dni?: string | null;
-//   avatar_url?: string | null;
-//   obra_social?: string | null;
-//   fecha_nacimiento?: string | null;
-//   created_at?: string | null;
-// }
-
-// interface PerfilMin {
-//   nombre?: string | null;
-//   apellido?: string | null;
-// }
-
-// interface TurnoSupabase {
-//   id: string;
-//   fecha_iso: string | null;
-//   estado: string | null;
-//   especialidad: string | null;
-//   paciente?: PerfilMin | null;
-//   especialista?: PerfilMin | null;
-// }
-
-// interface TurnoResumen {
-//   id: string;
-//   fechaTexto: string;
-//   estado: string;
-//   especialidad: string;
-//   contraparte: string;
-// }
-
-/** ViewModel para la tarjeta (UI) */
-//type AccentColor = 'purple' | 'teal' | 'blue' | 'pink';
-// interface UsuarioCardVM {
-//   id: string;
-//   rol: Rol;
-//   habilitado: boolean;          // mapea: especialista.aprobado; otros => true
-//   nombre: string;
-//   apellido: string;
-//   email: string;
-//   dni?: string | null;
-//   avatarUrl?: string | null;
-//   obraSocial?: string | null;   // pacientes
-//   edad?: number;                // opcional si hay fecha
-//   especialidades?: string[];    // opcional (si lo agregás luego)
-//   color: AccentColor;           // acento de tarjeta
-// }
-
 @Component({
   selector: 'app-usuarios-admin',
   standalone: true,
@@ -399,7 +346,32 @@ export class UsuariosAdminComponent implements OnInit {
     }
   }
 
-  private async obtenerTurnosUsuario(usuario: UsuarioDisplay): Promise<TurnoSupabase[]> {
+  // private async obtenerTurnosUsuario(usuario: UsuarioDisplay): Promise<TurnoSupabase[]> {
+  //   let query = this.supa.client
+  //     .from('turnos')
+  //     .select(`
+  //       id,
+  //       fecha_iso,
+  //       estado,
+  //       especialidad,
+  //       paciente:profiles!turnos_paciente_id_fkey (nombre, apellido),
+  //       especialista:profiles!turnos_especialista_id_fkey (nombre, apellido)
+  //     `);
+
+  //   if (usuario.rol === 'paciente') {
+  //     query = query.eq('paciente_id', usuario.id);
+  //   } else if (usuario.rol === 'especialista') {
+  //     query = query.eq('especialista_id', usuario.id);
+  //   } else {
+  //     query = query.or(`paciente_id.eq.${usuario.id},especialista_id.eq.${usuario.id}`);
+  //   }
+
+  //   const { data, error } = await query.order('fecha_iso', { ascending: false });
+  //   if (error) throw error;
+  //   return (data || []) as TurnoSupabase[];
+  // }
+
+    private async obtenerTurnosUsuario(usuario: UsuarioDisplay): Promise<TurnoSupabase[]> {
     let query = this.supa.client
       .from('turnos')
       .select(`
@@ -407,8 +379,8 @@ export class UsuariosAdminComponent implements OnInit {
         fecha_iso,
         estado,
         especialidad,
-        paciente:profiles!turnos_paciente_id_fkey (nombre, apellido),
-        especialista:profiles!turnos_especialista_id_fkey (nombre, apellido)
+        paciente:perfiles!turnos_paciente_id_fkey (nombre, apellido),
+        especialista:perfiles!turnos_especialista_id_fkey (nombre, apellido)
       `);
 
     if (usuario.rol === 'paciente') {

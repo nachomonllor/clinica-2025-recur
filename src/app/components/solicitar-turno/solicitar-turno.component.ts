@@ -215,7 +215,7 @@ export class SolicitarTurnoComponent implements OnInit {
       console.log('[SolicitarTurno] Cantidad de IDs:', idsAprobados.length);
 
       if (idsAprobados.length === 0) {
-        console.warn('[SolicitarTurno] No hay especialistas aprobados en profiles');
+        console.warn('[SolicitarTurno] No hay especialistas aprobados en perfiles');
         this.especialidades = [];
         this.especialistas = [];
         this.especialistasFiltrados = [];

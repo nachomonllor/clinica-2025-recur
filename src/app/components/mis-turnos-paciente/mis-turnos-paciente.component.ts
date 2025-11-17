@@ -10,7 +10,7 @@ import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dial
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatCardModule } from '@angular/material/card';
 import { MatSelectModule } from '@angular/material/select';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { TurnoService } from '../../../services/turno.service';
 import { TurnoVM } from '../../../models/turno.model';
 import { SupabaseService } from '../../../services/supabase.service';
@@ -24,8 +24,10 @@ import { ElevateOnHoverDirective } from '../../../directives/elevate-on-hover.di
   templateUrl: './mis-turnos-paciente.component.html',
   styleUrls: ['./mis-turnos-paciente.component.scss'],
   imports: [
+
     CommonModule,
     FormsModule,
+    RouterLink,
     ReactiveFormsModule,
     MatTableModule,
     MatFormFieldModule,

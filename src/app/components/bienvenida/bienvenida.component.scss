@@ -14,10 +14,11 @@
   --orange-700: #f97316;
 }
 
+
 .hero {
   position: relative;
   min-height: 100svh;
-  padding: clamp(12px, 2vw, 24px);
+  padding: 2.5rem 4rem 2rem;
   display: grid;
   grid-template-rows: auto 1fr auto;
   gap: clamp(16px, 2vw, 24px);
@@ -54,13 +55,16 @@
 .brand { display: flex; gap: .5rem; align-items: center; font-weight: 700; letter-spacing: .2px; }
 .brand mat-icon { color: var(--cyan); }
 
-/* Grid principal */
+
+/*  AHORA LA GRID ES UNA COLUMNA (STACK VERTICAL) */
 .hero-grid {
-  display: grid;
-  grid-template-columns: 1.1fr .9fr;
-  gap: clamp(18px, 4vw, 40px);
-  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;   // 👈 antes seguramente era row o grid de 2 columnas
+  gap: 2.5rem;
 }
+
 @media (max-width: 992px) {
   .hero-grid { grid-template-columns: 1fr; }
 }
@@ -71,15 +75,33 @@
   line-height: 1.05;
   margin: 0 0 .4rem;
 }
+
+/* Bloque de título + texto + cards de especialidades/horarios */
+.copy {
+  max-width: 900px;
+}
+
 .lead { color: var(--muted); max-width: 62ch; line-height: 1.6; }
 
+// .chips {
+//   display: grid;
+//   grid-template-columns: repeat(2, minmax(220px, 1fr));
+//   gap: 14px;
+//   margin: 1rem 0 1.25rem;
+// }
+
+/*  Especialidades y Horarios: 2 columnas arriba */
 .chips {
+  margin-top: 1.75rem;
   display: grid;
-  grid-template-columns: repeat(2, minmax(220px, 1fr));
-  gap: 14px;
-  margin: 1rem 0 1.25rem;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
 }
+
+
+
 @media (max-width: 640px) { .chips { grid-template-columns: 1fr; } }
+
 
 .chip.glass {
   padding: .9rem 1rem;
@@ -94,12 +116,36 @@
 }
 .chip ul { margin: 0; padding-left: 1rem; color: var(--muted); }
 
-/* Columna derecha: 2 cards */
+
 .cta-grid {
+  align-self: center;
+  width: 100%;
+  max-width: 900px;
   display: grid;
-  grid-template-columns: repeat(2, minmax(260px, 1fr));
-  gap: clamp(14px, 2vw, 20px);
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
 }
+
+/* Responsivo */
+// @media (max-width: 960px) {
+//   .hero {
+//     padding: 1.5rem 1.25rem 1.75rem;
+//   }
+
+//   .hero-grid {
+//     gap: 2rem;
+//   }
+// }
+
+
+/* Columna derecha: 2 cards */
+// .cta-grid {
+//   display: grid;
+//   grid-template-columns: repeat(2, minmax(260px, 1fr));
+//   gap: clamp(14px, 2vw, 20px);
+// }
+
+
 @media (max-width: 640px) { .cta-grid { grid-template-columns: 1fr; } }
 
 .cta-card {

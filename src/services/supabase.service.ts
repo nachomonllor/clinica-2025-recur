@@ -104,19 +104,50 @@ export class SupabaseService {
   // }
 
   // SupabaseService.obtenerPerfil(userId: string)
-  async obtenerPerfil(userId: string) {
-    // Trae lo necesario para decidir acceso/flujo
-    const cols = 'id, user_id, rol, aprobado,  nombre, apellido, avatar_url, imagen2_url';
+  // async obtenerPerfil(userId: string) {
+  //   // Trae lo necesario para decidir acceso/flujo
+  //   const cols = 'id, user_id, rol, aprobado,  nombre, apellido, avatar_url, imagen2_url';
 
-    // Busca por id = userId OR user_id = userId (cubre ambos esquemas)
+  //   // Busca por id = userId OR user_id = userId (cubre ambos esquemas)
+  //   const { data, error } = await this.client
+  //     .from('perfiles')
+  //     .select(cols)
+  //     .or(`id.eq.${userId},user_id.eq.${userId}`)
+  //     .maybeSingle();
+
+  //   return { data, error };
+  // }
+
+
+  // src/services/supabase.service.ts
+
+  async obtenerPerfil(userId: string) {
+    // columnas reales en `perfiles`
+    const cols = 'id, rol, aprobado, nombre, apellido, email, avatar_url, imagen2_url';
+
     const { data, error } = await this.client
       .from('perfiles')
       .select(cols)
-      .or(`id.eq.${userId},user_id.eq.${userId}`)
+      .eq('id', userId)
       .maybeSingle();
 
     return { data, error };
   }
+
+  // src/services/supabase.service.ts
+
+  // async obtenerPerfil(userId: string) {
+  //   // columnas reales en `perfiles`
+  //   const cols = 'id, rol, aprobado, nombre, apellido, email, avatar_url, imagen2_url';
+
+  //   const { data, error } = await this.client
+  //     .from('perfiles')
+  //     .select(cols)
+  //     .eq('id', userId)
+  //     .maybeSingle();
+
+  //   return { data, error };
+  // }
 
 
   async upsertPerfil(perfil: PerfilInsert): Promise<{ data: PerfilRow | null; error: any }> {

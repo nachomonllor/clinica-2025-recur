@@ -1,3 +1,4 @@
+
 // src/app/components/login-paciente/login-paciente.component.ts
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -24,12 +25,14 @@ import { SupabaseService } from '../../../services/supabase.service';
     CommonModule, ReactiveFormsModule, RouterModule,
     MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatTooltipModule, MatProgressSpinnerModule, MatSnackBarModule,
     AutoFocusDirective,
-    
-],
+
+  ],
+
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
+
   formularioLogin!: FormGroup;
   cargando = false;
   error: string = '';
@@ -103,11 +106,11 @@ export class LoginComponent implements OnInit {
       // 3) Perfil (sin seleccionar email en SupabaseService.obtenerPerfil)
       const { data: perfil, error: ePerfil } = await this.supa.obtenerPerfil(user.id);
       if (ePerfil || !perfil) throw ePerfil || new Error('No se encontró el perfil del usuario.');
-      
+
       // 4) Validaciones según requisitos del Sprint 1:
       // - Pacientes: solo pueden ingresar si verificaron su mail
       // - Especialistas: solo pueden ingresar si verificaron su mail Y fueron aprobados por admin
-      
+
       // Verificar email confirmado (requisito para todos los roles)
       if (!user.email_confirmed_at) {
         await this.supa.cerrarSesion();
@@ -127,7 +130,7 @@ export class LoginComponent implements OnInit {
           // El registro no existe, intentar completarlo desde metadata
           const userMetadata = user.user_metadata || {};
           const rawAppMetaData = (user as any).app_metadata || {};
-          
+
           // Obtener datos de metadata (pueden estar en user_metadata o app_metadata)
           const nombre = userMetadata['nombre'] || rawAppMetaData['nombre'] || perfil.nombre;
           const apellido = userMetadata['apellido'] || rawAppMetaData['apellido'] || perfil.apellido;
@@ -176,7 +179,7 @@ export class LoginComponent implements OnInit {
         await this.supa.cerrarSesion();
         throw new Error('Tu cuenta de especialista aún no ha sido aprobada por un administrador.');
       }
-      
+
       // Para pacientes, verificar que sea paciente (pero permitir otros roles si vienen de quickLogin)
       // if (perfil.rol !== 'paciente') {
       //   await this.supa.cerrarSesion();
@@ -194,7 +197,7 @@ export class LoginComponent implements OnInit {
       // Verificamos que las URLs no sean null, undefined, o strings vacíos
       const tieneAvatar = perfil.avatar_url && String(perfil.avatar_url).trim() !== '';
       const tieneImagen2 = perfil.imagen2_url && String(perfil.imagen2_url).trim() !== '';
-      
+
       // Solo mostrar advertencia si realmente faltan imágenes críticas
       // Para pacientes: ambas imágenes son requeridas
       // Para especialistas: solo avatar es requerido
@@ -234,7 +237,7 @@ export class LoginComponent implements OnInit {
       } else {
         await Swal.fire({ icon: 'success', title: 'Bienvenido', timer: 1500, showConfirmButton: false });
       }
-      
+
       // Redirigir según el rol
       if (perfil.rol === 'paciente') {
         this.router.navigate(['/mis-turnos-paciente']);

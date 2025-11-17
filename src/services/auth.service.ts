@@ -58,7 +58,7 @@ export class AuthService {
     });
     if (error) return { data, error };
 
-    // si querés crear fila en profiles después de signUp:
+    // PAR CREAR FILA EN PERFILES después de signUp:
     if (data.user && profile) {
       await this.client.from('perfiles').insert({
         id: data.user.id,
