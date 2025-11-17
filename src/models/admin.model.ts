@@ -1,4 +1,4 @@
-import { TurnoVM } from "./turno.model";
+import { EstadoTurno, TurnoVM } from "./turno.model";
 
 import { SpecialistCounters } from './especialista.model';
 
@@ -10,10 +10,10 @@ export type Rol = 'paciente' | 'especialista' | 'admin';
 export type RolTab = 'todos' | Rol;
 export type EstadoTab = 'todos' | 'habilitados' | 'pendientes' | 'inhabilitados';
 
-// ========= Turnos (CANÓNICO) =========
-export type EstadoTurno =
-  | 'pendiente' | 'aceptado' | 'confirmado'
-  | 'realizado' | 'rechazado' | 'cancelado';
+// // ========= Turnos (CANÓNICO) =========
+// export type EstadoTurno =
+//   | 'pendiente' | 'aceptado' | 'confirmado'
+//   | 'realizado' | 'rechazado' | 'cancelado';
 
 
 // Aliases de compatibilidad (no usar en código nuevo)

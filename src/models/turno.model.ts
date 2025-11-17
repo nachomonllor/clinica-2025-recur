@@ -19,13 +19,26 @@ export interface Turno {
   encuesta?: boolean;
 }
 
-// turno.model.ts
-export type TurnoEstado = 
+// // turno.model.ts
+// export type TurnoEstado = 
+//   | 'pendiente'
+//   | 'realizado'
+//   | 'cancelado'
+//   | 'rechazado'
+//   | 'aceptado';
+
+// Único dueño del estado
+export type EstadoTurno =
   | 'pendiente'
+  | 'aceptado'
+  | 'confirmado'
   | 'realizado'
-  | 'cancelado'
   | 'rechazado'
-  | 'aceptado';
+  | 'cancelado';
+
+// Alias de compat si lo usás
+export type TurnoEstado = EstadoTurno;
+
 
 export interface TurnoDto {
   pacienteId: string;
@@ -40,7 +53,6 @@ export interface TurnoDto {
   calificacion?: number;
 }
 
-export type EstadoTurno = TurnoEstado ; // 'pendiente'|'aceptado'|'realizado'|'cancelado'|'rechazado';
 
 /** Estructura tal como viene de la BD (tabla 'turnos') */
 export interface TurnoRow {

@@ -1,12 +1,3 @@
-// interface Usuario {
-//     nombre: string;
-//     apellido: string;
-//     email: string;
-//     imagenPerfil: string;
-//     // Si el usuario es Especialista, puede tener horarios asignados.
-//     horarios?: Horario[];
-//   }
-
 import { Observable } from "rxjs";
 import { Rol } from "./perfil.model";
 import { UUID } from "./especialista.model";
@@ -61,7 +52,6 @@ export interface UsuarioCardVM {
   especialidades?: string[];    // opcional (si lo agregás luego)
   color: AccentColor;           // acento de tarjeta
 }
-
 
 // =================== Usuarios (VM para la sección Admin) ===================
 export interface Usuario {
