@@ -14,7 +14,6 @@ export interface TurnoEspecialista {
   historiaBusqueda?: string;  // string de búsqueda con datos de historia clínica
 }
 
-
 export interface TurnoEspecialistaVM {
   id: UUID;
   fechaISO: string;
@@ -25,37 +24,3 @@ export interface TurnoEspecialistaVM {
   resenaEspecialista?: string | null;
 }
 
-
-// export interface TurnoEspecialista {
-//   id: number;
-//   fecha: string;    // ya formateada o para date pipe
-//   hora: string;
-//   especialidad: string;
-//   paciente: string;
-//   estado: EstadoTurno;  // unificado
-//   resena?: string;
-// }
-
-
-// // DATE PARA LA FECHA
-// export interface TurnoEspecialista {
-//   id: string;
-//   fecha: Date;            // <- antes string
-//   hora: string;
-//   especialidad: string;
-//   paciente: string;
-//   estado: 'pendiente'|'aceptado'|'realizado'|'cancelado'|'rechazado';
-//   resena?: string;
-//   encuesta?: boolean;
-// }
-
-
-// export interface TurnoEspecialista {
-//   id: number;
-//   fecha: string; // En producción podrías usar Date
-//   hora: string;
-//   especialidad: string;
-//   paciente: string;
-//   estado: 'pendiente' | 'aceptado' | 'realizado' | 'cancelado' | 'rechazado';
-//   resena?: string;
-// }
