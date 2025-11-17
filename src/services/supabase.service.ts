@@ -94,14 +94,30 @@ export class SupabaseService {
     return () => data.subscription.unsubscribe();
   }
 
-  async obtenerPerfil(uid: string) {
+  // async obtenerPerfil(uid: string) {
+  //   const { data, error } = await this.client
+  //     .from('perfiles')
+  //     .select('id, rol, aprobado, nombre, apellido, avatar_url, imagen2_url')
+  //     .eq('id', uid)
+  //     .single();
+  //   return { data, error };
+  // }
+
+  // SupabaseService.obtenerPerfil(userId: string)
+  async obtenerPerfil(userId: string) {
+    // Trae lo necesario para decidir acceso/flujo
+    const cols = 'id, user_id, rol, aprobado,  nombre, apellido, avatar_url, imagen2_url';
+
+    // Busca por id = userId OR user_id = userId (cubre ambos esquemas)
     const { data, error } = await this.client
       .from('perfiles')
-      .select('id, rol, aprobado, nombre, apellido, avatar_url, imagen2_url')
-      .eq('id', uid)
-      .single();
+      .select(cols)
+      .or(`id.eq.${userId},user_id.eq.${userId}`)
+      .maybeSingle();
+
     return { data, error };
   }
+
 
   async upsertPerfil(perfil: PerfilInsert): Promise<{ data: PerfilRow | null; error: any }> {
     const { data, error } = await this.client
@@ -153,7 +169,7 @@ export class SupabaseService {
 
 
 
-  
+
 }
 
 
