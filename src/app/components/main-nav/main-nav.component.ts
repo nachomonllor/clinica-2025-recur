@@ -52,7 +52,7 @@ export class MainNavComponent implements OnInit, OnDestroy {
   constructor(
     private readonly supabase: SupabaseService,
     private readonly router: Router
-  ) {}
+  ) { }
 
   async ngOnInit(): Promise<void> {
     await this.actualizarDesdeSesion();
@@ -126,8 +126,8 @@ export class MainNavComponent implements OnInit, OnDestroy {
       const nombre = `${perfil?.nombre ?? ''} ${perfil?.apellido ?? ''}`.trim();
       this.nombreVisible.set(nombre || session.user.email || 'Mi cuenta');
       // Obtener la URL del avatar si está disponible
-      const avatarUrl = perfil?.avatar_url && String(perfil.avatar_url).trim() !== '' 
-        ? perfil.avatar_url 
+      const avatarUrl = perfil?.avatar_url && String(perfil.avatar_url).trim() !== ''
+        ? perfil.avatar_url
         : null;
       this.avatarUrl.set(avatarUrl);
       this.avatarError.set(false);
@@ -149,26 +149,31 @@ export class MainNavComponent implements OnInit, OnDestroy {
         return [
           { label: 'Mis turnos', route: '/mis-turnos-paciente', icon: 'event_note' },
           { label: 'Solicitar turno', route: '/solicitar-turno', icon: 'add_circle' },
-          { label: 'Mi perfil', route: '/mi-perfil', icon: 'account_circle' }
+          // { label: 'Mi perfil', route: '/mi-perfil', icon: 'account_circle' },
+
+          { label: 'Mi perfil', route: '/perfil-usuario', icon: 'account_circle' }
         ];
       case 'especialista':
         return [
           { label: 'Mis turnos', route: '/mis-turnos-especialista', icon: 'event_note' },
           { label: 'Pacientes', route: '/pacientes-especialista', icon: 'groups' },
-          { label: 'Mi perfil', route: '/mi-perfil', icon: 'account_circle' }
+          //   { label: 'Mi perfil', route: '/mi-perfil', icon: 'account_circle' }
+
+          { label: 'Mi perfil', route: '/perfil-usuario', icon: 'account_circle' }
         ];
+      //case 'admin':
       case 'admin':
         return [
           { label: 'Turnos', route: '/turnos-admin', icon: 'calendar_month' },
           { label: 'Usuarios', route: '/usuarios-admin', icon: 'supervisor_account' },
-         // { label: 'Solicitar turno', route: '/solicitar-turno', icon: 'add_circle' },
+          // { label: 'Solicitar turno', route: '/solicitar-turno', icon: 'add_circle' },
 
-         // { label: 'Estadísticas', route: '/estadisticas', icon: 'insights' },
-          { label: 'Estadísticas', route: 'seleccion-estadisticas', icon: 'insights'},
+          // { label: 'Estadísticas', route: '/estadisticas', icon: 'insights' },
+          { label: 'Estadísticas', route: 'seleccion-estadisticas', icon: 'insights' },
 
           { label: 'Mi perfil', route: '/perfil-usuario', icon: 'account_circle' },
 
-          {label: 'Ingresos', route: '/log-ingreso', icon: 'event_note'}  // <=== VERIFICAR EL ICONO
+          { label: 'Ingresos', route: '/log-ingreso', icon: 'event_note' }  // <=== VERIFICAR EL ICONO
         ];
       default:
         return [];

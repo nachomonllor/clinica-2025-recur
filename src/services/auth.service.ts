@@ -39,36 +39,73 @@ export class AuthService {
   }
 
   // (Opcional) Leer perfil TABLA ‘profiles’
+  // async getMyProfile(userId: string) {
+  //   return await this.client
+  //     .from('perfiles')
+  //     .select('id, first_name, last_name, email, role')
+  //     .eq('id', userId)
+  //     .maybeSingle();
+  // }
+
+  // AuthService
   async getMyProfile(userId: string) {
-    return await this.client
+    return this.client
       .from('perfiles')
-      .select('id, first_name, last_name, email, role')
+      .select('id, nombre, apellido, email, rol')   // <- CASTELLANO
       .eq('id', userId)
       .maybeSingle();
   }
 
-  //  SignUp con verificación por email
-  async signUp(email: string, password: string, profile?: { first_name?: string; last_name?: string }) {
+
+  // //  SignUp con verificación por email
+  // async signUp(email: string, password: string, profile?: { first_name?: string; last_name?: string }) {
+  //   const { data, error } = await this.client.auth.signUp({
+  //     email,
+  //     password,
+  //     options: {
+  //       emailRedirectTo: window.location.origin + '/login' // adonde vuelve tras confirmar
+  //     }
+  //   });
+  //   if (error) return { data, error };
+
+  //   // PAR CREAR FILA EN PERFILES después de signUp:
+  //   if (data.user && profile) {
+  //     await this.client.from('perfiles').insert({
+  //       id: data.user.id,
+  //       email,
+  //       first_name: profile.first_name ?? null,
+  //       last_name: profile.last_name ?? null
+  //     });
+  //   }
+  //   return { data, error };
+  // }
+
+  // SignUp con verificación por email (CASTELLANO)
+
+  async signUp(email: string, password: string, profile?: { nombre?: string; apellido?: string; rol?: 'paciente' | 'especialista' | 'admin' }) {
     const { data, error } = await this.client.auth.signUp({
       email,
       password,
-      options: {
-        emailRedirectTo: window.location.origin + '/login' // adonde vuelve tras confirmar
-      }
+      options: { emailRedirectTo: window.location.origin + '/login' }
     });
     if (error) return { data, error };
 
-    // PAR CREAR FILA EN PERFILES después de signUp:
-    if (data.user && profile) {
+    if (data.user) {
       await this.client.from('perfiles').insert({
         id: data.user.id,
         email,
-        first_name: profile.first_name ?? null,
-        last_name: profile.last_name ?? null
+        nombre: profile?.nombre ?? null,
+        apellido: profile?.apellido ?? null,
+        rol: profile?.rol ?? 'paciente'
       });
+      // Crear fila en tabla de extensión según ROL
     }
     return { data, error };
   }
+
+
+
+
 }
 
 
@@ -76,47 +113,3 @@ export class AuthService {
 
 
 
-
-
-// // // src/app/services/auth.service.ts
-// // import { Injectable } from '@angular/core';
-
-// // @Injectable({ providedIn: 'root' })
-// // export class AuthService {
-// //   // Simula el usuario logueado; en producción vendrá de tu backend o Firebase Auth
-// //   get currentUser() {
-// //     return { uid: 'abc123-especialista' };
-// //   }
-// // }
-
-
-// // // src/app/services/auth.service.ts
-// // import { Injectable } from '@angular/core';
-// // import { AngularFireAuth } from '@angular/fire/compat/auth';
-// // import { Observable } from 'rxjs';
-// // import { User } from '@firebase/auth';
-
-// // @Injectable({ providedIn: 'root' })
-// // export class AuthService {
-// //   user$: Observable<User | null>;
-
-// //   constructor(private afAuth: AngularFireAuth) {
-// //     this.user$ = this.afAuth.authState;  // emite null o el usuario cuando cambia
-// //   }
-// // }
-
-// // // src/app/services/auth.service.ts
-// // import { Injectable } from '@angular/core';
-// // import { AngularFireAuth } from '@angular/fire/compat/auth';
-// // import firebase from 'firebase/compat/app';        // <— IMPORT
-// // import { Observable } from 'rxjs';
-
-// // @Injectable({ providedIn: 'root' })
-// // export class AuthService {
-// //   // declara user$ como firebase.User en lugar de @firebase/auth User
-// //   user$: Observable<firebase.User | null>;
-
-// //   constructor(private afAuth: AngularFireAuth) {
-// //     this.user$ = this.afAuth.authState;
-// //   }
-// // }

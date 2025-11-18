@@ -40,38 +40,6 @@ export class PacienteService {
     return this.http.get<HistoriaClinica>(`/api/historias/${pacienteId}`);
   }
 
-
-  // getPacientes() {
-
-  //   // src/app/services/pacientes.service.ts
-  //   return from(
-  //     this.supa
-  //       .from('perfiles')
-  //       .select('id, nombre, apellido, obra_social, avatar_url, imagen2_url, edad, dni')
-  //       .eq('rol', 'paciente')
-  //       .order('apellido', { ascending: true })
-  //   ).pipe(
-  //     map(({ data, error }) => {
-  //       if (error) throw error;
-  //       return (data || []).map((r: any) => ({
-  //         id: r.id,
-  //         avatarUrl: r.avatar_url ?? '',
-  //         nombre: r.nombre ?? '',
-  //         apellido: r.apellido ?? '',
-  //         edad: Number(r.edad ?? 0),
-  //         dni: r.dni ?? '',
-  //         obraSocial: r.obra_social ?? '',
-  //         email: '',                 // <- si el modelo lo exige, dejalo vacío
-  //         password: '',              // <- idem (no se lee nunca desde BD)
-  //         imagenPerfil1: r.avatar_url ?? '',
-  //         imagenPerfil2: r.imagen2_url ?? ''
-  //       })) as Paciente[];
-  //     })
-  //   );
-
-  // }
-
-
   // src/services/paciente.service.ts
   getPacientes() {
     return from(
@@ -110,46 +78,6 @@ export class PacienteService {
   }
 
 
-
 }
-
-
-
-// import { Injectable } from '@angular/core';
-
-// @Injectable({
-//   providedIn: 'root'
-// })
-// export class PacienteService {
-
-//   constructor() { }
-// }
-
-
-
-// /** Devuelve todos los pacientes (profiles.rol='paciente') como Observable */
-// getPacientes() {
-//   return from(
-//     this.supa
-//       .from('profiles')
-//       .select('id, nombre, apellido, email, obra_social, avatar_url')
-//       .eq('rol', 'paciente')
-//       .order('apellido', { ascending: true })
-//   ).pipe(
-//     map(({ data, error }) => {
-//       if (error) throw error;
-//       // Mapear nombres de columnas de BD -> modelo de UI
-//       return (data || []).map((r: any) => ({
-//         id: r.id,
-//         nombre: r.nombre ?? '',
-//         apellido: r.apellido ?? '',
-//         email: r.email ?? '',
-//         obraSocial: r.obra_social ?? '',     // BD: obra_social -> UI: obraSocial
-//         avatar: r.avatar_url ?? null         // BD: avatar_url -> UI: avatar
-//       })) as Paciente[];
-//     })
-//   );
-// }
-
 
 
