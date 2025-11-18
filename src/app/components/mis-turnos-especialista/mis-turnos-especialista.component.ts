@@ -29,7 +29,6 @@ import { ElevateOnHoverDirective } from '../../../directives/elevate-on-hover.di
   selector: 'app-mis-turnos-especialista',
   standalone: true,
   templateUrl: './mis-turnos-especialista.component.html',
- // styleUrl: './mis-turnos-especialista.component.scss',
 
   styleUrls: ['./mis-turnos-especialista.component.scss'],
 
@@ -50,7 +49,7 @@ import { ElevateOnHoverDirective } from '../../../directives/elevate-on-hover.di
     MatSlideToggleModule,
     StatusLabelPipe,
     StatusBadgeDirective,
-    ElevateOnHoverDirective
+    
   ]
 })
 export class MisTurnosEspecialistaComponent implements OnInit {
