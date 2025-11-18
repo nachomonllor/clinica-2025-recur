@@ -194,9 +194,7 @@ El sistema ofrece **Español**, **Inglés** y **Portugués** (mínimo **3 pantal
 
 ## Créditos
 
-Este proyecto sigue la **consigna oficial “Clínica Online 2025”** de la materia. Este README resume esas pautas para usuarios finales y no incluye pasos técnicos ni código. Para más detalle, consultá el **PDF de la consigna** incluido en el repositorio (referencias por **páginas 1–7** a lo largo del documento). 
+Este proyecto sigue la **consigna oficial “Clínica Online 2025”** de la materia. Este README resume esas pautas para usuarios finales y no incluye pasos técnicos ni código. 
 
----
 
-> **Nota:** Las pantallas reales del proyecto pueden variar en estilo o ubicación de botones, pero las **funciones** y **reglas** descritas aquí respetan la consigna oficial. Si tu implementación agrega cambios (por ejemplo, más filtros o informes), podés editar este README para reflejar esas mejoras. 
 
