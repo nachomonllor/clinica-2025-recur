@@ -26,19 +26,6 @@ export class SupabaseService {
   private _client: SupabaseClient;
 
   constructor() {
-    // this._client = createClient(environment.supabaseUrl, environment.supabaseKey, {
-    //   auth: {
-    //     persistSession: true,
-    //     autoRefreshToken: true,
-    //     detectSessionInUrl: true, // necesario si usas verificación por email
-    //     storage: localStorage,
-    //     // Evita el error de Navigator LockManager en desarrollo
-    //     // @ts-expect-error: multiTab puede no existir en typings antiguos
-    //     multiTab: false,
-    //     storageKey: 'sb-clinica-online-auth-2025',
-    //   }
-    // });
-
 
     this._client = createClient(environment.supabaseUrl, environment.supabaseKey, {
       auth: {
@@ -57,11 +44,9 @@ export class SupabaseService {
 
   }
 
-
   get client(): SupabaseClient {
     return this._client;
   }
-
 
   /* ========================= AUTH ========================= */
 
@@ -88,38 +73,10 @@ export class SupabaseService {
     return this.client.auth.getSession();
   }
 
-
   onAuthChange(cb: (event: AuthChangeEvent, session: Session | null) => void): () => void {
     const { data } = this.client.auth.onAuthStateChange((event, session) => cb(event, session));
     return () => data.subscription.unsubscribe();
   }
-
-  // async obtenerPerfil(uid: string) {
-  //   const { data, error } = await this.client
-  //     .from('perfiles')
-  //     .select('id, rol, aprobado, nombre, apellido, avatar_url, imagen2_url')
-  //     .eq('id', uid)
-  //     .single();
-  //   return { data, error };
-  // }
-
-  // SupabaseService.obtenerPerfil(userId: string)
-  // async obtenerPerfil(userId: string) {
-  //   // Trae lo necesario para decidir acceso/flujo
-  //   const cols = 'id, user_id, rol, aprobado,  nombre, apellido, avatar_url, imagen2_url';
-
-  //   // Busca por id = userId OR user_id = userId (cubre ambos esquemas)
-  //   const { data, error } = await this.client
-  //     .from('perfiles')
-  //     .select(cols)
-  //     .or(`id.eq.${userId},user_id.eq.${userId}`)
-  //     .maybeSingle();
-
-  //   return { data, error };
-  // }
-
-
-  // src/services/supabase.service.ts
 
   async obtenerPerfil(userId: string) {
     // columnas reales en `perfiles`
@@ -133,21 +90,6 @@ export class SupabaseService {
 
     return { data, error };
   }
-
-  // src/services/supabase.service.ts
-
-  // async obtenerPerfil(userId: string) {
-  //   // columnas reales en `perfiles`
-  //   const cols = 'id, rol, aprobado, nombre, apellido, email, avatar_url, imagen2_url';
-
-  //   const { data, error } = await this.client
-  //     .from('perfiles')
-  //     .select(cols)
-  //     .eq('id', userId)
-  //     .maybeSingle();
-
-  //   return { data, error };
-  // }
 
 
   async upsertPerfil(perfil: PerfilInsert): Promise<{ data: PerfilRow | null; error: any }> {
@@ -196,9 +138,6 @@ export class SupabaseService {
   get sdk(): SupabaseClient {
     return this.client;
   }
-
-
-
 
 
 }
