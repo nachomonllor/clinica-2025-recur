@@ -98,7 +98,7 @@ export class LoginComponent implements OnInit {
   //     const user = data.user;
   //     const md: any = user.user_metadata || {};
 
-  //     // 👇 Fallback: garantiza que exista fila en `perfiles`
+  //     //  Fallback: garantiza que exista fila en `perfiles`
   //     await supabase
   //       .from('perfiles')
   //       .upsert({
