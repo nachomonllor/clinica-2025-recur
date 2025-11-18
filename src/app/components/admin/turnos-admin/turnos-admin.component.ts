@@ -11,14 +11,6 @@ import { MatCardModule } from '@angular/material/card';
 import { SupabaseService } from '../../../../services/supabase.service';
 import { EstadoTurno, TurnoUI, TurnoVM } from '../../../../models/turno.model';
 
-// type TurnoUI = TurnoVM & {
-//   paciente: string;
-//   especialista: string;
-//   fecha: Date;
-//   hora: string;
-//   patologiasText: string; // texto indexable desde historia clínica
-// };
-
 @Component({
   selector: 'app-turnos-admin',
   standalone: true,

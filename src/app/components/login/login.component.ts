@@ -241,6 +241,10 @@ export class LoginComponent implements OnInit {
         await Swal.fire({ icon: 'success', title: 'Bienvenido', timer: 1500, showConfirmButton: false });
       }
 
+      //REGISTRO EL INGRESO
+       await this.logIngresos.registrarIngreso();
+
+
       // Redirigir según el rol
       if (perfil.rol === 'paciente') {
         this.router.navigate(['/mis-turnos-paciente']);
