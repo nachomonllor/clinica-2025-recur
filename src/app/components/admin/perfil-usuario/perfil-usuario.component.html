@@ -1,4 +1,216 @@
-<div class="profile-page" [@pageIn]>
+<!-- src/app/components/perfil-usuario/perfil-usuario.component.html -->
+
+<!-- Estado: cargando -->
+<div *ngIf="cargando" class="loading">
+  Cargando perfil...
+</div>
+
+<!-- Estado: error -->
+<div *ngIf="!cargando && error" class="error">
+  <h2>Hubo un problema</h2>
+  <p>{{ error }}</p>
+  <a routerLink="/bienvenida" class="btn ghost ripple">Ir a inicio</a>
+</div>
+
+<!-- Contenido principal -->
+<div class="profile-page" *ngIf="!cargando && !error && usuario as u" [@pageIn]>
+  <div class="hero-content glass">
+    <div class="hero-left">
+      <div class="avatar" [class.has-img]="u.avatarUrl">
+        <img *ngIf="u.avatarUrl; else avatarFallback" [src]="u.avatarUrl" [alt]="nombreCompleto" />
+        <ng-template #avatarFallback>
+          <!-- span>{{ (u.nombre?.[0] || u.email?.[0] || 'U') }}{{ (u.apellido?.[0] || '') }}</span-->
+
+          <span>{{ u.nombre | iniciales:u.apellido:u.email }}</span>
+
+
+        </ng-template>
+      </div>
+
+      <div class="title">
+        <h1>{{ nombreCompleto }}</h1>
+        <div class="sub">
+          <span class="chip role">{{ u.rol | uppercase }}</span>
+          <span class="dot" *ngIf="u.edad != null"></span>
+          <span *ngIf="u.edad != null">{{ u.edad }} años</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-right">
+      <span class="status" [class.on]="u.habilitado">
+        {{ u.habilitado ? 'HABILITADO' : 'DESHABILITADO' }}
+      </span>
+      <div class="hero-actions">
+        <a routerLink="/usuarios" class="btn ghost ripple" aria-label="Volver">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          Volver
+        </a>
+        <button class="btn primary ripple" (click)="enviarMail()" [disabled]="!u.email">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 6l8 6 8-6M4 18h16V6H4v12z" />
+          </svg>
+          Mensaje
+        </button>
+        <button class="btn danger ripple" (click)="toggleHabilitado()">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          {{ u.habilitado ? 'Deshabilitar' : 'Habilitar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <section class="content-grid">
+    <!-- Información Personal -->
+    <article class="panel">
+      <header class="panel-h">
+        <h2>Información Personal</h2>
+      </header>
+      <div class="panel-b info">
+        <div class="info-row">
+          <span class="label">Nombre</span>
+          <span class="value">{{ nombreCompleto }}</span>
+        </div>
+        <div class="info-row" *ngIf="u.edad != null">
+          <span class="label">Edad</span>
+          <span class="value">{{ u.edad }} años</span>
+        </div>
+        <div class="info-row" *ngIf="u.dni">
+          <span class="label">DNI</span>
+          <span class="value">{{ u.dni }}</span>
+        </div>
+        <div class="info-row" *ngIf="u.bio">
+          <span class="label">Acerca</span>
+          <span class="value">{{ u.bio }}</span>
+        </div>
+      </div>
+    </article>
+
+    <!-- Información de Contacto -->
+    <article class="panel">
+      <header class="panel-h">
+        <h2>Información de Contacto</h2>
+      </header>
+      <div class="panel-b info">
+        <div class="info-row">
+          <span class="label">Email</span>
+          <a class="value email" *ngIf="u.email; else sinEmail" [href]="'mailto:' + u.email">{{ u.email }}</a>
+          <ng-template #sinEmail>
+            <span class="value muted">Sin email</span>
+          </ng-template>
+          <button class="icon-btn ripple" (click)="copiar(u.email)" [disabled]="!u.email" aria-label="Copiar email">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M8 7h10a2 2 0 012 2v9a2 2 0 01-2 2H8a2 2 0 01-2-2V9a2 2 0 012-2z" />
+              <path d="M16 3H6a2 2 0 00-2 2v9" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="info-row" *ngIf="u.telefono">
+          <span class="label">Teléfono</span>
+          <a class="value" [href]="'tel:' + u.telefono">{{ u.telefono }}</a>
+          <button class="icon-btn ripple" (click)="llamar()" aria-label="Llamar">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M22 16.92v3a2 2 0 01-2.18 2A19.8 19.8 0 013 5.18 2 2 0 015 3h3a2 2 0 012 1.72c.12.9.3 1.78.57 2.63a2 2 0 01-.45 2L9 10a16 16 0 007 7l.65-.74a2 2 0 012-.45c.85.27 1.73.45 2.63.57A2 2 0 0122 16.92z" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="info-row" *ngIf="u.direccion || u.ciudad">
+          <span class="label">Dirección</span>
+          <span class="value">
+            {{ u.direccion }}
+            <ng-container *ngIf="u.ciudad"> - {{ u.ciudad }}</ng-container>
+          </span>
+        </div>
+      </div>
+    </article>
+
+    <!-- Profesional / Cobertura -->
+    <article class="panel">
+      <header class="panel-h">
+        <h2>{{ u.rol === 'especialista' ? 'Información Profesional' : 'Cobertura' }}</h2>
+      </header>
+      <div class="panel-b info">
+        <ng-container *ngIf="u.rol === 'especialista'; else cobertura">
+          <div class="info-row">
+            <span class="label">Especialidades</span>
+            <span class="value chips-line" *ngIf="u.especialidades?.length; else sinEspecialidades">
+              <span class="chip sm" *ngFor="let e of u.especialidades">{{ e }}</span>
+            </span>
+            <ng-template #sinEspecialidades>
+              <span class="value muted">—</span>
+            </ng-template>
+          </div>
+        </ng-container>
+        <ng-template #cobertura>
+          <div class="info-row" *ngIf="u.obraSocial">
+            <span class="label">Obra social</span>
+            <span class="value tag">{{ u.obraSocial }}</span>
+          </div>
+        </ng-template>
+      </div>
+    </article>
+
+    <!-- Acciones rápidas -->
+    <article class="panel actions-panel">
+      <header class="panel-h">
+        <h2>Acciones rápidas</h2>
+      </header>
+      <div class="panel-b quick-actions">
+        <button class="btn primary ripple" (click)="descargarHistoria()">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          Descargar historia
+        </button>
+        <button class="btn ghost ripple" (click)="verTurnos()">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M8 7h8M7 11h10M6 15h12M6 19h12" />
+          </svg>
+          Ver turnos
+        </button>
+      </div>
+    </article>
+
+    <!-- Actividad reciente (mock) -->
+    <article class="panel span-2">
+      <header class="panel-h">
+        <h2>Actividad reciente</h2>
+      </header>
+      <div class="panel-b">
+        <ol class="timeline">
+          <li>
+            <div class="time">Hoy 10:42</div>
+            <div class="event">Actualizó su foto de perfil</div>
+          </li>
+          <li>
+            <div class="time">Ayer 18:20</div>
+            <div class="event">Inicio de sesión exitoso</div>
+          </li>
+          <li>
+            <div class="time">08/11 09:10</div>
+            <div class="event">Descargó reporte de turnos</div>
+          </li>
+        </ol>
+      </div>
+    </article>
+  </section>
+
+  <!-- Fallbacks -->
+  <ng-template #sinEmail><span class="value muted">Sin email</span></ng-template>
+</div>
+
+
+
+
+
+<!-- <div class="profile-page" [@pageIn]>
   <div class="hero-content glass">
     <div class="hero-left">
       <div class="avatar" [class.has-img]="usuario.avatarUrl">
@@ -104,7 +316,7 @@
       </div>
     </article>
 
-    <!--    Profesional / Obra social  -->
+     Profesional / Obra social  
     <article class="panel">
       <header class="panel-h">
         <h2>{{ usuario.rol === 'especialista' ? 'Información Profesional' : 'Cobertura' }}</h2>
@@ -147,7 +359,7 @@
       </div>
     </article>
 
-    <!-- TIEMPO -->
+     TIEMPO 
     <article class="panel span-2">
       <header class="panel-h">
         <h2>Actividad reciente</h2>
@@ -171,4 +383,4 @@
     </article>
 
   </section>
-</div>
+</div> -->

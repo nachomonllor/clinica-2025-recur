@@ -2,24 +2,49 @@ import { Observable } from "rxjs";
 import { Rol } from "./perfil.model";
 import { UUID } from "./admin.model";
 
+// export interface UsuarioPerfil {
+//   id: string;
+//   nombre: string;
+//   apellido: string;
+//   rol: Rol;
+//   edad?: number;
+//   dni?: string;
+//   email: string;
+//   telefono?: string;
+//   direccion?: string;
+//   ciudad?: string;
+//   obraSocial?: string;             // pacientes
+//   especialidades?: string[];       // especialistas
+//   habilitado: boolean;
+//   avatarUrl?: string;
+//   bannerUrl?: string;
+//   bio?: string;
+// }
+
+// src/app/models/usuario.model.ts
 export interface UsuarioPerfil {
   id: string;
   nombre: string;
   apellido: string;
-  rol: Rol;
+  rol: 'paciente' | 'especialista' | 'admin' | string;
   edad?: number;
   dni?: string;
   email: string;
-  telefono?: string;
-  direccion?: string;
-  ciudad?: string;
-  obraSocial?: string;             // pacientes
-  especialidades?: string[];       // especialistas
+
+  telefono?: string | null;
+  direccion?: string | null;
+  ciudad?: string | null;
+  obraSocial?: string | null;
+
+  especialidades?: string[];
   habilitado: boolean;
-  avatarUrl?: string;
-  bannerUrl?: string;
+
+  avatarUrl?: string | null;
+  bannerUrl?: string | null;
   bio?: string;
 }
+
+
 
 export interface UsuarioDisplay {
   id: string;
