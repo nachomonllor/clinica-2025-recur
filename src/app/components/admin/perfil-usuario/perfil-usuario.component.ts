@@ -37,7 +37,7 @@ type EspecialistaRowLite = Partial<{
 @Component({
   selector: 'app-perfil-usuario',
   standalone: true,
-  imports: [CommonModule, RouterModule, InicialesPipe   ],
+  imports: [CommonModule, RouterModule, InicialesPipe],
   templateUrl: './perfil-usuario.component.html',
   styleUrls: ['./perfil-usuario.component.scss'],
   animations: [
