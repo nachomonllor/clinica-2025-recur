@@ -161,7 +161,7 @@ export class MainNavComponent implements OnInit, OnDestroy {
         return [
           { label: 'Turnos', route: '/turnos-admin', icon: 'calendar_month' },
           { label: 'Usuarios', route: '/usuarios-admin', icon: 'supervisor_account' },
-          { label: 'Solicitar turno', route: '/solicitar-turno', icon: 'add_circle' },
+         // { label: 'Solicitar turno', route: '/solicitar-turno', icon: 'add_circle' },
 
          // { label: 'Estadísticas', route: '/estadisticas', icon: 'insights' },
           { label: 'Estadísticas', route: 'seleccion-estadisticas', icon: 'insights'},

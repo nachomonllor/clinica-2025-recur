@@ -17,6 +17,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { QuickAccessUser, QuickLoginsConfig } from '../../../models/nav.models';
 import { Rol } from '../../../models/perfil.model';
 import { SupabaseService } from '../../../services/supabase.service';
+import { LogIngresosService } from '../../../services/log-ingresos.service';
 
 @Component({
   selector: 'app-login',
@@ -45,7 +46,9 @@ export class LoginComponent implements OnInit {
     private fb: FormBuilder,
     private supa: SupabaseService,
     private router: Router,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private logIngresos: LogIngresosService
+
   ) { }
 
   // /// ------------------- CAPTCHA ------------------
