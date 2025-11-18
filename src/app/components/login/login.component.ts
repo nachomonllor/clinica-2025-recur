@@ -75,6 +75,55 @@ export class LoginComponent implements OnInit {
 
   // // -----------------------------------------
 
+
+  async onSubmit(): Promise<void> {
+    return this.iniciarSesion();
+  }
+
+
+  // async onSubmit(): Promise<void> {
+  //   this.loading = true;
+  //   const supabase = this.supa.client;
+
+  //   try {
+  //     const { data, error } = await supabase.auth.signInWithPassword({
+  //       email: this.fb.value.email!,
+  //       password: this.fb.value.password!
+  //     });
+
+  //     if (error || !data.user) {
+  //       throw error || new Error('No se pudo iniciar sesión');
+  //     }
+
+  //     const user = data.user;
+  //     const md: any = user.user_metadata || {};
+
+  //     // 👇 Fallback: garantiza que exista fila en `perfiles`
+  //     await supabase
+  //       .from('perfiles')
+  //       .upsert({
+  //         id: user.id,
+  //         rol: md.rol || 'paciente',
+  //         nombre: md.nombre || null,
+  //         apellido: md.apellido || null,
+  //         dni: md.dni || null,
+  //         fecha_nacimiento: md.fecha_nacimiento || null,
+  //         obra_social: md.obra_social || null,
+  //         aprobado: md.rol === 'paciente' ? true : false
+  //       }, { onConflict: 'id' });
+
+  //     // ... acá ya seguís con tu lógica normal:
+  //     // redireccionar según rol, etc.
+
+  //   } catch (err: any) {
+  //     console.error('[Login] Error', err);
+  //     Swal.fire('Error', err.message || 'No se pudo iniciar sesión', 'error');
+  //   } finally {
+  //     this.loading = false;
+  //   }
+  // }
+
+
   ngOnInit(): void {
     this.formularioLogin = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -242,7 +291,7 @@ export class LoginComponent implements OnInit {
       }
 
       //REGISTRO EL INGRESO
-       await this.logIngresos.registrarIngreso();
+      await this.logIngresos.registrarIngreso();
 
 
       // Redirigir según el rol
