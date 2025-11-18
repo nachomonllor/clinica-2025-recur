@@ -24,7 +24,7 @@ export const routes: Routes = [
   { path: 'reportes', component: ReportesComponent},
 
   // Auth / público
-  { path: 'login-paciente',
+  { path: 'login',
     loadComponent: () => import('./components/login/login.component')
       .then(m => m.LoginComponent),
     data: { animation: 'login' } 

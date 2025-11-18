@@ -1,7 +1,7 @@
 
 import { Component, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Router } from '@angular/router';
+import { RouterModule, Router, RouterLink } from '@angular/router';
 
 // Angular Material
 import { MatButtonModule } from '@angular/material/button';
@@ -18,6 +18,7 @@ import { SupabaseService } from '../../../services/supabase.service';
   standalone: true,
   imports: [
     CommonModule, RouterModule,
+    RouterLink,
     MatButtonModule, MatIconModule, 
     MatCardModule, MatTooltipModule,
   ],

@@ -1,121 +1,99 @@
+<!-- HERO con buscador inline -->
+<div class="hero-left">
+    <h2>Mis turnos (Especialista)</h2>
+    <p>Gestioná solicitudes, confirmá, rechazá o finalizá con historia clínica.</p>
+</div>
 
-  <!-- HERO con buscador inline -->
-  <!-- <header class="hero hero--inline">
-    <div class="hero-left">
-      <h2>Mis turnos (Especialista)</h2>
-      <p>Gestioná solicitudes, confirmá, rechazá o finalizá con historia clínica.</p>
-    </div>
-
-    <div class="hero-right">
-      <mat-form-field appearance="outline" class="toolbar__filtro">
+<div class="hero-right">
+    <mat-form-field appearance="outline" class="toolbar__filtro">
         <mat-label>Buscar</mat-label>
-        <input
-          matInput
-          #f
-          (input)="applyFilter(f.value)"
-          placeholder="Paciente, especialidad, estado o términos de la historia clínica" />
-      </mat-form-field>
+        <input matInput #f (input)="applyFilter(f.value)"
+            placeholder="Paciente, especialidad, estado o términos de la historia clínica" />
+    </mat-form-field>
 
-      <span class="toolbar__count" *ngIf="turnos.length">{{ turnos.length }} turno(s)</span>
-    </div>
-  </header> -->
+    <span class="toolbar__count" *ngIf="turnos.length">{{ turnos.length }} turno(s)</span>
+</div>
 
-  <!-- LISTA DE CARDS -->
-  <section class="lista" *ngIf="turnos.length; else sinTurnos">
-    <article
-      class="turno-card"
-      *ngFor="let t of turnos"
-      [class.aceptado]="t.estado==='aceptado'"
-      [class.realizado]="t.estado==='realizado'"
-      [class.pendiente]="t.estado==='pendiente'"
-      [class.rechazado]="t.estado==='rechazado'"
-      [class.cancelado]="t.estado==='cancelado'">
+<!-- LISTA DE CARDS -->
+<section class="lista" *ngIf="turnos.length; else sinTurnos">
+    <article class="turno-card" *ngFor="let t of turnos" [class.aceptado]="t.estado==='aceptado'"
+        [class.realizado]="t.estado==='realizado'" [class.pendiente]="t.estado==='pendiente'"
+        [class.rechazado]="t.estado==='rechazado'" [class.cancelado]="t.estado==='cancelado'">
 
-      <div class="card-header">
-        <div class="fecha-hora">
-          <!-- Si tu 'fecha' es string, lo muestro directo para evitar pipe inválido -->
-          <div class="fecha">{{ t.fecha }}</div>
-          <div class="hora">{{ t.hora }}</div>
+        <div class="card-header">
+            <div class="fecha-hora">
+                <!-- Si tu 'fecha' es string, lo muestro directo para evitar pipe inválido -->
+                <div class="fecha">{{ t.fecha }}</div>
+                <div class="hora">{{ t.hora }}</div>
+            </div>
+
+            <span class="estado-chip" [appStatusBadge]="t.estado">
+                {{ t.estado | statusLabel }}
+            </span>
         </div>
 
-        <span class="estado-chip" [appStatusBadge]="t.estado">
-          {{ t.estado | statusLabel }}
-        </span>
-      </div>
+        <div class="card-body">
+            <div class="linea">
+                <span class="label">Paciente</span>
+                <span class="valor">{{ t.paciente }}</span>
+            </div>
+            <div class="linea">
+                <span class="label">Especialidad</span>
+                <span class="valor">{{ t.especialidad }}</span>
+            </div>
+            <div class="linea" *ngIf="t.resena">
+                <span class="label">Reseña</span>
+                <span class="valor">{{ t.resena }}</span>
+            </div>
+        </div>
 
-      <div class="card-body">
-        <div class="linea">
-          <span class="label">Paciente</span>
-          <span class="valor">{{ t.paciente }}</span>
-        </div>
-        <div class="linea">
-          <span class="label">Especialidad</span>
-          <span class="valor">{{ t.especialidad }}</span>
-        </div>
-        <div class="linea" *ngIf="t.resena">
-          <span class="label">Reseña</span>
-          <span class="valor">{{ t.resena }}</span>
-        </div>
-      </div>
-
-      <div class="card-actions">
-        <!-- Aceptar -->
-        <button mat-icon-button color="primary"
-                *ngIf="puedeAceptar(t)"
-                (click)="aceptarTurno(t)"
+        <div class="card-actions">
+            <!-- Aceptar -->
+            <button mat-icon-button color="primary" *ngIf="puedeAceptar(t)" (click)="aceptarTurno(t)"
                 matTooltip="Aceptar turno">
-          <mat-icon>check_circle</mat-icon>
-        </button>
+                <mat-icon>check_circle</mat-icon>
+            </button>
 
-        <!-- Rechazar -->
-        <button mat-icon-button color="warn"
-                *ngIf="puedeRechazar(t)"
-                (click)="rechazarTurno(t)"
+            <!-- Rechazar -->
+            <button mat-icon-button color="warn" *ngIf="puedeRechazar(t)" (click)="rechazarTurno(t)"
                 matTooltip="Rechazar turno">
-          <mat-icon>block</mat-icon>
-        </button>
+                <mat-icon>block</mat-icon>
+            </button>
 
-        <!-- Cancelar -->
-        <button mat-icon-button color="warn"
-                *ngIf="puedeCancelar(t)"
-                (click)="cancelarTurno(t)"
+            <!-- Cancelar -->
+            <button mat-icon-button color="warn" *ngIf="puedeCancelar(t)" (click)="cancelarTurno(t)"
                 matTooltip="Cancelar turno">
-          <mat-icon>cancel</mat-icon>
-        </button>
+                <mat-icon>cancel</mat-icon>
+            </button>
 
-        <!-- Finalizar (Historia Clínica) -->
-        <button mat-icon-button color="accent"
-                *ngIf="puedeFinalizar(t)"
-                (click)="finalizarTurno(t)"
+            <!-- Finalizar (Historia Clínica) -->
+            <button mat-icon-button color="accent" *ngIf="puedeFinalizar(t)" (click)="finalizarTurno(t)"
                 matTooltip="Finalizar turno (Historia clínica)">
-          <mat-icon>event_available</mat-icon>
-        </button>
+                <mat-icon>event_available</mat-icon>
+            </button>
 
-        <!-- Ver reseña -->
-        <button mat-icon-button color="primary"
-                *ngIf="puedeVerResena(t)"
-                (click)="verResena(t)"
+            <!-- Ver reseña -->
+            <button mat-icon-button color="primary" *ngIf="puedeVerResena(t)" (click)="verResena(t)"
                 matTooltip="Ver reseña">
-          <mat-icon>visibility</mat-icon>
-        </button>
-      </div>
+                <mat-icon>visibility</mat-icon>
+            </button>
+        </div>
     </article>
-  </section>
+</section>
 
-
-  
 
 <ng-template #sinTurnos>
-  <div class="empty">
-    <p>No se encontraron turnos.</p>
-  </div>
-</ng-template >
+    <div class="empty">
+        <p>No se encontraron turnos.</p>
+    </div>
+</ng-template>
 
 
 
 
 
-<mat-card class="mis-turnos-container" appElevateOnHover>
+<!-- TABLA CON ANGULAR MATERIAL -->
+<!-- <mat-card class="mis-turnos-container" appElevateOnHover>
     <mat-card-header>
         <mat-card-title>Mis Turnos (Especialista)</mat-card-title>
     </mat-card-header >
@@ -132,45 +110,36 @@
         </mat-form-field>
     </div>
 
-    <!-- tabla -->
+     tabla 
     <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
 
-        <!-- ID -->
+         ID 
         <ng-container matColumnDef="id">
             <th mat-header-cell *matHeaderCellDef> ID </th>
             <td mat-cell *matCellDef="let t"> {{ t.id }} </td>
         </ng-container>
 
-        <!-- Fecha -->
+         Fecha 
         <ng-container matColumnDef="fecha">
             <th mat-header-cell *matHeaderCellDef> Fecha </th>
-            <!-- td mat-cell *matCellDef="let t"> {{ t.fecha | date:'dd/MM/yyyy' }} </td -->
 
              <td mat-cell *matCellDef="let t"> {{ t.fecha }} </td>
         </ng-container>
 
        
-        <!-- Hora -->
+         Hora 
         <ng-container matColumnDef="hora">
             <th mat-header-cell *matHeaderCellDef> Hora </th>
             <td mat-cell *matCellDef="let t"> {{ t.hora }} </td>
         </ng-container>
 
-        <!-- Especialidad -->
+         Especialidad 
         <ng-container matColumnDef="especialidad">
             <th mat-header-cell *matHeaderCellDef> Especialidad </th>
             <td mat-cell *matCellDef="let t"> {{ t.especialidad }} </td>
         </ng-container>
 
-        <!-- Paciente -->
-        <!-- <ng-container matColumnDef="paciente">
-            <th mat-header-cell *matHeaderCellDef> Paciente </th>
-            <td mat-cell *matCellDef="let t">
-                {{ t.pacienteNombre }} (ID: {{ t.pacienteId }})
-            </td>
-        </ng-container> -->
-        <!-- mis-turnos-especialista.component.html -->
-
+        Paciente 
         <ng-container matColumnDef="paciente">
             <th mat-header-cell *matHeaderCellDef> Paciente </th>
             <td mat-cell *matCellDef="let t">
@@ -178,7 +147,7 @@
             </td>
         </ng-container>
 
-        <!-- Estado -->
+         Estado 
         <ng-container matColumnDef="estado">
             <th mat-header-cell *matHeaderCellDef> Estado </th>
             <td mat-cell *matCellDef="let t">
@@ -188,32 +157,32 @@
             </td>
         </ng-container>
 
-        <!-- Acciones -->
+         Acciones 
         <ng-container matColumnDef="acciones">
             <th mat-header-cell *matHeaderCellDef> Acciones </th>
             <td mat-cell *matCellDef="let t">
-                <!-- Aceptar: Solo visible si no está Aceptado, Realizado, Cancelado o Rechazado -->
+                 Aceptar: Solo visible si no está Aceptado, Realizado, Cancelado o Rechazado 
                 <button mat-icon-button color="primary"
                     *ngIf="puedeAceptar(t)"
                     (click)="aceptarTurno(t)" matTooltip="Aceptar turno">
                     <mat-icon>check_circle</mat-icon>
                 </button>
 
-                <!-- Rechazar: Solo visible si no está Aceptado, Realizado o Cancelado -->
+                 Rechazar: Solo visible si no está Aceptado, Realizado o Cancelado 
                 <button mat-icon-button color="warn"
                     *ngIf="puedeRechazar(t)"
                     (click)="rechazarTurno(t)" matTooltip="Rechazar turno">
                     <mat-icon>block</mat-icon>
                 </button>
 
-                <!-- Cancelar: Solo visible si no está Aceptado, Realizado o Rechazado -->
+                 Cancelar: Solo visible si no está Aceptado, Realizado o Rechazado 
                 <button mat-icon-button color="warn"
                     *ngIf="puedeCancelar(t)"
                     (click)="cancelarTurno(t)" matTooltip="Cancelar turno">
                     <mat-icon>cancel</mat-icon>
                 </button>
 
-                <!-- Finalizar: Solo visible si fue Aceptado -->
+                Finalizar: Solo visible si fue Aceptado 
                 <button mat-icon-button color="accent" 
                     *ngIf="puedeFinalizar(t)" 
                     (click)="finalizarTurno(t)"
@@ -221,7 +190,7 @@
                     <mat-icon>event_available</mat-icon>
                 </button>
 
-                <!-- Ver reseña: Solo visible si tiene reseña -->
+                 Ver reseña: Solo visible si tiene reseña 
                 <button mat-icon-button color="primary" 
                     *ngIf="puedeVerResena(t)" 
                     (click)="verResena(t)" 
@@ -231,7 +200,7 @@
             </td>
         </ng-container>
 
-        <!-- filas -->
+         filas 
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
@@ -241,7 +210,7 @@
     </p>
 </mat-card>
 
-<!-- Diálogo de confirmación -->
+ Diálogo de confirmación 
 <ng-template #confirmDialog let-data>
     <h2 mat-dialog-title>Confirmar</h2>
     <mat-dialog-content>{{ data.message }}</mat-dialog-content>
@@ -253,7 +222,7 @@
     </mat-dialog-actions>
 </ng-template>
 
-<!-- Diálogo de rechazo con comentario -->
+ Diálogo de rechazo con comentario 
 <ng-template #rechazarDialog let-data>
     <h2 mat-dialog-title>Rechazar Turno</h2>
     <mat-dialog-content>
@@ -286,7 +255,7 @@
     </mat-dialog-actions>
 </ng-template>
 
-<!-- Diálogo de cancelación con comentario -->
+ Diálogo de cancelación con comentario 
 <ng-template #cancelarDialog let-data>
     <h2 mat-dialog-title>Cancelar Turno</h2>
     <mat-dialog-content>
@@ -319,7 +288,7 @@
     </mat-dialog-actions>
 </ng-template>
 
-<!-- Diálogo de Historia Clínica -->
+Diálogo de Historia Clínica 
 <ng-template #historiaClinicaDialog let-data>
     <h2 mat-dialog-title>Historia Clínica - Finalizar Turno</h2>
     <mat-dialog-content>
@@ -328,7 +297,7 @@
         <p><strong>Fecha:</strong> {{ data?.turno?.fecha }} a las {{ data?.turno?.hora }}</p>
         
         <form [formGroup]="data?.form" style="margin-top: 16px;">
-            <!-- Datos fijos -->
+            Datos fijos 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
                 <mat-form-field appearance="outline">
                     <mat-label>Altura (cm)</mat-label>
@@ -372,7 +341,7 @@
                 </mat-form-field>
             </div>
 
-            <!-- Datos dinámicos -->
+             Datos dinámicos 
             <div style="margin-top: 24px; display: grid; gap: 20px;">
                 <div>
                     <h3 style="margin-bottom: 12px;">Indicadores adicionales</h3>
@@ -418,4 +387,4 @@
             Guardar Historia Clínica
         </button>
     </mat-dialog-actions>
-</ng-template>
+</ng-template> -->
