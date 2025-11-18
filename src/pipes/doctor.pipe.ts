@@ -1,11 +1,10 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-type PersonLike = {
-  nombre?: string | null;
-  apellido?: string | null;
-  rol?: string | null; // 'especialista' | 'paciente' | 'admin' | ...
-};
-
+/**
+ * Agrega "Dr." al nombre completo SOLO si el rol es 'especialista'.
+ * Acepta un objeto con { nombre, apellido, rol } o un string (nombre completo).
+ * Si recibe string y no puede conocer el rol, NO agrega prefijo (presenta tal cual).
+ */
 @Pipe({
   name: 'doctor',
   standalone: true,
@@ -13,41 +12,28 @@ type PersonLike = {
 })
 export class DoctorPipe implements PipeTransform {
 
-  /**
-   * value: puede ser objeto {nombre, apellido, rol} o un string con el nombre completo
-   * genero: 'm' → Dr., 'f' → Dra., undefined → Dr. (default)
-   * soloSiEspecialista: true por defecto; si es false, aplica el prefijo siempre
-   */
   transform(
-    value: PersonLike | string | null | undefined,
-    genero: 'm' | 'f' | null = null,
-    soloSiEspecialista: boolean = true
+    value: string | Partial<{ nombre: string; apellido: string; rol?: string }> | null | undefined
   ): string {
     if (value == null) return '';
 
-    const prefix = genero === 'f' ? 'Dra.' : 'Dr.';
+    const isObj = typeof value === 'object';
+    const rol = isObj ? (value as any).rol as string | undefined : undefined;
 
-    if (typeof value === 'object') {
-      const rol = (value.rol ?? '').toLowerCase();
-      const nombre = (value.nombre ?? '').trim();
-      const apellido = (value.apellido ?? '').trim();
-      const full = `${nombre} ${apellido}`.trim();
+    // Construir el nombre completo
+    const fullName = isObj
+      ? [ (value as any).nombre, (value as any).apellido ].filter(Boolean).join(' ').trim()
+      : String(value).trim();
 
-      if (!full) return ''; // si no hay nombre no forzamos "Dr. " suelto
-      if (soloSiEspecialista && rol !== 'especialista') return full;
+    if (!fullName) return '';
 
-      return this.addPrefix(full, prefix);
-    }
+    // Solo especialistas → prefijo
+    const isEspecialista = (rol ?? '').toLowerCase() === 'especialista';
+    if (!isEspecialista) return fullName;
 
-    // value es string (nombre completo)
-    const full = (value ?? '').toString().trim();
-    if (!full) return '';
-    return this.addPrefix(full, prefix);
-  }
+    // Evita duplicar si ya trae Dr./Dra.
+    if (/^\s*(dr\.|dra\.)\s+/i.test(fullName)) return fullName;
 
-  private addPrefix(name: string, prefix: string): string {
-    // Evita duplicar: si ya empieza con Dr/Dra (con o sin punto), no agrega.
-    if (/^\s*(dr\.?|dra\.?)\s+/i.test(name)) return name;
-    return `${prefix} ${name}`.trim();
+    return `Dr. ${fullName}`;
   }
 }

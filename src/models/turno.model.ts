@@ -36,7 +36,7 @@ export type EstadoTurno =
   | 'rechazado'
   | 'cancelado';
 
-// Alias de compat si lo usás
+// ALIAS DE COMPATIBILIDAD
 export type TurnoEstado = EstadoTurno;
 
 
@@ -52,7 +52,6 @@ export interface TurnoDto {
   encuesta?: boolean;
   calificacion?: number;
 }
-
 
 /** Estructura tal como viene de la BD (tabla 'turnos') */
 export interface TurnoRow {
