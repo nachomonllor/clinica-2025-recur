@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { from, Observable, of } from 'rxjs';
 import { map, catchError, tap } from 'rxjs/operators';
-import { SupabaseService } from './supabase.service';          // 👈 ajustá la ruta si hace falta
-import { LogIngreso } from '../models/log.model';              // 👈 idem
+import { SupabaseService } from './supabase.service';          
+import { LogIngreso } from '../models/log.model';            
 
 type LogRow = {
     email: string | null;
