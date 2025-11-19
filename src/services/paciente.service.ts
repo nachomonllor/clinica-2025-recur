@@ -40,14 +40,70 @@ export class PacienteService {
     return this.http.get<HistoriaClinica>(`/api/historias/${pacienteId}`);
   }
 
+  // // PacienteService.getPacientes()
+  // return from(
+  //   this.supa
+  //     .from('pacientes')
+  //     .select(`
+  //       id,
+  //       dni,
+  //       obra_social,
+  //       fecha_nacimiento,
+  //       perfil:perfiles (nombre, apellido, email, avatar_url, imagen2_url)
+  //     `)
+  //     .order('perfil.apellido', { ascending: true })
+  // ).pipe( /* map a tu modelo */ );
+
+
   // src/services/paciente.service.ts
+  // getPacientes() {
+  //   return from(
+  //     this.supa
+  //       .from('perfiles')
+  //       .select('id, nombre, apellido, email, obra_social, avatar_url, imagen2_url, fecha_nacimiento, dni')
+  //       .eq('rol', 'paciente')
+  //       .order('apellido', { ascending: true })
+  //   ).pipe(
+  //     map(({ data, error }) => {
+  //       if (error) throw error;
+
+  //       const calcEdad = (iso?: string | null) => {
+  //         if (!iso) return undefined;
+  //         const d = new Date(iso);
+  //         const diff = Date.now() - d.getTime();
+  //         const ageDate = new Date(diff);
+  //         return Math.abs(ageDate.getUTCFullYear() - 1970);
+  //       };
+
+  //       return (data || []).map((r: any) => ({
+  //         id: r.id,
+  //         avatarUrl: r.avatar_url ?? '',
+  //         nombre: r.nombre ?? '',
+  //         apellido: r.apellido ?? '',
+  //         edad: calcEdad(r.fecha_nacimiento),
+  //         dni: r.dni ?? '',
+  //         obraSocial: r.obra_social ?? '',
+  //         email: r.email ?? '',
+  //         password: '',
+  //         imagenPerfil1: r.avatar_url ?? '',
+  //         imagenPerfil2: r.imagen2_url ?? ''
+  //       })) as Paciente[];
+
+  //     })
+  //   );
+  // }
+
+  // Dentro de src/services/paciente.service.ts, reemplaza ÚNICAMENTE getPacientes()
+
   getPacientes() {
     return from(
       this.supa
-        .from('perfiles')
-        .select('id, nombre, apellido, email, obra_social, avatar_url, imagen2_url, fecha_nacimiento, dni')
-        .eq('rol', 'paciente')
-        .order('apellido', { ascending: true })
+        .from('pacientes')
+        .select(`
+        id, dni, obra_social, fecha_nacimiento,
+        perfil:perfiles ( id, nombre, apellido, email, avatar_url, imagen2_url )
+      `)
+        .order('id', { ascending: true })
     ).pipe(
       map(({ data, error }) => {
         if (error) throw error;
@@ -62,20 +118,23 @@ export class PacienteService {
 
         return (data || []).map((r: any) => ({
           id: r.id,
-          avatarUrl: r.avatar_url ?? '',
-          nombre: r.nombre ?? '',
-          apellido: r.apellido ?? '',
+          avatarUrl: r.perfil?.avatar_url ?? '',
+          nombre: r.perfil?.nombre ?? '',
+          apellido: r.perfil?.apellido ?? '',
           edad: calcEdad(r.fecha_nacimiento),
           dni: r.dni ?? '',
           obraSocial: r.obra_social ?? '',
-          email: r.email ?? '',
+          email: r.perfil?.email ?? '',
           password: '',
-          imagenPerfil1: r.avatar_url ?? '',
-          imagenPerfil2: r.imagen2_url ?? ''
+          imagenPerfil1: r.perfil?.avatar_url ?? '',
+          imagenPerfil2: r.perfil?.imagen2_url ?? ''
         })) as Paciente[];
       })
     );
   }
+
+
+
 
 
 }

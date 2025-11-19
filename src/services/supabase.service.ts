@@ -16,9 +16,10 @@ import type { PerfilInsert, PerfilRow } from '../models/perfil.model';
 import { environment } from '../environments/environment';
 
 /** Evitar múltiples instancias en dev/HMR */
-declare global {
-  interface Window { __supabaseClinica__: SupabaseClient | undefined }
-}
+
+// declare global {
+//   interface Window { __supabaseClinica__: SupabaseClient | undefined }
+// }
 
 @Injectable({ providedIn: 'root' })
 export class SupabaseService {
@@ -40,7 +41,7 @@ export class SupabaseService {
       },
     });
 
-    window.__supabaseClinica__ = this._client;
+   // window.__supabaseClinica__ = this._client;
 
   }
 

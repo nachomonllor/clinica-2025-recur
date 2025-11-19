@@ -142,13 +142,6 @@ export type TurnoUI = TurnoVM & {
   patologiasText: string; // texto indexable desde historia clínica
 };
 
-// export type TurnoUI = TurnoVM & {
-//   paciente: string;
-//   especialista: string;
-//   patologiasText: string; // sin repetir fecha/hora
-// };
-
-
 export interface TurnoSupabase {
   id: string;
   fecha_iso: string | null;

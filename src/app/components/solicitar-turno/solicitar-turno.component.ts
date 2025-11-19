@@ -15,19 +15,6 @@ import { MatIconModule } from "@angular/material/icon";
 import { EspecialistaOption } from '../../../models/especialista.model';
 import { PacienteOption } from '../../../models/paciente.model';
 
-// interface EspecialistaOption {
-//   id: string;
-//   nombre: string;
-//   apellido: string;
-//   especialidad: string;
-// }
-
-// interface PacienteOption {
-//   id: string;
-//   nombre: string;
-//   apellido: string;
-// }
-
 @Component({
   selector: 'app-solicitar-turno',
   standalone: true,
@@ -98,6 +85,10 @@ export class SolicitarTurnoComponent implements OnInit {
     this.generarDiasDisponibles();
     this.formularioInicializado = true;
   }
+
+
+
+
 
   inicializarFormularioBasico(): void {
     // Formulario básico para evitar errores de renderizado
@@ -197,104 +188,170 @@ export class SolicitarTurnoComponent implements OnInit {
     }
   }
 
+  // async cargarEspecialidades(): Promise<void> {
+  //   try {
+  //     // Obtener IDs de especialistas aprobados
+  //     const { data: perfilesData, error: perfilesError } = await this.supa.client
+  //       .from('perfiles')
+  //       .select('id')
+  //       .eq('rol', 'especialista')
+  //       .eq('aprobado', true);
+
+  //     if (perfilesError) {
+  //       throw perfilesError;
+  //     }
+
+  //     const idsAprobados = (perfilesData || []).map((p: any) => p.id);
+  //     console.log('[SolicitarTurno] IDs de especialistas aprobados:', idsAprobados);
+  //     console.log('[SolicitarTurno] Cantidad de IDs:', idsAprobados.length);
+
+  //     if (idsAprobados.length === 0) {
+  //       console.warn('[SolicitarTurno] No hay especialistas aprobados en perfiles');
+  //       this.especialidades = [];
+  //       this.especialistas = [];
+  //       this.especialistasFiltrados = [];
+  //       this.snackBar.open('No hay especialistas disponibles. Un administrador debe aprobar las cuentas primero.', 'Cerrar', { duration: 4000 });
+  //       return;
+  //     }
+
+  //     // Obtener datos de especialistas
+  //     console.log('[SolicitarTurno] Consultando especialistas con IDs:', idsAprobados);
+  //     const { data: especialistasData, error: especialistasError } = await this.supa.client
+  //       .from('especialistas')
+  //       .select('id, nombre, apellido, especialidad')
+  //       .in('id', idsAprobados);
+
+  //     console.log('[SolicitarTurno] Respuesta de especialistas:', { data: especialistasData, error: especialistasError });
+
+  //     if (especialistasError) {
+  //       console.error('[SolicitarTurno] Error al consultar especialistas:', especialistasError);
+  //       throw especialistasError;
+  //     }
+
+  //     console.log('[SolicitarTurno] Especialistas encontrados en BD:', especialistasData?.length || 0);
+  //     console.log('[SolicitarTurno] Datos completos:', especialistasData);
+
+  //     if (!especialistasData || especialistasData.length === 0) {
+  //       console.warn('[SolicitarTurno] No se encontraron especialistas en la tabla especialistas');
+  //       this.especialidades = [];
+  //       this.especialistas = [];
+  //       this.especialistasFiltrados = [];
+  //       this.snackBar.open('No hay especialistas disponibles', 'Cerrar', { duration: 3000 });
+  //       return;
+  //     }
+
+  //     // Obtener especialidades únicas
+  //     const especialidadesSet = new Set<string>();
+  //     const especialistasList: EspecialistaOption[] = [];
+  //     const especialistasSinEspecialidad: any[] = [];
+
+  //     especialistasData.forEach((e: any) => {
+  //       if (e.especialidad && e.especialidad.trim() !== '') {
+  //         especialidadesSet.add(e.especialidad);
+  //         especialistasList.push({
+  //           id: e.id,
+  //           nombre: e.nombre || '',
+  //           apellido: e.apellido || '',
+  //           especialidad: e.especialidad
+  //         });
+  //       } else {
+  //         especialistasSinEspecialidad.push(e);
+  //         console.warn(`[SolicitarTurno] Especialista ${e.nombre} ${e.apellido} (${e.id}) no tiene especialidad asignada`);
+  //       }
+  //     });
+
+  //     if (especialistasSinEspecialidad.length > 0) {
+  //       console.warn(`[SolicitarTurno] ${especialistasSinEspecialidad.length} especialistas sin especialidad asignada`);
+  //     }
+
+  //     this.especialidades = Array.from(especialidadesSet).sort();
+  //     this.especialistas = especialistasList;
+  //     this.especialistasFiltrados = []; // Inicializar vacío hasta que se seleccione una especialidad
+
+  //     console.log('[SolicitarTurno] Especialidades únicas cargadas:', this.especialidades);
+  //     console.log('[SolicitarTurno] Total especialistas con especialidad:', this.especialistas.length);
+
+  //     if (this.especialidades.length === 0) {
+  //       this.snackBar.open('Los especialistas aprobados no tienen especialidad asignada', 'Cerrar', { duration: 4000 });
+  //     }
+  //   } catch (e: any) {
+  //     console.error('[SolicitarTurno] Error al cargar especialidades', e);
+  //     this.especialidades = [];
+  //     this.especialistas = [];
+  //     this.especialistasFiltrados = [];
+  //     this.snackBar.open(
+  //       `Error al cargar especialidades: ${e.message || 'Error desconocido'}`,
+  //       'Cerrar',
+  //       { duration: 4000 }
+  //     );
+  //   }
+  // }
+
+
   async cargarEspecialidades(): Promise<void> {
     try {
-      // Obtener IDs de especialistas aprobados
-      const { data: perfilesData, error: perfilesError } = await this.supa.client
-        .from('perfiles')
-        .select('id')
-        .eq('rol', 'especialista')
-        .eq('aprobado', true);
+      // 1) Catálogo canónico de especialidades
+      const { data: cat, error: catErr } = await this.supa.client
+        .from('especialidades_catalogo')
+        .select('id, nombre')
+        .order('nombre', { ascending: true });
 
-      if (perfilesError) {
-        throw perfilesError;
+      if (catErr) throw catErr;
+
+      // Si el catálogo está vacío, fallback: tomar "distinct" de turnos.especialidad
+      if (!cat || cat.length === 0) {
+        const { data: t } = await this.supa.client
+          .from('turnos')
+          .select('especialidad')
+          .not('especialidad', 'is', null);
+
+        const unicas = Array.from(new Set((t ?? []).map(x => String(x.especialidad)))).sort();
+        this.especialidades = unicas;
+      } else {
+        this.especialidades = cat.map(x => String(x.nombre));
       }
 
-      const idsAprobados = (perfilesData || []).map((p: any) => p.id);
-      console.log('[SolicitarTurno] IDs de especialistas aprobados:', idsAprobados);
-      console.log('[SolicitarTurno] Cantidad de IDs:', idsAprobados.length);
-
-      if (idsAprobados.length === 0) {
-        console.warn('[SolicitarTurno] No hay especialistas aprobados en perfiles');
-        this.especialidades = [];
-        this.especialistas = [];
-        this.especialistasFiltrados = [];
-        this.snackBar.open('No hay especialistas disponibles. Un administrador debe aprobar las cuentas primero.', 'Cerrar', { duration: 4000 });
-        return;
-      }
-
-      // Obtener datos de especialistas
-      console.log('[SolicitarTurno] Consultando especialistas con IDs:', idsAprobados);
-      const { data: especialistasData, error: especialistasError } = await this.supa.client
+      // 2) Traer especialistas (sin depender de que id==perfil_id)
+      // Ajustá esta parte según tu esquema real:
+      // - Si "especialistas" tiene columna perfil_id => usá .in('perfil_id', idsAprobados)
+      // - Si "especialistas" comparte el mismo id que "perfiles" => usá .in('id', idsAprobados)
+      // Para destrabar ya, traemos todos y después si querés re-filtrás por "aprobado".
+      const { data: especs, error: especErr } = await this.supa.client
         .from('especialistas')
-        .select('id, nombre, apellido, especialidad')
-        .in('id', idsAprobados);
+        .select('id, perfil_id, nombre, apellido, especialidad, especialidad_id');
 
-      console.log('[SolicitarTurno] Respuesta de especialistas:', { data: especialistasData, error: especialistasError });
+      if (especErr) throw especErr;
 
-      if (especialistasError) {
-        console.error('[SolicitarTurno] Error al consultar especialistas:', especialistasError);
-        throw especialistasError;
-      }
+      // Mapear especialistas asegurando que e.especialidad sea un string “visible”
+      const nombrePorId = new Map<string, string>();
+      (cat ?? []).forEach(x => nombrePorId.set(x.id, x.nombre));
 
-      console.log('[SolicitarTurno] Especialistas encontrados en BD:', especialistasData?.length || 0);
-      console.log('[SolicitarTurno] Datos completos:', especialistasData);
+      this.especialistas = (especs ?? []).map(e => ({
+        id: e.id,
+        nombre: e.nombre || '',
+        apellido: e.apellido || '',
+        // Si existe especialidad en texto úsala; si no, resolvés por especialidad_id contra el catálogo
+        especialidad: e.especialidad
+          ?? (e.especialidad_id ? (nombrePorId.get(e.especialidad_id) ?? '') : '')
+      }));
 
-      if (!especialistasData || especialistasData.length === 0) {
-        console.warn('[SolicitarTurno] No se encontraron especialistas en la tabla especialistas');
-        this.especialidades = [];
-        this.especialistas = [];
-        this.especialistasFiltrados = [];
-        this.snackBar.open('No hay especialistas disponibles', 'Cerrar', { duration: 3000 });
-        return;
-      }
-
-      // Obtener especialidades únicas
-      const especialidadesSet = new Set<string>();
-      const especialistasList: EspecialistaOption[] = [];
-      const especialistasSinEspecialidad: any[] = [];
-
-      especialistasData.forEach((e: any) => {
-        if (e.especialidad && e.especialidad.trim() !== '') {
-          especialidadesSet.add(e.especialidad);
-          especialistasList.push({
-            id: e.id,
-            nombre: e.nombre || '',
-            apellido: e.apellido || '',
-            especialidad: e.especialidad
-          });
-        } else {
-          especialistasSinEspecialidad.push(e);
-          console.warn(`[SolicitarTurno] Especialista ${e.nombre} ${e.apellido} (${e.id}) no tiene especialidad asignada`);
-        }
-      });
-
-      if (especialistasSinEspecialidad.length > 0) {
-        console.warn(`[SolicitarTurno] ${especialistasSinEspecialidad.length} especialistas sin especialidad asignada`);
-      }
-
-      this.especialidades = Array.from(especialidadesSet).sort();
-      this.especialistas = especialistasList;
-      this.especialistasFiltrados = []; // Inicializar vacío hasta que se seleccione una especialidad
-
-      console.log('[SolicitarTurno] Especialidades únicas cargadas:', this.especialidades);
-      console.log('[SolicitarTurno] Total especialistas con especialidad:', this.especialistas.length);
-
-      if (this.especialidades.length === 0) {
-        this.snackBar.open('Los especialistas aprobados no tienen especialidad asignada', 'Cerrar', { duration: 4000 });
-      }
+      // Limpio el filtrado dependiente de la selección
+      this.especialistasFiltrados = [];
     } catch (e: any) {
       console.error('[SolicitarTurno] Error al cargar especialidades', e);
       this.especialidades = [];
       this.especialistas = [];
       this.especialistasFiltrados = [];
       this.snackBar.open(
-        `Error al cargar especialidades: ${e.message || 'Error desconocido'}`,
+        `Error al cargar especialidades: ${e.message ?? 'Error desconocido'}`,
         'Cerrar',
         { duration: 4000 }
       );
     }
   }
+
+
+
 
   async cargarPacientes(): Promise<void> {
     try {

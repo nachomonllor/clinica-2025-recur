@@ -33,7 +33,7 @@ export class TurnosAdminComponent implements OnInit {
   @ViewChild('cancelDialog') cancelDialog!: TemplateRef<unknown>;
 
   /** ===== FLAG MOCK / DB ===== */
-  readonly USE_MOCK = true; // <<=== PONERLO EN FALSE PARA LEER DE SUPABASE
+  readonly USE_MOCK = false; // <<=== PONERLO EN FALSE PARA LEER DE SUPABASE
 
   // estado de UI
   loading = false;
@@ -89,35 +89,135 @@ export class TurnosAdminComponent implements OnInit {
    * Nota: si NO tenés la tabla `especialidades` todavía, podés quitar el alias `esp:...`
    * del select y en el mapeo uso fallback a `t.especialidad` o `t.especialidad_id`.
    */
+  // private async cargarTurnosDB(): Promise<TurnoUI[]> {
+  //   const { data, error } = await this.supa.client
+  //     .from('turnos')
+  //     .select(`
+  //       id,
+  //       paciente_id,
+  //       especialista_id,
+  //       especialidad,               -- si existe como texto en tu tabla
+  //       especialidad_id,            -- si existe como uuid (para el join)
+  //       fecha_iso,
+  //       estado,
+  //       resena_especialista,
+  //       encuesta,
+  //       ubicacion,
+  //       notas,
+  //       created_at,
+  //       updated_at,
+  //       historia_busqueda,
+
+  //       paciente:perfiles!turnos_paciente_id_fkey ( apellido, nombre ),
+  //       especialista:perfiles!turnos_especialista_id_fkey ( apellido, nombre ),
+  //       esp:especialidades!turnos_especialidad_id_fkey ( nombre )
+
+  //     `)
+  //     .order('fecha_iso', { ascending: false });
+
+  //   if (error) throw error;
+
+  //   const rows = (data as any[]) ?? [];
+  //   return this.buildUIFromRows(rows);
+  // }
+
   private async cargarTurnosDB(): Promise<TurnoUI[]> {
-    const { data, error } = await this.supa.client
+    // 1) Traer turnos "crudos" de la tabla
+    const { data: base, error } = await this.supa.client
       .from('turnos')
       .select(`
-        id,
-        paciente_id,
-        especialista_id,
-        especialidad,               -- si existe como texto en tu tabla
-        especialidad_id,            -- si existe como uuid (para el join)
-        fecha_iso,
-        estado,
-        resena_especialista,
-        encuesta,
-        ubicacion,
-        notas,
-        created_at,
-        updated_at,
-        historia_busqueda,
-        paciente:perfiles!turnos_paciente_id_fkey ( apellido, nombre ),
-        especialista:perfiles!turnos_especialista_id_fkey ( apellido, nombre ),
-        esp:especialidades!turnos_especialidad_id_fkey ( nombre )
-      `)
+      id,
+      paciente_id,
+      especialista_id,
+      especialidad,
+      fecha_iso,
+      estado,
+      resena_especialista,
+      encuesta,
+      ubicacion,
+      notas,
+      created_at,
+      updated_at,
+      historia_busqueda
+    `)
       .order('fecha_iso', { ascending: false });
 
     if (error) throw error;
 
-    const rows = (data as any[]) ?? [];
-    return this.buildUIFromRows(rows);
+    const rows = (base ?? []) as any[];
+
+    // Si no hay nada, devolvemos vacío y listo
+    if (!rows.length) {
+      console.log('[TurnosAdmin] No hay turnos en DB');
+      return [];
+    }
+
+    // 2) Armar set de IDs para pedir nombres en `perfiles`
+    const uidSet = new Set<string>();
+    rows.forEach(r => {
+      if (r.paciente_id) uidSet.add(r.paciente_id);
+      if (r.especialista_id) uidSet.add(r.especialista_id);
+    });
+    const ids = Array.from(uidSet);
+
+    const nombres = new Map<string, string>();
+
+    if (ids.length) {
+      try {
+        const { data: perfs, error: perfsError } = await this.supa.client
+          .from('perfiles')
+          .select('id, nombre, apellido')
+          .in('id', ids);
+
+        if (!perfsError && perfs) {
+          (perfs as any[]).forEach(p => {
+            const full = [p.apellido?.trim(), p.nombre?.trim()].filter(Boolean).join(', ');
+            nombres.set(p.id, full || '-');
+          });
+        } else {
+          console.warn('[TurnosAdmin] Error al traer perfiles', perfsError);
+        }
+      } catch (err) {
+        console.warn('[TurnosAdmin] Excepción al traer perfiles', err);
+      }
+    }
+
+    // 3) Mapear a TurnoUI usando tu mapRowToVM
+    const list: TurnoUI[] = rows.map((t: any) => {
+      const row: TurnoRow = {
+        id: t.id,
+        paciente_id: t.paciente_id,
+        especialista_id: t.especialista_id,
+        especialidad: String(t.especialidad ?? '—'),
+        fecha_iso: t.fecha_iso,
+        estado: t.estado as EstadoTurno,
+        resena_especialista: t.resena_especialista ?? null,
+        encuesta: t.encuesta ?? null,
+        ubicacion: t.ubicacion ?? null,
+        notas: t.notas ?? null,
+        created_at: t.created_at,
+        updated_at: t.updated_at
+      };
+
+      const vm = mapRowToVM(row);
+
+      const pacienteNombre = t.paciente_id ? (nombres.get(t.paciente_id) ?? '-') : '-';
+      const especialistaNombre = t.especialista_id ? (nombres.get(t.especialista_id) ?? '-') : '-';
+
+      const ui: TurnoUI = {
+        ...vm,
+        paciente: pacienteNombre,
+        especialista: especialistaNombre,
+        patologiasText: String(t.historia_busqueda ?? '').toLowerCase()
+      };
+
+      return ui;
+    });
+
+    console.log('[TurnosAdmin] Turnos desde DB:', list);
+    return list;
   }
+
 
   // -----------------------------------------------------------------------------------
   // MOCK

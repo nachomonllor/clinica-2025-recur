@@ -48,12 +48,13 @@ export const routes: Routes = [
     // SUGERIDO: canMatch: [adminGuard]
   },
 
-  {
-    path: 'usuarios',
-    loadComponent: () =>
-      import('./components/usuarios/usuarios.component')
-        .then(m => m.UsuariosComponent)
-  },
+  // {
+  //   path: 'usuarios',
+  //   loadComponent: () =>
+  //     import('./components/usuarios/usuarios.component')
+  //       .then(m => m.UsuariosComponent)
+  // },
+
 
   {
     path: 'reportes',
