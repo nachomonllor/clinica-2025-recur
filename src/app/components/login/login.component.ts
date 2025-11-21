@@ -158,7 +158,7 @@ export class LoginComponent implements OnInit {
       } else if (perfil.rol === 'especialista') {
         await this.router.navigate(['/mis-turnos-especialista']);
       } else {
-        await this.router.navigate(['/bienvenida']);
+        await this.router.navigate(['/perfil-usuario']);
       }
 
     } catch (e) {
