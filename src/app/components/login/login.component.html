@@ -20,9 +20,9 @@
         </mat-form-field>
 
         <mat-card class="quick-reminder" *ngIf="quickSeleccionado">
-          <strong>{{ quickSeleccionado.nombre }}</strong>
-          ({{ quickSeleccionado.rol | titlecase }}) completado.
-          Revisá los campos y tocá <em>Ingresar</em>.
+            <strong>{{ quickSeleccionado.nombre }}</strong>
+            ({{ quickSeleccionado.rol | titlecase }}) completado.
+            Revisá los campos y tocá <em>Ingresar</em>.
         </mat-card>
 
         <button mat-raised-button color="primary" class="full-width" type="submit" [disabled]="f.invalid || cargando">
@@ -35,13 +35,9 @@
         <div class="quick-access-inline" *ngIf="accesosRapidos.length">
             <h4>Accesos rápidos</h4>
             <div class="quick-inline-grid">
-                <button
-                    type="button"
-                    class="inline-fav"
-                    *ngFor="let user of accesosRapidos"
+                <button type="button" class="inline-fav" *ngFor="let user of accesosRapidos"
                     [class.rol-paciente]="user.rol === 'paciente'"
-                    [class.rol-especialista]="user.rol === 'especialista'"
-                    [class.rol-admin]="user.rol === 'admin'"
+                    [class.rol-especialista]="user.rol === 'especialista'" [class.rol-admin]="user.rol === 'admin'"
                     (click)="activarQuick(user, $event)"
                     [attr.title]="user.nombre + ' (' + (user.rol | titlecase) + ')'">
                     <div class="inline-avatar">
@@ -59,7 +55,7 @@
     </div>
 
 
- <!-- <div class="captcha-wrapper">
+    <!-- <div class="captcha-wrapper">
     <app-captcha-imagen (captchaValido)="onCaptchaValido($event)"></app-captcha-imagen>
   </div> -->
 
