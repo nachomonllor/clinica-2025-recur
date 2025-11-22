@@ -71,3 +71,50 @@ export interface TurnoUI {
 
   [key: string]: any;       // para campos adicionales que el template pudiera usar
 }
+
+// src/app/models/turno.model.ts
+
+// ...lo que ya tengas arriba (Turno, TurnoCreate, EstadoTurnoCodigo, etc.)
+
+/** Mapea el código de la tabla estados_turno (PENDIENTE, FINALIZADO, etc.)
+ *  al string de UI en minúsculas.
+ */
+export function mapEstadoCodigoToUI(codigo: string | null | undefined): EstadoTurnoUI {
+  switch ((codigo || '').toUpperCase()) {
+    case 'aceptado':   return 'ACEPTADO';
+    case 'rechazado':  return 'RECHAZADO';
+    case 'cancelado':  return 'CANCELADO';
+    case 'finalizado': return 'FINALIZADO';
+    case 'pendiente':  return 'PENDIENTE';
+    default:           return 'PENDIENTE';
+  }
+}
+
+/** ViewModel que usa el paciente en "Mis turnos" */
+export interface TurnoVM {
+  id: string;
+
+  /** Fecha real para comparar en puedeCancelar */
+  fecha: Date;
+
+  /** 'HH:mm' para mostrar / parsear la hora */
+  hora: string;
+
+  especialidad: string;
+  especialista: string;
+
+  /** estado en minúsculas (pendiente, aceptado, cancelado, realizado, etc.) */
+  estado: EstadoTurnoUI | string;
+
+  /** Texto indexable para búsqueda (motivo, síntomas, etc.) */
+  historiaBusqueda?: string | null;
+
+  /** Reseña del especialista (comentario final en el turno) */
+  resena?: string | null;
+
+  /** ¿Tiene encuesta de atención asociada? */
+  encuesta?: boolean;
+
+  /** Estrellas de la encuesta (1..5) si existe */
+  calificacion?: number;
+}

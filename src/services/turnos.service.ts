@@ -4,9 +4,9 @@ import { Injectable } from '@angular/core';
 import { SupabaseService } from './supabase.service';
 import { EstadoTurno } from '../app/models/estado-turno.model';
 import { EstadoTurnoCodigo } from '../app/models/tipos.model';
-import { Turno, TurnoCreate, TurnoUpdate } from '../app/models/turno.model';
+import { mapEstadoCodigoToUI, Turno, TurnoCreate, TurnoUpdate, TurnoVM } from '../app/models/turno.model';
 
-import { from, Observable } from 'rxjs';
+import { from, map, Observable } from 'rxjs';
 import { TurnoEspecialista } from '../app/models/turno-especialista.model';
 
 
@@ -105,6 +105,21 @@ export class TurnosService {
 
     return data as Turno;
   }
+
+  // async crearTurno(payload: TurnoCreate): Promise<Turno> {
+  //   const { data, error } = await this.supa.client
+  //     .from('turnos')
+  //     .insert(payload as any)
+  //     .select('*')
+  //     .single();
+
+  //   if (error) {
+  //     console.error('[TurnosService] Error al crear turno', error);
+  //     throw error;
+  //   }
+
+  //   return data as Turno;
+  // }
 
   /**
    * Atajo: crea un turno con estado PENDIENTE
@@ -382,5 +397,176 @@ export class TurnosService {
     });
   }
 
+
+  // -----------------------  ----------------------------------------------------          
+
+  /** Turnos del paciente actual mapeados a TurnoVM (para Mis turnos paciente) */
+  getTurnosPacienteVM$(): Observable<TurnoVM[]> {
+    return from(this.obtenerTurnosPacienteVM());
+  }
+
+  private async obtenerTurnosPacienteVM(): Promise<TurnoVM[]> {
+    // 1) Sesión actual → paciente_id
+    const { data: sessionData, error: sessionError } = await this.supa.getSession();
+    if (sessionError) {
+      console.error('[TurnosService] Error obteniendo sesión', sessionError);
+      throw sessionError;
+    }
+
+    const pacienteId = sessionData?.session?.user?.id;
+    if (!pacienteId) {
+      console.warn('[TurnosService] No hay paciente logueado');
+      return [];
+    }
+
+    // 2) Turnos del paciente (solo columnas necesarias)
+    const { data: turnosData, error: turnosError } = await this.supa.client
+      .from('turnos')
+      .select(`
+        id,
+        paciente_id,
+        especialista_id,
+        especialidad_id,
+        estado_turno_id,
+        fecha_hora_inicio,
+        motivo,
+        comentario
+      `)
+      .eq('paciente_id', pacienteId)
+      .order('fecha_hora_inicio', { ascending: false });
+
+    if (turnosError) {
+      console.error('[TurnosService] Error al obtener turnos del paciente', turnosError);
+      throw turnosError;
+    }
+
+    const turnos = (turnosData ?? []) as any[];
+    if (!turnos.length) return [];
+
+    // 3) Armar sets de IDs para mapear nombres, especialidades, estados y encuestas
+    const especialistaIds = Array.from(
+      new Set(turnos.map(t => t.especialista_id).filter(Boolean))
+    ) as string[];
+
+    const especialidadIds = Array.from(
+      new Set(turnos.map(t => t.especialidad_id).filter(Boolean))
+    ) as string[];
+
+    const estadoIds = Array.from(
+      new Set(turnos.map(t => t.estado_turno_id).filter(Boolean))
+    ) as string[];
+
+    const turnoIds = turnos.map(t => t.id as string);
+
+    // 4) Cargar mapas auxiliares en paralelo
+    const [
+      { data: usuariosData },
+      { data: especialidadesData },
+      { data: estadosData },
+      { data: encuestasData }
+    ] = await Promise.all([
+      especialistaIds.length
+        ? this.supa.client.from('usuarios')
+          .select('id, nombre, apellido')
+          .in('id', especialistaIds)
+        : Promise.resolve({ data: [] as any[], error: null }),
+
+      especialidadIds.length
+        ? this.supa.client.from('especialidades')
+          .select('id, nombre')
+          .in('id', especialidadIds)
+        : Promise.resolve({ data: [] as any[], error: null }),
+
+      estadoIds.length
+        ? this.supa.client.from('estados_turno')
+          .select('id, codigo')
+          .in('id', estadoIds)
+        : Promise.resolve({ data: [] as any[], error: null }),
+
+      turnoIds.length
+        ? this.supa.client.from('encuestas_atencion')
+          .select('turno_id, estrellas')
+          .in('turno_id', turnoIds)
+        : Promise.resolve({ data: [] as any[], error: null })
+    ]);
+
+    const usuariosMap = new Map<string, { nombre: string | null; apellido: string | null }>();
+    (usuariosData ?? []).forEach((u: any) =>
+      usuariosMap.set(u.id, { nombre: u.nombre ?? null, apellido: u.apellido ?? null })
+    );
+
+    const especialidadesMap = new Map<string, string>();
+    (especialidadesData ?? []).forEach((e: any) =>
+      especialidadesMap.set(e.id, e.nombre ?? 'Sin especialidad')
+    );
+
+    const estadosMap = new Map<string, string>();
+    (estadosData ?? []).forEach((e: any) =>
+      estadosMap.set(e.id, e.codigo ?? 'PENDIENTE')
+    );
+
+    const encuestasMap = new Map<string, number | null>();
+    (encuestasData ?? []).forEach((e: any) =>
+      encuestasMap.set(e.turno_id, e.estrellas ?? null)
+    );
+
+    // 5) Mapear a TurnoVM
+    return turnos.map((t): TurnoVM => {
+      const fecha = new Date(t.fecha_hora_inicio);
+      const hora = fecha.toLocaleTimeString('es-AR', {
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+
+      const especialistaInfo = usuariosMap.get(t.especialista_id) || null;
+      const especialistaNombre = especialistaInfo
+        ? `${especialistaInfo.apellido ?? ''} ${especialistaInfo.nombre ?? ''}`.trim() || 'Especialista'
+        : 'Especialista';
+
+      const especialidadNombre =
+        especialidadesMap.get(t.especialidad_id) ?? 'Sin especialidad';
+
+      const codigoEstado = estadosMap.get(t.estado_turno_id) ?? 'PENDIENTE';
+      const estadoUI = mapEstadoCodigoToUI(codigoEstado);
+
+      const estrellas = encuestasMap.get(t.id) ?? null;
+
+      return {
+        id: t.id,
+        fecha,
+        hora,
+        especialidad: especialidadNombre,
+        especialista: especialistaNombre,
+        estado: estadoUI,
+        historiaBusqueda: t.motivo ?? null,
+        resena: t.comentario ?? null,
+        encuesta: estrellas != null,
+        calificacion: estrellas ?? undefined
+      };
+    });
+  }
+
+  /** Marca un turno como CANCELADO en la tabla turnos */
+  cancelarTurno(turnoId: string): Observable<void> {
+    return from(
+      this.supa.client
+        .from('turnos')
+        .update({ estado_turno_id: null, /* opcional: columna texto si la tenés */ })
+        .eq('id', turnoId)
+    ).pipe(
+      map(({ error }) => {
+        if (error) {
+          console.error('[TurnosService] Error al cancelar turno', error);
+          throw error;
+        }
+        return;
+      })
+    );
+  }
+  
 }
+
+
+
+
 
