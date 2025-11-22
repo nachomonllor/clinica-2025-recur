@@ -1,5 +1,6 @@
 // ---------- Tipos de respuesta para las estadísticas ----------
 
+import { ApexAxisChartSeries, ApexChart, ApexDataLabels, ApexPlotOptions, ApexXAxis, ApexYAxis, ApexTitleSubtitle, ApexTooltip, ApexGrid, ApexStroke, ApexFill } from "ng-apexcharts";
 import { EstadoTurnoCodigo } from "./tipos.model";
 
 export interface EstadisticaTurnosPorEstado {
@@ -27,3 +28,18 @@ export interface EstadisticaPromedioEstrellasPorEspecialista {
   promedio_estrellas: number;
   cantidad_encuestas: number;
 }
+
+export type ChartOptions = {
+  series: ApexAxisChartSeries;
+  chart: ApexChart;
+  dataLabels: ApexDataLabels;
+  plotOptions: ApexPlotOptions;
+  xaxis: ApexXAxis;
+  yaxis: ApexYAxis;
+  title: ApexTitleSubtitle;
+  tooltip: ApexTooltip;
+  grid: ApexGrid;
+  stroke: ApexStroke;
+  fill: ApexFill;
+  colors: string[];
+};

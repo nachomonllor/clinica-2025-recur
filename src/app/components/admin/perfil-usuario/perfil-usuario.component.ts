@@ -8,54 +8,7 @@ import {
 import { SupabaseService } from '../../../../services/supabase.service';
 import { InicialesPipe } from '../../../../pipes/iniciales.pipe';
 import { Rol } from '../../../models/tipos.model';
-
-// --- Tipado del metadata que guardaste en auth.user_metadata
-type MetaUsuario = {
-  rol?: 'paciente' | 'especialista' | 'admin' | string;
-  nombre?: string;
-  apellido?: string;
-  dni?: string;
-  fecha_nacimiento?: string;
-  especialidad?: string;
-  especialidades?: string; // CSV
-};
-
-// Fila liviana desde esquema_clinica.usuarios
-type UsuarioRowLite = Partial<{
-  id: string;
-  nombre: string;
-  apellido: string;
-  edad: number;
-  dni: string;
-  obra_social: string;
-  email: string;
-  perfil: string;
-  imagen_perfil_1: string | null;
-  imagen_perfil_2: string | null;
-  esta_aprobado: boolean;
-  mail_verificado: boolean;
-  activo: boolean;
-}>;
-
-// Modelo que usa la UI
-interface UsuarioPerfil {
-  id: string;
-  nombre: string;
-  apellido: string;
-  rol: Rol;
-  edad?: number;
-  dni: string;
-  email: string;
-  telefono: string | null;
-  direccion: string | null;
-  ciudad: string | null;
-  obraSocial: string | null;
-  especialidades: string[];
-  habilitado: boolean;
-  avatarUrl: string | null;
-  bannerUrl: string | null;
-  bio: string;
-}
+import { MetaUsuario, UsuarioPerfil, UsuarioRowLite } from '../../../models/usuario.model';
 
 @Component({
   selector: 'app-perfil-usuario',

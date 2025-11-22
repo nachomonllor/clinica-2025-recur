@@ -316,3 +316,5 @@ export class EstadisticasService {
     }
 }
 
+
+export { EstadisticaTurnosPorEspecialidad };
