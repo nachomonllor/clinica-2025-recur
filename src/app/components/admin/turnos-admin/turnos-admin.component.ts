@@ -15,7 +15,6 @@ import { TurnosService } from '../../../../services/turnos.service';
 import { EstadoTurnoUI, TurnoUI } from '../../../models/turno.model';
 import { EstadoTurnoCodigo } from '../../../models/tipos.model';
 
-
 @Component({
   selector: 'app-turnos-admin',
   standalone: true,
@@ -309,6 +308,12 @@ export class TurnosAdminComponent implements OnInit {
       }
     });
   }
+
+  // PARA EL PIPE
+  formatearEstado(e: EstadoTurnoUI): string {
+    return e.charAt(0) + e.slice(1).toLowerCase(); // 'PENDIENTE' → 'Pendiente'
+  }
+
 }
 
 

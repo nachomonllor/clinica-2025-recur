@@ -30,7 +30,9 @@
 
           <span class="badge" [class.ok]="estadoClass(t.estado)==='ok'" [class.warn]="estadoClass(t.estado)==='warn'"
             [class.bad]="estadoClass(t.estado)==='bad'">
-            {{ t.estado }}
+       
+            {{ formatearEstado(t.estado) }}
+
           </span>
         </button>
 
@@ -63,7 +65,9 @@
         <label>Estado</label>
         <div class="pill estado" [class.ok]="estadoClass(s.estado)==='ok'" [class.warn]="estadoClass(s.estado)==='warn'"
           [class.bad]="estadoClass(s.estado)==='bad'">
-          {{ s.estado }}
+     
+          {{ formatearEstado(s.estado) }}
+
         </div>
       </div>
 
