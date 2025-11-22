@@ -41,3 +41,33 @@ export interface TurnoConDetalle extends Turno {
   estado_codigo?: EstadoTurnoCodigo;
 }
 
+export type EstadoTurnoUI = EstadoTurnoCodigo;  // <===== misma unión 
+
+
+/**
+ * Modelo de vista para la tabla de turnos del admin.
+ * Tiene lo que necesita la UI, con algunos campos clave fuertemente tipados
+ * y una index signature para que el template pueda usar extras sin que TS se queje.
+ */
+export interface TurnoUI {
+  id: string;
+  pacienteId: string;
+  especialistaId: string;
+  especialidadId: string;
+
+  paciente: string;
+  especialista: string;
+  especialidad: string;
+
+  fecha: Date;
+  fechaISO: string;
+  hora: string;
+
+  estado: EstadoTurnoUI;
+  motivo: string | null;
+  comentario: string | null;
+
+  patologiasText: string;   // usado para búsqueda (motivo + comentario)
+
+  [key: string]: any;       // para campos adicionales que el template pudiera usar
+}

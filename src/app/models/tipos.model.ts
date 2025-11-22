@@ -19,4 +19,3 @@ export type TipoControl =
 
 // Tipo de evento en el log de ingresos
 export type LogIngresoTipo = 'LOGIN' | 'VISITA' | string;
-
