@@ -15,6 +15,7 @@ import { SupabaseService } from '../../../services/supabase.service';
 import { StatusLabelPipe } from '../../../pipes/status-label.pipe';
 import { StatusBadgeDirective } from '../../../directives/status-badge.directive';
 import { ElevateOnHoverDirective } from '../../../directives/elevate-on-hover.directive';
+import { TurnosService } from '../../../services/turnos.service';
 
 @Component({
   selector: 'app-mis-turnos-paciente',
@@ -49,7 +50,7 @@ export class MisTurnosPacienteComponent implements OnInit {
   @ViewChild('calificarDialog') calificarDialog!: TemplateRef<unknown>;
 
   constructor(
-    private turnoService: TurnoService,
+    private turnoService: TurnosService,
     private router: Router,
     private dialog: MatDialog,
     private snackBar: MatSnackBar,

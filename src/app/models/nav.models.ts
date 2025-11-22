@@ -23,3 +23,18 @@ export interface QuickAccessUser {
   rol: Rol;  // 'PACIENTE' | 'ESPECIALISTA' | 'ADMIN'
 }
 
+export interface NavItem {
+  label: string;
+  route: string;
+  icon: string;
+}
+
+// Esto lo usás en el login para accesos rápidos
+export interface QuickAccessUser {
+  email: string;
+  password: string;
+  nombre: string;
+  avatar: string;
+  rol: Rol;
+}
+

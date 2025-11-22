@@ -1,6 +1,10 @@
 // ---------- Tipos de respuesta para las estadísticas ----------
 
-import { ApexAxisChartSeries, ApexChart, ApexDataLabels, ApexPlotOptions, ApexXAxis, ApexYAxis, ApexTitleSubtitle, ApexTooltip, ApexGrid, ApexStroke, ApexFill } from "ng-apexcharts";
+import {
+  ApexAxisChartSeries, ApexChart, ApexDataLabels,
+  ApexPlotOptions, ApexXAxis, ApexYAxis, ApexTitleSubtitle,
+  ApexTooltip, ApexGrid, ApexStroke, ApexFill
+} from "ng-apexcharts";
 import { EstadoTurnoCodigo } from "./tipos.model";
 
 export interface EstadisticaTurnosPorEstado {
@@ -43,3 +47,9 @@ export type ChartOptions = {
   fill: ApexFill;
   colors: string[];
 };
+
+// models/estadisticas.models.ts (o donde tengas los tipos)
+export interface EstadisticaTurnosPorDia {
+  fecha: string;    // 'YYYY-MM-DD'
+  cantidad: number;
+}

@@ -6,6 +6,10 @@ import { EstadoTurno } from '../app/models/estado-turno.model';
 import { EstadoTurnoCodigo } from '../app/models/tipos.model';
 import { Turno, TurnoCreate, TurnoUpdate } from '../app/models/turno.model';
 
+import { from, Observable } from 'rxjs';
+import { TurnoEspecialista } from '../app/models/turno-especialista.model';
+
+
 @Injectable({ providedIn: 'root' })
 export class TurnosService {
 
@@ -14,7 +18,7 @@ export class TurnosService {
 
   constructor(
     private readonly supa: SupabaseService,
-  ) {}
+  ) { }
 
   /* ================= ESTADOS DE TURNO ================= */
 
@@ -306,5 +310,77 @@ export class TurnosService {
 
     return (data ?? []) as Turno[];
   }
+
+
+  /**
+   * Devuelve los turnos del especialista logueado, ya mapeados a TurnoEspecialista
+   * y ordenados por fecha descendente.
+   */
+  getTurnosEspecialista$(): Observable<TurnoEspecialista[]> {
+    return from(this.cargarTurnosEspecialista());
+  }
+
+  private async cargarTurnosEspecialista(): Promise<TurnoEspecialista[]> {
+    // 1) sesión actual
+    const { data: sessionData, error: sessionError } = await this.supa.getSession();
+    if (sessionError || !sessionData?.session?.user) {
+      console.error('[TurnoService] No hay sesión de especialista', sessionError);
+      return [];
+    }
+
+    const especialistaId = sessionData.session.user.id;
+
+    // 2) query a turnos + joins mínimos para nombres
+    const { data, error } = await this.supa.client
+      .from('turnos')
+      .select(`
+        id,
+        fecha_hora_inicio,
+        fecha_hora_fin,
+        comentario,
+        estado_turno: estados_turno!fk_turno_estado ( codigo ),
+        especialidad: especialidades!fk_turno_especialidad ( nombre ),
+        paciente: usuarios!fk_turno_paciente ( nombre, apellido )
+      `)
+      .eq('especialista_id', especialistaId)
+      .order('fecha_hora_inicio', { ascending: false });
+
+    if (error) {
+      console.error('[TurnoService] Error al obtener turnos especialista', error);
+      return [];
+    }
+
+    const rows = (data ?? []) as any[];
+
+    return rows.map((t): TurnoEspecialista => {
+      const fechaISO: string = t.fecha_hora_inicio;
+      const fecha = new Date(fechaISO);
+
+      const pacienteNombre = t.paciente
+        ? `${t.paciente.apellido ?? ''} ${t.paciente.nombre ?? ''}`.trim() || 'Paciente'
+        : 'Paciente';
+
+      const especialidadNombre =
+        t.especialidad?.nombre ??
+        t.especialidad ??
+        'Sin especialidad';
+
+      const estadoCodigo: string =
+        (t.estado_turno?.codigo as string | undefined) ?? 'PENDIENTE';
+
+      return {
+        id: t.id,
+        fechaISO,
+        fecha: fecha.toLocaleDateString('es-AR'),
+        hora: fecha.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' }),
+        especialidad: especialidadNombre,
+        paciente: pacienteNombre,
+        estado: estadoCodigo,
+        historiaBusqueda: (t.comentario ?? '') as string,
+        resena: t.comentario ?? null
+      };
+    });
+  }
+
 }
 
