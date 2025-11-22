@@ -143,41 +143,71 @@ export class MainNavComponent implements OnInit, OnDestroy {
     }
   }
 
-  private construirMenu(rol: Rol | null): NavItem[] {
+  // private construirMenu(rol: Rol | null): NavItem[] {
+  //   switch (rol) {
+  //     case 'paciente':
+  //       return [
+  //         { label: 'Mis turnos', route: '/mis-turnos-paciente', icon: 'event_note' },
+  //         { label: 'Solicitar turno', route: '/solicitar-turno', icon: 'add_circle' },
+  //         // { label: 'Mi perfil', route: '/mi-perfil', icon: 'account_circle' },
+
+  //         { label: 'Mi perfil', route: '/perfil-usuario', icon: 'account_circle' }
+  //       ];
+  //     case 'especialista':
+  //       return [
+  //         { label: 'Mis turnos', route: '/mis-turnos-especialista', icon: 'event_note' },
+  //         { label: 'Pacientes', route: '/pacientes-especialista', icon: 'groups' },
+  //         //   { label: 'Mi perfil', route: '/mi-perfil', icon: 'account_circle' }
+
+  //         { label: 'Mi perfil', route: '/perfil-usuario', icon: 'account_circle' }
+  //       ];
+  //     //case 'admin':
+  //     case 'admin':
+  //       return [
+  //         // { label: 'Turnos', route: '/turnos-admin', icon: 'calendar_month' },
+  //         // { label: 'Usuarios', route: '/usuarios-admin', icon: 'supervisor_account' },
+  //         // // { label: 'Solicitar turno', route: '/solicitar-turno', icon: 'add_circle' },
+  //         // { label: 'Estadísticas', route: '/seleccion-estadisticas', icon: 'insights' },
+  //         // { label: 'Mi perfil', route: '/perfil-usuario', icon: 'account_circle' },
+  //         // { label: 'Ingresos', route: '/log-ingreso', icon: 'event_note' }  // <=== VERIFICAR EL ICONO
+
+  //                 { label: 'Mi perfil', route: '/perfil-usuario', icon: 'account_circle' }
+  //       ];
+  //     default:
+  //       return [];
+  //   }
+  // }
+
+
+
+  private construirMenu(rol: Rol | null | string): NavItem[] {
     switch (rol) {
       case 'paciente':
         return [
           { label: 'Mis turnos', route: '/mis-turnos-paciente', icon: 'event_note' },
           { label: 'Solicitar turno', route: '/solicitar-turno', icon: 'add_circle' },
-          // { label: 'Mi perfil', route: '/mi-perfil', icon: 'account_circle' },
-
-          { label: 'Mi perfil', route: '/perfil-usuario', icon: 'account_circle' }
+          { label: 'Mi perfil', route: '/perfil-usuario', icon: 'account_circle' },
         ];
       case 'especialista':
         return [
           { label: 'Mis turnos', route: '/mis-turnos-especialista', icon: 'event_note' },
           { label: 'Pacientes', route: '/pacientes-especialista', icon: 'groups' },
-          //   { label: 'Mi perfil', route: '/mi-perfil', icon: 'account_circle' }
-
-          { label: 'Mi perfil', route: '/perfil-usuario', icon: 'account_circle' }
+          { label: 'Mi perfil', route: '/perfil-usuario', icon: 'account_circle' },
         ];
-      //case 'admin':
       case 'admin':
+      case 'administrador':   // <= SE AGREGA ESTA LÍNEA PARA ACEPTAR 'administrador' TAMBIÉN
         return [
           { label: 'Turnos', route: '/turnos-admin', icon: 'calendar_month' },
           { label: 'Usuarios', route: '/usuarios-admin', icon: 'supervisor_account' },
-          // { label: 'Solicitar turno', route: '/solicitar-turno', icon: 'add_circle' },
-
           { label: 'Estadísticas', route: '/seleccion-estadisticas', icon: 'insights' },
-
           { label: 'Mi perfil', route: '/perfil-usuario', icon: 'account_circle' },
-
-          { label: 'Ingresos', route: '/log-ingreso', icon: 'event_note' }  // <=== VERIFICAR EL ICONO
+          { label: 'Ingresos', route: '/log-ingreso', icon: 'event_note' },
         ];
       default:
         return [];
     }
   }
+
 
   private obtenerInicioPorRol(rol: Rol | null): string {
     switch (rol) {
