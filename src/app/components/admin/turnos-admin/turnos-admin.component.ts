@@ -14,6 +14,7 @@ import { SupabaseService } from '../../../../services/supabase.service';
 import { TurnosService } from '../../../../services/turnos.service';
 import { EstadoTurnoUI, TurnoUI } from '../../../models/turno.model';
 import { EstadoTurnoCodigo } from '../../../models/tipos.model';
+import { EstadoTurnoLabelPipe } from "../../../../pipes/estado-turno-label.pipe";
 
 @Component({
   selector: 'app-turnos-admin',
@@ -28,8 +29,9 @@ import { EstadoTurnoCodigo } from '../../../models/tipos.model';
     MatIconModule,
     MatCardModule,
     MatDialogModule,
-    MatSnackBarModule
-  ],
+    MatSnackBarModule,
+    EstadoTurnoLabelPipe
+],
   templateUrl: './turnos-admin.component.html',
   styleUrls: ['./turnos-admin.component.scss']
 })
