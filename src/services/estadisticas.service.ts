@@ -7,7 +7,6 @@ import { SupabaseService } from './supabase.service';
 import { Turno } from '../app/models/turno.model';
 import { EstadoTurno } from '../app/models/estado-turno.model';
 import { Especialidad } from '../app/models/especialidad.model';
-import { LogIngreso } from '../app/models/log-ingresos.model';
 import { EncuestaAtencion } from '../app/models/encuesta-atencion.model';
 import { Usuario } from '../app/models/usuario.model';
 
@@ -16,7 +15,9 @@ import {
     EstadisticaPromedioEstrellasPorEspecialista,
     EstadisticaTurnosPorDia,
     EstadisticaTurnosPorEspecialidad,
-    EstadisticaTurnosPorEstado
+    EstadisticaTurnosPorEstado,
+    PerfilBasico,
+    TurnoEstadistica
 } from '../app/models/estadistica.model';
 
 @Injectable({ providedIn: 'root' })
@@ -267,16 +268,54 @@ export class EstadisticasService {
         return from(this.obtenerTurnosPorEspecialidad({ desde, hasta }));
     }
 
+    // Perfiles básicos por id, para mostrar nombres en gráficos
+    async obtenerPerfiles(ids: string[]): Promise<Map<string, PerfilBasico>> {
+        const mapa = new Map<string, PerfilBasico>();
+
+        if (!ids || !ids.length) {
+            return mapa;
+        }
+
+        const { data, error } = await this.supa.client
+            .from('perfiles')
+            .select('id, nombre, apellido, email, created_at, updated_at')
+            .in('id', ids);
+
+        if (error) {
+            console.error('[EstadisticasService] Error al obtener perfiles', error);
+            throw error;
+        }
+
+        (data ?? []).forEach((row: any) => {
+            mapa.set(row.id, {
+                id: row.id,
+                nombre: row.nombre ?? null,
+                apellido: row.apellido ?? null,
+                email: row.email ?? null,
+                created_at: row.created_at ?? null,
+                updated_at: row.updated_at ?? null
+            });
+        });
+
+        return mapa;
+    }
+
     // =======================================================
     // INGRESOS POR DÍA (log_ingresos)
     // =======================================================
-
     async obtenerIngresosPorDia(filtros?: {
         desde?: string;
         hasta?: string;
         usuarioId?: string;
         tipo?: string;
     }): Promise<EstadisticaIngresosPorDia[]> {
+
+        // Tipo mínimo que realmente devuelve esta consulta
+        type LogRow = {
+            fecha_hora: string;
+            usuario_id: string | null;
+            tipo: string | null;
+        };
 
         let query = this.supa.client
             .from('log_ingresos')
@@ -302,12 +341,14 @@ export class EstadisticasService {
             throw error;
         }
 
-        const logs = (data ?? []) as LogIngreso[];
+        const logs = (data ?? []) as LogRow[];
 
         const conteoPorDia = new Map<string, number>();
 
         for (const log of logs) {
             const fechaIso = log.fecha_hora;
+            if (!fechaIso) continue;
+
             const dia = fechaIso.slice(0, 10); // yyyy-mm-dd
             conteoPorDia.set(dia, (conteoPorDia.get(dia) ?? 0) + 1);
         }
@@ -317,9 +358,51 @@ export class EstadisticasService {
             resultado.push({ fecha, cantidad });
         }
 
+        // Orden cronológico ascendente
         resultado.sort((a, b) => a.fecha.localeCompare(b.fecha));
 
         return resultado;
+    }
+
+    // =======================================================
+    // LOGS DE INGRESO PARA DASHBOARD
+    // Devuelve "PerfilBasico" con created/updated = fecha de ingreso
+    // =======================================================
+    async obtenerLogsDeIngreso(limit = 200): Promise<PerfilBasico[]> {
+        // 1) Traigo logs crudos
+        const { data, error } = await this.supa.client
+            .from('log_ingresos')
+            .select('fecha_hora, usuario_id')
+            .order('fecha_hora', { ascending: false })
+            .limit(limit);
+
+        if (error) {
+            console.error('[EstadisticasService] Error al obtener log_ingresos', error);
+            throw error;
+        }
+
+        const logs = (data ?? []) as { fecha_hora: string; usuario_id: string | null }[];
+
+        // 2) Junto ids de usuario y traigo perfiles
+        const ids = Array.from(new Set(logs.map(l => l.usuario_id).filter(Boolean))) as string[];
+        const perfilesMap = await this.obtenerPerfiles(ids);
+
+        // 3) Armo salida en forma de PerfilBasico "enriquecido" con la fecha del log
+        const salida: PerfilBasico[] = logs.map(log => {
+            const base = log.usuario_id ? perfilesMap.get(log.usuario_id) : undefined;
+            const ts = log.fecha_hora ?? null;
+
+            return {
+                id: log.usuario_id ?? 'sin-id',
+                nombre: base?.nombre ?? null,
+                apellido: base?.apellido ?? null,
+                email: base?.email ?? null,
+                created_at: ts,
+                updated_at: ts
+            };
+        });
+
+        return salida;
     }
 
     ingresosPorDia(filtros?: {
@@ -345,6 +428,7 @@ export class EstadisticasService {
             .select('especialista_id, estrellas, fecha_respuesta');
 
         if (filtros?.desde) {
+
             query = query.gte('fecha_respuesta', filtros.desde);
         }
         if (filtros?.hasta) {
@@ -417,6 +501,24 @@ export class EstadisticasService {
     ): Observable<EstadisticaPromedioEstrellasPorEspecialista[]> {
         return from(this.obtenerPromedioEstrellasPorEspecialista({ desde, hasta }));
     }
+
+
+    // =======================================================
+    // TURNOS CRUDOS PARA DASHBOARD
+    // =======================================================
+    async obtenerTurnos(): Promise<TurnoEstadistica[]> {
+        const { data, error } = await this.supa.client
+            .from('turnos')
+            .select('id, especialista_id, especialidad, fecha_iso, estado, created_at');
+
+        if (error) {
+            console.error('[EstadisticasService] Error al obtener turnos', error);
+            throw error;
+        }
+
+        return (data ?? []) as TurnoEstadistica[];
+    }
+
 }
 
 
