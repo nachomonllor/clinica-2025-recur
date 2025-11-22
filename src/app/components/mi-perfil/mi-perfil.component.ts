@@ -11,8 +11,6 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatIconModule } from '@angular/material/icon';
 import { SupabaseService } from '../../../services/supabase.service';
-import { HistoriaClinica } from '../../../models/historia-clinica.model';
-import { DatoDinamico } from '../../../models/dato-dinamico.model';
 import { formatearDatoDinamico } from '../../../utils/dato-dinamico.util';
 import Swal from 'sweetalert2';
 import { MatTableModule } from '@angular/material/table';
@@ -20,7 +18,8 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import jsPDF from 'jspdf';
 
 import { animate, query, stagger, style, transition, trigger } from '@angular/animations';
-import { PerfilCompleto } from '../../../models/perfil.model';
+import { HistoriaClinica } from '../../models/historia-clinica.model';
+import { DatoDinamico } from '../../models/dato-dinamico.util';
 
 
 // interface PerfilCompleto {

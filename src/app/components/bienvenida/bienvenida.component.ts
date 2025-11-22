@@ -19,7 +19,7 @@ import { SupabaseService } from '../../../services/supabase.service';
   imports: [
     CommonModule, RouterModule,
     RouterLink,
-    MatButtonModule, MatIconModule, 
+    MatButtonModule, MatIconModule,
     MatCardModule, MatTooltipModule,
   ],
   templateUrl: './bienvenida.component.html',
@@ -40,13 +40,13 @@ export class BienvenidaComponent implements OnInit, OnDestroy {
   constructor(
     private supabase: SupabaseService,
     private router: Router,
-  ) {}
+  ) { }
 
 
   async ngOnInit(): Promise<void> {
     // Verificar si hay tokens de verificación en la URL (viene del email)
     const tieneTokensEnUrl = this.tieneTokensDeVerificacion();
-    
+
     // Si hay tokens, esperar un poco más para que Supabase los procese
     if (tieneTokensEnUrl) {
       // Esperar un poco para que Supabase procese los tokens de la URL
@@ -60,7 +60,7 @@ export class BienvenidaComponent implements OnInit, OnDestroy {
     this.unsubscribeAuthChange = this.supabase.onAuthChange(async (event, session) => {
       const tieneSesion = !!session;
       this.autenticado.set(tieneSesion);
-      
+
       // Si se detecta una nueva sesión (por ejemplo, después de verificar email)
       if (tieneSesion && event === 'SIGNED_IN') {
         // Limpiar parámetros de la URL si venían del email
@@ -93,9 +93,9 @@ export class BienvenidaComponent implements OnInit, OnDestroy {
         const { data } = await this.supabase.getSession();
         tieneSesion = !!data.session;
         sessionData = data;
-        
+
         if (tieneSesion) break;
-        
+
         // Si hay tokens pero aún no hay sesión, esperar un poco más
         if (tieneTokens && i < intentos - 1) {
           await new Promise(resolve => setTimeout(resolve, 500));
@@ -118,22 +118,60 @@ export class BienvenidaComponent implements OnInit, OnDestroy {
     }
   }
 
+  // private async redirigirSegunRol(userId: string): Promise<void> {
+  //   try {
+  //     const { data: perfil } = await this.supabase .obtenerPerfil(userId);
+  //     const rol = perfil?.rol;
+
+  //     if (rol === 'paciente') {
+  //       this.router.navigate(['/mis-turnos-paciente']);
+  //     } else if (rol === 'especialista') {
+  //       this.router.navigate(['/mis-turnos-especialista']);
+  //     } else if (rol === 'admin') {
+  //       this.router.navigate(['/turnos-admin']);
+  //     }
+  //   } catch (error) {
+  //     console.error('[Bienvenida] Error al obtener perfil para redirección:', error);
+  //   }
+  // }
+
   private async redirigirSegunRol(userId: string): Promise<void> {
     try {
-      const { data: perfil } = await this.supabase.obtenerPerfil(userId);
-      const rol = perfil?.rol;
-      
-      if (rol === 'paciente') {
-        this.router.navigate(['/mis-turnos-paciente']);
-      } else if (rol === 'especialista') {
-        this.router.navigate(['/mis-turnos-especialista']);
-      } else if (rol === 'admin') {
-        this.router.navigate(['/turnos-admin']);
+      // -------------------------- Nuevo método del SupabaseService --------------------------
+      const { data: usuario, error } = await this.supabase.obtenerUsuarioPorId(userId);
+
+      if (error) throw error;
+      if (!usuario) throw new Error('Usuario no encontrado');
+
+      const rol = usuario.perfil; // 'PACIENTE' | 'ESPECIALISTA' | 'ADMIN'
+
+      switch (rol) {
+        case 'PACIENTE':
+          await this.router.navigate(['/mis-turnos-paciente']);
+          break;
+
+        case 'ESPECIALISTA':
+          await this.router.navigate(['/mis-turnos-especialista']);
+          break;
+
+        case 'ADMIN':
+          await this.router.navigate(['/turnos-admin']);
+          break;
+
+        default:
+          // fallback defensivo
+          await this.router.navigate(['/bienvenida']);
+          break;
       }
+
     } catch (error) {
-      console.error('[Bienvenida] Error al obtener perfil para redirección:', error);
+      console.error('[Bienvenida] Error al obtener usuario para redirección:', error);
+      // si algo falla, lo mando a bienvenida para no dejarlo colgado
+      await this.router.navigate(['/bienvenida']);
     }
   }
+
+
 }
 
 

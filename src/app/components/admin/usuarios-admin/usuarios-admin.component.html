@@ -21,8 +21,8 @@
 
       <div class="chips">
         <button class="chip" [class.active]="filtroRol === 'todos'" (click)="filtroRol = 'todos'">Todos</button>
-        <button class="chip" [class.active]="filtroRol === 'especialista'" (click)="filtroRol = 'especialista'">Especialistas</button>
-        <button class="chip" [class.active]="filtroRol === 'paciente'" (click)="filtroRol = 'paciente'">Pacientes</button>
+        <button class="chip" [class.active]="filtroRol === 'ESPECIALISTA'" (click)="filtroRol = 'ESPECIALISTA'">Especialistas</button>
+        <button class="chip" [class.active]="filtroRol === 'PACIENTE'" (click)="filtroRol = 'PACIENTE'">Pacientes</button>
       </div>
 
       <label class="only-enabled">
@@ -37,7 +37,7 @@
     <article class="user-card"
              [@cardInOut]
              *ngFor="let u of filtered; trackBy: trackById"
-             [ngClass]="[u.color, u.rol === 'paciente' ? 'card-lg' : 'card-sm']">
+             [ngClass]="[u.color, u.rol === 'PACIENTE' ? 'card-lg' : 'card-sm']">
       <div class="accent"></div>
 
       <!-- Cabecera -->
@@ -62,7 +62,7 @@
       </div>
 
       <!-- Cuerpo -->
-      <div class="card-body" [ngClass]="{'is-paciente': u.rol === 'paciente'}">
+      <div class="card-body" [ngClass]="{'is-paciente': u.rol === 'PACIENTE'}">
         <div class="info">
           <div class="info-row">
             <span class="label">Email</span>
@@ -74,12 +74,12 @@
             <span class="value">{{ u.dni }}</span>
           </div>
 
-          <div class="info-row" *ngIf="u.rol === 'paciente' && u.obraSocial">
+          <div class="info-row" *ngIf="u.rol === 'PACIENTE' && u.obraSocial">
             <span class="label">Obra social</span>
             <span class="value tag">{{ u.obraSocial }}</span>
           </div>
 
-          <div class="info-row" *ngIf="u.rol === 'especialista' && u.especialidades?.length">
+          <div class="info-row" *ngIf="u.rol === 'ESPECIALISTA' && u.especialidades?.length">
             <span class="label">Especialidades</span>
             <span class="chips-line">
               <span class="chip sm" *ngFor="let e of u.especialidades">{{ e }}</span>
@@ -88,7 +88,7 @@
         </div>
 
         <!-- Acciones -->
-        <div class="actions" *ngIf="u.rol === 'paciente'; else accionesEspecialista">
+        <div class="actions" *ngIf="u.rol === 'PACIENTE'; else accionesEspecialista">
           <button class="btn primary ripple" (click)="verHistoria(u)">
             <svg class="icon" viewBox="0 0 24 24">
               <path d="M4 6a2 2 0 012-2h8l6 6v10a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 4v4h4"/>

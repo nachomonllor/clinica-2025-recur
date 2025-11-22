@@ -4,10 +4,7 @@ import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import {
-  DatoDinamico,
-  formatearDatoDinamico
-} from '../../../../utils/dato-dinamico.util';
+import { DatoDinamicoPipe } from "../../../../pipes/dato-dinamico.pipe";
 
 @Component({
   selector: 'app-historia-clinica-dialog',
@@ -17,8 +14,9 @@ import {
     MatDialogModule,
     MatExpansionModule,
     MatButtonModule,
-    MatIconModule
-  ],
+    MatIconModule,
+    DatoDinamicoPipe
+],
   template: `
     <h2 mat-dialog-title>Historia Clínica - {{ data.pacienteNombre }}</h2>
     <mat-dialog-content>
@@ -58,7 +56,9 @@ import {
               <h4>Datos Dinámicos:</h4>
               <ul>
                 <li *ngFor="let dato of historia.datos_dinamicos">
-                  {{ formatDato(dato) }}
+               
+
+                    {{ dato | datoDinamico }}
                 </li>
               </ul>
             </div>
@@ -100,6 +100,26 @@ import {
     }
   `]
 })
+// export class HistoriaClinicaDialogComponent {
+//   constructor(
+//     @Inject(MAT_DIALOG_DATA)
+//     public data: { pacienteNombre: string; historias: any[] }
+//   ) {}
+
+//   formatearFecha(fecha: string | undefined): string {
+//     if (!fecha) return 'N/A';
+//     return new Date(fecha).toLocaleDateString('es-AR', {
+//       year: 'numeric',
+//       month: 'long',
+//       day: 'numeric'
+//     });
+//   }
+
+//   formatDato(dato: DatoDinamico): string {
+//     return formatearDatoDinamico(dato);
+//   }
+// }
+
 export class HistoriaClinicaDialogComponent {
   constructor(
     @Inject(MAT_DIALOG_DATA)
@@ -114,12 +134,7 @@ export class HistoriaClinicaDialogComponent {
       day: 'numeric'
     });
   }
-
-  formatDato(dato: DatoDinamico): string {
-    return formatearDatoDinamico(dato);
-  }
 }
-
 
 
 

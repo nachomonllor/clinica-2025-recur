@@ -11,8 +11,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { SupabaseService } from '../../../services/supabase.service';
 import { HistoriaClinicaDialogComponent } from '../admin/usuarios-admin/historia-clinica-dialog.component';
-import { PacienteAtendido } from '../../../models/paciente.model';
-import { TurnoDetalle } from '../../../models/turno.model';
 
 // interface PacienteAtendido {
 //   id: string;

@@ -4,8 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { BehaviorSubject, Observable, combineLatest, of } from 'rxjs';
 import { catchError, map, shareReplay, tap } from 'rxjs/operators';
-import { LogIngreso, PageToken } from '../../../models/log.model';
 import { LogIngresosService } from '../../../services/log-ingresos.service';
+import { LogIngreso } from '../../models/log-ingresos.model';
 
 @Component({
   selector: 'app-log-ingresos-admin',

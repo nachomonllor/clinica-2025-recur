@@ -11,8 +11,6 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatCardModule } from '@angular/material/card';
 import { MatSelectModule } from '@angular/material/select';
 import { Router, RouterLink } from '@angular/router';
-import { TurnoService } from '../../../services/turno.service';
-import { TurnoVM } from '../../../models/turno.model';
 import { SupabaseService } from '../../../services/supabase.service';
 import { StatusLabelPipe } from '../../../pipes/status-label.pipe';
 import { StatusBadgeDirective } from '../../../directives/status-badge.directive';

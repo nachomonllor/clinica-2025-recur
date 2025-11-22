@@ -4,7 +4,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { EstadisticasService, PerfilBasico, TurnoEstadistica } from '../../../services/estadisticas.service';
+import { EstadisticasService } from '../../../services/estadisticas.service';
 import { ElevateOnHoverDirective } from '../../../directives/elevate-on-hover.directive';
 import Chart from 'chart.js/auto';
 import * as XLSX from 'xlsx';

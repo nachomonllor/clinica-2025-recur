@@ -51,3 +51,4 @@ export type HistoriaDatoDinamicoUpdate =
   Partial<Omit<HistoriaDatoDinamico, 'id' | 'historia_id'>>;
 
   
+

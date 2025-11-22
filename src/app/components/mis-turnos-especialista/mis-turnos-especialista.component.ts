@@ -16,14 +16,10 @@ import { MatSliderModule } from '@angular/material/slider';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 import { Router } from '@angular/router';
-import { TurnoService } from '../../../services/turno.service';
-import { TurnoEspecialista } from '../../../models/turno-especialista.model';
 import { SupabaseService } from '../../../services/supabase.service';
-import { DatoDinamico } from '../../../models/dato-dinamico.model';
 import Swal from 'sweetalert2';
 import { StatusLabelPipe } from '../../../pipes/status-label.pipe';
 import { StatusBadgeDirective } from '../../../directives/status-badge.directive';
-import { ElevateOnHoverDirective } from '../../../directives/elevate-on-hover.directive';
 
 @Component({
   selector: 'app-mis-turnos-especialista',
