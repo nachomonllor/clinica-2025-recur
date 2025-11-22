@@ -68,6 +68,7 @@
         <span>Siguiente</span><span class="chev right" aria-hidden="true"></span>
       </button>
       <button class="pg square" [disabled]="vm.pageIndex === vm.pageCount - 1" (click)="last(vm.pageCount)" aria-label="Última página">»</button>
+
     </nav>
   </main>
 </section>
@@ -82,8 +83,9 @@
   </section>
 </ng-template>
 
-<pre class="debug">
+<!-- DESCOMENTAR PARA VER EL JSON --> 
+<!-- <pre class="debug">
   {{ (logs$ | async) | json }}
 </pre>
-
+ -->
 

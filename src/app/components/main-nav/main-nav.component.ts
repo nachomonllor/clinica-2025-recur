@@ -8,8 +8,6 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import type { Session } from '@supabase/supabase-js';
 import { SupabaseService } from '../../../services/supabase.service';
-import { Rol } from '../../../models/perfil.model';
-import { NavItem } from '../../../models/nav.models';
 
 //type Rol = 'paciente' | 'especialista' | 'admin';
 

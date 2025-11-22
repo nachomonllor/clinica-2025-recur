@@ -1,75 +1,87 @@
 import { Injectable } from '@angular/core';
-import { from, Observable, of } from 'rxjs';
-import { map, catchError, tap } from 'rxjs/operators';
-import { SupabaseService } from './supabase.service';          
-import { LogIngreso } from '../models/log.model';            
-
-type LogRow = {
-    email: string | null;
-    created_at: string | null;
-};
+import { SupabaseService } from './supabase.service';
+import { LogIngresoTipo } from '../app/models/tipos.model';
+import { LogIngreso, LogIngresoCreate } from '../app/models/log-ingresos.model';
 
 @Injectable({ providedIn: 'root' })
 export class LogIngresosService {
 
-    constructor(private supa: SupabaseService) { }
+  constructor(
+    private readonly supa: SupabaseService,
+  ) {}
 
-    //   /** Inserta una fila en log_ingresos para el usuario actualmente logueado */
-    async registrarIngreso(): Promise<void> {
-        const { data, error } = await this.supa.client.auth.getUser();
-        if (error) {
-            console.error('[LogIngresosService] error getUser', error);
-            return;
-        }
-        const user = data.user;
-        if (!user) return;
+  /**
+   * Registra un ingreso (por defecto LOGIN) para el usuario autenticado.
+   * Si no hay usuario logueado, no hace nada pero loguea un warning.
+   */
+  async registrarIngreso(tipo: LogIngresoTipo = 'LOGIN'): Promise<void> {
+    try {
+      const { data, error } = await this.supa.obtenerUsuarioActual();
 
-        const email = user.email ?? '(sin email)';
+      if (error || !data?.user) {
+        console.warn('[LogIngresosService] No hay usuario autenticado para registrar ingreso', error);
+        return;
+      }
 
-        const { error: insError } = await this.supa.client
-            .from('log_ingresos')
-            .insert({
-                user_id: user.id,
-                email: email
-                // created_at se completa solo con now()
-            });
+      const user = data.user;
 
-        if (insError) {
-            console.error('[LogIngresosService] error insert log_ingresos', insError);
-        }
+      const payload: LogIngresoCreate = {
+        usuario_id: user.id,
+        tipo,
+        ip: null,                        // desde frontend es complicado obtener IP real
+        user_agent: navigator.userAgent, // al menos registramos el user agent
+      };
+
+      const { error: insertError } = await this.supa.client
+        .from('log_ingresos')
+        .insert(payload);
+
+      if (insertError) {
+        console.error('[LogIngresosService] Error al insertar log de ingreso', insertError);
+      }
+    } catch (e) {
+      console.error('[LogIngresosService] Excepción al registrar ingreso', e);
+    }
+  }
+
+  /**
+   * Obtiene logs de ingresos, con filtros opcionales para admin.
+   */
+  async obtenerLogIngresos(params?: {
+    usuarioId?: string;
+    desde?: string;  // ISO
+    hasta?: string;  // ISO
+    tipo?: LogIngresoTipo;
+    limite?: number;
+  }): Promise<{ data: LogIngreso[]; error: any | null }> {
+
+    let query = this.supa.client
+      .from('log_ingresos')
+      .select('*')
+      .order('fecha_hora', { ascending: false });
+
+    if (params?.usuarioId) {
+      query = query.eq('usuario_id', params.usuarioId);
+    }
+    if (params?.tipo) {
+      query = query.eq('tipo', params.tipo);
+    }
+    if (params?.desde) {
+      query = query.gte('fecha_hora', params.desde);
+    }
+    if (params?.hasta) {
+      query = query.lte('fecha_hora', params.hasta);
+    }
+    if (params?.limite && params.limite > 0) {
+      query = query.limit(params.limite);
     }
 
-    /** Devuelve todos los logs ordenados desc por fecha */
-    all$(): Observable<LogIngreso[]> {
-        const query = this.supa.client
-            .from('log_ingresos')
-            .select('email, created_at')
-            .order('created_at', { ascending: false });
+    const { data, error } = await query;
 
-        return from(query).pipe(
-            tap(res => console.log('[log_ingresos] raw supabase', res)),
-            map(({ data, error }) => {
-                if (error) {
-                    console.error('[LogIngresosService] error select log_ingresos', error);
-                    return [] as LogIngreso[];
-                }
+    return {
+      data: (data ?? []) as LogIngreso[],
+      error,
+    };
+  }
 
-                const rows = (data ?? []) as LogRow[];
-
-                const mapped = rows.map(r => ({
-                    email: r.email ?? '(sin email)',
-                    createdAt: r.created_at ?? new Date(0).toISOString()
-                }));
-
-                console.log('[log_ingresos] mapped', mapped);
-                return mapped;
-            }),
-            catchError(err => {
-                console.error('[LogIngresosService] EXCEPTION all$', err);
-                return of<LogIngreso[]>([]);
-            })
-        );
-    }
 }
-
-
