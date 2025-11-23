@@ -207,7 +207,7 @@ export class MainNavComponent implements OnInit, OnDestroy {
       case 'ADMIN':
         return '/turnos-admin';
       default:
-        return '/bienvenida';
+        return '/login';
     }
   }
 }
