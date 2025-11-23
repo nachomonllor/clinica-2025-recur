@@ -1,0 +1,264 @@
+-- =====================================================================================
+--  CLÍNICA ONLINE - ESQUEMA BASE PARA SUPABASE
+--  Schema: esquema_clinica
+--  Incluye:
+--    - usuarios (pacientes, especialistas, admins)
+--    - especialidades y relación con especialistas
+--    - horarios de especialistas
+--    - turnos con estados y comentarios
+--    - historia clínica (datos fijos + dinámicos)
+--    - encuestas de atención
+--    - log de ingresos / visitas
+--    - configuración simple (ej: captcha habilitado)
+-- =====================================================================================
+
+-- Extensión para gen_random_uuid() (ya suele estar en Supabase)
+create extension if not exists pgcrypto;
+
+-- Schema
+create schema if not exists esquema_clinica;
+
+-- -------------------------------------------------------------------
+-- (Opcional) Limpiar tablas si re-ejecutás el script
+-- -------------------------------------------------------------------
+drop table if exists esquema_clinica.encuestas_atencion;
+drop table if exists esquema_clinica.historia_datos_dinamicos;
+drop table if exists esquema_clinica.historia_clinica;
+drop table if exists esquema_clinica.turnos;
+drop table if exists esquema_clinica.horarios_especialista;
+drop table if exists esquema_clinica.usuario_especialidad;
+drop table if exists esquema_clinica.estados_turno;
+drop table if exists esquema_clinica.especialidades;
+drop table if exists esquema_clinica.log_ingresos;
+drop table if exists esquema_clinica.configuracion_sistema;
+drop table if exists esquema_clinica.usuarios;
+
+-- -------------------------------------------------------------------
+-- USUARIOS (PACIENTES, ESPECIALISTAS, ADMINISTRADORES)
+-- -------------------------------------------------------------------
+create table esquema_clinica.usuarios (
+  id uuid primary key default gen_random_uuid(),
+  nombre           text not null,
+  apellido         text not null,
+  edad             integer,
+  dni              text not null unique,
+  obra_social      text,         -- solo para perfil PACIENTE (opcional)
+  email            text not null unique,
+  password         text not null, -- sugerencia: guardar hash, no el texto plano
+  perfil           text not null
+                    check (perfil in ('PACIENTE','ESPECIALISTA','ADMIN')),
+  imagen_perfil_1  text,         -- todos los perfiles
+  imagen_perfil_2  text,         -- solo pacientes (2 imágenes)
+  esta_aprobado    boolean not null default false, -- especialistas: requiere aprobación
+  mail_verificado  boolean not null default false,
+  activo           boolean not null default true,
+  idioma_preferido text not null default 'es',     -- Sprint 6: idiomas
+  fecha_registro   timestamptz not null default now()
+);
+
+-- -------------------------------------------------------------------
+-- ESPECIALIDADES Y RELACIÓN CON ESPECIALISTAS
+-- -------------------------------------------------------------------
+create table esquema_clinica.especialidades (
+  id          uuid primary key default gen_random_uuid(),
+  nombre      text not null unique,
+  descripcion text
+);
+
+-- N:N entre especialistas (usuarios.perfil = 'ESPECIALISTA') y especialidades
+create table esquema_clinica.usuario_especialidad (
+  usuario_id      uuid not null,
+  especialidad_id uuid not null,
+  primary key (usuario_id, especialidad_id),
+  constraint fk_usuario_especialidad_usuario
+    foreign key (usuario_id) references esquema_clinica.usuarios(id),
+  constraint fk_usuario_especialidad_especialidad
+    foreign key (especialidad_id) references esquema_clinica.especialidades(id)
+);
+
+-- -------------------------------------------------------------------
+-- HORARIOS DE ESPECIALISTAS ("Mis horarios")
+-- -------------------------------------------------------------------
+create table esquema_clinica.horarios_especialista (
+  id                      uuid primary key default gen_random_uuid(),
+  especialista_id         uuid not null,
+  especialidad_id         uuid, -- opcional, por si el horario depende de la especialidad
+  dia_semana              smallint not null, -- 0=domingo, 1=lunes, ... (definir en código)
+  hora_desde              time not null,
+  hora_hasta              time not null,
+  duracion_turno_minutos  integer not null default 30, -- mínima 30, modificable
+  constraint fk_horario_especialista_usuario
+    foreign key (especialista_id) references esquema_clinica.usuarios(id),
+  constraint fk_horario_especialista_especialidad
+    foreign key (especialidad_id) references esquema_clinica.especialidades(id)
+);
+
+create index idx_horario_especialista
+  on esquema_clinica.horarios_especialista (especialista_id, dia_semana);
+
+-- -------------------------------------------------------------------
+-- ESTADOS DE TURNO
+-- -------------------------------------------------------------------
+create table esquema_clinica.estados_turno (
+  id          uuid primary key default gen_random_uuid(),
+  codigo      text not null unique, -- ej: PENDIENTE, ACEPTADO, RECHAZADO, CANCELADO, FINALIZADO
+  descripcion text,
+  orden       integer
+);
+
+-- -------------------------------------------------------------------
+-- TURNOS
+-- -------------------------------------------------------------------
+create table esquema_clinica.turnos (
+  id                  uuid primary key default gen_random_uuid(),
+  paciente_id         uuid not null,
+  especialista_id     uuid not null,
+  especialidad_id     uuid not null,
+  estado_turno_id     uuid not null,
+  fecha_hora_inicio   timestamptz not null,
+  fecha_hora_fin      timestamptz not null,
+  motivo              text,        -- motivo del turno (solicitud)
+  comentario          text,        -- comentario de cancelación / rechazo / reseña final
+  fecha_creacion      timestamptz not null default now(),
+  fecha_ultima_actualizacion timestamptz not null default now(),
+  constraint fk_turno_paciente
+    foreign key (paciente_id) references esquema_clinica.usuarios(id),
+  constraint fk_turno_especialista
+    foreign key (especialista_id) references esquema_clinica.usuarios(id),
+  constraint fk_turno_especialidad
+    foreign key (especialidad_id) references esquema_clinica.especialidades(id),
+  constraint fk_turno_estado
+    foreign key (estado_turno_id) references esquema_clinica.estados_turno(id)
+);
+
+create index idx_turnos_paciente_fecha
+  on esquema_clinica.turnos (paciente_id, fecha_hora_inicio);
+
+create index idx_turnos_especialista_fecha
+  on esquema_clinica.turnos (especialista_id, fecha_hora_inicio);
+
+create index idx_turnos_especialidad_fecha
+  on esquema_clinica.turnos (especialidad_id, fecha_hora_inicio);
+
+-- -------------------------------------------------------------------
+-- HISTORIA CLÍNICA (UNA ENTRADA POR ATENCIÓN / CONTROL)
+--  - 4 datos fijos: altura, peso, temperatura, presión
+--  - datos dinámicos en tabla aparte
+-- -------------------------------------------------------------------
+create table esquema_clinica.historia_clinica (
+  id              uuid primary key default gen_random_uuid(),
+  paciente_id     uuid not null,
+  especialista_id uuid not null,
+  turno_id        uuid,       -- referencia opcional al turno que originó la atención
+  fecha_registro  timestamptz not null default now(),
+  altura          numeric(5,2),  -- en cm o m, según convención
+  peso            numeric(5,2),  -- kg
+  temperatura     numeric(4,1),  -- °C
+  presion         text,          -- ej: "120/80"
+  constraint fk_historia_paciente
+    foreign key (paciente_id) references esquema_clinica.usuarios(id),
+  constraint fk_historia_especialista
+    foreign key (especialista_id) references esquema_clinica.usuarios(id),
+  constraint fk_historia_turno
+    foreign key (turno_id) references esquema_clinica.turnos(id)
+);
+
+create index idx_historia_paciente_fecha
+  on esquema_clinica.historia_clinica (paciente_id, fecha_registro);
+
+create index idx_historia_especialista_fecha
+  on esquema_clinica.historia_clinica (especialista_id, fecha_registro);
+
+-- Datos dinámicos de la historia clínica
+--  - Se usarán tanto para los 3 campos dinámicos "clave/valor" (Sprint 3)
+--    como para los 3 nuevos de Sprint 5 (rango, numérico, sí/no)
+create table esquema_clinica.historia_datos_dinamicos (
+  id            uuid primary key default gen_random_uuid(),
+  historia_id   uuid not null,
+  clave         text not null,  -- nombre del dato dinámico
+  tipo_control  text,           -- 'OTRO', 'RANGO_0_100', 'NUMERICO', 'SI_NO', etc.
+  valor_texto   text,
+  valor_numerico numeric,
+  valor_boolean boolean,
+  constraint fk_historiadato_historia
+    foreign key (historia_id) references esquema_clinica.historia_clinica(id)
+    on delete cascade
+);
+
+create index idx_historiadato_historia
+  on esquema_clinica.historia_datos_dinamicos (historia_id);
+
+-- -------------------------------------------------------------------
+-- ENCUESTA DE ATENCIÓN (1 POR TURNO, COMPLETADA POR EL PACIENTE)
+--  - 1 cuadro de texto, estrellas, radio, check, rango, etc.
+-- -------------------------------------------------------------------
+create table esquema_clinica.encuestas_atencion (
+  id                 uuid primary key default gen_random_uuid(),
+  turno_id           uuid not null unique,
+  paciente_id        uuid not null,
+  especialista_id    uuid not null,
+  fecha_respuesta    timestamptz not null default now(),
+  comentario         text,      -- único cuadro de texto
+  estrellas          smallint,  -- 1..5 recomendado
+  respuesta_radio    text,
+  respuesta_checkbox text,      -- ej: valores separados por coma
+  valor_rango        integer,
+  constraint fk_encuesta_turno
+    foreign key (turno_id) references esquema_clinica.turnos(id)
+      on delete cascade,
+  constraint fk_encuesta_paciente
+    foreign key (paciente_id) references esquema_clinica.usuarios(id),
+  constraint fk_encuesta_especialista
+    foreign key (especialista_id) references esquema_clinica.usuarios(id)
+);
+
+create index idx_encuesta_especialista
+  on esquema_clinica.encuestas_atencion (especialista_id, fecha_respuesta);
+
+create index idx_encuesta_paciente
+  on esquema_clinica.encuestas_atencion (paciente_id, fecha_respuesta);
+
+-- -------------------------------------------------------------------
+-- LOG DE INGRESOS / VISITAS (para informes del Sprint 4 y 6)
+-- -------------------------------------------------------------------
+create table esquema_clinica.log_ingresos (
+  id          uuid primary key default gen_random_uuid(),
+  usuario_id  uuid not null,
+  fecha_hora  timestamptz not null default now(),
+  tipo        text not null default 'LOGIN',  -- LOGIN, VISITA, etc.
+  ip          text,
+  user_agent  text,
+  constraint fk_login_usuario
+    foreign key (usuario_id) references esquema_clinica.usuarios(id)
+);
+
+create index idx_log_usuario_fecha
+  on esquema_clinica.log_ingresos (usuario_id, fecha_hora);
+
+-- -------------------------------------------------------------------
+-- CONFIGURACIÓN GENERAL DEL SISTEMA
+--  Ejemplo: captcha habilitado/deshabilitado
+-- -------------------------------------------------------------------
+create table esquema_clinica.configuracion_sistema (
+  clave         text primary key,
+  valor_texto   text,
+  valor_numero  numeric,
+  valor_boolean boolean
+);
+
+-- -------------------------------------------------------------------
+-- SEED BÁSICO
+-- -------------------------------------------------------------------
+
+-- Estados de turno (podés ajustar textos si querés)
+insert into esquema_clinica.estados_turno (id, codigo, descripcion, orden) values
+  (gen_random_uuid(), 'PENDIENTE', 'Turno pendiente de aceptación', 1),
+  (gen_random_uuid(), 'ACEPTADO',  'Turno aceptado por el especialista', 2),
+  (gen_random_uuid(), 'RECHAZADO', 'Turno rechazado por el especialista', 3),
+  (gen_random_uuid(), 'CANCELADO', 'Turno cancelado por paciente / especialista / administrador', 4),
+  (gen_random_uuid(), 'FINALIZADO','Turno realizado / finalizado', 5);
+
+-- Config para el captcha (Sprint 5) - lo podés consultar desde la app
+insert into esquema_clinica.configuracion_sistema (clave, valor_boolean)
+values ('captcha_habilitado', true)
+on conflict (clave) do nothing;

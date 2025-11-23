@@ -37,7 +37,7 @@ export class PerfilUsuarioComponent implements OnInit {
   constructor(
     private supa: SupabaseService,
     private router: Router
-  ) {}
+  ) { }
 
   async ngOnInit(): Promise<void> {
     try {
@@ -73,8 +73,8 @@ export class PerfilUsuarioComponent implements OnInit {
       const rolRaw = String(u.perfil ?? meta.rol ?? 'PACIENTE').toUpperCase();
       const rol: Rol =
         rolRaw === 'ESPECIALISTA' ? 'ESPECIALISTA' :
-        rolRaw === 'ADMIN' ? 'ADMIN' :
-        'PACIENTE';
+          rolRaw === 'ADMIN' ? 'ADMIN' :
+            'PACIENTE';
 
       // 4) Especialidades: primero desde tablas, luego metadata como fallback
       let especialidades: string[] = [];
@@ -124,16 +124,16 @@ export class PerfilUsuarioComponent implements OnInit {
       // 6) Mapear al modelo de la UI (UsuarioPerfil)
       this.usuario = {
         id: userId,
-        nombre:   (u.nombre   ?? meta.nombre)   ?? '',
+        nombre: (u.nombre ?? meta.nombre) ?? '',
         apellido: (u.apellido ?? meta.apellido) ?? '',
         rol,
         edad,
-        dni:   (u.dni ?? meta.dni) ?? '',
+        dni: (u.dni ?? meta.dni) ?? '',
         email: (u.email ?? authUser.email) ?? '',
 
-        telefono:  null,                // esos campos no existen en la tabla nueva
+        telefono: null,                // esos campos no existen en la tabla nueva
         direccion: null,
-        ciudad:    null,
+        ciudad: null,
         obraSocial: u.obra_social ?? null,
 
         especialidades,
@@ -145,8 +145,8 @@ export class PerfilUsuarioComponent implements OnInit {
         bio:
           rol === 'ESPECIALISTA'
             ? (especialidades.length
-                ? `Especialista en ${especialidades.join(', ')}`
-                : 'Especialista de la clínica.')
+              ? `Especialista en ${especialidades.join(', ')}`
+              : 'Especialista de la clínica.')
             : rol === 'ADMIN'
               ? 'Administrador del sistema de la clínica.'
               : 'Paciente de la clínica.',
@@ -207,6 +207,8 @@ export class PerfilUsuarioComponent implements OnInit {
   verTurnos() {
     if (this.usuario) {
       console.log('Ver turnos de', this.usuario.id);
+
+      this.router.navigate(['/admin/turnos'], { queryParams: { usuario: this.usuario.id } });
     }
   }
 }

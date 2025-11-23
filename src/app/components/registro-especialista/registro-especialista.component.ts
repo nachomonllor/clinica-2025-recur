@@ -23,6 +23,10 @@ import { SupabaseService } from '../../../services/supabase.service';
 import { environment } from '../../../environments/environment';
 import { CaptchaComponent } from '../captcha/captcha.component';
 
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatIconModule } from '@angular/material/icon';
+
+
 // ===== Validadores para selección múltiple =====
 function minSelected(min: number): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
@@ -50,7 +54,12 @@ function maxSelected(max: number): ValidatorFn {
     MatSelectModule,
     MatButtonModule,
     MatCardModule,
-    CaptchaComponent
+    CaptchaComponent,
+  
+    // MatSelectModule,  // <- ya no hace falta si no lo usás en otro lado
+   
+    MatButtonToggleModule, // NUEVO
+    MatIconModule,         // NUEVO
   ],
   templateUrl: './registro-especialista.component.html',
   styleUrls: ['./registro-especialista.component.scss']
@@ -88,6 +97,11 @@ export class RegistroEspecialistaComponent implements OnInit {
     otraEspecialidad: FormControl<string | null>;
     imagenPerfil: FormControl<File | null>;
   }>;
+
+  get especialidadesSeleccionadas(): string[] {
+    return (this.registroForm?.get('especialidades')?.value as string[]) || [];
+  }
+
 
   constructor(
     public fb: FormBuilder,

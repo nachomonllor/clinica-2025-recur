@@ -4,7 +4,7 @@
 
   <!-- form [formGroup]="f" (ngSubmit)="onSubmit()" -->
 
-    <form [formGroup]="registroForm" (ngSubmit)="onSubmit()" autocomplete="off">
+  <form [formGroup]="registroForm" (ngSubmit)="onSubmit()" autocomplete="off">
 
 
     <mat-form-field appearance="outline" class="full-width">
@@ -51,12 +51,13 @@
     </mat-form-field>
 
     <!-- ESPECIALIDADES -->
-    <mat-form-field appearance="outline" class="full-width">
+
+    <!-- <mat-form-field appearance="outline" class="full-width">
       <mat-label>Especialidades</mat-label>
       <mat-select formControlName="especialidades" multiple>
         <mat-option *ngFor="let esp of especialidadesBase" [value]="esp">{{ esp }}</mat-option>
       </mat-select>
-      <mat-hint>Elegí entre 1 y {{ maxEspecialidades }} especialidades.</mat-hint> <!-- NUEVO -->
+      <mat-hint>Elegí entre 1 y {{ maxEspecialidades }} especialidades.</mat-hint> 
       <mat-error
         *ngIf="f.get('especialidades')?.hasError('required') || f.get('especialidades')?.hasError('minSelected')">
         Seleccioná al menos una.
@@ -64,15 +65,73 @@
       <mat-error *ngIf="f.get('especialidades')?.hasError('maxSelected')">
         Máximo {{ maxEspecialidades }} especialidades.
       </mat-error>
-    </mat-form-field>
+    </mat-form-field> -->
 
-    <mat-form-field *ngIf="f.get('especialidades')?.value?.includes('Otro')" appearance="outline" class="full-width">
+    <!-- ESPECIALIDADES (botones, no combo) -->
+    <div class="especialidades-section"
+      [class.has-error]="f.get('especialidades')?.invalid && f.get('especialidades')?.touched">
+      <div class="especialidades-header">
+        <span class="label">Especialidades</span>
+        <span class="counter">
+          {{ especialidadesSeleccionadas.length }}/{{ maxEspecialidades }}
+        </span>
+      </div>
+
+      <mat-button-toggle-group formControlName="especialidades" multiple class="especialidades-toggle-group">
+        <mat-button-toggle *ngFor="let esp of especialidadesBase" [value]="esp" class="especialidad-toggle" [disabled]="loading ||
+            (
+              !especialidadesSeleccionadas.includes(esp) &&
+              especialidadesSeleccionadas.length >= maxEspecialidades
+            )
+          ">
+          <mat-icon class="check-icon" *ngIf="especialidadesSeleccionadas.includes(esp)">
+            check
+          </mat-icon>
+          <span>{{ esp }}</span>
+        </mat-button-toggle>
+      </mat-button-toggle-group>
+
+      <div class="especialidades-hint">
+        Elegí entre 1 y {{ maxEspecialidades }} especialidades.
+      </div>
+
+      <div class="especialidades-error" *ngIf="f.get('especialidades')?.touched">
+        <span *ngIf="
+            f.get('especialidades')?.hasError('required') ||
+            f.get('especialidades')?.hasError('minSelected')
+          ">
+          Seleccioná al menos una.
+        </span>
+        <span *ngIf="f.get('especialidades')?.hasError('maxSelected')">
+          Máximo {{ maxEspecialidades }} especialidades.
+        </span>
+      </div>
+    </div>
+    <!-- FIN ESPECIALIDADES -->
+
+
+
+    <!-- <mat-form-field *ngIf="f.get('especialidades')?.value?.includes('Otro')" appearance="outline" class="full-width">
+      <mat-label>Agregar especialidad</mat-label>
+      <input matInput formControlName="otraEspecialidad" placeholder="Ej: Traumatología" />
+      <mat-error *ngIf="f.get('otraEspecialidad')?.hasError('required')">
+        Indicá la especialidad.
+      </mat-error>
+    </mat-form-field> -->
+
+    <mat-form-field
+      *ngIf="especialidadesSeleccionadas.includes('Otro')"
+      appearance="outline"
+      class="full-width"
+    >
       <mat-label>Agregar especialidad</mat-label>
       <input matInput formControlName="otraEspecialidad" placeholder="Ej: Traumatología" />
       <mat-error *ngIf="f.get('otraEspecialidad')?.hasError('required')">
         Indicá la especialidad.
       </mat-error>
     </mat-form-field>
+
+
 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Correo Electrónico</mat-label>
