@@ -160,7 +160,7 @@ export class BienvenidaComponent implements OnInit, OnDestroy {
 
         default:
           // fallback defensivo
-          await this.router.navigate(['/bienvenida']);
+          await this.router.navigate(['/login']);
           break;
       }
 

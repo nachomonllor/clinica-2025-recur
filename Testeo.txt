@@ -1,0 +1,386 @@
+## 1.  testear punto por punto
+
+1. **Armar una tabla/lista** (en Excel, Notion, Google Sheets, lo que uses) con columnas tipo:
+
+   * ID / Sprint
+   * Sección / Pantalla
+   * Rol (Paciente / Especialista / Admin)
+   * Requisito (copiado/resumido de la consigna)
+   * ¿Cumple? (Sí / No)
+   * Comentarios / bugs
+
+2. **Recorrer la app por rol**, no por pantalla:
+
+   * Crear usuario Paciente de prueba
+   * Crear Especialista de prueba
+   * Crear Admin de prueba
+   * Con cada uno, recorrer todas las secciones que le corresponden y completar el checklist.
+
+3. Para cada ítem:
+
+   * Hacer **al menos**:
+
+     * 1 caso “feliz” (todo bien).
+     * 1 caso de error (datos inválidos, estados que no permiten la acción, etc.).
+
+4. Al final, revisás la tabla: todo lo que quede en “NO” o con comentarios raros, son cosas a corregir antes de entregar.
+
+---
+
+## 2. Checklist por sprint
+
+
+### ✅ Sprint 1 – Autenticación y usuarios 
+
+**Requisitos mínimos**
+
+* [ ] ¿La app tiene favicon?
+* [ ] ¿Está subida a la web y accesible por URL?
+* [ ] ¿Hay algún loading/spinner visible en pantallas de carga (por ejemplo al loguear, cargar turnos, etc.)?
+
+**Página de bienvenida**
+
+* [ ] ¿Existe una página de bienvenida (home) diferenciada del resto?
+* [ ] ¿Tiene accesos claros al **Login** y al **Registro**?
+
+**Registro**
+
+*Paciente*
+
+* [ ] ¿Puedo registrar un Paciente?
+* [ ] ¿El formulario de paciente pide: Nombre, Apellido, Edad, DNI, Obra Social, Mail, Contraseña, 2 imágenes de perfil?
+* [ ] ¿Valida campos obligatorios vacíos?
+* [ ] ¿Valida formato de mail?
+* [ ] ¿Valida que la contraseña cumpla con las reglas que hayas definido?
+* [ ] ¿Valida que suba exactamente 2 imágenes (o al menos 2, según diseño)?
+
+*Especialista*
+
+* [ ] ¿Puedo registrar un Especialista?
+* [ ] ¿Pide: Nombre, Apellido, Edad, DNI, Especialidad, Mail, Contraseña, imagen de perfil?
+* [ ] ¿Permite elegir especialidad de una lista **y** agregar una nueva si no está?
+* [ ] ¿Se guardan correctamente las especialidades múltiples si el especialista tiene más de una?
+* [ ] ¿Los campos están validados igual que en paciente (obligatorios, mail, etc.)?
+
+*Generales*
+
+* [ ] ¿Los mensajes de error de validación se muestran claramente?
+
+**Login**
+
+* [ ] ¿Puedo ingresar al sistema con un usuario Paciente con mail verificado?
+* [ ] ¿Puedo ingresar al sistema con un Especialista cuando ya fue aprobado por un Admin y su mail verificado?
+* [ ] ¿Un Especialista no aprobado ve algún mensaje/impedimento al intentar loguearse?
+* [ ] ¿Un Paciente con mail sin verificar no puede entrar y ve el mensaje correspondiente?
+* [ ] ¿Existen “botones de acceso rápido” (por ejemplo login rápido de un usuario demo, o links claros a las secciones)? (según cómo lo implementaste)
+
+**Sección Usuarios (solo Admin)**
+
+* [ ] ¿Sólo el Admin puede ver esta sección?
+* [ ] ¿Se ven todos los usuarios (Pacientes, Especialistas y Admins) con su información?
+* [ ] ¿El Admin puede **habilitar/inhabilitar** el acceso de los Especialistas?
+* [ ] ¿Al inhabilitar un especialista, éste ya no puede ingresar?
+* [ ] ¿Desde aquí se pueden crear nuevos usuarios igual que en Registro?
+* [ ] ¿Se puede crear un usuario **Administrador** con: Nombre, Apellido, Edad, DNI, Mail, Password, imagen de perfil?
+* [ ] ¿Las validaciones se aplican también en esta pantalla de alta de usuarios?
+
+---
+
+### ✅ Sprint 2 – Turnos, filtros y captcha 
+
+**Requisitos mínimos**
+
+* [ ] ¿El formulario de registro (o donde lo decidiste) tiene un Captcha (Google o propio)?
+* [ ] ¿Si el Captcha está mal, no deja registrarse?
+* [ ] ¿Existe un README en el proyecto con:
+
+  * [ ] Descripción de la clínica / sistema
+  * [ ] Pantallas principales
+  * [ ] Cómo acceder a cada sección
+  * [ ] Qué contiene cada sección?
+
+---
+
+#### Mis Turnos – como PACIENTE
+
+* [ ] Logueado como Paciente, ¿existe una sección “Mis turnos”?
+* [ ] ¿Solo muestra los turnos de ese paciente?
+
+*Filtro (único – sin combobox)*
+
+* [ ] ¿Hay un filtro único que permite buscar por Especialidad o Especialista sin usar combobox (por ejemplo, un input de texto)?
+
+*Acciones y visibilidades*
+
+Para cada turno en el listado:
+
+* [ ] ¿El estado del turno está bien visible (pendiente, aceptado, cancelado, realizado, etc.)?
+* [ ] ¿Solo se muestra la acción que el usuario puede hacer en ese estado?
+
+Acciones específicas:
+
+* [ ] **Cancelar turno**
+
+  * [ ] Solo aparece si el turno **no fue realizado**.
+  * [ ] Al cancelar, pide comentario de por qué se cancela.
+  * [ ] El estado del turno cambia correctamente.
+* [ ] **Ver reseña**
+
+  * [ ] Solo aparece si el turno tiene reseña/comentario cargado.
+* [ ] **Completar encuesta**
+
+  * [ ] Solo aparece si el especialista marcó el turno como realizado y dejó reseña.
+  * [ ] Al completarla, se guarda correctamente.
+* [ ] **Calificar Atención**
+
+  * [ ] Solo aparece cuando el turno está realizado.
+  * [ ] Permite dejar comentario sobre la atención del especialista y se guarda correctamente.
+
+---
+
+#### Mis Turnos – como ESPECIALISTA
+
+* [ ] Logueado como Especialista, ¿existe “Mis turnos”?
+* [ ] ¿Solo ve turnos asignados a ese especialista?
+
+*Filtro (único – sin combobox)*
+
+* [ ] ¿Puede filtrar por Especialidad o Paciente con un solo filtro (sin combobox)?
+
+*Acciones según estado*
+
+Para un turno en cada estado, revisá:
+
+* [ ] **Cancelar turno**
+
+  * [ ] Solo visible si el turno NO está Aceptado, Realizado o Rechazado.
+  * [ ] Obliga a dejar comentario de por qué lo cancela.
+* [ ] **Rechazar turno**
+
+  * [ ] Solo visible si el turno NO está Aceptado, Realizado o Cancelado.
+  * [ ] Obliga comentario de rechazo.
+* [ ] **Aceptar turno**
+
+  * [ ] Solo visible si el turno NO está Realizado, Cancelado o Rechazado.
+* [ ] **Finalizar turno**
+
+  * [ ] Solo visible si el turno fue **Aceptado**.
+  * [ ] Pide reseña o comentario de consulta y diagnóstico (esto se usará como historia clínica base).
+* [ ] **Ver reseña**
+
+  * [ ] Solo visible si el turno tiene comentario/reseña cargada.
+* [ ] ¿Siempre se ve solo la acción que corresponde al estado actual?
+
+---
+
+#### Turnos – (solo Admin)
+
+* [ ] ¿El Admin tiene una sección “Turnos” con todos los turnos de la clínica?
+* [ ] ¿Hay filtro único por: Especialidad y Especialista, sin combobox?
+* [ ] **Cancelar turno (Admin)**
+
+  * [ ] Solo se puede si el turno NO está Aceptado, Realizado o Rechazado.
+  * [ ] Pide comentario de cancelación.
+  * [ ] Cambia correctamente el estado.
+
+---
+
+#### Solicitar Turno
+
+*Acceso*
+
+* [ ] ¿La sección “Solicitar turno” está disponible para Paciente y Admin?
+
+*Funcionalidad*
+
+* [ ] ¿Se selecciona Especialidad?
+* [ ] ¿Se selecciona Especialista (en función de la especialidad)?
+* [ ] ¿Se selecciona día y horario del turno?
+* [ ] ¿NO se usa Datepicker (es decir, elegís de otro tipo de control propio)?
+* [ ] ¿Sólo se permiten turnos dentro de los **próximos 15 días**? (Intentar elegir una fecha fuera de rango para comprobar)
+* [ ] ¿Los horarios disponibles respetan la disponibilidad del especialista?
+* [ ] Como Admin, ¿además se puede seleccionar qué Paciente es el dueño del turno?
+
+---
+
+#### Mi Perfil / Mis horarios
+
+* [ ] ¿Cada usuario tiene sección “Mi perfil” con sus datos (Nombre, Apellido, imágenes, etc.)?
+* [ ] Como Especialista, ¿existe “Mis horarios”?
+* [ ] En “Mis horarios”, ¿el especialista puede marcar su disponibilidad (días/horarios)?
+* [ ] ¿Se tiene en cuenta que el especialista puede tener más de una especialidad asociada?
+
+---
+
+### ✅ Sprint 3 – Historia clínica y descargas 
+
+**Requisitos mínimos (al menos una opción)**
+
+* [ ] Opción 1: ¿El Admin puede descargar un Excel con datos de usuarios desde la sección Usuarios?
+
+* **o**
+
+* [ ] Opción 2: ¿El Paciente puede descargar un PDF con su historia clínica desde Mi perfil, con:
+
+  * [ ] Logo de la clínica
+  * [ ] Título del informe
+  * [ ] Fecha de emisión?
+
+* [ ] ¿Hay al menos 2 animaciones de transición entre componentes al navegar?
+
+---
+
+#### Historia clínica
+
+*Visibilidad*
+
+* [ ] ¿El Paciente ve su historia clínica en “Mi perfil”?
+* [ ] ¿El Admin ve la historia clínica desde la sección Usuarios?
+* [ ] ¿Los Especialistas tienen una sección “Pacientes” donde solo aparecen aquellos que atendieron al menos una vez, y desde allí pueden ver la historia clínica?
+
+*Carga (Especialista al finalizar turno)*
+
+* [ ] ¿Al finalizar un turno, el especialista puede completar la historia clínica de ese paciente?
+* [ ] ¿La historia clínica guarda estos 4 campos fijos?
+
+  * [ ] Altura
+  * [ ] Peso
+  * [ ] Temperatura
+  * [ ] Presión
+* [ ] ¿Permite hasta **tres datos dinámicos** de tipo clave/valor (por ejemplo clave “caries”, valor “4”)?
+* [ ] ¿Se muestran luego correctamente estos datos dinámicos?
+
+---
+
+#### Nuevo filtro de turnos
+
+* [ ] En “Mis turnos” (Paciente) ¿ahora existe un filtro que busca por **cualquier campo** del turno, incluyendo historia clínica (tanto datos fijos como dinámicos)?
+* [ ] En “Mis turnos” (Especialista) ¿lo mismo?
+* [ ] ¿El filtro realmente encuentra por ejemplo por “Altura”, por una clave dinámica, por nombre de paciente, etc.?
+
+---
+
+### ✅ Sprint 4 – Pipes, directivas y estadísticas 
+
+**Requisitos mínimos**
+
+* [ ] ¿El sistema tiene al menos **3 Pipes** propios (no los built‑in) y se usan en la interfaz?
+* [ ] ¿Tiene al menos **3 Directivas** propias (estructurales/atributo) y se usan en componentes?
+
+---
+
+#### Informes / estadísticas (solo Admin)
+
+* [ ] ¿Existe una sección de informes/estadísticas accesible sólo para Admin?
+
+Informes a verificar:
+
+* [ ] **Log de ingresos**: ¿Se ve un listado con usuario, día y horario de cada login?
+* [ ] **Cantidad de turnos por especialidad**: ¿Gráfico o tabla correcto?
+* [ ] **Cantidad de turnos por día**: ¿Gráfico correcto?
+* [ ] **Cantidad de turnos solicitados por médico en un rango de fechas**:
+
+  * [ ] ¿Puedo elegir un médico y un lapso, y ver la cantidad?
+* [ ] **Cantidad de turnos finalizados por médico en un lapso de tiempo**:
+
+  * [ ] ¿Funciona igual, pero contando finalizados?
+
+*Descargas*
+
+* [ ] ¿Puedo descargar estos informes en Excel **o** PDF (al menos un formato por informe, según como lo resolviste)?
+
+---
+
+### ✅ Sprint 5 – Nuevos datos dinámicos y captcha propio 
+
+#### Nuevos datos dinámicos en historia clínica
+
+* [ ] Además de los 3 dinámicos anteriores, ¿se agregan **3 nuevos datos dinámicos**, cada uno con control específico?:
+
+  * [ ] Uno con control de **rango 0–100**.
+  * [ ] Uno con cuadro de texto **numérico**.
+  * [ ] Uno con **switch Si/No**.
+* [ ] ¿Se guardan y se muestran correctamente?
+
+#### Directiva de captcha propio
+
+* [ ] ¿Existe una directiva propia que implementa un captcha (mini ejercicio, suma, letras, etc.)?
+* [ ] ¿La directiva se comunica con el componente padre por Input/Output (por ejemplo emitiendo “captcha válido/ inválido”)?
+* [ ] ¿Este captcha se usa en **toda operación de alta** que realizan Paciente y Profesional (registro de usuario, alta de turno, etc. según definiste)?
+* [ ] ¿Se puede deshabilitar el captcha (alguna configuración / bandera)?
+
+#### Animaciones de transición
+
+* [ ] ¿Hay al menos **6** animaciones de transición distintas entre componentes al navegar?
+
+---
+
+### ✅ Sprint 6 – Idiomas, encuestas y más informes 
+
+#### Idiomas
+
+* [ ] ¿El sistema soporta al menos 3 idiomas: Español, Inglés y Portugués?
+* [ ] ¿Hay alguna forma de cambiar de idioma (botón, selector, etc.)?
+* [ ] ¿Al menos **3 pantallas** completas están correctamente traducidas a los 3 idiomas?
+
+#### Encuesta de atención
+
+*Precondición*
+
+* [ ] ¿Hay datos de al menos 30 días de uso (turnos tomados, atendidos, encuestas) para que las estadísticas tengan sentido? (o datos de prueba que simulen eso)
+
+*Funcionalidad de encuesta*
+
+* [ ] ¿El Paciente puede completar una encuesta de satisfacción sobre un turno?
+* [ ] ¿La encuesta tiene al menos 5 controles, incluyendo obligatoriamente:**
+
+  * [ ] SOLO **un** cuadro de texto (texto libre).
+  * [ ] Estrellas para calificar (rating).
+  * [ ] Radio buttons.
+  * [ ] Checkboxes.
+  * [ ] Control de rango (slider), etc.
+* [ ] ¿Las respuestas se guardan y se usan luego en los informes?
+
+#### Nuevos informes estadísticos
+
+* [ ] **Cantidad de visitas a la clínica** (visitas al sistema): ¿se ve y se actualiza?
+* [ ] **Cantidad de pacientes por especialidad**:
+
+  * [ ] ¿Se grafica?
+  * [ ] ¿Se puede descargar la imagen del gráfico?
+* [ ] **Cantidad de médicos por especialidad**:
+
+  * [ ] ¿Se grafica?
+  * [ ] ¿Se puede descargar la imagen del gráfico?
+* [ ] **Informe basado en encuesta al cliente**:
+
+  * [ ] ¿Muestra los resultados de las encuestas (promedios, distribuciones, etc.)?
+* [ ] **Informe por cantidad de visitas**: mismo de arriba, pero centrado en visitas.
+* [ ] **Informe por paciente**:
+
+  * [ ] ¿Permite seleccionar un paciente y ver todos sus turnos (tomados, suspendidos, pendientes, etc.)?
+
+---
+
+## 3. Ejemplo rápido de caso de prueba
+
+Para que no sea solo checklist, te muestro cómo podés documentar un test (muy resumido):
+
+**Caso:** Registro de Paciente exitoso
+
+* **Rol:** Visitante (no logueado)
+* **Precondiciones:** No existe usuario con el mail `paciente@test.com`.
+* **Pasos:**
+
+  1. Ir a página de Bienvenida → clic en “Registrarse”.
+  2. Elegir tipo “Paciente”.
+  3. Completar todos los campos válidos.
+  4. Subir 2 imágenes.
+  5. Resolver el captcha.
+  6. Enviar formulario.
+* **Resultado esperado:**
+
+  * Se muestra mensaje de registro exitoso.
+  * Se envía mail de verificación (si lo implementaste).
+  * El usuario aparece en la base de datos como Paciente y no puede loguearse hasta verificar el mail.
+
