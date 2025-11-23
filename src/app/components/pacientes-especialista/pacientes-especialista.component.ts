@@ -13,7 +13,11 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { SupabaseService } from '../../../services/supabase.service';
 import { HistoriaClinicaDialogComponent } from '../admin/usuarios-admin/historia-clinica-dialog.component';
 
- import { PacienteAtendido, TurnoDetalle } from '../../models/pacientes-especialista.model';
+import { PacienteAtendido, TurnoDetalle } from '../../models/pacientes-especialista.model';
+
+// ------------------------------------------------
+// ------------------------------------------------
+  
 
 @Component({
   selector: 'app-pacientes-especialista',
@@ -66,6 +70,7 @@ export class PacientesEspecialistaComponent implements OnInit {
     const especialistaId = sessionData.session.user.id;
 
     try {
+      // historias_clinicas sigue siendo válida: paciente_id / especialista_id
       const { data: historias, error: historiasError } = await this.supa.client
         .from('historia_clinica')
         .select('paciente_id')
@@ -85,11 +90,12 @@ export class PacientesEspecialistaComponent implements OnInit {
         return;
       }
 
+      // CAMBIO: ahora usamos esquema_clinica.usuarios en vez de perfiles
       const { data: pacientes, error: pacientesError } = await this.supa.client
-        .from('perfiles')
-        .select('id, nombre, apellido, dni, email, avatar_url')
+        .from('usuarios')
+        .select('id, nombre, apellido, dni, email, imagen_perfil_1, perfil')
         .in('id', pacienteIds)
-        .eq('rol', 'paciente');
+        .eq('perfil', 'PACIENTE'); // check del DDL
 
       if (pacientesError) {
         console.error('[PacientesEspecialista] Error al cargar pacientes', pacientesError);
@@ -102,8 +108,10 @@ export class PacientesEspecialistaComponent implements OnInit {
         apellido: p.apellido || '',
         dni: p.dni || '',
         email: p.email || '',
-        avatar_url: p.avatar_url
+        // CAMBIO: usamos imagen_perfil_1 como avatar
+        avatar_url: p.imagen_perfil_1 || undefined
       }));
+
       this.aplicarFiltro(this.filtro);
     } catch (err) {
       console.error('[PacientesEspecialista] Error', err);
@@ -146,12 +154,20 @@ export class PacientesEspecialistaComponent implements OnInit {
       if (!sessionData?.session) return;
 
       const especialistaId = sessionData.session.user.id;
+
+      // CAMBIO: usamos columnas nuevas de turnos y aprovechamos FK a especialidades / estados_turno
       const { data, error } = await this.supa.client
         .from('turnos')
-        .select('id, fecha_iso, especialidad, estado, resena_especialista')
+        .select(`
+          id,
+          fecha_hora_inicio,
+          comentario,
+          especialidades ( nombre ),
+          estados_turno ( codigo )
+        `)
         .eq('paciente_id', pacienteId)
         .eq('especialista_id', especialistaId)
-        .order('fecha_iso', { ascending: false });
+        .order('fecha_hora_inicio', { ascending: false });
 
       if (error) {
         console.error('[PacientesEspecialista] Error al cargar turnos', error);
@@ -159,16 +175,21 @@ export class PacientesEspecialistaComponent implements OnInit {
       }
 
       this.turnosPaciente = (data || []).map((t: any) => {
-        const fecha = t.fecha_iso ? new Date(t.fecha_iso) : undefined;
+        const fecha = t.fecha_hora_inicio ? new Date(t.fecha_hora_inicio) : undefined;
         const fechaTexto = fecha
           ? fecha.toLocaleString('es-AR', { dateStyle: 'medium', timeStyle: 'short' })
           : 'Fecha no disponible';
+
+        const especialidadNombre = t.especialidades?.nombre ?? 'Sin especialidad';
+        const estadoCodigo = t.estados_turno?.codigo ?? 'PENDIENTE';
+
         return {
           id: t.id,
-          especialidad: t.especialidad ?? 'Sin especialidad',
-          estado: t.estado ?? 'pendiente',
+          especialidad: especialidadNombre,
+          estado: estadoCodigo,
           fechaTexto,
-          resena: (t.resena_especialista || '').trim() || undefined
+          // CAMBIO: usamos comentario como “reseña”
+          resena: (t.comentario || '').trim() || undefined
         } as TurnoDetalle;
       });
     } finally {
@@ -186,12 +207,14 @@ export class PacientesEspecialistaComponent implements OnInit {
       if (!sessionData?.session) return;
 
       const especialistaId = sessionData.session.user.id;
+
+      // CAMBIO: ordenamos por fecha_registro (no created_at)
       const { data: historias, error } = await this.supa.client
         .from('historia_clinica')
         .select('*')
         .eq('paciente_id', pacienteId)
         .eq('especialista_id', especialistaId)
-        .order('created_at', { ascending: false });
+        .order('fecha_registro', { ascending: false });
 
       if (error) {
         console.error('[PacientesEspecialista] Error al cargar historia clínica', error);
@@ -199,14 +222,16 @@ export class PacientesEspecialistaComponent implements OnInit {
       }
 
       const historiasCompletas = await Promise.all((historias || []).map(async (h: any) => {
+        // CAMBIO: usamos fecha_hora_inicio en turnos
         const { data: turno } = await this.supa.client
           .from('turnos')
-          .select('fecha_iso')
+          .select('fecha_hora_inicio')
           .eq('id', h.turno_id)
           .single();
 
+        // CAMBIO: usamos usuarios en vez de perfiles para el especialista
         const { data: especialista } = await this.supa.client
-          .from('perfiles')
+          .from('usuarios')
           .select('nombre, apellido')
           .eq('id', h.especialista_id)
           .single();
@@ -214,7 +239,9 @@ export class PacientesEspecialistaComponent implements OnInit {
         return {
           ...h,
           especialistaNombre: especialista ? `${especialista.nombre} ${especialista.apellido}` : 'N/A',
-          fechaAtencion: turno?.fecha_iso ? new Date(turno.fecha_iso).toLocaleDateString('es-AR') : 'N/A'
+          fechaAtencion: turno?.fecha_hora_inicio
+            ? new Date(turno.fecha_hora_inicio).toLocaleDateString('es-AR')
+            : 'N/A'
         };
       }));
 
