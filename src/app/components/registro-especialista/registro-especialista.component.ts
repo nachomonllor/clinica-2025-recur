@@ -8,10 +8,10 @@ import {
 import { Router } from '@angular/router';
 
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule }    from '@angular/material/input';
-import { MatButtonModule }   from '@angular/material/button';
-import { MatCardModule }     from '@angular/material/card';
-import { MatSelectModule }   from '@angular/material/select';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatSelectModule } from '@angular/material/select';
 
 import Swal from 'sweetalert2';
 import { SupabaseService } from '../../../services/supabase.service';
@@ -73,42 +73,42 @@ export class RegistroEspecialistaComponent implements OnInit {
 
   // ===== Form (typed) =====
   registroForm!: FormGroup<{
-    nombre:            FormControl<string | null>;
-    apellido:          FormControl<string | null>;
-    dni:               FormControl<string | null>;
-    fechaNacimiento:   FormControl<string | null>; // 'YYYY-MM-DD'
-    email:             FormControl<string | null>;
-    password:          FormControl<string | null>;
-    especialidades:    FormControl<string[] | null>;
-    otraEspecialidad:  FormControl<string | null>;
-    imagenPerfil:      FormControl<File | null>;
+    nombre: FormControl<string | null>;
+    apellido: FormControl<string | null>;
+    dni: FormControl<string | null>;
+    fechaNacimiento: FormControl<string | null>; // 'YYYY-MM-DD'
+    email: FormControl<string | null>;
+    password: FormControl<string | null>;
+    especialidades: FormControl<string[] | null>;
+    otraEspecialidad: FormControl<string | null>;
+    imagenPerfil: FormControl<File | null>;
   }>;
 
   constructor(
     public fb: FormBuilder,
     public supa: SupabaseService,
     private router: Router
-  ) {}
+  ) { }
 
   async ngOnInit(): Promise<void> {
     this.maxDateISO = this.toISODateLocal(new Date());
 
     this.registroForm = this.fb.group({
-      nombre:           this.fb.control<string | null>(null, Validators.required),
-      apellido:         this.fb.control<string | null>(null, Validators.required),
-      dni:              this.fb.control<string | null>(null, Validators.required),
-      fechaNacimiento:  this.fb.control<string | null>(null, [Validators.required, RegistroEspecialistaComponent.fechaNacimientoValidator]),
-      email:            this.fb.control<string | null>(null, [Validators.required, Validators.email]),
-      password:         this.fb.control<string | null>(null, Validators.required),
+      nombre: this.fb.control<string | null>(null, Validators.required),
+      apellido: this.fb.control<string | null>(null, Validators.required),
+      dni: this.fb.control<string | null>(null, Validators.required),
+      fechaNacimiento: this.fb.control<string | null>(null, [Validators.required, RegistroEspecialistaComponent.fechaNacimientoValidator]),
+      email: this.fb.control<string | null>(null, [Validators.required, Validators.email]),
+      password: this.fb.control<string | null>(null, Validators.required),
 
       // CAMBIO: agrega minSelected(1) y maxSelected(maxEspecialidades)
-      especialidades:   this.fb.control<string[] | null>([], [
+      especialidades: this.fb.control<string[] | null>([], [
         Validators.required,
         minSelected(1),                // NUEVO
         maxSelected(this.maxEspecialidades) // NUEVO
       ]),
       otraEspecialidad: this.fb.control<string | null>(null),
-      imagenPerfil:     this.fb.control<File | null>(null, Validators.required),
+      imagenPerfil: this.fb.control<File | null>(null, Validators.required),
     });
 
     // "Otro" => obliga a completar el campo libre
@@ -193,7 +193,7 @@ export class RegistroEspecialistaComponent implements OnInit {
       if (lista.length === 0) {
         try {
           const { data, error } = await this.supa.client
-            .from('especialidades')
+            .from('especialidades') //---- CAMBIO DE NOMBRE A especialidades_catalogo
             .select('nombre, activa')
             .eq('activa', true)
             .order('nombre');
@@ -276,7 +276,7 @@ export class RegistroEspecialistaComponent implements OnInit {
 
     if (code === '23505') {
       if (msg.includes('email')) return 'El correo ya está registrado en el sistema.';
-      if (msg.includes('dni'))   return 'El DNI ya existe en el sistema.';
+      if (msg.includes('dni')) return 'El DNI ya existe en el sistema.';
       return 'Registro duplicado.';
     }
 
@@ -304,11 +304,55 @@ export class RegistroEspecialistaComponent implements OnInit {
     if (error) throw error;
   }
 
+  async registrarEspecialista(form: FormGroup) {
+    this.loading = true;
+    try {
+      // 1) signUp => sesión autenticada inmediata (en dev)
+      const { data: { user }, error: signErr } = await this.supa.client.auth.signUp({
+        email: form.value.email,
+        password: form.value.password
+      });
+      if (signErr || !user) throw signErr ?? new Error('No se creó el usuario');
+
+      const uid = user.id;
+
+      // 2) Crear/actualizar perfil (upsert evita pk duplicada si ya existe por trigger)
+      const { error: perErr } = await this.supa.client.from('perfiles').upsert({
+        id: uid,
+        rol: 'especialista',
+        nombre: form.value.nombre ?? '',
+        apellido: form.value.apellido ?? '',
+        aprobado: false  // lo habilita un admin luego
+      }, { onConflict: 'id' });
+      if (perErr) throw perErr;
+
+      // 3) Crear/actualizar registro de especialista
+      const normalizar = (s: string) => (s || '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      const { error: espErr } = await this.supa.client.from('especialistas').upsert({
+        id: uid,
+        nombre: form.value.nombre ?? '',
+        apellido: form.value.apellido ?? '',
+        especialidad: normalizar(form.value.especialidad) // por ahora texto
+      }, { onConflict: 'id' });
+      if (espErr) throw espErr;
+
+      // listo
+      Swal.fire({ icon: 'success', title: 'Registro enviado', text: 'Un admin debe aprobar tu cuenta', timer: 2500, showConfirmButton: false });
+    } catch (e: any) {
+      console.error('[Registro especialista] ERR', e);
+      Swal.fire('Error', [e.message, e.details, e.hint].filter(Boolean).join(' — '), 'error');
+    } finally {
+      this.loading = false;
+    }
+  }
+
   async onSubmit(): Promise<void> {
     if (this.registroForm.invalid || !this.captchaValido) {
       this.registroForm.markAllAsTouched();
       return;
     }
+
+    await this.registrarEspecialista(this.registroForm); // <=== NUEVO
 
     const fv = this.registroForm.value;
     this.loading = true;
@@ -437,9 +481,10 @@ export class RegistroEspecialistaComponent implements OnInit {
       this.loading = false;
     }
   }
+
+
+
 }
-
-
 
 
 

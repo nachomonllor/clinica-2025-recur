@@ -69,14 +69,3 @@ export class EncuestaAtencionComponent implements OnInit {
 }
 
 
-// import { Component } from '@angular/core';
-
-// @Component({
-//   selector: 'app-encuesta-atencion',
-//   imports: [],
-//   templateUrl: './encuesta-atencion.component.html',
-//   styleUrl: './encuesta-atencion.component.scss'
-// })
-// export class EncuestaAtencionComponent {
-
-// }

@@ -2,7 +2,10 @@
 <mat-card class="registro-container" *ngIf="registroForm as f">
   <mat-card-title>Registro de Especialista</mat-card-title>
 
-  <form [formGroup]="f" (ngSubmit)="onSubmit()">
+  <!-- form [formGroup]="f" (ngSubmit)="onSubmit()" -->
+
+    <form [formGroup]="registroForm" (ngSubmit)="onSubmit()" autocomplete="off">
+
 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Nombre</mat-label>

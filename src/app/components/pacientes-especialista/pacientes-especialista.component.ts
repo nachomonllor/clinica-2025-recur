@@ -9,27 +9,11 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+
 import { SupabaseService } from '../../../services/supabase.service';
 import { HistoriaClinicaDialogComponent } from '../admin/usuarios-admin/historia-clinica-dialog.component';
-import { PacienteAtendido } from '../../../models/paciente.model';
-import { TurnoDetalle } from '../../../models/turno.model';
 
-// interface PacienteAtendido {
-//   id: string;
-//   nombre: string;
-//   apellido: string;
-//   dni: string;
-//   email: string;
-//   avatar_url?: string;
-// }
-
-// interface TurnoDetalle {
-//   id: string;
-//   especialidad: string;
-//   fechaTexto: string;
-//   estado: string;
-//   resena?: string;
-// }
+ import { PacienteAtendido, TurnoDetalle } from '../../models/pacientes-especialista.model';
 
 @Component({
   selector: 'app-pacientes-especialista',
@@ -72,7 +56,7 @@ export class PacientesEspecialistaComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.cargarPacientes();
+    void this.cargarPacientes();
   }
 
   async cargarPacientes(): Promise<void> {
@@ -174,7 +158,7 @@ export class PacientesEspecialistaComponent implements OnInit {
         return;
       }
 
-      this.turnosPaciente = (data || []).map(t => {
+      this.turnosPaciente = (data || []).map((t: any) => {
         const fecha = t.fecha_iso ? new Date(t.fecha_iso) : undefined;
         const fechaTexto = fecha
           ? fecha.toLocaleString('es-AR', { dateStyle: 'medium', timeStyle: 'short' })
@@ -185,7 +169,7 @@ export class PacientesEspecialistaComponent implements OnInit {
           estado: t.estado ?? 'pendiente',
           fechaTexto,
           resena: (t.resena_especialista || '').trim() || undefined
-        };
+        } as TurnoDetalle;
       });
     } finally {
       this.cargandoDetalle = false;
@@ -246,4 +230,3 @@ export class PacientesEspecialistaComponent implements OnInit {
     }
   }
 }
-
