@@ -1,17 +1,3 @@
-// import { Component } from '@angular/core';
-
-// @Component({
-//   selector: 'app-seleccion-estadisticas',
-//   standalone: true,
-//   imports: [],
-//   templateUrl: './seleccion-estadisticas.component.html',
-//   styleUrl: './seleccion-estadisticas.component.scss'
-// })
-// export class SeleccionEstadisticasComponent {
-
-// }
-
-
 import { Component } from '@angular/core';
 import { trigger, transition, style, animate, query, stagger } from '@angular/animations';
 import { Router, RouterLink } from '@angular/router';
@@ -22,15 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { CommonModule } from '@angular/common';
-import { TarjetaEstadistica } from '../../../models/estadisticas.models';
-
-// type TarjetaEstadistica = {
-//   titulo: string;
-//   subtitulo: string;
-//   icono: string;
-//   ruta: string;
-//   aria?: string;
-// };
+import { TarjetaEstadistica } from '../../models/estadistica.model';
 
 @Component({
   selector: 'app-seleccion-estadisticas',

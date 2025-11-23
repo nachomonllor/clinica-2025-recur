@@ -117,3 +117,11 @@ export interface ChartOptions {
   title?: any;
   [key: string]: any;
 }
+
+export type TarjetaEstadistica = {
+  titulo: string;
+  subtitulo: string;
+  icono: string;
+  ruta: string;
+  aria?: string;
+};
