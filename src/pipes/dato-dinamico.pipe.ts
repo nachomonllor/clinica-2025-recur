@@ -1,6 +1,6 @@
 // src/app/pipes/dato-dinamico.pipe.ts
 import { Pipe, PipeTransform } from '@angular/core';
-import { DatoDinamico, formatearDatoDinamico } from '../app/models/dato-dinamico.util';
+import { DatoDinamico, formatearDatoDinamico } from '../app/models/dato-dinamico.model';
 
 @Pipe({
   name: 'datoDinamico',

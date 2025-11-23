@@ -27,6 +27,8 @@ import { EstadisticasService } from '../../../services/estadisticas.service';
 import { RouterLink } from '@angular/router';
 import { ChartOptions } from '../../models/estadistica.model';
 
+type ItemMedico = { medico: string; cantidad: number };
+
 // export type ChartOptions = {
 //   series: ApexAxisChartSeries;
 //   chart: ApexChart;
@@ -276,7 +278,7 @@ export class TurnosPorMedicoComponent implements OnInit {
         )
       )
       .subscribe({
-        next: (items) => {
+         next: (items: ItemMedico[]) => {
           const categorias = items.map(i => i.medico);
           const valores = items.map(i => i.cantidad);
 
