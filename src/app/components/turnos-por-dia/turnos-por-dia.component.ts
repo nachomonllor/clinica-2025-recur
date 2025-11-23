@@ -100,12 +100,21 @@ export class TurnosPorDiaComponent implements OnInit {
         dataLabels: { position: 'top' }
       }
     },
+    // dataLabels: {
+    //   enabled: true,
+    //   formatter: (val) => (typeof val === 'number' ? val.toString() : `${val}`),
+    //   offsetY: -18,
+    //   style: { fontSize: '12px', fontWeight: '700', colors: ['#FFFFFF'] }
+    // },
+
     dataLabels: {
       enabled: true,
-      formatter: (val) => (typeof val === 'number' ? val.toString() : `${val}`),
+      formatter: (val: number | string) =>
+        typeof val === 'number' ? val.toString() : `${val}`,
       offsetY: -18,
       style: { fontSize: '12px', fontWeight: '700', colors: ['#FFFFFF'] }
     },
+
     xaxis: {
       categories: [],
       title: { text: 'Fecha' },

@@ -20,12 +20,9 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { CommonModule } from '@angular/common';
-import {
-  EstadisticasService,
-  EstadisticaTurnosPorEspecialidad,   //    <======= import del tipo
-} from '../../../services/estadisticas.service';
 import { RouterLink } from '@angular/router';
-import { ChartOptions } from '../../models/estadistica.model';
+import { ChartOptions, EstadisticaTurnosPorEspecialidad } from '../../models/estadistica.model';
+import { EstadisticasService } from '../../../services/estadisticas.service';
 
 // ... ChartOptions igual que antes
 

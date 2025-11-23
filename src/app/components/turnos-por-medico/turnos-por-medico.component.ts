@@ -3,8 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import {
-  ApexAxisChartSeries, ApexChart, ApexDataLabels, ApexFill, ApexGrid,
-  ApexPlotOptions, ApexStroke, ApexTitleSubtitle, ApexTooltip, ApexXAxis, ApexYAxis,
+  ApexAxisChartSeries, 
   NgApexchartsModule
 } from 'ng-apexcharts';
 
@@ -26,7 +25,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { map } from 'rxjs/operators';
 import { EstadisticasService } from '../../../services/estadisticas.service';
 import { RouterLink } from '@angular/router';
-import { ChartOptions } from '../../../models/estadisticas.models';
+import { ChartOptions } from '../../models/estadistica.model';
 
 // export type ChartOptions = {
 //   series: ApexAxisChartSeries;
@@ -94,12 +93,21 @@ export class TurnosPorMedicoComponent implements OnInit {
         dataLabels: { position: 'center' }
       }
     },
+    // dataLabels: {
+    //   enabled: true,
+    //   formatter: (val) => (typeof val === 'number' ? val.toString() : `${val}`),
+    //   offsetY: 0,
+    //   style: { fontSize: '12px', fontWeight: '700', colors: ['#FFFFFF'] }
+    // },
+
     dataLabels: {
       enabled: true,
-      formatter: (val) => (typeof val === 'number' ? val.toString() : `${val}`),
-      offsetY: 0,
+      formatter: (val: number | string) =>
+        typeof val === 'number' ? val.toString() : `${val}`,
+      offsetY: -18,
       style: { fontSize: '12px', fontWeight: '700', colors: ['#FFFFFF'] }
     },
+
     // En horizontal, Apex usa xaxis como numérica y coloca categorías en el eje Y automáticamente
     xaxis: {
       title: { text: 'Cantidad de Turnos' },
@@ -215,67 +223,27 @@ export class TurnosPorMedicoComponent implements OnInit {
 
 
   private cargarDatos(): void {
-  this.cargando = true;
-  this.error = undefined;
+    this.cargando = true;
+    this.error = undefined;
 
-  // HARD CODEO  
-  if (this.USO_EL_MOCK) {
-    // Simulamos una latencia pequeña (opcional)
-    setTimeout(() => {
-      // Ordenamos desc por cantidad (igual que en la versión con backend)
-      const items = [...this.MOCK_ITEMS].sort((a, b) => b.cantidad - a.cantidad);
+    // HARD CODEO  
+    if (this.USO_EL_MOCK) {
+      // Simulamos una latencia pequeña (opcional)
+      setTimeout(() => {
+        // Ordenamos desc por cantidad (igual que en la versión con backend)
+        const items = [...this.MOCK_ITEMS].sort((a, b) => b.cantidad - a.cantidad);
 
-      const categorias = items.map(i => i.medico);
-      const valores    = items.map(i => i.cantidad);
-
-      // Altura dinámica para barras horizontales
-      const dynHeight = Math.max(320, 60 * categorias.length + 120);
-
-      this.chartSeries = [{ name: 'Turnos', data: valores }];
-
-      // Garantizamos 'type' y fallback si chart venía undefined
-      const baseChart = this.chartOptions.chart ?? { type: 'bar' as const, height: 420 };
-
-      this.chartOptions = {
-        ...this.chartOptions,
-        chart: { ...baseChart, type: 'bar', height: dynHeight },
-        xaxis: { ...(this.chartOptions.xaxis ?? {}), categories: categorias },
-      };
-
-      this.cargando = false;
-    }, 250);
-
-    return; //salimos para no llamar al backend
-  }
-
-  //  USE_MOCK = false
-  const { desde, hasta, soloFinalizados } = this.filtrosForm.value;
-  const isoDesde = this.toIso(desde ?? undefined);
-  const isoHasta = this.toIso(hasta ?? undefined);
-
-  this.api
-    .turnosPorMedico(isoDesde, isoHasta, !!soloFinalizados)
-    .pipe(
-      // Si el servicio devuelve PostgrestSingleResponse, tomo .data; si ya es array, lo dejo
-      map((res: any) => Array.isArray(res) ? res : (res?.data ?? [])),
-      // Normalizo y ordeno desc
-      map((items: any[]) =>
-        items.map(i => {
-          const fallback = `${(i.apellido ?? '')} ${(i.nombre ?? '')}`.trim();
-          const medico   = ((i.medico ?? fallback) || 'Sin nombre');
-          return { medico, cantidad: Number(i.cantidad ?? 0) };
-        }).sort((a, b) => b.cantidad - a.cantidad)
-      )
-    )
-    .subscribe({
-      next: (items) => {
         const categorias = items.map(i => i.medico);
-        const valores    = items.map(i => i.cantidad);
+        const valores = items.map(i => i.cantidad);
 
+        // Altura dinámica para barras horizontales
         const dynHeight = Math.max(320, 60 * categorias.length + 120);
+
         this.chartSeries = [{ name: 'Turnos', data: valores }];
 
+        // Garantizamos 'type' y fallback si chart venía undefined
         const baseChart = this.chartOptions.chart ?? { type: 'bar' as const, height: 420 };
+
         this.chartOptions = {
           ...this.chartOptions,
           chart: { ...baseChart, type: 'bar', height: dynHeight },
@@ -283,13 +251,53 @@ export class TurnosPorMedicoComponent implements OnInit {
         };
 
         this.cargando = false;
-      },
-      error: () => {
-        this.error = 'No pudimos cargar los datos.';
-        this.cargando = false;
-      }
-    });
-}
+      }, 250);
+
+      return; //salimos para no llamar al backend
+    }
+
+    //  USE_MOCK = false
+    const { desde, hasta, soloFinalizados } = this.filtrosForm.value;
+    const isoDesde = this.toIso(desde ?? undefined);
+    const isoHasta = this.toIso(hasta ?? undefined);
+
+    this.api
+      .turnosPorMedico(isoDesde, isoHasta, !!soloFinalizados)
+      .pipe(
+        // Si el servicio devuelve PostgrestSingleResponse, tomo .data; si ya es array, lo dejo
+        map((res: any) => Array.isArray(res) ? res : (res?.data ?? [])),
+        // Normalizo y ordeno desc
+        map((items: any[]) =>
+          items.map(i => {
+            const fallback = `${(i.apellido ?? '')} ${(i.nombre ?? '')}`.trim();
+            const medico = ((i.medico ?? fallback) || 'Sin nombre');
+            return { medico, cantidad: Number(i.cantidad ?? 0) };
+          }).sort((a, b) => b.cantidad - a.cantidad)
+        )
+      )
+      .subscribe({
+        next: (items) => {
+          const categorias = items.map(i => i.medico);
+          const valores = items.map(i => i.cantidad);
+
+          const dynHeight = Math.max(320, 60 * categorias.length + 120);
+          this.chartSeries = [{ name: 'Turnos', data: valores }];
+
+          const baseChart = this.chartOptions.chart ?? { type: 'bar' as const, height: 420 };
+          this.chartOptions = {
+            ...this.chartOptions,
+            chart: { ...baseChart, type: 'bar', height: dynHeight },
+            xaxis: { ...(this.chartOptions.xaxis ?? {}), categories: categorias },
+          };
+
+          this.cargando = false;
+        },
+        error: () => {
+          this.error = 'No pudimos cargar los datos.';
+          this.cargando = false;
+        }
+      });
+  }
 
 
   async descargarPDF(): Promise<void> {

@@ -125,3 +125,10 @@ export type TarjetaEstadistica = {
   ruta: string;
   aria?: string;
 };
+
+export interface EstadisticaTurnosPorMedico {
+  especialista_id: string;
+  nombre: string | null;
+  apellido: string | null;
+  cantidad: number;
+}
