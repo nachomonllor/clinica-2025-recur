@@ -1,15 +1,29 @@
+import { DatoDinamico } from './dato-dinamico.model';
 import { TipoControl } from './tipos.model';
 
 export interface HistoriaClinica {
   id: string;
+
   paciente_id: string;
   especialista_id: string;
+
+  // en la tabla es opcional, en el código a veces puede venir null
   turno_id: string | null;
-  fecha_registro: string;
+
+  // en tu esquema SQL se llama fecha_registro (timestamptz)
+  fecha_registro: string;       // ISO string
+
+  // por compatibilidad con Supabase (created_at) si en algún momento lo usaste
+  created_at?: string;
+
+  // datos fijos (mejor permitir null por si vienen vacíos)
   altura: number | null;
   peso: number | null;
   temperatura: number | null;
   presion: string | null;
+
+  // columna JSONB o campo que traés “join-eado” con historia_datos_dinamicos
+  datos_dinamicos?: DatoDinamico[] | null;
 }
 
 export interface HistoriaClinicaCreate {

@@ -36,8 +36,8 @@
             <h4>Accesos rápidos</h4>
             <div class="quick-inline-grid">
                 <button type="button" class="inline-fav" *ngFor="let user of accesosRapidos"
-                    [class.rol-paciente]="user.rol === 'paciente'"
-                    [class.rol-especialista]="user.rol === 'especialista'" [class.rol-admin]="user.rol === 'admin'"
+                    [class.rol-paciente]="user.rol === 'PACIENTE'"
+                    [class.rol-especialista]="user.rol === 'ESPECIALISTA'" [class.rol-admin]="user.rol === 'ADMIN'"
                     (click)="activarQuick(user, $event)"
                     [attr.title]="user.nombre + ' (' + (user.rol | titlecase) + ')'">
                     <div class="inline-avatar">

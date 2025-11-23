@@ -10,6 +10,7 @@ import Chart from 'chart.js/auto';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { PerfilBasico, TurnoEstadistica } from '../../models/estadistica.model';
 
 interface ConteoEspecialidad { especialidad: string; cantidad: number; }
 interface ConteoDia { fecha: string; cantidad: number; }
