@@ -269,6 +269,38 @@ export class EstadisticasService {
         return from(this.obtenerTurnosPorEspecialidad({ desde, hasta }));
     }
 
+    // // Perfiles básicos por id, para mostrar nombres en gráficos
+    // async obtenerPerfiles(ids: string[]): Promise<Map<string, PerfilBasico>> {
+    //     const mapa = new Map<string, PerfilBasico>();
+
+    //     if (!ids || !ids.length) {
+    //         return mapa;
+    //     }
+
+    //     const { data, error } = await this.supa.client
+    //         .from('perfiles')
+    //         .select('id, nombre, apellido, email, created_at, updated_at')
+    //         .in('id', ids);
+
+    //     if (error) {
+    //         console.error('[EstadisticasService] Error al obtener perfiles', error);
+    //         throw error;
+    //     }
+
+    //     (data ?? []).forEach((row: any) => {
+    //         mapa.set(row.id, {
+    //             id: row.id,
+    //             nombre: row.nombre ?? null,
+    //             apellido: row.apellido ?? null,
+    //             email: row.email ?? null,
+    //             created_at: row.created_at ?? null,
+    //             updated_at: row.updated_at ?? null
+    //         });
+    //     });
+
+    //     return mapa;
+    // }
+
     // Perfiles básicos por id, para mostrar nombres en gráficos
     async obtenerPerfiles(ids: string[]): Promise<Map<string, PerfilBasico>> {
         const mapa = new Map<string, PerfilBasico>();
@@ -277,13 +309,14 @@ export class EstadisticasService {
             return mapa;
         }
 
+        // CAMBIO =========>>  ahora leemos de esquema_clinica.usuarios en vez de 'perfiles'
         const { data, error } = await this.supa.client
-            .from('perfiles')
-            .select('id, nombre, apellido, email, created_at, updated_at')
+            .from('usuarios')
+            .select('id, nombre, apellido, email, fecha_registro')
             .in('id', ids);
 
         if (error) {
-            console.error('[EstadisticasService] Error al obtener perfiles', error);
+            console.error('[EstadisticasService] Error al obtener perfiles/usuarios', error);
             throw error;
         }
 
@@ -293,8 +326,10 @@ export class EstadisticasService {
                 nombre: row.nombre ?? null,
                 apellido: row.apellido ?? null,
                 email: row.email ?? null,
-                created_at: row.created_at ?? null,
-                updated_at: row.updated_at ?? null
+                // El modelo Estadistica.PerfilBasico espera created_at / updated_at:
+                // usamos fecha_registro como created_at y dejamos updated_at igual o null.
+                created_at: row.fecha_registro ?? null,
+                updated_at: row.fecha_registro ?? null
             });
         });
 
