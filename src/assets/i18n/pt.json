@@ -1,0 +1,32 @@
+{
+  "COMMON": {
+    "LANGUAGE": "Idioma",
+    "ACCEPT": "Aceitar",
+    "CANCEL": "Cancelar",
+    "BACK": "Voltar",
+    "LOGOUT": "Sair"
+  },
+  "WELCOME": {
+    "TITLE": "Clínica Online",
+    "SUBTITLE": "Gerencie suas consultas médicas facilmente",
+    "LOGIN": "Entrar",
+    "REGISTER": "Registrar-se"
+  },
+  "LOGIN": {
+    "TITLE": "Entrar",
+    "EMAIL": "E-mail",
+    "PASSWORD": "Senha",
+    "BUTTON": "Entrar",
+    "AS_PATIENT": "Entrar como paciente",
+    "AS_DOCTOR": "Entrar como especialista"
+  },
+  "APPOINTMENT": {
+    "TITLE": "Solicitar consulta",
+    "SELECT_SPECIALITY": "Selecione uma especialidade",
+    "SELECT_DOCTOR": "Selecione um especialista",
+    "SELECT_DATE": "Selecione a data",
+    "SELECT_TIME": "Selecione o horário",
+    "CONFIRM": "Confirmar consulta"
+  }
+}
+

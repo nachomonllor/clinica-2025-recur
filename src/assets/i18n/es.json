@@ -1,0 +1,31 @@
+{
+  "COMMON": {
+    "LANGUAGE": "Idioma",
+    "ACCEPT": "Aceptar",
+    "CANCEL": "Cancelar",
+    "BACK": "Volver",
+    "LOGOUT": "Cerrar sesión"
+  },
+  "WELCOME": {
+    "TITLE": "Clínica Online",
+    "SUBTITLE": "Gestione sus turnos médicos de forma sencilla",
+    "LOGIN": "Iniciar sesión",
+    "REGISTER": "Registrarse"
+  },
+  "LOGIN": {
+    "TITLE": "Iniciar sesión",
+    "EMAIL": "Correo electrónico",
+    "PASSWORD": "Contraseña",
+    "BUTTON": "Entrar",
+    "AS_PATIENT": "Ingresar como paciente",
+    "AS_DOCTOR": "Ingresar como especialista"
+  },
+  "APPOINTMENT": {
+    "TITLE": "Solicitar turno",
+    "SELECT_SPECIALITY": "Seleccione una especialidad",
+    "SELECT_DOCTOR": "Seleccione un especialista",
+    "SELECT_DATE": "Seleccione fecha",
+    "SELECT_TIME": "Seleccione horario",
+    "CONFIRM": "Confirmar turno"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "COMMON": {
+    "LANGUAGE": "Language",
+    "ACCEPT": "Accept",
+    "CANCEL": "Cancel",
+    "BACK": "Back",
+    "LOGOUT": "Log out"
+  },
+  "WELCOME": {
+    "TITLE": "Online Clinic",
+    "SUBTITLE": "Manage your medical appointments easily",
+    "LOGIN": "Log in",
+    "REGISTER": "Sign up"
+  },
+  "LOGIN": {
+    "TITLE": "Log in",
+    "EMAIL": "Email",
+    "PASSWORD": "Password",
+    "BUTTON": "Sign in",
+    "AS_PATIENT": "Log in as patient",
+    "AS_DOCTOR": "Log in as specialist"
+  },
+  "APPOINTMENT": {
+    "TITLE": "Book appointment",
+    "SELECT_SPECIALITY": "Select a speciality",
+    "SELECT_DOCTOR": "Select a doctor",
+    "SELECT_DATE": "Select date",
+    "SELECT_TIME": "Select time",
+    "CONFIRM": "Confirm appointment"
+  }
+}
+
