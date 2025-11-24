@@ -6,12 +6,6 @@
     "BACK": "Volver",
     "LOGOUT": "Cerrar sesión"
   },
-  "WELCOME": {
-    "TITLE": "Clínica Online",
-    "SUBTITLE": "Gestione sus turnos médicos de forma sencilla",
-    "LOGIN": "Iniciar sesión",
-    "REGISTER": "Registrarse"
-  },
   "LOGIN": {
     "TITLE": "Iniciar sesión",
     "EMAIL": "Correo electrónico",
@@ -39,5 +33,32 @@
     "PACIENTE": "Paciente",
     "ESPECIALISTA": "Especialista",
     "ADMIN": "Administrador"
+  },
+  "WELCOME": {
+    "BRAND": "Clínica Monllor",
+    "TOPBAR_LOGIN": "Ingresar",
+    "TAGLINE": "Cuidamos tu salud con tecnología, compromiso y calidez humana. Turnos online, seguimiento personalizado y atención profesional.",
+    "SPECIALTIES": {
+      "TITLE": "Especialidades",
+      "LINE1": "Clínica Médica · Pediatría · Cardiología",
+      "LINE2": "Dermatología · Nutrición · Psicología"
+    },
+    "SCHEDULES": {
+      "TITLE": "Horarios de Atención",
+      "LINE1": "Lunes a Viernes: 8:00 a 19:00 hs",
+      "LINE2": "Sábados: 9:00 a 14:00 hs"
+    },
+    "LOGIN_CARD": {
+      "TITLE": "Iniciar Sesión",
+      "TEXT": "Para comenzar con las gestiones, ingrese con usuario y contraseña.",
+      "BUTTON": "Ingresar"
+    },
+    "REGISTER_CARD": {
+      "TITLE": "Registrarse",
+      "TEXT": "¿Aún no tenés cuenta? Podés crearla aquí mismo en pocos pasos.",
+      "BUTTON": "Registrarse"
+    },
+    "FOOTER": "Clínica Online — UTN"
   }
+  
 }

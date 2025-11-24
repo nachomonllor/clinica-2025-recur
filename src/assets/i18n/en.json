@@ -6,12 +6,6 @@
     "BACK": "Back",
     "LOGOUT": "Log out"
   },
-  "WELCOME": {
-    "TITLE": "Online Clinic",
-    "SUBTITLE": "Manage your medical appointments easily",
-    "LOGIN": "Log in",
-    "REGISTER": "Sign up"
-  },
   "LOGIN": {
     "TITLE": "Log in",
     "EMAIL": "Email",
@@ -24,7 +18,7 @@
     "QUICK_COMPLETED": "completed. Review the fields and press Sign in.",
     "QUICK_ACCESS": "Quick access",
     "QUICK_NOTE": "Use these shortcuts to auto-fill the login with demo profiles.",
-     "AS_PATIENT": "Log in as patient",
+    "AS_PATIENT": "Log in as patient",
     "AS_DOCTOR": "Log in as specialist"
   },
   "APPOINTMENT": {
@@ -39,5 +33,32 @@
     "PACIENTE": "Patient",
     "ESPECIALISTA": "Specialist",
     "ADMIN": "Admin"
+  },
+  
+  "WELCOME": {
+    "BRAND": "Monllor Clinic",
+    "TOPBAR_LOGIN": "Sign in",
+    "TAGLINE": "We take care of your health with technology, commitment and human warmth. Online appointments, personalised follow-up and professional care.",
+    "SPECIALTIES": {
+      "TITLE": "Specialities",
+      "LINE1": "Internal Medicine · Pediatrics · Cardiology",
+      "LINE2": "Dermatology · Nutrition · Psychology"
+    },
+    "SCHEDULES": {
+      "TITLE": "Opening hours",
+      "LINE1": "Monday to Friday: 8:00 am to 7:00 pm",
+      "LINE2": "Saturday: 9:00 am to 2:00 pm"
+    },
+    "LOGIN_CARD": {
+      "TITLE": "Sign in",
+      "TEXT": "To start managing your appointments, sign in with your email and password.",
+      "BUTTON": "Sign in"
+    },
+    "REGISTER_CARD": {
+      "TITLE": "Sign up",
+      "TEXT": "Don't have an account yet? You can create one in just a few steps.",
+      "BUTTON": "Sign up"
+    },
+    "FOOTER": "Online Clinic — UTN"
   }
 }

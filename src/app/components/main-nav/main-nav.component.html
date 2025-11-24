@@ -1,4 +1,33 @@
 
+
+<mat-toolbar color="primary">
+  <!-- Lo que ya tengas: logo, botones, etc. -->
+
+  <span class="spacer"></span>
+
+  <!-- Selector de idioma -->
+  <button
+    mat-button
+    [matMenuTriggerFor]="langMenu"
+    matTooltip="{{ 'COMMON.LANGUAGE' | translate }}"
+  >
+    <mat-icon>language</mat-icon>
+    {{ 'COMMON.LANGUAGE' | translate }}
+    ({{ idiomaActual() | uppercase }})
+  </button>
+
+  <mat-menu #langMenu="matMenu">
+    <button mat-menu-item (click)="cambiarIdioma('es')">Español</button>
+    <button mat-menu-item (click)="cambiarIdioma('en')">English</button>
+    <button mat-menu-item (click)="cambiarIdioma('pt')">Português</button>
+  </mat-menu>
+
+  <!-- acá seguiría tu menú de usuario / logout -->
+</mat-toolbar>
+
+<!-- -------------------------------------------------------------------------------------- -->
+<!-- -------------------------------------------------------------------------------------- -->
+
 <!-- src/app/components/main-nav/main-nav.component.html -->
 <mat-toolbar class="main-nav" *ngIf="!cargando() && autenticado()">
   <button mat-button class="brand" (click)="irAHOME()" aria-label="Ir al inicio">
