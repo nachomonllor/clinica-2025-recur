@@ -17,6 +17,7 @@ import { Router, RouterModule } from '@angular/router';
 import { SupabaseService } from '../../../services/supabase.service';
 import Swal from 'sweetalert2';
 import { MatIconModule } from '@angular/material/icon';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 // ---------------------------------------------------------------------
 // Tipos locales para el componente (ya no se importan de otros .ts)
@@ -48,7 +49,9 @@ interface PacienteOption {
     MatSelectModule,
     MatButtonModule,
     MatSnackBarModule,
-    MatIconModule
+    MatIconModule,
+
+    TranslateModule
   ],
   templateUrl: './solicitar-turno.component.html',
   styleUrls: ['./solicitar-turno.component.scss']
@@ -88,7 +91,8 @@ export class SolicitarTurnoComponent implements OnInit {
     private fb: FormBuilder,
     private supa: SupabaseService,
     public router: Router,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private translate: TranslateService
   ) {
     // Form básico para que el template no reviente antes de OnInit
     this.inicializarFormularioBasico();
@@ -172,8 +176,16 @@ export class SolicitarTurnoComponent implements OnInit {
       if (esp) {
         this.especialistasFiltrados = this.especialistas.filter(e => e.especialidad === esp);
 
+        // if (this.especialistasFiltrados.length === 0) {
+        //   this.snackBar.open(`No hay especialistas disponibles para ${esp}`, 'Cerrar', { duration: 3000 });
+        // }
+
         if (this.especialistasFiltrados.length === 0) {
-          this.snackBar.open(`No hay especialistas disponibles para ${esp}`, 'Cerrar', { duration: 3000 });
+          this.snackBar.open(
+            this.translate.instant('APPOINTMENT.NO_SPECIALISTS', { speciality: esp }),
+            this.translate.instant('COMMON.CLOSE'),
+            { duration: 3000 }
+          );
         }
 
         especialistaCtrl.reset();
@@ -266,7 +278,7 @@ export class SolicitarTurnoComponent implements OnInit {
         .select('id, nombre, apellido, perfil, esta_aprobado, activo')
         .eq('perfil', 'ESPECIALISTA')
       //  .eq('esta_aprobado', true)  <================================ VERIFICAR SI CARGA APROBADOS O NO APROBADOS
-       // .eq('activo', true);         <================================ VERIFICAR SI CARGA APROBADOS O NO APROBADOS
+      // .eq('activo', true);         <================================ VERIFICAR SI CARGA APROBADOS O NO APROBADOS
 
       if (usuariosErr) throw usuariosErr;
       const usuarios = (usuariosData ?? []) as any[];
@@ -306,11 +318,23 @@ export class SolicitarTurnoComponent implements OnInit {
       this.especialidades = [];
       this.especialistas = [];
       this.especialistasFiltrados = [];
+
+
+
+      // this.snackBar.open(
+      //   'Error al cargar especialidades o especialistas',
+      //   'Cerrar',
+      //   { duration: 4000 }
+      // );
+
       this.snackBar.open(
-        'Error al cargar especialidades o especialistas',
-        'Cerrar',
+        this.translate.instant('APPOINTMENT.ERROR_LOAD_SPECIALTIES'),
+        this.translate.instant('COMMON.CLOSE'),
         { duration: 4000 }
       );
+
+
+
     }
   }
 
@@ -335,7 +359,18 @@ export class SolicitarTurnoComponent implements OnInit {
       );
     } catch (e: any) {
       console.error('[SolicitarTurno] Error al cargar pacientes', e);
-      this.snackBar.open('Error al cargar pacientes', 'Cerrar', { duration: 2500 });
+
+
+      // this.snackBar.open('Error al cargar pacientes', 'Cerrar', { duration: 2500 });
+
+
+      this.snackBar.open(
+        this.translate.instant('APPOINTMENT.ERROR_LOAD_PATIENTS'),
+        this.translate.instant('COMMON.CLOSE'),
+        { duration: 2500 }
+      );
+
+
       this.pacientes = [];
     }
   }
@@ -391,14 +426,24 @@ export class SolicitarTurnoComponent implements OnInit {
     const fv = this.formularioTurno.value;
 
     try {
+      // if (!fv.especialidad || !fv.especialista || !fv.dia || !fv.hora) {
+      //   throw new Error('Faltan datos obligatorios del turno.');
+      // }
+
+      // const pacienteIdFinal = this.esAdmin ? fv.paciente! : this.pacienteId!;
+      // if (!pacienteIdFinal) {
+      //   throw new Error('No se pudo determinar el paciente.');
+      // }
+
       if (!fv.especialidad || !fv.especialista || !fv.dia || !fv.hora) {
-        throw new Error('Faltan datos obligatorios del turno.');
+        throw new Error(this.translate.instant('APPOINTMENT.ERROR_MISSING_FIELDS'));
       }
 
       const pacienteIdFinal = this.esAdmin ? fv.paciente! : this.pacienteId!;
       if (!pacienteIdFinal) {
-        throw new Error('No se pudo determinar el paciente.');
+        throw new Error(this.translate.instant('APPOINTMENT.ERROR_PATIENT_NOT_FOUND'));
       }
+
 
       const especialistaId = fv.especialista!;
       const diaSeleccionado = fv.dia.split('|')[0];  // YYYY-MM-DD
@@ -429,15 +474,26 @@ export class SolicitarTurnoComponent implements OnInit {
         return codigo === 'PENDIENTE' || codigo === 'ACEPTADO';
       });
 
+      // if (hayChoque) {
+      //   throw new Error('Ya existe un turno en ese horario. Por favor, seleccioná otro.');
+      // }
+
       if (hayChoque) {
-        throw new Error('Ya existe un turno en ese horario. Por favor, seleccioná otro.');
+        throw new Error(this.translate.instant('APPOINTMENT.ERROR_SLOT_TAKEN'));
       }
 
       // 2) Obtener id de la especialidad elegida
       const nombreEsp = fv.especialidad;
       const especialidadId = this.especialidadIdPorNombre.get(nombreEsp);
+
+
+      // if (!especialidadId) {
+      //   throw new Error('No se encontró la especialidad seleccionada.');
+      // }
+
+
       if (!especialidadId) {
-        throw new Error('No se encontró la especialidad seleccionada.');
+        throw new Error(this.translate.instant('APPOINTMENT.ERROR_SPECIALITY_NOT_FOUND'));
       }
 
       // 3) Obtener id de estado PENDIENTE
@@ -447,8 +503,12 @@ export class SolicitarTurnoComponent implements OnInit {
         .eq('codigo', 'PENDIENTE')
         .single();
 
+      // if (estadoErr || !estadoPend) {
+      //   throw estadoErr || new Error('No se encontró el estado PENDIENTE.');
+      // }
+
       if (estadoErr || !estadoPend) {
-        throw estadoErr || new Error('No se encontró el estado PENDIENTE.');
+        throw estadoErr || new Error(this.translate.instant('APPOINTMENT.ERROR_STATUS_NOT_FOUND'));
       }
 
       // 4) Insertar turno
@@ -466,10 +526,19 @@ export class SolicitarTurnoComponent implements OnInit {
 
       if (insertErr) throw insertErr;
 
+      // Swal.fire({
+      //   icon: 'success',
+      //   title: 'Turno solicitado',
+      //   text: 'El turno ha sido solicitado exitosamente',
+      //   timer: 2000,
+      //   showConfirmButton: false
+      // });
+
+
       Swal.fire({
         icon: 'success',
-        title: 'Turno solicitado',
-        text: 'El turno ha sido solicitado exitosamente',
+        title: this.translate.instant('APPOINTMENT.SUCCESS_TITLE'),
+        text: this.translate.instant('APPOINTMENT.SUCCESS_TEXT'),
         timer: 2000,
         showConfirmButton: false
       });
@@ -480,12 +549,19 @@ export class SolicitarTurnoComponent implements OnInit {
       } else {
         this.router.navigate(['/mis-turnos-paciente']);
       }
+
     } catch (err: any) {
       console.error('[SolicitarTurno] Error al crear turno', err);
-      Swal.fire('Error', err.message || 'No se pudo solicitar el turno', 'error');
+      Swal.fire(
+        this.translate.instant('COMMON.ERROR_TITLE'),
+        err.message || this.translate.instant('APPOINTMENT.ERROR_SUBMIT_GENERIC'),
+        'error'
+      );
     } finally {
       this.loading = false;
     }
+
+
   }
 
   // =================================================================

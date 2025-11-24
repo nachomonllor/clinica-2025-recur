@@ -19,6 +19,9 @@ import { SupabaseService } from '../../../services/supabase.service';
 import { Rol } from '../../models/tipos.model';
 import { NavItem } from '../../models/nav.models';
 
+import { TranslateModule, TranslateService } from '@ngx-translate/core'; // <= IDIOMAS
+
+
 @Component({
   selector: 'app-main-nav',
   standalone: true,
@@ -29,12 +32,43 @@ import { NavItem } from '../../models/nav.models';
     MatButtonModule,
     MatIconModule,
     MatMenuModule,
-    MatTooltipModule
+    MatTooltipModule,
+    TranslateModule
   ],
   templateUrl: './main-nav.component.html',
   styleUrls: ['./main-nav.component.scss']
 })
 export class MainNavComponent implements OnInit, OnDestroy {
+
+
+
+  protected readonly idiomas = ['es', 'en', 'pt'] as const;
+  protected readonly idiomaActual = signal<string>('es');
+
+
+  constructor(
+    private readonly supabase: SupabaseService,
+    private readonly router: Router,
+    private readonly translate: TranslateService          // < ============= NUEVO
+  ) {
+    const saved = localStorage.getItem('lang');
+    const inicial =
+      saved && this.idiomas.includes(saved as any)
+        ? saved
+        : (this.translate.currentLang || 'es');
+
+    this.idiomaActual.set(inicial);
+    this.translate.use(inicial);
+  }
+
+  protected cambiarIdioma(lang: string): void {
+    if (!this.idiomas.includes(lang as any)) return;
+    this.idiomaActual.set(lang);
+    this.translate.use(lang);
+    localStorage.setItem('lang', lang);
+  }
+
+  // --------------------------------------------------------------------------------------
 
   protected readonly cargando = signal(true);
   protected readonly autenticado = signal(false);
@@ -50,10 +84,10 @@ export class MainNavComponent implements OnInit, OnDestroy {
 
   private unsubscribeAuthChange?: () => void;
 
-  constructor(
-    private readonly supabase: SupabaseService,
-    private readonly router: Router
-  ) {}
+  // constructor(
+  //   private readonly supabase: SupabaseService,
+  //   private readonly router: Router
+  // ) {}
 
   async ngOnInit(): Promise<void> {
     await this.actualizarDesdeSesion();
@@ -148,7 +182,7 @@ export class MainNavComponent implements OnInit, OnDestroy {
 
       const avatarUrl =
         usuario.imagen_perfil_1 &&
-        String(usuario.imagen_perfil_1).trim() !== ''
+          String(usuario.imagen_perfil_1).trim() !== ''
           ? usuario.imagen_perfil_1
           : null;
 

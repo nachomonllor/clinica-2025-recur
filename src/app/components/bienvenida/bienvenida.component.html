@@ -1,4 +1,113 @@
 <section class="hero" [@fadeIn]>
+
+  <!-- <header class="topbar" aria-label="Clínica Online">
+    <div class="brand">
+      <mat-icon>local_hospital</mat-icon>
+      <span>{{ 'WELCOME.BRAND' | translate }}</span>
+    </div>
+    <nav class="top-actions">
+      <a mat-button color="primary" routerLink="/login" *ngIf="!autenticado()">
+        <mat-icon>login</mat-icon>
+        {{ 'WELCOME.TOPBAR_LOGIN' | translate }}
+      </a>
+    </nav>
+  </header> -->
+
+  <header class="topbar" aria-label="Clínica Online">
+    <div class="brand">
+      <mat-icon>local_hospital</mat-icon>
+      <span>{{ 'WELCOME.BRAND' | translate }}</span>
+    </div>
+
+    <nav class="top-actions">
+      <!-- Selector de idioma -->
+      <div class="lang-switch">
+        <button mat-button type="button" *ngFor="let lang of idiomas" (click)="cambiarIdioma(lang)"
+          [class.active]="lang === idiomaActual()">
+          {{ lang | uppercase }}
+        </button>
+      </div>
+
+      <a mat-button color="primary" routerLink="/login" *ngIf="!autenticado()">
+        <mat-icon>login</mat-icon>
+        {{ 'WELCOME.TOPBAR_LOGIN' | translate }}
+      </a>
+    </nav>
+  </header>
+
+
+  <div class="hero-grid">
+    <!-- Columna izquierda -->
+    <div class="copy">
+      <h1>{{ 'WELCOME.BRAND' | translate }}</h1>
+      <p class="lead">
+        {{ 'WELCOME.TAGLINE' | translate }}
+      </p>
+
+      <div class="chips">
+        <div class="chip glass">
+          <h3>
+            <mat-icon>local_offer</mat-icon>
+            {{ 'WELCOME.SPECIALTIES.TITLE' | translate }}
+          </h3>
+          <ul>
+            <li>{{ 'WELCOME.SPECIALTIES.LINE1' | translate }}</li>
+            <li>{{ 'WELCOME.SPECIALTIES.LINE2' | translate }}</li>
+          </ul>
+        </div>
+
+        <div class="chip glass">
+          <h3>
+            <mat-icon>schedule</mat-icon>
+            {{ 'WELCOME.SCHEDULES.TITLE' | translate }}
+          </h3>
+          <ul>
+            <li>{{ 'WELCOME.SCHEDULES.LINE1' | translate }}</li>
+            <li>{{ 'WELCOME.SCHEDULES.LINE2' | translate }}</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Columna derecha: grid con 2 cards -->
+    <div class="cta-grid" *ngIf="!autenticado()">
+      <mat-card class="cta-card login">
+        <div class="icon-ring"><mat-icon>verified_user</mat-icon></div>
+        <h2>{{ 'WELCOME.LOGIN_CARD.TITLE' | translate }}</h2>
+        <p>{{ 'WELCOME.LOGIN_CARD.TEXT' | translate }}</p>
+        <div class="btn-row">
+          <a mat-raised-button class="btn-cta" routerLink="/login">
+            <mat-icon>login</mat-icon>
+            {{ 'WELCOME.LOGIN_CARD.BUTTON' | translate }}
+          </a>
+        </div>
+      </mat-card>
+
+      <mat-card class="cta-card register">
+        <div class="icon-ring"><mat-icon>app_registration</mat-icon></div>
+        <h2>{{ 'WELCOME.REGISTER_CARD.TITLE' | translate }}</h2>
+        <p>{{ 'WELCOME.REGISTER_CARD.TEXT' | translate }}</p>
+        <div class="btn-row">
+          <a mat-raised-button class="btn-cta" routerLink="/seleccionar-usuario-registro">
+            <mat-icon>person_add</mat-icon>
+            {{ 'WELCOME.REGISTER_CARD.BUTTON' | translate }}
+          </a>
+        </div>
+      </mat-card>
+    </div>
+  </div>
+
+  <footer class="foot">
+    {{ 'WELCOME.FOOTER' | translate }}
+  </footer>
+</section>
+
+<!-- -------------------------------------------------------------------------------------- -->
+<!-- -------------------------------------------------------------------------------------- -->
+<!-- -------------------------------------------------------------------------------------- -->
+<!-- -------------------------------------------------------------------------------------- -->
+
+<!-- <section class="hero" [@fadeIn]>
   <header class="topbar" aria-label="Clínica Online">
     <div class="brand">
       <mat-icon>local_hospital</mat-icon>
@@ -12,7 +121,6 @@
   </header>
 
   <div class="hero-grid">
-    <!-- Columna izquierda -->
     <div class="copy">
       <h1>Clínica Monllor</h1>
       <p class="lead">
@@ -39,7 +147,6 @@
       </div>
     </div>
 
-    <!-- Columna derecha: grid con 2 cards -->
     <div class="cta-grid" *ngIf="!autenticado()">
       <mat-card class="cta-card login">
         <div class="icon-ring"><mat-icon>verified_user</mat-icon></div>
@@ -66,9 +173,4 @@
   </div>
 
   <footer class="foot">Clínica Online — UTN</footer>
-</section>
-
-
-
-
-
+</section> -->

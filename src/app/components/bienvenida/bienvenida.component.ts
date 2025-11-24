@@ -12,6 +12,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 // Animaciones
 import { trigger, transition, style, animate } from '@angular/animations';
 import { SupabaseService } from '../../../services/supabase.service';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-bienvenida',
@@ -21,6 +22,7 @@ import { SupabaseService } from '../../../services/supabase.service';
     RouterLink,
     MatButtonModule, MatIconModule,
     MatCardModule, MatTooltipModule,
+    TranslateModule      
   ],
   templateUrl: './bienvenida.component.html',
   styleUrls: ['./bienvenida.component.scss'],
@@ -34,14 +36,47 @@ import { SupabaseService } from '../../../services/supabase.service';
   ]
 })
 export class BienvenidaComponent implements OnInit, OnDestroy {
-  protected readonly autenticado = signal(false);
+  
+    protected readonly autenticado = signal(false);
   private unsubscribeAuthChange?: () => void;
+ 
+  protected readonly idiomas = ['es', 'en', 'pt'] as const;
+  protected readonly idiomaActual = signal<string>('es');
 
   constructor(
     private supabase: SupabaseService,
     private router: Router,
-  ) { }
+    private translate: TranslateService    //  <= ========== NUEVO
+  ) {
+    const saved = localStorage.getItem('lang');
+    const inicial =
+      saved && this.idiomas.includes(saved as any)
+        ? saved
+        : (this.translate.currentLang || 'es');
 
+    this.idiomaActual.set(inicial);
+    this.translate.use(inicial);
+  }
+
+  // 👇 NUEVO
+  protected cambiarIdioma(lang: string): void {
+    if (!this.idiomas.includes(lang as any)) return;
+    this.idiomaActual.set(lang);
+    this.translate.use(lang);
+    localStorage.setItem('lang', lang);
+  }
+
+
+
+
+
+  //---------------------------
+
+
+  //  constructor(
+  //   private supabase: SupabaseService,
+  //   private router: Router,
+  // ) { } 
 
   async ngOnInit(): Promise<void> {
     // Verificar si hay tokens de verificación en la URL (viene del email)
@@ -117,23 +152,6 @@ export class BienvenidaComponent implements OnInit, OnDestroy {
       this.autenticado.set(false);
     }
   }
-
-  // private async redirigirSegunRol(userId: string): Promise<void> {
-  //   try {
-  //     const { data: perfil } = await this.supabase .obtenerPerfil(userId);
-  //     const rol = perfil?.rol;
-
-  //     if (rol === 'paciente') {
-  //       this.router.navigate(['/mis-turnos-paciente']);
-  //     } else if (rol === 'especialista') {
-  //       this.router.navigate(['/mis-turnos-especialista']);
-  //     } else if (rol === 'admin') {
-  //       this.router.navigate(['/turnos-admin']);
-  //     }
-  //   } catch (error) {
-  //     console.error('[Bienvenida] Error al obtener perfil para redirección:', error);
-  //   }
-  // }
 
   private async redirigirSegunRol(userId: string): Promise<void> {
     try {

@@ -1,17 +1,17 @@
 {
+
+
   "COMMON": {
-    "LANGUAGE": "Idioma",
-    "ACCEPT": "Aceptar",
-    "CANCEL": "Cancelar",
-    "BACK": "Volver",
-    "LOGOUT": "Cerrar sesión"
-  },
-  "WELCOME": {
-    "TITLE": "Clínica Online",
-    "SUBTITLE": "Gestione sus turnos médicos de forma sencilla",
-    "LOGIN": "Iniciar sesión",
-    "REGISTER": "Registrarse"
-  },
+  "LANGUAGE": "Idioma",
+  "ACCEPT": "Aceptar",
+  "CANCEL": "Cancelar",
+  "BACK": "Volver",
+  "LOGOUT": "Cerrar sesión",
+  "CLOSE": "Cerrar",
+  "ERROR_TITLE": "Error"
+},
+
+
   "LOGIN": {
     "TITLE": "Iniciar sesión",
     "EMAIL": "Correo electrónico",
@@ -27,17 +27,93 @@
     "AS_PATIENT": "Ingresar como paciente",
     "AS_DOCTOR": "Ingresar como especialista"
   },
+
+
   "APPOINTMENT": {
-    "TITLE": "Solicitar turno",
-    "SELECT_SPECIALITY": "Seleccione una especialidad",
-    "SELECT_DOCTOR": "Seleccione un especialista",
-    "SELECT_DATE": "Seleccione fecha",
-    "SELECT_TIME": "Seleccione horario",
-    "CONFIRM": "Confirmar turno"
+  "TITLE": "Solicitar turno",
+  "TITLE_ADMIN": "Solicitar turno (Admin)",
+  "SUBTITLE": "Seleccioná especialidad, profesional, día y horario.",
+  "BADGE": "Atención online",
+
+  "STEPS": {
+    "SPECIALITY": "Especialidad",
+    "SPECIALIST": "Especialista",
+    "DAY": "Día",
+    "TIME": "Hora"
   },
+
+  "FORM": {
+    "SPECIALITY_LABEL": "Especialidad",
+    "SPECIALITY_REQUIRED": "La especialidad es obligatoria",
+    "SPECIALIST_LABEL": "Especialista",
+    "SPECIALIST_REQUIRED": "El especialista es obligatorio",
+    "PATIENT_LABEL": "Paciente",
+    "PATIENT_REQUIRED": "El paciente es obligatorio",
+    "DAY_TITLE": "Día",
+    "TIME_TITLE": "Hora"
+  },
+
+  "SUMMARY": {
+    "TITLE": "Resumen",
+    "SPECIALITY": "Especialidad",
+    "SPECIALIST": "Especialista",
+    "DAY": "Día",
+    "TIME": "Hora"
+  },
+
+  "NOTE": "Los turnos se confirman por email. Si no recibís el correo en 5 minutos, revisá tu carpeta de spam.",
+
+  "ACTIONS": {
+    "CANCEL": "Cancelar",
+    "SUBMIT": "Solicitar turno",
+    "SUBMIT_LOADING": "Solicitando…"
+  },
+
+  "NO_SPECIALISTS": "No hay especialistas disponibles para {{speciality}}.",
+  "ERROR_LOAD_SPECIALTIES": "Error al cargar especialidades o especialistas.",
+  "ERROR_LOAD_PATIENTS": "Error al cargar pacientes.",
+  "ERROR_MISSING_FIELDS": "Faltan datos obligatorios del turno.",
+  "ERROR_PATIENT_NOT_FOUND": "No se pudo determinar el paciente.",
+  "ERROR_SLOT_TAKEN": "Ya existe un turno en ese horario. Por favor, seleccioná otro.",
+  "ERROR_SPECIALITY_NOT_FOUND": "No se encontró la especialidad seleccionada.",
+  "ERROR_STATUS_NOT_FOUND": "No se encontró el estado PENDIENTE.",
+  "ERROR_SUBMIT_GENERIC": "No se pudo solicitar el turno.",
+  "SUCCESS_TITLE": "Turno solicitado",
+  "SUCCESS_TEXT": "El turno ha sido solicitado exitosamente."
+},
+
+
+
   "ROLES": {
     "PACIENTE": "Paciente",
     "ESPECIALISTA": "Especialista",
     "ADMIN": "Administrador"
+  },
+  "WELCOME": {
+    "BRAND": "Clínica Monllor",
+    "TOPBAR_LOGIN": "Ingresar",
+    "TAGLINE": "Cuidamos tu salud con tecnología, compromiso y calidez humana. Turnos online, seguimiento personalizado y atención profesional.",
+    "SPECIALTIES": {
+      "TITLE": "Especialidades",
+      "LINE1": "Clínica Médica · Pediatría · Cardiología",
+      "LINE2": "Dermatología · Nutrición · Psicología"
+    },
+    "SCHEDULES": {
+      "TITLE": "Horarios de Atención",
+      "LINE1": "Lunes a Viernes: 8:00 a 19:00 hs",
+      "LINE2": "Sábados: 9:00 a 14:00 hs"
+    },
+    "LOGIN_CARD": {
+      "TITLE": "Iniciar Sesión",
+      "TEXT": "Para comenzar con las gestiones, ingrese con usuario y contraseña.",
+      "BUTTON": "Ingresar"
+    },
+    "REGISTER_CARD": {
+      "TITLE": "Registrarse",
+      "TEXT": "¿Aún no tenés cuenta? Podés crearla aquí mismo en pocos pasos.",
+      "BUTTON": "Registrarse"
+    },
+    "FOOTER": "Clínica Online — UTN"
   }
+  
 }

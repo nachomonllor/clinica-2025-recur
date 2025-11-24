@@ -4,13 +4,9 @@
     "ACCEPT": "Accept",
     "CANCEL": "Cancel",
     "BACK": "Back",
-    "LOGOUT": "Log out"
-  },
-  "WELCOME": {
-    "TITLE": "Online Clinic",
-    "SUBTITLE": "Manage your medical appointments easily",
-    "LOGIN": "Log in",
-    "REGISTER": "Sign up"
+    "LOGOUT": "Log out",
+    "CLOSE": "Close",
+    "ERROR_TITLE": "Error"
   },
   "LOGIN": {
     "TITLE": "Log in",
@@ -24,20 +20,86 @@
     "QUICK_COMPLETED": "completed. Review the fields and press Sign in.",
     "QUICK_ACCESS": "Quick access",
     "QUICK_NOTE": "Use these shortcuts to auto-fill the login with demo profiles.",
-     "AS_PATIENT": "Log in as patient",
+    "AS_PATIENT": "Log in as patient",
     "AS_DOCTOR": "Log in as specialist"
   },
+
   "APPOINTMENT": {
     "TITLE": "Book appointment",
-    "SELECT_SPECIALITY": "Select a speciality",
-    "SELECT_DOCTOR": "Select a doctor",
-    "SELECT_DATE": "Select date",
-    "SELECT_TIME": "Select time",
-    "CONFIRM": "Confirm appointment"
+    "TITLE_ADMIN": "Book appointment (Admin)",
+    "SUBTITLE": "Select speciality, professional, day and time.",
+    "BADGE": "Online care",
+    "STEPS": {
+      "SPECIALITY": "Speciality",
+      "SPECIALIST": "Doctor",
+      "DAY": "Day",
+      "TIME": "Time"
+    },
+    "FORM": {
+      "SPECIALITY_LABEL": "Speciality",
+      "SPECIALITY_REQUIRED": "Speciality is required.",
+      "SPECIALIST_LABEL": "Doctor",
+      "SPECIALIST_REQUIRED": "Doctor is required.",
+      "PATIENT_LABEL": "Patient",
+      "PATIENT_REQUIRED": "Patient is required.",
+      "DAY_TITLE": "Day",
+      "TIME_TITLE": "Time"
+    },
+    "SUMMARY": {
+      "TITLE": "Summary",
+      "SPECIALITY": "Speciality",
+      "SPECIALIST": "Doctor",
+      "DAY": "Day",
+      "TIME": "Time"
+    },
+    "NOTE": "Appointments are confirmed by email. If you do not receive it within 5 minutes, please check your spam folder.",
+    "ACTIONS": {
+      "CANCEL": "Cancel",
+      "SUBMIT": "Book appointment",
+      "SUBMIT_LOADING": "Booking…"
+    },
+    "NO_SPECIALISTS": "There are no specialists available for {{speciality}}.",
+    "ERROR_LOAD_SPECIALTIES": "Error loading specialities or doctors.",
+    "ERROR_LOAD_PATIENTS": "Error loading patients.",
+    "ERROR_MISSING_FIELDS": "Some required appointment fields are missing.",
+    "ERROR_PATIENT_NOT_FOUND": "Could not determine the patient.",
+    "ERROR_SLOT_TAKEN": "There is already an appointment at that time. Please choose another slot.",
+    "ERROR_SPECIALITY_NOT_FOUND": "Selected speciality was not found.",
+    "ERROR_STATUS_NOT_FOUND": "Status PENDING was not found.",
+    "ERROR_SUBMIT_GENERIC": "The appointment could not be created.",
+    "SUCCESS_TITLE": "Appointment requested",
+    "SUCCESS_TEXT": "Your appointment request was created successfully."
   },
+
   "ROLES": {
     "PACIENTE": "Patient",
     "ESPECIALISTA": "Specialist",
     "ADMIN": "Admin"
+  },
+  "WELCOME": {
+    "BRAND": "Monllor Clinic",
+    "TOPBAR_LOGIN": "Sign in",
+    "TAGLINE": "We take care of your health with technology, commitment and human warmth. Online appointments, personalised follow-up and professional care.",
+    "SPECIALTIES": {
+      "TITLE": "Specialities",
+      "LINE1": "Internal Medicine · Pediatrics · Cardiology",
+      "LINE2": "Dermatology · Nutrition · Psychology"
+    },
+    "SCHEDULES": {
+      "TITLE": "Opening hours",
+      "LINE1": "Monday to Friday: 8:00 am to 7:00 pm",
+      "LINE2": "Saturday: 9:00 am to 2:00 pm"
+    },
+    "LOGIN_CARD": {
+      "TITLE": "Sign in",
+      "TEXT": "To start managing your appointments, sign in with your email and password.",
+      "BUTTON": "Sign in"
+    },
+    "REGISTER_CARD": {
+      "TITLE": "Sign up",
+      "TEXT": "Don't have an account yet? You can create one in just a few steps.",
+      "BUTTON": "Sign up"
+    },
+    "FOOTER": "Online Clinic — UTN"
   }
 }

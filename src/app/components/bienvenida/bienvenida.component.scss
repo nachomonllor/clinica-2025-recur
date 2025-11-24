@@ -1,3 +1,57 @@
+
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Contenedor tipo “pastilla” para los idiomas */
+.lang-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.35);         /* fondo oscuro semi-transparente */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.35);
+}
+
+/* Botones de idioma */
+.lang-switch button.mat-mdc-button {
+  min-width: 2.6rem;
+  padding: 0.15rem 0.6rem;
+  line-height: 1.2;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+
+  color: #dbe9ff;                          /* texto clarito */
+}
+
+/* Hover general */
+.lang-switch button.mat-mdc-button:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Idioma activo: contraste fuerte */
+.lang-switch button.active.mat-mdc-button {
+  background-color: #ffffff;
+  color: #0a1f4a;                          /* azul oscuro */
+  border-radius: 999px;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.4);
+}
+
+
+
+
 :host {
   /* Paleta */
   --bg-900: #071a28;
@@ -83,12 +137,6 @@
 
 .lead { color: var(--muted); max-width: 62ch; line-height: 1.6; }
 
-// .chips {
-//   display: grid;
-//   grid-template-columns: repeat(2, minmax(220px, 1fr));
-//   gap: 14px;
-//   margin: 1rem 0 1.25rem;
-// }
 
 /*  Especialidades y Horarios: 2 columnas arriba */
 .chips {
@@ -126,24 +174,7 @@
   gap: 1.5rem;
 }
 
-/* Responsivo */
-// @media (max-width: 960px) {
-//   .hero {
-//     padding: 1.5rem 1.25rem 1.75rem;
-//   }
 
-//   .hero-grid {
-//     gap: 2rem;
-//   }
-// }
-
-
-/* Columna derecha: 2 cards */
-// .cta-grid {
-//   display: grid;
-//   grid-template-columns: repeat(2, minmax(260px, 1fr));
-//   gap: clamp(14px, 2vw, 20px);
-// }
 
 
 @media (max-width: 640px) { .cta-grid { grid-template-columns: 1fr; } }
@@ -226,6 +257,7 @@ a[mat-raised-button].btn-cta:hover { filter: saturate(1.08) contrast(1.03); tran
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }
 }
+
 
 
 
