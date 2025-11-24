@@ -17,7 +17,14 @@
     "EMAIL": "Email",
     "PASSWORD": "Password",
     "BUTTON": "Sign in",
-    "AS_PATIENT": "Log in as patient",
+    "EMAIL_REQUIRED": "Email is required.",
+    "EMAIL_INVALID": "Invalid format.",
+    "PASSWORD_REQUIRED": "Password is required.",
+    "PASSWORD_MIN": "Minimum 6 characters.",
+    "QUICK_COMPLETED": "completed. Review the fields and press Sign in.",
+    "QUICK_ACCESS": "Quick access",
+    "QUICK_NOTE": "Use these shortcuts to auto-fill the login with demo profiles.",
+     "AS_PATIENT": "Log in as patient",
     "AS_DOCTOR": "Log in as specialist"
   },
   "APPOINTMENT": {
@@ -27,6 +34,10 @@
     "SELECT_DATE": "Select date",
     "SELECT_TIME": "Select time",
     "CONFIRM": "Confirm appointment"
+  },
+  "ROLES": {
+    "PACIENTE": "Patient",
+    "ESPECIALISTA": "Specialist",
+    "ADMIN": "Admin"
   }
 }
-

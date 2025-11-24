@@ -22,6 +22,10 @@ import { Rol } from '../../models/tipos.model';
 import { Usuario, UsuarioCreate } from '../../models/usuario.model';
 import { QuickAccessUser, QuickLoginsConfig } from '../../models/nav.models';
 
+import { TranslateModule } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
+
+
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -30,6 +34,8 @@ import { QuickAccessUser, QuickLoginsConfig } from '../../models/nav.models';
     MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule,
     MatTooltipModule, MatProgressSpinnerModule, MatSnackBarModule,
     AutoFocusDirective,
+    TranslateModule,
+
   ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
@@ -47,6 +53,9 @@ export class LoginComponent implements OnInit {
   quickLogins: QuickLoginsConfig = environment.quickLogins as QuickLoginsConfig;
   quickSeleccionado?: { nombre: string; rol: Rol; email: string };
 
+  idiomas = ['es', 'en', 'pt'];
+  idiomaActual = 'es';
+
   @ViewChild('passwordInput', { static: false }) passwordInput?: ElementRef<HTMLInputElement>;
 
   constructor(
@@ -54,9 +63,23 @@ export class LoginComponent implements OnInit {
     private supa: SupabaseService,
     private router: Router,
     private snackBar: MatSnackBar,
-    private logIngresos: LogIngresosService
-  ) { }
+    private logIngresos: LogIngresosService,
+    private translate: TranslateService,
 
+  ) {
+
+    const saved = localStorage.getItem('lang');
+    const inicial = saved && this.idiomas.includes(saved) ? saved : 'es';
+    this.idiomaActual = inicial;
+    this.translate.use(inicial);
+  }
+
+  cambiarIdioma(lang: string) {
+    if (!this.idiomas.includes(lang)) return;
+    this.idiomaActual = lang;
+    this.translate.use(lang);
+    localStorage.setItem('lang', lang);
+  }
   ngOnInit(): void {
     this.formularioLogin = this.fb.group({
       email: this.fb.control('', { nonNullable: true, validators: [Validators.required, Validators.email] }),

@@ -17,6 +17,13 @@
     "EMAIL": "E-mail",
     "PASSWORD": "Senha",
     "BUTTON": "Entrar",
+    "EMAIL_REQUIRED": "O e-mail é obrigatório.",
+    "EMAIL_INVALID": "Formato inválido.",
+    "PASSWORD_REQUIRED": "A senha é obrigatória.",
+    "PASSWORD_MIN": "Mínimo 6 caracteres.",
+    "QUICK_COMPLETED": "concluído. Revise os campos e clique em Entrar.",
+    "QUICK_ACCESS": "Acessos rápidos",
+    "QUICK_NOTE": "Use estes acessos para preencher o login automaticamente com perfis de demonstração.",
     "AS_PATIENT": "Entrar como paciente",
     "AS_DOCTOR": "Entrar como especialista"
   },
@@ -27,6 +34,10 @@
     "SELECT_DATE": "Selecione a data",
     "SELECT_TIME": "Selecione o horário",
     "CONFIRM": "Confirmar consulta"
+  },
+  "ROLES": {
+    "PACIENTE": "Paciente",
+    "ESPECIALISTA": "Especialista",
+    "ADMIN": "Administrador"
   }
 }
-
