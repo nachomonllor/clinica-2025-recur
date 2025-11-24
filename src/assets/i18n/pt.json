@@ -1,0 +1,43 @@
+{
+  "COMMON": {
+    "LANGUAGE": "Idioma",
+    "ACCEPT": "Aceitar",
+    "CANCEL": "Cancelar",
+    "BACK": "Voltar",
+    "LOGOUT": "Sair"
+  },
+  "WELCOME": {
+    "TITLE": "Clínica Online",
+    "SUBTITLE": "Gerencie suas consultas médicas facilmente",
+    "LOGIN": "Entrar",
+    "REGISTER": "Registrar-se"
+  },
+  "LOGIN": {
+    "TITLE": "Entrar",
+    "EMAIL": "E-mail",
+    "PASSWORD": "Senha",
+    "BUTTON": "Entrar",
+    "EMAIL_REQUIRED": "O e-mail é obrigatório.",
+    "EMAIL_INVALID": "Formato inválido.",
+    "PASSWORD_REQUIRED": "A senha é obrigatória.",
+    "PASSWORD_MIN": "Mínimo 6 caracteres.",
+    "QUICK_COMPLETED": "concluído. Revise os campos e clique em Entrar.",
+    "QUICK_ACCESS": "Acessos rápidos",
+    "QUICK_NOTE": "Use estes acessos para preencher o login automaticamente com perfis de demonstração.",
+    "AS_PATIENT": "Entrar como paciente",
+    "AS_DOCTOR": "Entrar como especialista"
+  },
+  "APPOINTMENT": {
+    "TITLE": "Solicitar consulta",
+    "SELECT_SPECIALITY": "Selecione uma especialidade",
+    "SELECT_DOCTOR": "Selecione um especialista",
+    "SELECT_DATE": "Selecione a data",
+    "SELECT_TIME": "Selecione o horário",
+    "CONFIRM": "Confirmar consulta"
+  },
+  "ROLES": {
+    "PACIENTE": "Paciente",
+    "ESPECIALISTA": "Especialista",
+    "ADMIN": "Administrador"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "COMMON": {
+    "LANGUAGE": "Language",
+    "ACCEPT": "Accept",
+    "CANCEL": "Cancel",
+    "BACK": "Back",
+    "LOGOUT": "Log out"
+  },
+  "WELCOME": {
+    "TITLE": "Online Clinic",
+    "SUBTITLE": "Manage your medical appointments easily",
+    "LOGIN": "Log in",
+    "REGISTER": "Sign up"
+  },
+  "LOGIN": {
+    "TITLE": "Log in",
+    "EMAIL": "Email",
+    "PASSWORD": "Password",
+    "BUTTON": "Sign in",
+    "EMAIL_REQUIRED": "Email is required.",
+    "EMAIL_INVALID": "Invalid format.",
+    "PASSWORD_REQUIRED": "Password is required.",
+    "PASSWORD_MIN": "Minimum 6 characters.",
+    "QUICK_COMPLETED": "completed. Review the fields and press Sign in.",
+    "QUICK_ACCESS": "Quick access",
+    "QUICK_NOTE": "Use these shortcuts to auto-fill the login with demo profiles.",
+     "AS_PATIENT": "Log in as patient",
+    "AS_DOCTOR": "Log in as specialist"
+  },
+  "APPOINTMENT": {
+    "TITLE": "Book appointment",
+    "SELECT_SPECIALITY": "Select a speciality",
+    "SELECT_DOCTOR": "Select a doctor",
+    "SELECT_DATE": "Select date",
+    "SELECT_TIME": "Select time",
+    "CONFIRM": "Confirm appointment"
+  },
+  "ROLES": {
+    "PACIENTE": "Patient",
+    "ESPECIALISTA": "Specialist",
+    "ADMIN": "Admin"
+  }
+}
