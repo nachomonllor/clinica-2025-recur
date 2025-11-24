@@ -4,7 +4,9 @@
     "ACCEPT": "Aceitar",
     "CANCEL": "Cancelar",
     "BACK": "Voltar",
-    "LOGOUT": "Sair"
+    "LOGOUT": "Sair",
+    "CLOSE": "Fechar",
+    "ERROR_TITLE": "Erro"
   },
   "LOGIN": {
     "TITLE": "Entrar",
@@ -22,19 +24,56 @@
     "AS_DOCTOR": "Entrar como especialista"
   },
   "APPOINTMENT": {
-    "TITLE": "Solicitar consulta",
-    "SELECT_SPECIALITY": "Selecione uma especialidade",
-    "SELECT_DOCTOR": "Selecione um especialista",
-    "SELECT_DATE": "Selecione a data",
-    "SELECT_TIME": "Selecione o horário",
-    "CONFIRM": "Confirmar consulta"
+    "TITLE": "Agendar consulta",
+    "TITLE_ADMIN": "Agendar consulta (Admin)",
+    "SUBTITLE": "Selecione especialidade, profissional, dia e horário.",
+    "BADGE": "Atendimento online",
+    "STEPS": {
+      "SPECIALITY": "Especialidade",
+      "SPECIALIST": "Especialista",
+      "DAY": "Dia",
+      "TIME": "Horário"
+    },
+    "FORM": {
+      "SPECIALITY_LABEL": "Especialidade",
+      "SPECIALITY_REQUIRED": "A especialidade é obrigatória.",
+      "SPECIALIST_LABEL": "Especialista",
+      "SPECIALIST_REQUIRED": "O especialista é obrigatório.",
+      "PATIENT_LABEL": "Paciente",
+      "PATIENT_REQUIRED": "O paciente é obrigatório.",
+      "DAY_TITLE": "Dia",
+      "TIME_TITLE": "Horário"
+    },
+    "SUMMARY": {
+      "TITLE": "Resumo",
+      "SPECIALITY": "Especialidade",
+      "SPECIALIST": "Especialista",
+      "DAY": "Dia",
+      "TIME": "Horário"
+    },
+    "NOTE": "As consultas são confirmadas por e-mail. Se você não receber em até 5 minutos, verifique sua pasta de spam.",
+    "ACTIONS": {
+      "CANCEL": "Cancelar",
+      "SUBMIT": "Agendar consulta",
+      "SUBMIT_LOADING": "Agendando…"
+    },
+    "NO_SPECIALISTS": "Não há especialistas disponíveis para {{speciality}}.",
+    "ERROR_LOAD_SPECIALTIES": "Erro ao carregar especialidades ou especialistas.",
+    "ERROR_LOAD_PATIENTS": "Erro ao carregar pacientes.",
+    "ERROR_MISSING_FIELDS": "Faltam dados obrigatórios da consulta.",
+    "ERROR_PATIENT_NOT_FOUND": "Não foi possível determinar o paciente.",
+    "ERROR_SLOT_TAKEN": "Já existe uma consulta nesse horário. Por favor, selecione outro.",
+    "ERROR_SPECIALITY_NOT_FOUND": "A especialidade selecionada não foi encontrada.",
+    "ERROR_STATUS_NOT_FOUND": "O estado PENDENTE não foi encontrado.",
+    "ERROR_SUBMIT_GENERIC": "Não foi possível agendar a consulta.",
+    "SUCCESS_TITLE": "Consulta solicitada",
+    "SUCCESS_TEXT": "A consulta foi solicitada com sucesso."
   },
   "ROLES": {
     "PACIENTE": "Paciente",
     "ESPECIALISTA": "Especialista",
     "ADMIN": "Administrador"
   },
-  
   "WELCOME": {
     "BRAND": "Clínica Monllor",
     "TOPBAR_LOGIN": "Entrar",
