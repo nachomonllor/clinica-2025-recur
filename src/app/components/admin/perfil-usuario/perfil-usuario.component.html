@@ -1,15 +1,18 @@
+
 <!-- src/app/components/perfil-usuario/perfil-usuario.component.html -->
 
 <!-- Estado: cargando -->
 <div *ngIf="cargando" class="loading">
-  Cargando perfil...
+  {{ 'PROFILE.LOADING' | translate }}
 </div>
 
 <!-- Estado: error -->
 <div *ngIf="!cargando && error" class="error">
-  <h2>Hubo un problema</h2>
+  <h2>{{ 'PROFILE.ERROR_TITLE' | translate }}</h2>
   <p>{{ error }}</p>
-  <a routerLink="/bienvenida" class="btn ghost ripple">Ir a inicio</a>
+  <a routerLink="/bienvenida" class="btn ghost ripple">
+    {{ 'PROFILE.GO_HOME' | translate }}
+  </a>
 </div>
 
 <!-- Contenido principal -->
@@ -19,10 +22,266 @@
       <div class="avatar" [class.has-img]="u.avatarUrl">
         <img *ngIf="u.avatarUrl; else avatarFallback" [src]="u.avatarUrl" [alt]="nombreCompleto" />
         <ng-template #avatarFallback>
-          <!-- span>{{ (u.nombre?.[0] || u.email?.[0] || 'U') }}{{ (u.apellido?.[0] || '') }}</span-->
+          <span>{{ u.nombre | iniciales:u.apellido:u.email }}</span>
+        </ng-template>
+      </div>
+
+      <div class="title">
+        <h1>{{ nombreCompleto }}</h1>
+        <div class="sub">
+          <span class="chip role">
+            {{ ('ROLES.' + u.rol) | translate }}
+          </span>
+          <span class="dot" *ngIf="u.edad != null"></span>
+          <span *ngIf="u.edad != null">
+            {{ 'PROFILE.AGE_YEARS' | translate:{ age: u.edad } }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-right">
+      <span class="status" [class.on]="u.habilitado">
+        {{
+          u.habilitado
+            ? ('PROFILE.STATUS_ENABLED' | translate)
+            : ('PROFILE.STATUS_DISABLED' | translate)
+        }}
+      </span>
+
+      <div class="hero-actions">
+        <a routerLink="/usuarios" class="btn ghost ripple" aria-label="Volver">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          {{ 'PROFILE.ACTIONS.BACK' | translate }}
+        </a>
+
+        <button class="btn primary ripple" (click)="enviarMail()" [disabled]="!u.email">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 6l8 6 8-6M4 18h16V6H4v12z" />
+          </svg>
+          {{ 'PROFILE.ACTIONS.MESSAGE' | translate }}
+        </button>
+
+        <button class="btn danger ripple" (click)="toggleHabilitado()">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          {{
+            u.habilitado
+              ? ('PROFILE.ACTIONS.DISABLE' | translate)
+              : ('PROFILE.ACTIONS.ENABLE' | translate)
+          }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <section class="content-grid">
+    <!-- Información Personal -->
+    <article class="panel">
+      <header class="panel-h">
+        <h2>{{ 'PROFILE.SECTIONS.PERSONAL' | translate }}</h2>
+      </header>
+      <div class="panel-b info">
+        <div class="info-row">
+          <span class="label">{{ 'PROFILE.FIELDS.NAME' | translate }}</span>
+          <span class="value">{{ nombreCompleto }}</span>
+        </div>
+        <div class="info-row" *ngIf="u.edad != null">
+          <span class="label">{{ 'PROFILE.FIELDS.AGE' | translate }}</span>
+          <span class="value">
+            {{ 'PROFILE.AGE_YEARS' | translate:{ age: u.edad } }}
+          </span>
+        </div>
+        <div class="info-row" *ngIf="u.dni">
+          <span class="label">{{ 'PROFILE.FIELDS.DNI' | translate }}</span>
+          <span class="value">{{ u.dni }}</span>
+        </div>
+        <div class="info-row" *ngIf="u.bio">
+          <span class="label">{{ 'PROFILE.FIELDS.ABOUT' | translate }}</span>
+          <span class="value">{{ u.bio }}</span>
+        </div>
+      </div>
+    </article>
+
+    <!-- Información de Contacto -->
+    <article class="panel">
+      <header class="panel-h">
+        <h2>{{ 'PROFILE.SECTIONS.CONTACT' | translate }}</h2>
+      </header>
+      <div class="panel-b info">
+        <div class="info-row">
+          <span class="label">{{ 'PROFILE.FIELDS.EMAIL' | translate }}</span>
+
+          <a
+            class="value email"
+            *ngIf="u.email; else sinEmail"
+            [href]="'mailto:' + u.email"
+          >
+            {{ u.email }}
+          </a>
+          <ng-template #sinEmail>
+            <span class="value muted">
+              {{ 'PROFILE.FIELDS.NO_EMAIL' | translate }}
+            </span>
+          </ng-template>
+
+          <button
+            class="icon-btn ripple"
+            (click)="copiar(u.email)"
+            [disabled]="!u.email"
+            aria-label="Copiar email"
+          >
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M8 7h10a2 2 0 012 2v9a2 2 0 01-2 2H8a2 2 0 01-2-2V9a2 2 0 012-2z" />
+              <path d="M16 3H6a2 2 0 00-2 2v9" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="info-row" *ngIf="u.telefono">
+          <span class="label">{{ 'PROFILE.FIELDS.PHONE' | translate }}</span>
+          <a class="value" [href]="'tel:' + u.telefono">{{ u.telefono }}</a>
+          <button class="icon-btn ripple" (click)="llamar()" aria-label="Llamar">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M22 16.92v3a2 2 0 01-2.18 2A19.8 19.8 0 013 5.18 2 2 0 015 3h3a2 2 0 012 1.72c.12.9.3 1.78.57 2.63a2 2 0 01-.45 2L9 10a16 16 0 007 7l.65-.74a2 2 0 012-.45c.85.27 1.73.45 2.63.57A2 2 0 0122 16.92z" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="info-row" *ngIf="u.direccion || u.ciudad">
+          <span class="label">{{ 'PROFILE.FIELDS.ADDRESS' | translate }}</span>
+          <span class="value">
+            {{ u.direccion }}
+            <ng-container *ngIf="u.ciudad">
+              – {{ u.ciudad }}
+            </ng-container>
+          </span>
+        </div>
+      </div>
+    </article>
+
+    <!-- Profesional / Cobertura -->
+    <article class="panel">
+      <header class="panel-h">
+        <h2>
+          {{
+            u.rol === 'ESPECIALISTA'
+              ? ('PROFILE.SECTIONS.PROFESSIONAL' | translate)
+              : ('PROFILE.SECTIONS.COVERAGE' | translate)
+          }}
+        </h2>
+      </header>
+      <div class="panel-b info">
+        <ng-container *ngIf="u.rol === 'ESPECIALISTA'; else cobertura">
+          <div class="info-row">
+            <span class="label">
+              {{ 'PROFILE.FIELDS.SPECIALITIES' | translate }}
+            </span>
+            <span
+              class="value chips-line"
+              *ngIf="u.especialidades.length; else sinEspecialidades"
+            >
+              <span class="chip sm" *ngFor="let e of u.especialidades">
+                {{ e }}
+              </span>
+            </span>
+            <ng-template #sinEspecialidades>
+              <span class="value muted">
+                {{ 'PROFILE.FIELDS.NO_SPECIALITIES' | translate }}
+              </span>
+            </ng-template>
+          </div>
+        </ng-container>
+
+        <ng-template #cobertura>
+          <div class="info-row" *ngIf="u.obraSocial">
+            <span class="label">
+              {{ 'PROFILE.FIELDS.INSURANCE' | translate }}
+            </span>
+            <span class="value tag">{{ u.obraSocial }}</span>
+          </div>
+        </ng-template>
+      </div>
+    </article>
+
+    <!-- Acciones rápidas -->
+    <article class="panel actions-panel">
+      <header class="panel-h">
+        <h2>{{ 'PROFILE.SECTIONS.QUICK_ACTIONS' | translate }}</h2>
+      </header>
+      <div class="panel-b quick-actions">
+        <button class="btn ghost ripple" (click)="verTurnos()">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M8 7h8M7 11h10M6 15h12M6 19h12" />
+          </svg>
+          {{ 'PROFILE.ACTIONS.VIEW_APPOINTMENTS' | translate }}
+        </button>
+      </div>
+    </article>
+
+    <!-- Actividad reciente (mock) -->
+    <article class="panel span-2">
+      <header class="panel-h">
+        <h2>{{ 'PROFILE.SECTIONS.RECENT_ACTIVITY' | translate }}</h2>
+      </header>
+      <div class="panel-b">
+        <ol class="timeline">
+          <li>
+            <div class="time">
+              {{ 'PROFILE.RECENT.ITEM1_TIME' | translate }}
+            </div>
+            <div class="event">
+              {{ 'PROFILE.RECENT.ITEM1_TEXT' | translate }}
+            </div>
+          </li>
+          <li>
+            <div class="time">
+              {{ 'PROFILE.RECENT.ITEM2_TIME' | translate }}
+            </div>
+            <div class="event">
+              {{ 'PROFILE.RECENT.ITEM2_TEXT' | translate }}
+            </div>
+          </li>
+          <li>
+            <div class="time">
+              {{ 'PROFILE.RECENT.ITEM3_TIME' | translate }}
+            </div>
+            <div class="event">
+              {{ 'PROFILE.RECENT.ITEM3_TEXT' | translate }}
+            </div>
+          </li>
+        </ol>
+      </div>
+    </article>
+  </section>
+</div>
+
+
+
+
+<!-- 
+<div *ngIf="cargando" class="loading">
+  Cargando perfil...
+</div>
+
+<div *ngIf="!cargando && error" class="error">
+  <h2>Hubo un problema</h2>
+  <p>{{ error }}</p>
+  <a routerLink="/bienvenida" class="btn ghost ripple">Ir a inicio</a>
+</div>
+
+<div class="profile-page" *ngIf="!cargando && !error && usuario as u" [@pageIn]>
+  <div class="hero-content glass">
+    <div class="hero-left">
+      <div class="avatar" [class.has-img]="u.avatarUrl">
+        <img *ngIf="u.avatarUrl; else avatarFallback" [src]="u.avatarUrl" [alt]="nombreCompleto" />
+        <ng-template #avatarFallback>
 
           <span>{{ u.nombre | iniciales:u.apellido:u.email }}</span>
-
 
         </ng-template>
       </div>
@@ -38,34 +297,48 @@
     </div>
 
     <div class="hero-right">
+
       <span class="status" [class.on]="u.habilitado">
-        {{ u.habilitado ? 'HABILITADO' : 'DESHABILITADO' }}
+        {{
+        u.habilitado
+        ? ('PROFILE.STATUS_ENABLED' | translate)
+        : ('PROFILE.STATUS_DISABLED' | translate)
+        }}
       </span>
+
+
       <div class="hero-actions">
         <a routerLink="/usuarios" class="btn ghost ripple" aria-label="Volver">
           <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
             <path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round" />
           </svg>
-          Volver
+          {{ 'PROFILE.BUTTON_BACK' | translate }}
+
         </a>
         <button class="btn primary ripple" (click)="enviarMail()" [disabled]="!u.email">
           <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
             <path d="M4 6l8 6 8-6M4 18h16V6H4v12z" />
           </svg>
-          Mensaje
+          {{ 'PROFILE.BUTTON_MESSAGE' | translate }}
+
         </button>
         <button class="btn danger ripple" (click)="toggleHabilitado()">
           <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
             <path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" />
           </svg>
-          {{ u.habilitado ? 'Deshabilitar' : 'Habilitar' }}
+          {{
+          u.habilitado
+          ? ('PROFILE.BUTTON_DISABLE' | translate)
+          : ('PROFILE.BUTTON_ENABLE' | translate)
+          }}
+
         </button>
       </div>
     </div>
   </div>
 
   <section class="content-grid">
-    <!-- Información Personal -->
+
     <article class="panel">
       <header class="panel-h">
         <h2>Información Personal</h2>
@@ -77,7 +350,9 @@
         </div>
         <div class="info-row" *ngIf="u.edad != null">
           <span class="label">Edad</span>
-          <span class="value">{{ u.edad }} años</span>
+
+          {{ u.edad }} {{ 'PROFILE.FIELD_AGE_SUFFIX' | translate }}
+
         </div>
         <div class="info-row" *ngIf="u.dni">
           <span class="label">DNI</span>
@@ -90,18 +365,24 @@
       </div>
     </article>
 
-    <!-- Información de Contacto -->
     <article class="panel">
       <header class="panel-h">
-        <h2>Información de Contacto</h2>
+
+        <h2>{{ 'PROFILE.SECTION_PERSONAL' | translate }}</h2>
+
       </header>
       <div class="panel-b info">
         <div class="info-row">
-          <span class="label">Email</span>
+
+          <span class="label">{{ 'PROFILE.FIELD_EMAIL' | translate }}</span>
+
           <a class="value email" *ngIf="u.email; else sinEmail" [href]="'mailto:' + u.email">{{ u.email }}</a>
           <ng-template #sinEmail>
-            <span class="value muted">Sin email</span>
+            <span class="value muted">
+              {{ 'PROFILE.FIELD_NO_EMAIL' | translate }}
+            </span>
           </ng-template>
+
           <button class="icon-btn ripple" (click)="copiar(u.email)" [disabled]="!u.email" aria-label="Copiar email">
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
               <path d="M8 7h10a2 2 0 012 2v9a2 2 0 01-2 2H8a2 2 0 01-2-2V9a2 2 0 012-2z" />
@@ -131,7 +412,6 @@
       </div>
     </article>
 
-    <!-- Profesional / Cobertura -->
     <article class="panel">
       <header class="panel-h">
         <h2>{{ u.rol === 'ESPECIALISTA' ? 'Información Profesional' : 'Cobertura' }}</h2>
@@ -157,18 +437,11 @@
       </div>
     </article>
 
-    <!-- Acciones rápidas -->
     <article class="panel actions-panel">
       <header class="panel-h">
         <h2>Acciones rápidas</h2>
       </header>
       <div class="panel-b quick-actions">
-        <!-- <button class="btn primary ripple" (click)="descargarHistoria()">
-          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-          Descargar historia
-        </button> -->
         <button class="btn ghost ripple" (click)="verTurnos()">
           <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
             <path d="M8 7h8M7 11h10M6 15h12M6 19h12" />
@@ -178,7 +451,6 @@
       </div>
     </article>
 
-    <!-- Actividad reciente (mock) -->
     <article class="panel span-2">
       <header class="panel-h">
         <h2>Actividad reciente</h2>
@@ -202,10 +474,5 @@
     </article>
   </section>
 
-  <!-- Fallbacks -->
   <ng-template #sinEmail><span class="value muted">Sin email</span></ng-template>
-</div>
-
-
-
-
+</div> -->

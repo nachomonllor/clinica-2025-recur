@@ -23,7 +23,6 @@
     "AS_PATIENT": "Log in as patient",
     "AS_DOCTOR": "Log in as specialist"
   },
-
   "APPOINTMENT": {
     "TITLE": "Book appointment",
     "TITLE_ADMIN": "Book appointment (Admin)",
@@ -70,12 +69,12 @@
     "SUCCESS_TITLE": "Appointment requested",
     "SUCCESS_TEXT": "Your appointment request was created successfully."
   },
-
   "ROLES": {
     "PACIENTE": "Patient",
     "ESPECIALISTA": "Specialist",
     "ADMIN": "Admin"
   },
+  
   "WELCOME": {
     "BRAND": "Monllor Clinic",
     "TOPBAR_LOGIN": "Sign in",
@@ -101,5 +100,63 @@
       "BUTTON": "Sign up"
     },
     "FOOTER": "Online Clinic — UTN"
+  },
+
+
+
+  
+  "PROFILE": {
+  "LOADING": "Loading profile...",
+  "ERROR_TITLE": "Something went wrong",
+  "ERROR_NO_USER_DATA": "No user data was found in the clinic database.",
+  "ERROR_GENERIC": "Error loading profile.",
+  "GO_HOME": "Go to home",
+
+  "STATUS_ENABLED": "ENABLED",
+  "STATUS_DISABLED": "DISABLED",
+
+  "AGE_YEARS": "{{age}} years",
+
+  "SECTIONS": {
+    "PERSONAL": "Personal information",
+    "CONTACT": "Contact information",
+    "PROFESSIONAL": "Professional information",
+    "COVERAGE": "Coverage",
+    "QUICK_ACTIONS": "Quick actions",
+    "RECENT_ACTIVITY": "Recent activity"
+  },
+
+  "FIELDS": {
+    "NAME": "Name",
+    "AGE": "Age",
+    "DNI": "ID",
+    "ABOUT": "About",
+    "EMAIL": "Email",
+    "NO_EMAIL": "No email",
+    "PHONE": "Phone",
+    "ADDRESS": "Address",
+    "INSURANCE": "Health insurance",
+    "SPECIALITIES": "Specialities",
+    "NO_SPECIALITIES": "No specialities"
+  },
+
+  "ACTIONS": {
+    "BACK": "Back",
+    "MESSAGE": "Message",
+    "DISABLE": "Disable",
+    "ENABLE": "Enable",
+    "VIEW_APPOINTMENTS": "View appointments"
+  },
+
+  "RECENT": {
+    "ITEM1_TIME": "Today 10:42",
+    "ITEM1_TEXT": "Updated profile picture",
+    "ITEM2_TIME": "Yesterday 18:20",
+    "ITEM2_TEXT": "Successful login",
+    "ITEM3_TIME": "08/11 09:10",
+    "ITEM3_TEXT": "Downloaded appointments report"
   }
+}
+
+
 }

@@ -10,10 +10,15 @@ import { InicialesPipe } from '../../../../pipes/iniciales.pipe';
 import { Rol } from '../../../models/tipos.model';
 import { MetaUsuario, UsuarioPerfil, UsuarioRowLite } from '../../../models/usuario.model';
 
+
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+
 @Component({
   selector: 'app-perfil-usuario',
   standalone: true,
-  imports: [CommonModule, RouterModule, InicialesPipe],
+  imports: [CommonModule, RouterModule, InicialesPipe,
+    TranslateModule
+  ],
   templateUrl: './perfil-usuario.component.html',
   styleUrls: ['./perfil-usuario.component.scss'],
   animations: [
@@ -36,7 +41,8 @@ export class PerfilUsuarioComponent implements OnInit {
 
   constructor(
     private supa: SupabaseService,
-    private router: Router
+    private router: Router,
+    private translate: TranslateService
   ) { }
 
   async ngOnInit(): Promise<void> {
@@ -62,10 +68,16 @@ export class PerfilUsuarioComponent implements OnInit {
         .maybeSingle();
 
       if (usuarioError) throw usuarioError;
+      // if (!usuarioData) {
+      //   this.error = 'No se encontraron datos de usuario en la clínica.';
+      //   return;
+      // }
+
       if (!usuarioData) {
-        this.error = 'No se encontraron datos de usuario en la clínica.';
+        this.error = this.translate.instant('PROFILE.ERROR_NO_USER_DATA');
         return;
       }
+
 
       const u = (usuarioData ?? {}) as UsuarioRowLite;
 
@@ -113,7 +125,8 @@ export class PerfilUsuarioComponent implements OnInit {
           .filter(Boolean);
       }
 
-      // 5) Edad: de la tabla, o calculada desde fecha_nacimiento en metadata
+      // Edad: de la tabla, o calculada desde fecha_nacimiento en metadata
+
       let edad: number | undefined;
       if (typeof u.edad === 'number') {
         edad = u.edad;
@@ -121,7 +134,58 @@ export class PerfilUsuarioComponent implements OnInit {
         edad = this.calcEdadFromISO(meta.fecha_nacimiento);
       }
 
-      // 6) Mapear al modelo de la UI (UsuarioPerfil)
+
+      // 7) Bio traducible
+      let bio: string;
+      if (rol === 'ESPECIALISTA') {
+        if (especialidades.length) {
+          bio = this.translate.instant(
+            'PROFILE.BIO.SPECIALIST_WITH_SPECIALITIES',
+            { specialities: especialidades.join(', ') }
+          );
+        } else {
+          bio = this.translate.instant('PROFILE.BIO.SPECIALIST_DEFAULT');
+        }
+      } else if (rol === 'ADMIN') {
+        bio = this.translate.instant('PROFILE.BIO.ADMIN');
+      } else {
+        bio = this.translate.instant('PROFILE.BIO.PATIENT');
+      }
+
+
+
+      //  Mapear al modelo de la UI (UsuarioPerfil)
+      // this.usuario = {
+      //   id: userId,
+      //   nombre: (u.nombre ?? meta.nombre) ?? '',
+      //   apellido: (u.apellido ?? meta.apellido) ?? '',
+      //   rol,
+      //   edad,
+      //   dni: (u.dni ?? meta.dni) ?? '',
+      //   email: (u.email ?? authUser.email) ?? '',
+
+      //   telefono: null,                // esos campos no existen en la tabla nueva
+      //   direccion: null,
+      //   ciudad: null,
+      //   obraSocial: u.obra_social ?? null,
+
+      //   especialidades,
+      //   habilitado: u.activo ?? true,
+
+      //   avatarUrl: u.imagen_perfil_1 ?? null,
+      //   bannerUrl: null,               // no tenemos banner_url en el esquema nuevo
+
+      //   bio:
+      //     rol === 'ESPECIALISTA'
+      //       ? (especialidades.length
+      //         ? `Especialista en ${especialidades.join(', ')}`
+      //         : 'Especialista de la clínica.')
+      //       : rol === 'ADMIN'
+      //         ? 'Administrador del sistema de la clínica.'
+      //         : 'Paciente de la clínica.',
+      // };
+
+      // 8) Mapear al modelo de la UI
       this.usuario = {
         id: userId,
         nombre: (u.nombre ?? meta.nombre) ?? '',
@@ -131,7 +195,7 @@ export class PerfilUsuarioComponent implements OnInit {
         dni: (u.dni ?? meta.dni) ?? '',
         email: (u.email ?? authUser.email) ?? '',
 
-        telefono: null,                // esos campos no existen en la tabla nueva
+        telefono: null,
         direccion: null,
         ciudad: null,
         obraSocial: u.obra_social ?? null,
@@ -140,24 +204,25 @@ export class PerfilUsuarioComponent implements OnInit {
         habilitado: u.activo ?? true,
 
         avatarUrl: u.imagen_perfil_1 ?? null,
-        bannerUrl: null,               // no tenemos banner_url en el esquema nuevo
+        bannerUrl: null,
 
-        bio:
-          rol === 'ESPECIALISTA'
-            ? (especialidades.length
-              ? `Especialista en ${especialidades.join(', ')}`
-              : 'Especialista de la clínica.')
-            : rol === 'ADMIN'
-              ? 'Administrador del sistema de la clínica.'
-              : 'Paciente de la clínica.',
+        bio
       };
+
+      // } catch (err: any) {
+      //   console.error('[PerfilUsuario] Error cargando perfil:', err);
+      //   this.error = err?.message || 'Error al cargar el perfil.';
+      // } finally {
+      //   this.cargando = false;
+      // }
 
     } catch (err: any) {
       console.error('[PerfilUsuario] Error cargando perfil:', err);
-      this.error = err?.message || 'Error al cargar el perfil.';
+      this.error = err?.message || this.translate.instant('PROFILE.ERROR_GENERIC');
     } finally {
       this.cargando = false;
     }
+
   }
 
   private calcEdadFromISO(iso: string): number {

@@ -99,5 +99,61 @@
       "BUTTON": "Registrar-se"
     },
     "FOOTER": "Clínica Online — UTN"
+  },
+
+
+  "PROFILE": {
+  "LOADING": "Carregando perfil...",
+  "ERROR_TITLE": "Ocorreu um problema",
+  "ERROR_NO_USER_DATA": "Nenhum dado de usuário foi encontrado na clínica.",
+  "ERROR_GENERIC": "Erro ao carregar o perfil.",
+  "GO_HOME": "Ir para início",
+
+  "STATUS_ENABLED": "ATIVO",
+  "STATUS_DISABLED": "INATIVO",
+
+  "AGE_YEARS": "{{age}} anos",
+
+  "SECTIONS": {
+    "PERSONAL": "Informações pessoais",
+    "CONTACT": "Informações de contato",
+    "PROFESSIONAL": "Informações profissionais",
+    "COVERAGE": "Cobertura",
+    "QUICK_ACTIONS": "Ações rápidas",
+    "RECENT_ACTIVITY": "Atividade recente"
+  },
+
+  "FIELDS": {
+    "NAME": "Nome",
+    "AGE": "Idade",
+    "DNI": "Documento",
+    "ABOUT": "Sobre",
+    "EMAIL": "E-mail",
+    "NO_EMAIL": "Sem e-mail",
+    "PHONE": "Telefone",
+    "ADDRESS": "Endereço",
+    "INSURANCE": "Convênio",
+    "SPECIALITIES": "Especialidades",
+    "NO_SPECIALITIES": "Sem especialidades"
+  },
+
+  "ACTIONS": {
+    "BACK": "Voltar",
+    "MESSAGE": "Mensagem",
+    "DISABLE": "Desativar",
+    "ENABLE": "Ativar",
+    "VIEW_APPOINTMENTS": "Ver consultas"
+  },
+
+  "RECENT": {
+    "ITEM1_TIME": "Hoje 10:42",
+    "ITEM1_TEXT": "Atualizou a foto do perfil",
+    "ITEM2_TIME": "Ontem 18:20",
+    "ITEM2_TEXT": "Login bem-sucedido",
+    "ITEM3_TIME": "08/11 09:10",
+    "ITEM3_TEXT": "Baixou relatório de consultas"
   }
+}
+
+  
 }
