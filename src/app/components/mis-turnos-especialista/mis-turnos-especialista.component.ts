@@ -99,6 +99,34 @@ export class MisTurnosEspecialistaComponent implements OnInit {
   // ACCIONES SOBRE TURNOS
   // =========================================================
 
+  // rechazarTurno(turno: TurnoEspecialista): void {
+  //   const comentarioForm = this.fb.group({
+  //     comentario: ['', [Validators.required, Validators.minLength(10)]]
+  //   });
+
+  //   const ref = this.dialog.open(this.rechazarDialog, {
+  //     data: { turno, form: comentarioForm },
+  //     width: '500px'
+  //   });
+
+  //   ref.afterClosed().subscribe(async result => {
+  //     if (result && comentarioForm.valid) {
+  //       try {
+  //         await this.turnoService.cambiarEstadoPorCodigo(
+  //           turno.id,
+  //           'RECHAZADO',
+  //           comentarioForm.value.comentario
+  //         );
+  //         turno.estado = 'RECHAZADO';
+  //         this.dataSource.data = [...this.dataSource.data];
+  //         this.snackBar.open('Turno rechazado', 'Cerrar', { duration: 2000 });
+  //       } catch (error: any) {
+  //         this.snackBar.open(`Error al rechazar: ${error.message || 'Error desconocido'}`, 'Cerrar', { duration: 2500 });
+  //       }
+  //     }
+  //   });
+  // }
+
   rechazarTurno(turno: TurnoEspecialista): void {
     const comentarioForm = this.fb.group({
       comentario: ['', [Validators.required, Validators.minLength(10)]]
@@ -109,23 +137,53 @@ export class MisTurnosEspecialistaComponent implements OnInit {
       width: '500px'
     });
 
-    ref.afterClosed().subscribe(async result => {
+    ref.afterClosed().subscribe(result => {
       if (result && comentarioForm.valid) {
-        try {
-          await this.turnoService.cambiarEstadoPorCodigo(
-            turno.id, 
-            'RECHAZADO', 
-            comentarioForm.value.comentario
-          );
-          turno.estado = 'RECHAZADO';
-          this.dataSource.data = [...this.dataSource.data];
-          this.snackBar.open('Turno rechazado', 'Cerrar', { duration: 2000 });
-        } catch (error: any) {
-          this.snackBar.open(`Error al rechazar: ${error.message || 'Error desconocido'}`, 'Cerrar', { duration: 2500 });
-        }
+        const comentario = comentarioForm.get('comentario')?.value ?? null;
+
+        this.turnoService.cambiarEstadoPorCodigo(turno.id, 'RECHAZADO', comentario)
+          .then(() => {
+            turno.estado = 'RECHAZADO';
+            this.dataSource.data = [...this.dataSource.data];
+            this.snackBar.open('Turno rechazado', 'Cerrar', { duration: 2000 });
+          })
+          .catch(error => {
+            console.error('[MisTurnosEspecialista] Error al rechazar turno', error);
+            this.snackBar.open(`Error al rechazar: ${error.message ?? error}`, 'Cerrar', { duration: 2500 });
+          });
       }
     });
   }
+
+
+  // cancelarTurno(turno: TurnoEspecialista): void {
+  //   const comentarioForm = this.fb.group({
+  //     comentario: ['', [Validators.required, Validators.minLength(10)]]
+  //   });
+
+  //   const ref = this.dialog.open(this.cancelarDialog, {
+  //     data: { turno, form: comentarioForm },
+  //     width: '500px'
+  //   });
+
+  //   ref.afterClosed().subscribe(async result => {
+  //     if (result && comentarioForm.valid) {
+  //       try {
+  //         await this.turnoService.cambiarEstadoPorCodigo(
+  //           turno.id,
+  //           'CANCELADO',
+  //           comentarioForm.value.comentario
+  //         );
+  //         turno.estado = 'CANCELADO';
+  //         this.dataSource.data = [...this.dataSource.data];
+  //         this.snackBar.open('Turno cancelado', 'Cerrar', { duration: 2000 });
+  //       } catch (error: any) {
+  //         this.snackBar.open(`Error al cancelar: ${error.message || 'Error desconocido'}`, 'Cerrar', { duration: 2500 });
+  //       }
+  //     }
+  //   });
+  // }
+
 
   cancelarTurno(turno: TurnoEspecialista): void {
     const comentarioForm = this.fb.group({
@@ -137,20 +195,20 @@ export class MisTurnosEspecialistaComponent implements OnInit {
       width: '500px'
     });
 
-    ref.afterClosed().subscribe(async result => {
+    ref.afterClosed().subscribe(result => {
       if (result && comentarioForm.valid) {
-        try {
-          await this.turnoService.cambiarEstadoPorCodigo(
-            turno.id, 
-            'CANCELADO', 
-            comentarioForm.value.comentario
-          );
-          turno.estado = 'CANCELADO';
-          this.dataSource.data = [...this.dataSource.data];
-          this.snackBar.open('Turno cancelado', 'Cerrar', { duration: 2000 });
-        } catch (error: any) {
-          this.snackBar.open(`Error al cancelar: ${error.message || 'Error desconocido'}`, 'Cerrar', { duration: 2500 });
-        }
+        const comentario = comentarioForm.get('comentario')?.value ?? null;
+
+        this.turnoService.cambiarEstadoPorCodigo(turno.id, 'CANCELADO', comentario)
+          .then(() => {
+            turno.estado = 'CANCELADO';
+            this.dataSource.data = [...this.dataSource.data];
+            this.snackBar.open('Turno cancelado', 'Cerrar', { duration: 2000 });
+          })
+          .catch(error => {
+            console.error('[MisTurnosEspecialista] Error al cancelar turno', error);
+            this.snackBar.open(`Error al cancelar: ${error.message ?? error}`, 'Cerrar', { duration: 2500 });
+          });
       }
     });
   }
@@ -181,6 +239,75 @@ export class MisTurnosEspecialistaComponent implements OnInit {
   }
 
   /** Guarda historia clínica + cambia estado a FINALIZADO */
+  // async guardarHistoriaClinica(turno: TurnoEspecialista, form: FormGroup): Promise<void> {
+  //   try {
+  //     const { data: sessionData } = await this.supa.getSession();
+  //     if (!sessionData?.session) {
+  //       throw new Error('No hay sesión activa');
+  //     }
+  //     const especialistaId = sessionData.session.user.id;
+  //     const fv = form.value;
+
+  //     // Obtener paciente_id del turno
+  //     const { data: turnoData, error: turnoError } = await this.supa.client
+  //       .from('turnos')
+  //       .select('paciente_id')
+  //       .eq('id', turno.id)
+  //       .single();
+
+  //     if (turnoError || !turnoData) {
+  //       throw new Error('No se pudo obtener el turno');
+  //     }
+
+  //     const datosDinamicos: DatoDinamico[] = [
+  //       { clave: 'Índice de riesgo', valor: Number(fv.riesgo), tipo: 'rango', unidad: '%' },
+  //       { clave: 'Nivel de glucosa', valor: Number(fv.nivelGlucosa), tipo: 'numero', unidad: 'mg/dL' },
+  //       { clave: 'Requiere seguimiento', valor: !!fv.requiereSeguimiento, tipo: 'booleano' }
+  //     ];
+
+  //     // Insertar en historia_clinica
+  //     const { error: historiaError } = await this.supa.client
+  //       .from('historia_clinica')
+  //       .insert({
+  //         paciente_id: turnoData.paciente_id,
+  //         especialista_id: especialistaId,
+  //         turno_id: turno.id,
+  //         altura: parseFloat(fv.altura),
+  //         peso: parseFloat(fv.peso),
+  //         temperatura: parseFloat(fv.temperatura),
+  //         presion: fv.presion,
+  //         //  ACA: mapear datos_dinamicos a la tabla historia_datos_dinamicos.
+
+  //       });
+
+  //     if (historiaError) throw historiaError;
+
+  //     // Guardar comentario/reseña del especialista en el turno
+  //     const comentario = fv.comentario?.trim() || null;
+  //     await this.turnoService.cambiarEstadoPorCodigo(turno.id, 'FINALIZADO', comentario);
+
+  //     turno.estado = 'FINALIZADO';
+  //     turno.resena = comentario;
+  //     this.dataSource.data = [...this.dataSource.data];
+
+  //     Swal.fire({
+  //       icon: 'success',
+  //       title: 'Historia clínica guardada',
+  //       text: 'El turno ha sido finalizado correctamente.',
+  //       timer: 2000,
+  //       showConfirmButton: false
+  //     });
+  //   } catch (error: any) {
+  //     console.error('[MisTurnosEspecialista] Error al guardar historia clínica:', error);
+  //     this.snackBar.open(
+  //       `Error: ${error.message || 'No se pudo guardar la historia clínica'}`,
+  //       'Cerrar',
+  //       { duration: 3000 }
+  //     );
+  //   }
+  // }
+
+  /** Guarda historia clínica + cambia estado a FINALIZADO */
   async guardarHistoriaClinica(turno: TurnoEspecialista, form: FormGroup): Promise<void> {
     try {
       const { data: sessionData } = await this.supa.getSession();
@@ -204,11 +331,11 @@ export class MisTurnosEspecialistaComponent implements OnInit {
       const datosDinamicos: DatoDinamico[] = [
         { clave: 'Índice de riesgo', valor: Number(fv.riesgo), tipo: 'rango', unidad: '%' },
         { clave: 'Nivel de glucosa', valor: Number(fv.nivelGlucosa), tipo: 'numero', unidad: 'mg/dL' },
-        { clave: 'Requiere seguimiento', valor: !!fv.requiereSeguimiento, tipo: 'booleano' }
+        { clave: 'Requiere seguimiento', valor: !!fv.requiereSeguimiento, tipo: 'booleano', unidad: null }
       ];
 
-      // Insertar en historia_clinica
-      const { error: historiaError } = await this.supa.client
+      // 1) Insertar en historia_clinica y recuperar el id de la historia
+      const { data: historiaData, error: historiaError } = await this.supa.client
         .from('historia_clinica')
         .insert({
           paciente_id: turnoData.paciente_id,
@@ -217,19 +344,35 @@ export class MisTurnosEspecialistaComponent implements OnInit {
           altura: parseFloat(fv.altura),
           peso: parseFloat(fv.peso),
           temperatura: parseFloat(fv.temperatura),
-          presion: fv.presion,
-          //  ACA: mapear datos_dinamicos a la tabla historia_datos_dinamicos.
-         
-        });
+          presion: fv.presion
+        })
+        .select('id')        // <- pedimos que nos devuelva el id insertado
+        .single();           // <- como es un solo registro
 
-      if (historiaError) throw historiaError;
+      if (historiaError || !historiaData) throw historiaError || new Error('No se pudo crear la historia clínica');
 
-      // Guardar comentario/reseña del especialista en el turno
-      const comentario = fv.comentario?.trim() || null;
-      await this.turnoService.cambiarEstadoPorCodigo(turno.id, 'FINALIZADO', comentario);
+      const historiaId = historiaData.id;
+
+      // 2) Mapear datos_dinamicos a la tabla historia_datos_dinamicos
+      const dinamicosPayload = datosDinamicos.map(d => ({
+        historia_id: historiaId,          // FK a historia_clinica.id  (ajusta si tu columna se llama distinto)
+        clave: d.clave,
+        valor: d.valor as any,            // si en la BD es text/JSON, podés hacer String(d.valor)
+        tipo: d.tipo,
+        unidad: d.unidad ?? null
+      }));
+
+      // 3) Insertar los datos dinámicos
+      const { error: dinamicosError } = await this.supa.client
+        .from('historia_datos_dinamicos')
+        .insert(dinamicosPayload);
+
+      if (dinamicosError) throw dinamicosError;
+
+      // Cambiar estado del turno
+      await this.turnoService.cambiarEstadoPorCodigo(turno.id, 'FINALIZADO');
 
       turno.estado = 'FINALIZADO';
-      turno.resena = comentario;
       this.dataSource.data = [...this.dataSource.data];
 
       Swal.fire({
@@ -248,6 +391,7 @@ export class MisTurnosEspecialistaComponent implements OnInit {
       );
     }
   }
+
 
   // =========================================================
   // HABILITACIONES POR ESTADO
@@ -277,29 +421,51 @@ export class MisTurnosEspecialistaComponent implements OnInit {
     return !!(turno.resena && turno.resena.trim().length > 0);
   }
 
+  // aceptarTurno(turno: TurnoEspecialista): void {
+  //   Swal.fire({
+  //     title: '¿Aceptar turno?',
+  //     text: `¿Estás seguro de que deseas aceptar el turno con ${turno.paciente}?`,
+  //     icon: 'question',
+  //     showCancelButton: true,
+  //     confirmButtonColor: '#3085d6',
+  //     cancelButtonColor: '#d33',
+  //     confirmButtonText: 'Sí, aceptar',
+  //     cancelButtonText: 'Cancelar'
+  //   }).then(async (result) => {
+  //     if (result.isConfirmed) {
+  //       try {
+  //         await this.turnoService.cambiarEstadoPorCodigo(turno.id, 'ACEPTADO');
+  //         turno.estado = 'ACEPTADO';
+  //         this.dataSource.data = [...this.dataSource.data];
+  //         this.snackBar.open('Turno aceptado', 'Cerrar', { duration: 2000 });
+  //       } catch (error: any) {
+  //         this.snackBar.open(`Error al aceptar: ${error.message || 'Error desconocido'}`, 'Cerrar', { duration: 2500 });
+  //       }
+  //     }
+  //   });
+  // }
+
   aceptarTurno(turno: TurnoEspecialista): void {
-    Swal.fire({
-      title: '¿Aceptar turno?',
-      text: `¿Estás seguro de que deseas aceptar el turno con ${turno.paciente}?`,
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Sí, aceptar',
-      cancelButtonText: 'Cancelar'
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          await this.turnoService.cambiarEstadoPorCodigo(turno.id, 'ACEPTADO');
-          turno.estado = 'ACEPTADO';
-          this.dataSource.data = [...this.dataSource.data];
-          this.snackBar.open('Turno aceptado', 'Cerrar', { duration: 2000 });
-        } catch (error: any) {
-          this.snackBar.open(`Error al aceptar: ${error.message || 'Error desconocido'}`, 'Cerrar', { duration: 2500 });
-        }
+    const ref = this.dialog.open(this.confirmDialog, {
+      data: { message: `¿Aceptar el turno con ${turno.paciente}?` }
+    });
+
+    ref.afterClosed().subscribe(ok => {
+      if (ok) {
+        this.turnoService.cambiarEstadoPorCodigo(turno.id, 'ACEPTADO')
+          .then(() => {
+            turno.estado = 'ACEPTADO';
+            this.dataSource.data = [...this.dataSource.data];
+            this.snackBar.open('Turno aceptado', 'Cerrar', { duration: 2000 });
+          })
+          .catch(error => {
+            console.error('[MisTurnosEspecialista] Error al aceptar turno', error);
+            this.snackBar.open(`Error al aceptar: ${error.message ?? error}`, 'Cerrar', { duration: 2500 });
+          });
       }
     });
   }
+
 
   verResena(turno: TurnoEspecialista): void {
     this.snackBar.open(turno.resena ?? 'Sin reseña', 'Cerrar', { duration: 4000 });
@@ -314,7 +480,7 @@ export class MisTurnosEspecialistaComponent implements OnInit {
     return (ds.filteredData?.length ? ds.filteredData : ds.data) || [];
   }
 
-  
+
 }
 
 

@@ -105,7 +105,7 @@
 
         <ng-template #accionesEspecialista>
           <div class="actions">
-            <button class="btn danger ripple" (click)="toggleHabilitado(u)" [attr.aria-pressed]="!u.habilitado">
+            <button class="btn danger ripple" *ngIf="esAdmin" (click)="toggleHabilitado(u)" [attr.aria-pressed]="!u.habilitado">
               <svg class="icon" viewBox="0 0 24 24">
                 <path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
@@ -252,7 +252,7 @@
         <button
           mat-flat-button
           color="warn"
-          *ngIf="seleccionado.rol === 'especialista'"
+          *ngIf="seleccionado.rol === 'especialista' && esAdmin"
           (click)="toggleAprobacion(seleccionado)">
           <mat-icon>{{ seleccionado.aprobado ? 'block' : 'check_circle' }}</mat-icon>
           {{ seleccionado.aprobado ? 'Inhabilitar' : 'Habilitar' }}

@@ -105,6 +105,7 @@ export class UsuariosAdminComponent implements OnInit {
   search = '';
   filtroRol: 'todos' | Rol = 'todos';
   soloHabilitados = false;
+  esAdmin = false;
 
   // Estado de selección / detalle
   usuariosFiltrados: UsuarioAdmin[] = [];
@@ -139,6 +140,27 @@ export class UsuariosAdminComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     this.maxDateISO = this.toISODateLocal(new Date());
     this.inicializarFormulario();
+    
+    // Verificar si el usuario actual es admin
+    try {
+      const { data: sessionData } = await this.supa.getSession();
+      if (sessionData?.session) {
+        const userId = sessionData.session.user.id;
+        const { data: usuario, error } = await this.supa.client
+          .from('usuarios')
+          .select('perfil')
+          .eq('id', userId)
+          .single();
+        
+        if (!error && usuario) {
+          const perfil = String(usuario.perfil ?? '').toUpperCase();
+          this.esAdmin = perfil === 'ADMIN';
+        }
+      }
+    } catch (e) {
+      console.error('[UsuariosAdmin] Error al verificar rol', e);
+    }
+    
     await this.cargarUsuarios();
   }
 
