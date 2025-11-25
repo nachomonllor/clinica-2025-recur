@@ -38,6 +38,7 @@ export class PerfilUsuarioComponent implements OnInit {
   usuario: UsuarioPerfil | null = null;
   cargando = true;
   error?: string;
+  esAdmin = false;
 
   constructor(
     private supa: SupabaseService,
@@ -87,6 +88,8 @@ export class PerfilUsuarioComponent implements OnInit {
         rolRaw === 'ESPECIALISTA' ? 'ESPECIALISTA' :
           rolRaw === 'ADMIN' ? 'ADMIN' :
             'PACIENTE';
+
+      this.esAdmin = rol === 'ADMIN';
 
       // 4) Especialidades: primero desde tablas, luego metadata como fallback
       let especialidades: string[] = [];

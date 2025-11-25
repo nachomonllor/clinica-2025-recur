@@ -21,6 +21,10 @@ import { StatusLabelPipe } from '../../../pipes/status-label.pipe';
 import { StatusBadgeDirective } from '../../../directives/status-badge.directive';
 import { ElevateOnHoverDirective } from '../../../directives/elevate-on-hover.directive';
 
+import * as XLSX from 'xlsx';
+import { formatDate } from '@angular/common';
+
+
 @Component({
   selector: 'app-mis-turnos-paciente',
   standalone: true,
@@ -239,6 +243,45 @@ export class MisTurnosPacienteComponent implements OnInit {
     const filtered = ds.filteredData;
     return (filtered && filtered.length ? filtered : ds.data) || [];
   }
+
+  exportarHistoriaClinicaExcel(): void {
+    const turnos = this.turnos;  // respeta el filtro actual
+
+    if (!turnos.length) {
+      this.snackBar.open('No hay turnos para exportar.', 'Cerrar', {
+        duration: 2500
+      });
+      return;
+    }
+
+    const filas = turnos.map((t, idx) => ({
+      Nro: idx + 1,
+      Fecha: t.fecha ? t.fecha.toLocaleDateString('es-AR') : '',
+      Hora: t.hora ?? '',
+      Estado: t.estado ?? '',
+      Especialidad: t.especialidad ?? '',
+      Profesional: t.especialista ?? '',
+      Calificación: t.calificacion ?? '',
+      'Reseña del especialista': t.resena ?? '',
+      'Historia clínica (texto)': (t as any).historiaClinica || t.historiaBusqueda || ''
+    }));
+
+    const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(filas);
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Historia Clínica');
+
+    const ahora = new Date();
+    const fechaArchivo = `${ahora.getFullYear()}${(ahora.getMonth() + 1)
+      .toString()
+      .padStart(2, '0')}${ahora.getDate().toString().padStart(2, '0')}_${ahora
+        .getHours()
+        .toString()
+        .padStart(2, '0')}${ahora.getMinutes().toString().padStart(2, '0')}`;
+
+    const fileName = `historia_clinica_${fechaArchivo}.xlsx`;
+    XLSX.writeFile(wb, fileName);
+  }
+
 }
 
 

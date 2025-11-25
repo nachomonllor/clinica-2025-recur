@@ -36,6 +36,17 @@ interface PacienteOption {
   apellido: string;
 }
 
+interface HorarioEspecialistaRow {
+  id: string;
+  especialista_id: string;
+  especialidad_id: string | null;
+  dia_semana: number; // 0=domingo ... 6=sábado
+  hora_desde: string; // 'HH:MM:SS'
+  hora_hasta: string; // 'HH:MM:SS'
+  duracion_turno_minutos: number;
+}
+
+
 @Component({
   selector: 'app-solicitar-turno',
   standalone: true,
@@ -66,6 +77,7 @@ export class SolicitarTurnoComponent implements OnInit {
     hora: FormControl<string | null>;
   }>;
 
+
   // nombre visible de la especialidad
   especialidades: string[] = [];
 
@@ -74,10 +86,13 @@ export class SolicitarTurnoComponent implements OnInit {
   pacientes: PacienteOption[] = [];
 
   diasDisponibles: string[] = [];
-  horariosDisponibles: string[] = [
-    '08:00', '09:00', '10:00', '11:00', '12:00',
-    '14:00', '15:00', '16:00', '17:00', '18:00'
-  ];
+  // horariosDisponibles: string[] = [
+  //   '08:00', '09:00', '10:00', '11:00', '12:00',
+  //   '14:00', '15:00', '16:00', '17:00', '18:00'
+  // ];
+
+  horariosDisponibles: string[] = []; // <============ SACO LOS HARDCODIADOS Y TOMO LOS DE LA TABLA esquema_clinica.horarios_especialista
+
 
   esAdmin = false;
   pacienteId: string | null = null;
@@ -98,8 +113,284 @@ export class SolicitarTurnoComponent implements OnInit {
     this.inicializarFormularioBasico();
   }
 
+  /// ========> PARA QUE SOLO PINTE LOS HORARIOS QUE TIENE DISPONIBLE EL ESPECIALISTA
+  // private async actualizarHorariosDisponiblesParaSeleccion(): Promise<void> {
+  //   const especialidadCtrl = this.formularioTurno.get('especialidad') as FormControl<string | null>;
+  //   const especialistaCtrl = this.formularioTurno.get('especialista') as FormControl<string | null>;
+  //   const diaCtrl = this.formularioTurno.get('dia') as FormControl<string | null>;
+  //   const horaCtrl = this.formularioTurno.get('hora') as FormControl<string | null>;
+
+  //   const especialistaId = especialistaCtrl?.value;
+  //   const nombreEspecialidad = especialidadCtrl?.value;
+  //   const diaValue = diaCtrl?.value; // "YYYY-MM-DD|texto lindo"
+
+  //   if (!especialistaId || !nombreEspecialidad || !diaValue) {
+  //     this.horariosDisponibles = [];
+  //     horaCtrl?.reset();
+  //     horaCtrl?.disable({ emitEvent: false });
+  //     return;
+  //   }
+
+  //   const especialidadId = this.especialidadIdPorNombre.get(nombreEspecialidad) ?? null;
+  //   const diaSeleccionado = diaValue.split('|')[0]; // "YYYY-MM-DD"
+  //   const fecha = new Date(diaSeleccionado);
+  //   const diaSemana = fecha.getDay(); // 0=domingo ... 6=sábado (coincide con tu comentario)
+
+  //   try {
+  //     // 1) Traer horarios del especialista para ese día de semana
+  //     const { data: horariosData, error: horariosErr } = await this.supa.client
+  //       .from('horarios_especialista')
+  //       .select('id, especialista_id, especialidad_id, dia_semana, hora_desde, hora_hasta, duracion_turno_minutos')
+  //       .eq('especialista_id', especialistaId)
+  //       .eq('dia_semana', diaSemana);
+
+  //     if (horariosErr) throw horariosErr;
+
+  //     const horarios = (horariosData ?? []) as HorarioEspecialistaRow[];
+
+  //     // Filtrar por especialidad si corresponde
+  //     const horariosFiltrados = horarios.filter(h => {
+  //       if (!especialidadId) return true; // si no hay especialidad, usamos todos
+  //       // si especialidad_id es null => aplica a todas
+  //       return !h.especialidad_id || h.especialidad_id === especialidadId;
+  //     });
+
+  //     // if (!horariosFiltrados.length) {
+  //     //   this.horariosDisponibles = [];
+  //     //   horaCtrl?.reset();
+  //     //   horaCtrl?.disable({ emitEvent: false });
+
+  //     //   this.snackBar.open(
+  //     //     this.translate.instant('APPOINTMENT.NO_SLOTS_FOR_DAY'),
+  //     //     this.translate.instant('COMMON.CLOSE'),
+  //     //     { duration: 3000 }
+  //     //   );
+
+  //     //   return;
+  //     // }
+
+  //     if (!horariosFiltrados.length) {
+  //       this.horariosDisponibles = [];
+  //       horaCtrl?.reset();
+  //       horaCtrl?.disable({ emitEvent: false });
+  //       return;
+  //     }
+
+  //     // 2) Generar slots posibles
+  //     let slots: string[] = [];
+  //     for (const h of horariosFiltrados) {
+  //       const duracion = h.duracion_turno_minutos || 30;
+
+  //       const [hdH, hdM] = h.hora_desde.substring(0, 5).split(':').map(Number);
+  //       const [hhH, hhM] = h.hora_hasta.substring(0, 5).split(':').map(Number);
+
+  //       let minutosDesde = hdH * 60 + hdM;
+  //       const minutosHasta = hhH * 60 + hhM;
+
+  //       while (minutosDesde + duracion <= minutosHasta) {
+  //         const hh = Math.floor(minutosDesde / 60).toString().padStart(2, '0');
+  //         const mm = (minutosDesde % 60).toString().padStart(2, '0');
+  //         slots.push(`${hh}:${mm}`);
+  //         minutosDesde += duracion;
+  //       }
+  //     }
+
+  //     // Quitar duplicados y ordenar
+  //     slots = Array.from(new Set(slots)).sort();
+
+  //     // 3) Filtrar los slots que ya tengan turno reservado
+  //     const { data: turnosDia, error: turnosErr } = await this.supa.client
+  //       .from('turnos')
+  //       .select(`
+  //       fecha_hora_inicio,
+  //       estado:estados_turno!fk_turno_estado ( codigo )
+  //     `)
+  //       .eq('especialista_id', especialistaId)
+  //       .gte('fecha_hora_inicio', `${diaSeleccionado}T00:00:00`)
+  //       .lt('fecha_hora_inicio', `${diaSeleccionado}T23:59:59`);
+
+  //     if (turnosErr) throw turnosErr;
+
+  //     const ocupadas = new Set<string>();
+  //     (turnosDia ?? []).forEach((t: any) => {
+  //       const codigo = String(t.estado?.codigo ?? '').toUpperCase();
+  //       if (codigo === 'PENDIENTE' || codigo === 'ACEPTADO') {
+  //         const dt = new Date(t.fecha_hora_inicio);
+  //         const hh = dt.getHours().toString().padStart(2, '0');
+  //         const mm = dt.getMinutes().toString().padStart(2, '0');
+  //         ocupadas.add(`${hh}:${mm}`);
+  //       }
+  //     });
+
+  //     this.horariosDisponibles = slots.filter(h => !ocupadas.has(h));
+
+  //     // Habilitar el selector de hora sólo si hay algo
+  //     if (this.horariosDisponibles.length > 0) {
+  //       horaCtrl?.enable({ emitEvent: false });
+  //     } else {
+  //       horaCtrl?.reset();
+  //       horaCtrl?.disable({ emitEvent: false });
+
+  //       this.snackBar.open(
+  //         this.translate.instant('APPOINTMENT.NO_FREE_SLOTS'),
+  //         this.translate.instant('COMMON.CLOSE'),
+  //         { duration: 3000 }
+  //       );
+  //     }
+
+  //   } catch (e) {
+  //     console.error('[SolicitarTurno] Error al cargar horarios del especialista', e);
+  //     this.horariosDisponibles = [];
+  //     horaCtrl?.reset();
+  //     horaCtrl?.disable({ emitEvent: false });
+
+  //     this.snackBar.open(
+  //       this.translate.instant('APPOINTMENT.ERROR_LOAD_SLOTS'),
+  //       this.translate.instant('COMMON.CLOSE'),
+  //       { duration: 3000 }
+  //     );
+  //   }
+  // }
+
+
+  private async actualizarHorariosDisponiblesParaSeleccion(): Promise<void> {
+    const especialidadCtrl = this.formularioTurno.get('especialidad') as FormControl<string | null>;
+    const especialistaCtrl = this.formularioTurno.get('especialista') as FormControl<string | null>;
+    const diaCtrl = this.formularioTurno.get('dia') as FormControl<string | null>;
+    const horaCtrl = this.formularioTurno.get('hora') as FormControl<string | null>;
+
+    const especialistaId = especialistaCtrl?.value;
+    const nombreEspecialidad = especialidadCtrl?.value;
+    const diaValue = diaCtrl?.value; // "YYYY-MM-DD|texto lindo"
+
+    if (!especialistaId || !nombreEspecialidad || !diaValue) {
+      this.horariosDisponibles = [];
+      horaCtrl?.reset();
+      horaCtrl?.disable({ emitEvent: false });
+      return;
+    }
+
+    const especialidadId = this.especialidadIdPorNombre.get(nombreEspecialidad) ?? null;
+
+    // ------- IMPORTANTE: calcular día de semana en horario local -------
+    const diaSeleccionado = diaValue.split('|')[0]; // "YYYY-MM-DD"
+    const [yearStr, monthStr, dayStr] = diaSeleccionado.split('-');
+    const year = Number(yearStr);
+    const month = Number(monthStr); // 1..12
+    const day = Number(dayStr);
+
+    // new Date(año, mesIndex, día) usa fecha LOCAL (no UTC)
+    const fechaLocal = new Date(year, month - 1, day);
+    const diaSemana = fechaLocal.getDay(); // 0=domingo ... 6=sábado
+
+    try {
+      // 1) Traer horarios del especialista para ese día de semana
+      const { data: horariosData, error: horariosErr } = await this.supa.client
+        .from('horarios_especialista')
+        .select('id, especialista_id, especialidad_id, dia_semana, hora_desde, hora_hasta, duracion_turno_minutos')
+        .eq('especialista_id', especialistaId)
+        .eq('dia_semana', diaSemana);
+
+      if (horariosErr) throw horariosErr;
+
+      const horarios = (horariosData ?? []) as HorarioEspecialistaRow[];
+
+      // Filtrar por especialidad si corresponde
+      const horariosFiltrados = horarios.filter(h => {
+        if (!especialidadId) return true; // si no hay especialidad, usamos todos
+        // si especialidad_id es null => aplica a todas
+        return !h.especialidad_id || h.especialidad_id === especialidadId;
+      });
+
+      if (!horariosFiltrados.length) {
+        this.horariosDisponibles = [];
+        horaCtrl?.reset();
+        horaCtrl?.disable({ emitEvent: false });
+        return;
+      }
+
+      // 2) Generar slots posibles
+      let slots: string[] = [];
+
+      for (const h of horariosFiltrados) {
+        const duracion = h.duracion_turno_minutos || 30;
+
+        // hora_desde / hora_hasta vienen como "HH:MM" o "HH:MM:SS"
+        const [hdH, hdM] = h.hora_desde.substring(0, 5).split(':').map(Number);
+        const [hhH, hhM] = h.hora_hasta.substring(0, 5).split(':').map(Number);
+
+        let minutosDesde = hdH * 60 + hdM;
+        const minutosHasta = hhH * 60 + hhM;
+
+        while (minutosDesde + duracion <= minutosHasta) {
+          const hh = Math.floor(minutosDesde / 60).toString().padStart(2, '0');
+          const mm = (minutosDesde % 60).toString().padStart(2, '0');
+          slots.push(`${hh}:${mm}`);
+          minutosDesde += duracion;
+        }
+      }
+
+      // Quitar duplicados y ordenar
+      slots = Array.from(new Set(slots)).sort();
+
+      // 3) Filtrar los slots que ya tengan turno reservado
+      const { data: turnosDia, error: turnosErr } = await this.supa.client
+        .from('turnos')
+        .select(`
+        fecha_hora_inicio,
+        estado:estados_turno!fk_turno_estado ( codigo )
+      `)
+        .eq('especialista_id', especialistaId)
+        .gte('fecha_hora_inicio', `${diaSeleccionado}T00:00:00`)
+        .lt('fecha_hora_inicio', `${diaSeleccionado}T23:59:59`);
+
+      if (turnosErr) throw turnosErr;
+
+      const ocupadas = new Set<string>();
+      (turnosDia ?? []).forEach((t: any) => {
+        const codigo = String(t.estado?.codigo ?? '').toUpperCase();
+        if (codigo === 'PENDIENTE' || codigo === 'ACEPTADO') {
+          const dt = new Date(t.fecha_hora_inicio);
+          const hh = dt.getHours().toString().padStart(2, '0');
+          const mm = dt.getMinutes().toString().padStart(2, '0');
+          ocupadas.add(`${hh}:${mm}`);
+        }
+      });
+
+      this.horariosDisponibles = slots.filter(h => !ocupadas.has(h));
+
+      // Habilitar el selector de hora sólo si hay algo
+      if (this.horariosDisponibles.length > 0) {
+        horaCtrl?.enable({ emitEvent: false });
+      } else {
+        horaCtrl?.reset();
+        horaCtrl?.disable({ emitEvent: false });
+
+        this.snackBar.open(
+          this.translate.instant('APPOINTMENT.NO_FREE_SLOTS'),
+          this.translate.instant('COMMON.CLOSE'),
+          { duration: 3000 }
+        );
+      }
+
+    } catch (e) {
+      console.error('[SolicitarTurno] Error al cargar horarios del especialista', e);
+      this.horariosDisponibles = [];
+      horaCtrl?.reset();
+      horaCtrl?.disable({ emitEvent: false });
+
+      this.snackBar.open(
+        this.translate.instant('APPOINTMENT.ERROR_LOAD_SLOTS'),
+        this.translate.instant('COMMON.CLOSE'),
+        { duration: 3000 }
+      );
+    }
+  }
+
+
+
   // =================================================================
-  // Ciclo de vida
+  // ------------------------- -  Ciclo de vida ngonini
   // =================================================================
   async ngOnInit(): Promise<void> {
     // 1) Obtener sesión y rol del usuario desde tabla usuarios
@@ -137,10 +428,77 @@ export class SolicitarTurnoComponent implements OnInit {
     }
 
     // 4) Generar días habilitados
-    this.generarDiasDisponibles();
+    //this.generarDiasDisponibles();
 
     this.formularioInicializado = true;
   }
+
+
+  private async actualizarDiasDisponiblesParaSeleccion(): Promise<void> {
+    const especialidadCtrl = this.formularioTurno.get('especialidad') as FormControl<string | null>;
+    const especialistaCtrl = this.formularioTurno.get('especialista') as FormControl<string | null>;
+
+    const especialistaId = especialistaCtrl?.value;
+    const nombreEspecialidad = especialidadCtrl?.value;
+
+    if (!especialistaId || !nombreEspecialidad) {
+      this.diasDisponibles = [];
+      return;
+    }
+
+    const especialidadId = this.especialidadIdPorNombre.get(nombreEspecialidad) ?? null;
+
+    try {
+      // Traemos TODOS los horarios del especialista (para cualquier día)
+      const { data: horariosData, error: horariosErr } = await this.supa.client
+        .from('horarios_especialista')
+        .select('dia_semana, especialidad_id')
+        .eq('especialista_id', especialistaId);
+
+      if (horariosErr) throw horariosErr;
+
+      const horarios = (horariosData ?? []) as Pick<HorarioEspecialistaRow, 'dia_semana' | 'especialidad_id'>[];
+
+      // Qué días de la semana atiende para esta especialidad
+      const diasSemanaDisponibles = new Set<number>();
+
+      horarios.forEach(h => {
+        if (!especialidadId) {
+          diasSemanaDisponibles.add(h.dia_semana);
+        } else if (!h.especialidad_id || h.especialidad_id === especialidadId) {
+          diasSemanaDisponibles.add(h.dia_semana);
+        }
+      });
+
+      const hoy = new Date();
+      const maxDias = this.esAdmin ? 30 : 15;
+      const dias: string[] = [];
+
+      for (let i = 1; i <= maxDias; i++) {
+        const fecha = new Date(hoy);
+        fecha.setDate(hoy.getDate() + i);
+
+        const dow = fecha.getDay(); // 0=domingo ... 6=sábado
+        if (diasSemanaDisponibles.has(dow)) {
+          // *** AQUÍ estaba el problema: antes usábamos toISOString() (UTC) ***
+          const year = fecha.getFullYear();
+          const month = (fecha.getMonth() + 1).toString().padStart(2, '0');
+          const day = fecha.getDate().toString().padStart(2, '0');
+          const fechaStr = `${year}-${month}-${day}`; // YYYY-MM-DD en LOCAL
+
+          const fechaFormateada = this.formatearFecha(fecha);
+          dias.push(`${fechaStr}|${fechaFormateada}`);
+        }
+      }
+
+      this.diasDisponibles = dias;
+    } catch (e) {
+      console.error('[SolicitarTurno] Error al cargar días disponibles', e);
+      this.diasDisponibles = [];
+    }
+  }
+
+
 
   // =================================================================
   // Inicialización y listeners del formulario
@@ -172,13 +530,92 @@ export class SolicitarTurnoComponent implements OnInit {
     horaCtrl.disable({ emitEvent: false });
 
     // Cuando cambia la especialidad, filtramos especialistas
+    // especialidadCtrl.valueChanges.subscribe(esp => {
+    //   if (esp) {
+    //     this.especialistasFiltrados = this.especialistas.filter(e => e.especialidad === esp);
+
+    //     // if (this.especialistasFiltrados.length === 0) {
+    //     //   this.snackBar.open(`No hay especialistas disponibles para ${esp}`, 'Cerrar', { duration: 3000 });
+    //     // }
+
+    //     if (this.especialistasFiltrados.length === 0) {
+    //       this.snackBar.open(
+    //         this.translate.instant('APPOINTMENT.NO_SPECIALISTS', { speciality: esp }),
+    //         this.translate.instant('COMMON.CLOSE'),
+    //         { duration: 3000 }
+    //       );
+    //     }
+
+    //     especialistaCtrl.reset();
+    //     especialistaCtrl.enable({ emitEvent: false });
+    //     diaCtrl.reset();
+    //     diaCtrl.disable({ emitEvent: false });
+    //     horaCtrl.reset();
+    //     horaCtrl.disable({ emitEvent: false });
+    //   } else {
+    //     this.especialistasFiltrados = [];
+    //     especialistaCtrl.reset();
+    //     especialistaCtrl.disable({ emitEvent: false });
+    //     diaCtrl.reset();
+    //     diaCtrl.disable({ emitEvent: false });
+    //     horaCtrl.reset();
+    //     horaCtrl.disable({ emitEvent: false });
+    //   }
+    // });
+
+    // Al elegir especialista se habilita día
+    // especialistaCtrl.valueChanges.subscribe(especialista => {
+    //   if (especialista) {
+    //     diaCtrl.enable({ emitEvent: false });
+    //   } else {
+    //     diaCtrl.reset();
+    //     diaCtrl.disable({ emitEvent: false });
+    //     horaCtrl.reset();
+    //     horaCtrl.disable({ emitEvent: false });
+    //   }
+    // });
+
+    // especialistaCtrl.valueChanges.subscribe(especialista => {
+    //   if (especialista) {
+    //     diaCtrl.enable({ emitEvent: false });
+    //     this.horariosDisponibles = [];
+    //     horaCtrl.reset();
+    //     horaCtrl.disable({ emitEvent: false });
+    //   } else {
+    //     diaCtrl.reset();
+    //     diaCtrl.disable({ emitEvent: false });
+    //     this.horariosDisponibles = [];
+    //     horaCtrl.reset();
+    //     horaCtrl.disable({ emitEvent: false });
+    //   }
+    // });
+
+
+    especialistaCtrl.valueChanges.subscribe(especialista => {
+      if (especialista) {
+        // recalculamos días según los horarios de ese especialista
+        this.actualizarDiasDisponiblesParaSeleccion();
+        diaCtrl.enable({ emitEvent: false });
+
+        this.horariosDisponibles = [];
+        horaCtrl.reset();
+        horaCtrl.disable({ emitEvent: false });
+      } else {
+        this.diasDisponibles = [];
+        diaCtrl.reset();
+        diaCtrl.disable({ emitEvent: false });
+
+        this.horariosDisponibles = [];
+        horaCtrl.reset();
+        horaCtrl.disable({ emitEvent: false });
+      }
+    });
+
+
+
     especialidadCtrl.valueChanges.subscribe(esp => {
       if (esp) {
         this.especialistasFiltrados = this.especialistas.filter(e => e.especialidad === esp);
-
-        // if (this.especialistasFiltrados.length === 0) {
-        //   this.snackBar.open(`No hay especialistas disponibles para ${esp}`, 'Cerrar', { duration: 3000 });
-        // }
 
         if (this.especialistasFiltrados.length === 0) {
           this.snackBar.open(
@@ -188,6 +625,9 @@ export class SolicitarTurnoComponent implements OnInit {
           );
         }
 
+        this.diasDisponibles = [];
+        this.horariosDisponibles = [];
+
         especialistaCtrl.reset();
         especialistaCtrl.enable({ emitEvent: false });
         diaCtrl.reset();
@@ -196,6 +636,9 @@ export class SolicitarTurnoComponent implements OnInit {
         horaCtrl.disable({ emitEvent: false });
       } else {
         this.especialistasFiltrados = [];
+        this.diasDisponibles = [];
+        this.horariosDisponibles = [];
+
         especialistaCtrl.reset();
         especialistaCtrl.disable({ emitEvent: false });
         diaCtrl.reset();
@@ -205,23 +648,25 @@ export class SolicitarTurnoComponent implements OnInit {
       }
     });
 
-    // Al elegir especialista se habilita día
-    especialistaCtrl.valueChanges.subscribe(especialista => {
-      if (especialista) {
-        diaCtrl.enable({ emitEvent: false });
-      } else {
-        diaCtrl.reset();
-        diaCtrl.disable({ emitEvent: false });
-        horaCtrl.reset();
-        horaCtrl.disable({ emitEvent: false });
-      }
-    });
+
 
     // Al elegir día se habilita hora
+    //   diaCtrl.valueChanges.subscribe(dia => {
+    //     if (dia) {
+    //       horaCtrl.enable({ emitEvent: false });
+    //     } else {
+    //       horaCtrl.reset();
+    //       horaCtrl.disable({ emitEvent: false });
+    //     }
+    //   });
+    // }
+
     diaCtrl.valueChanges.subscribe(dia => {
       if (dia) {
-        horaCtrl.enable({ emitEvent: false });
+        // Recalcular horarios según especialista + día + especialidad
+        this.actualizarHorariosDisponiblesParaSeleccion();
       } else {
+        this.horariosDisponibles = [];
         horaCtrl.reset();
         horaCtrl.disable({ emitEvent: false });
       }
