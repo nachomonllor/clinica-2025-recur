@@ -64,7 +64,7 @@ export const routes: Routes = [
       // --- Paciente ---
       {
         path: 'mis-turnos-paciente',
-        canActivate: [RoleGuard],   // <-- AGREGADO GUard
+        canActivate: [RoleGuard],   // <-- AGREGADO GUard ---------------------------------------------------------
 
         loadComponent: () =>
           import('./components/mis-turnos-paciente/mis-turnos-paciente.component')
@@ -133,7 +133,7 @@ export const routes: Routes = [
           import('./components/admin/usuarios-admin/usuarios-admin.component')
             .then(m => m.UsuariosAdminComponent),
              data: { 
-              roles: ['ADMIN']         // <--  el guard 
+              roles: ['ADMIN']         // <--  el guard ---------------------------------------------------------
             }
       },
       {
