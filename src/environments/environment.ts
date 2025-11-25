@@ -8,21 +8,6 @@ export const environment = {
   captchaEnabled: true,
   recaptchaSiteKey: 'SITE_KEY_DEL_CAPTCHA_ACA',
 
-  // quickLogins: {
-  //    paciente: [
-  //     { email: 'admin@hotmail.com', password: '123456', nombre: 'admin@hotmail.com', avatar: 'https://tuwlrspqlkpqatnaintx.supabase.co/storage/v1/object/public/avatars/2173bce1-49f3-41f9-b600-990518322df2/1764039766395_1_admin.jpg' },
-  //     { email: 'marcela.rodriguez@test.com', password: 'Paciente123', nombre: 'Marcela Rodríguez', avatar: 'assets/avatars/indio.jpg' },
-  //     { email: 'andres.lopez@test.com', password: 'Paciente123', nombre: 'Andrés López', avatar: 'assets/avatars/jagger.jpg' }
-  //   ],
-  //   especialista: [
-  //     { email: 'especialista@test.com', password: 'Especialista123', nombre: 'Dra. Ana Ruiz', avatar: 'assets/avatars/avril.jpg' },
-  //     { email: 'jorge.perez@test.com', password: 'Especialista123', nombre: 'Dr. Jorge Pérez', avatar: 'assets/avatars/albert.jpg' }
-  //   ],
-  //   admin: [
-  //     { email: 'admin@test.com', password: 'Admin123', nombre: 'Administrador Demo', avatar: 'assets/avatars/nacho.jpg' }
-  //   ]
-  // }
-
   quickLogins: {
     paciente: [
       {
