@@ -65,4 +65,9 @@ export type HistoriaDatoDinamicoUpdate =
   Partial<Omit<HistoriaDatoDinamico, 'id' | 'historia_id'>>;
 
   
+export interface HistoriaClinicaConExtras extends HistoriaClinica {
+  especialistaNombre: string;  // comes de la tabla usuarios
+  fechaAtencion: string;       // texto ya formateado para mostrar
+}
+
 

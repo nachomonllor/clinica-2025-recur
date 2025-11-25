@@ -1,10 +1,19 @@
 import { Component, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { DatoDinamicoPipe } from "../../../../pipes/dato-dinamico.pipe";
+import jsPDF from 'jspdf';
+import { HistoriaClinicaConExtras } from '../../../models/historia-clinica.model';
+import { DatoDinamico } from '../../../models/dato-dinamico.model';
+
+// historia-clinica-dialog.component.ts
+export interface HistoriaClinicaDialogData {
+  pacienteNombre: string;
+  historias: HistoriaClinicaConExtras[];
+}
 
 @Component({
   selector: 'app-historia-clinica-dialog',
@@ -16,9 +25,19 @@ import { DatoDinamicoPipe } from "../../../../pipes/dato-dinamico.pipe";
     MatButtonModule,
     MatIconModule,
     DatoDinamicoPipe
-],
+  ],
   template: `
-    <h2 mat-dialog-title>Historia Clínica - {{ data.pacienteNombre }}</h2>
+
+
+    <h2 mat-dialog-title class="dialog-header">Historia Clínica - {{ data.pacienteNombre }}</h2>
+ 
+  <span class="spacer"></span>
+  <button mat-icon-button (click)="exportarPdf()">
+    <mat-icon>download</mat-icon>
+  </button>
+  <button mat-icon-button (click)="cerrar()">
+    <mat-icon>close</mat-icon>
+  </button>
     <mat-dialog-content>
       <p *ngIf="data.historias.length === 0">No hay historias clínicas registradas.</p>
       
@@ -100,6 +119,8 @@ import { DatoDinamicoPipe } from "../../../../pipes/dato-dinamico.pipe";
     }
   `]
 })
+
+
 // export class HistoriaClinicaDialogComponent {
 //   constructor(
 //     @Inject(MAT_DIALOG_DATA)
@@ -114,17 +135,105 @@ import { DatoDinamicoPipe } from "../../../../pipes/dato-dinamico.pipe";
 //       day: 'numeric'
 //     });
 //   }
-
-//   formatDato(dato: DatoDinamico): string {
-//     return formatearDatoDinamico(dato);
-//   }
 // }
 
+
 export class HistoriaClinicaDialogComponent {
+
   constructor(
-    @Inject(MAT_DIALOG_DATA)
-    public data: { pacienteNombre: string; historias: any[] }
-  ) {}
+    @Inject(MAT_DIALOG_DATA) public data: HistoriaClinicaDialogData,
+    private dialogRef: MatDialogRef<HistoriaClinicaDialogComponent>
+  ) { }
+
+  cerrar(): void {
+    this.dialogRef.close();
+  }
+
+  // private formatearDatoDinamico(d: DatoDinamico): string {
+  //   if (d.valor !== null && d.valor !== undefined) {
+  //     return d.valor;
+  //   }
+  //   if (d.valor !== null && d.valor !== undefined) {
+  //     return String(d.valor_numerico);
+  //   }
+  //   if (d.valor_boolean !== null && d.valor_boolean !== undefined) {
+  //     return d.valor_boolean ? 'Sí' : 'No';
+  //   }
+  //   return '-';
+  // }
+
+  private formatearDatoDinamico(d: DatoDinamico): string {
+    const v = d.valor;
+
+    let texto: string;
+
+    if (v === null || v === undefined) {
+      texto = '-';
+    } else if (typeof v === 'boolean') {
+      texto = v ? 'Sí' : 'No';
+    } else {
+      texto = String(v);
+    }
+
+    if (d.unidad) {
+      texto += ` ${d.unidad}`;
+    }
+
+    return texto;
+  }
+
+  exportarPdf(): void {
+    const doc = new jsPDF();
+    const pageHeight = doc.internal.pageSize.getHeight();
+
+    doc.setFontSize(16);
+    doc.text(`Historia Clínica - ${this.data.pacienteNombre}`, 10, 15);
+
+    let y = 25;
+
+    const addLine = (texto: string) => {
+      const lineas = doc.splitTextToSize(texto, 190); // ancho de línea
+      for (const linea of lineas) {
+        if (y > pageHeight - 10) {
+          doc.addPage();
+          y = 20;
+        }
+        doc.text(linea, 10, y);
+        y += 6;
+      }
+    };
+
+
+    this.data.historias.forEach((h, index: number) => {
+
+      addLine(`Atención #${index + 1} - ${h.fechaAtencion || 'N/A'}`);
+      addLine(`Especialista: ${h.especialistaNombre || 'N/A'}`);
+      addLine(`Fecha de registro: ${new Date(h.fecha_registro).toLocaleString('es-AR')}`);
+
+      addLine(
+        `Altura: ${h.altura ?? '-'} cm | ` +
+        `Peso: ${h.peso ?? '-'} kg | ` +
+        `Temperatura: ${h.temperatura ?? '-'} °C | ` +
+        `Presión: ${h.presion ?? '-'}`
+      );
+
+      // Datos dinámicos
+      (h.datos_dinamicos || []).forEach((d: DatoDinamico) => {
+        addLine(`${d.clave}: ${this.formatearDatoDinamico(d)}`);
+      });
+
+      y += 4; // espacio extra entre atenciones
+      if (y > pageHeight - 10) {
+        doc.addPage();
+        y = 20;
+      }
+    });
+
+    const nombreArchivo =
+      `historia_clinica_${this.data.pacienteNombre.replace(/\s+/g, '_').toLowerCase()}.pdf`;
+
+    doc.save(nombreArchivo);
+  }
 
   formatearFecha(fecha: string | undefined): string {
     if (!fecha) return 'N/A';
@@ -137,4 +246,87 @@ export class HistoriaClinicaDialogComponent {
 }
 
 
+// export class HistoriaClinicaDialogComponent {
 
+//   constructor(
+//     @Inject(MAT_DIALOG_DATA)
+//     public data: { pacienteNombre: string; historias: HistoriaClinica[] },
+//     private dialogRef: MatDialogRef<HistoriaClinicaDialogComponent>
+//   ) { }
+
+//   //   constructor(
+//   //   @Inject(MAT_DIALOG_DATA)
+//   //   public data: { pacienteNombre: string; historias: any[] }
+//   // ) {}
+
+//   formatearFecha(fecha: string | undefined): string {
+//     if (!fecha) return 'N/A';
+//     return new Date(fecha).toLocaleDateString('es-AR', {
+//       year: 'numeric',
+//       month: 'long',
+//       day: 'numeric'
+//     });
+//   }
+
+//   // ------------------- EXPORTAR PDF -------------------
+//   exportarPDF(): void {
+//     const doc = new jsPDF();
+
+//     // Título
+//     doc.setFontSize(16);
+//     doc.text(
+//       `Historia Clínica - ${this.data.pacienteNombre}`,
+//       10,
+//       15
+//     );
+
+//     let y = 25; // posición vertical inicial
+
+//     this.data.historias.forEach((h, index) => {
+//       // Si nos acercamos al final de la hoja, agregamos una nueva
+//       if (y > 270) {
+//         doc.addPage();
+//         y = 20;
+//       }
+
+//       // Encabezado de cada atención
+//       doc.setFontSize(12);
+//       const tituloAtencion = `Atención #${index + 1} - ${h.fecha_registro  || 'N/A'}`;
+//       doc.text(tituloAtencion, 10, y);
+//       y += 6;
+
+//       doc.setFontSize(10);
+
+//       // Especialista
+//       doc.text(`Especialista: ${h.especialista_id || 'N/A'}`, 10, y);
+//       y += 5;
+
+//       // Fila 1: altura / peso
+//       doc.text(`Altura: ${h.altura ?? '-'}`, 10, y);
+//       doc.text(`Peso: ${h.peso ?? '-'}`, 80, y);
+//       y += 5;
+
+//       // Fila 2: temperatura / presión
+//       doc.text(`Temperatura: ${h.temperatura ?? '-'}`, 10, y);
+//       doc.text(`Presión: ${h.presion ?? '-'}`, 80, y);
+//       y += 8;
+
+//       // Si tenés campos dinámicos, podrías iterarlos acá
+//       // Object.entries(h.datosExtra || {}).forEach(([clave, valor]) => { ... })
+//     });
+
+//     // Nombre de archivo: historia-clinica-rose-axl.pdf
+//     const nombreArchivo =
+//       `historia-clinica-${this.data.pacienteNombre}`
+//         .toLowerCase()
+//         .replace(/\s+/g, '-')
+//         .normalize('NFD')
+//         .replace(/[\u0300-\u036f]/g, ''); // saca tildes
+
+//     doc.save(`${nombreArchivo}.pdf`);
+//   }
+
+//   cerrar(): void {
+//     this.dialogRef.close();
+//   }
+// }
