@@ -2,11 +2,14 @@
 import { Routes } from '@angular/router';
 import { MainNavComponent } from './components/main-nav/main-nav.component';
 
+import { RoleGuard } from './guards/role.guard';
+
+
 export const routes: Routes = [
   // Home (redirige a bienvenida)
   { path: '', pathMatch: 'full', redirectTo: 'bienvenida' },
 
-  // ===== RUTAS PÚBLICAS / SIN NAVBAR =====
+  // ===== RUTAS PÚBLICAS  ----  SIN NAVBAR =====
   {
     path: 'bienvenida',
     loadComponent: () =>
@@ -56,15 +59,20 @@ export const routes: Routes = [
   {
     path: '',
     component: MainNavComponent,
-    // acá a futuro podrías poner canActivate / canActivateChild con un AuthGuard
+
     children: [
       // --- Paciente ---
       {
         path: 'mis-turnos-paciente',
+        canActivate: [RoleGuard],   // <-- AGREGADO GUard
+
         loadComponent: () =>
           import('./components/mis-turnos-paciente/mis-turnos-paciente.component')
             .then(m => m.MisTurnosPacienteComponent),
-        data: { animation: 'turnos' }
+        data: {
+          animation: 'turnos',
+          roles: ['PACIENTE']
+        }
       },
       {
         path: 'solicitar-turno',
@@ -120,9 +128,13 @@ export const routes: Routes = [
       },
       {
         path: 'usuarios-admin',
+          canActivate: [RoleGuard],
         loadComponent: () =>
           import('./components/admin/usuarios-admin/usuarios-admin.component')
-            .then(m => m.UsuariosAdminComponent)
+            .then(m => m.UsuariosAdminComponent),
+             data: { 
+              roles: ['ADMIN']         // <--  el guard 
+            }
       },
       {
         path: 'log-ingreso',

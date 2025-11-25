@@ -9,12 +9,12 @@ export const environment = {
 
   quickLogins: {
     paciente: [
-      {
-        email: 'maradona@hotmail.com',
-        password: '123456',
-        nombre: 'diego maradona',
-        avatar: 'https://tuwlrspqlkpqatnaintx.supabase.co/storage/v1/object/public/avatars/7781eb7a-8c24-4631-a63c-4b9739c3e149/1763943378241_1_diego.jpg'
-      },
+      // {
+      //   email: 'maradona@hotmail.com',
+      //   password: '123456',
+      //   nombre: 'diego maradona',
+      //   avatar: 'https://tuwlrspqlkpqatnaintx.supabase.co/storage/v1/object/public/avatars/7781eb7a-8c24-4631-a63c-4b9739c3e149/1763943378241_1_diego.jpg'
+      // },
       {
         email: 'ana@hotmail.com',
         password: '123456',
