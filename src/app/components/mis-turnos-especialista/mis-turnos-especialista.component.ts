@@ -163,7 +163,8 @@ export class MisTurnosEspecialistaComponent implements OnInit {
       presion: ['', Validators.required],
       riesgo: [50, [Validators.required, Validators.min(0), Validators.max(100)]],
       nivelGlucosa: [null, [Validators.required, Validators.min(0)]],
-      requiereSeguimiento: [false]
+      requiereSeguimiento: [false],
+      comentario: ['', [Validators.required, Validators.minLength(10)]]
     });
 
     const ref = this.dialog.open(this.historiaClinicaDialog, {
@@ -223,9 +224,12 @@ export class MisTurnosEspecialistaComponent implements OnInit {
 
       if (historiaError) throw historiaError;
 
-      await this.turnoService.cambiarEstadoPorCodigo(turno.id, 'FINALIZADO');
+      // Guardar comentario/reseña del especialista en el turno
+      const comentario = fv.comentario?.trim() || null;
+      await this.turnoService.cambiarEstadoPorCodigo(turno.id, 'FINALIZADO', comentario);
 
       turno.estado = 'FINALIZADO';
+      turno.resena = comentario;
       this.dataSource.data = [...this.dataSource.data];
 
       Swal.fire({
@@ -250,7 +254,10 @@ export class MisTurnosEspecialistaComponent implements OnInit {
   // =========================================================
 
   puedeAceptar(turno: TurnoEspecialista): boolean {
-    return !['ACEPTADO', 'FINALIZADO', 'CANCELADO', 'RECHAZADO'].includes(turno.estado.toString().toUpperCase());
+    // El estado puede venir en mayúsculas o minúsculas desde la BD
+    const estadoNormalizado = String(turno.estado || '').toUpperCase().trim();
+    // Solo puede aceptar si está en estado PENDIENTE
+    return estadoNormalizado === 'PENDIENTE';
   }
 
   puedeRechazar(turno: TurnoEspecialista): boolean {

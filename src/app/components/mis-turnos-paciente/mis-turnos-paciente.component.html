@@ -185,8 +185,25 @@
   </mat-dialog-content>
   <mat-dialog-actions align="end">
     <button mat-button mat-dialog-close>Cancelar</button>
-    <button mat-raised-button color="accent" [disabled]="!data?.form?.valid" [mat-dialog-close]="true">
+      <button mat-raised-button color="accent" [disabled]="!data?.form?.valid" [mat-dialog-close]="true">
       Guardar Calificación
     </button>
+  </mat-dialog-actions>
+</ng-template>
+
+<!-- Diálogo para ver reseña -->
+<ng-template #verResenaDialog let-data>
+  <h2 mat-dialog-title>Reseña del Especialista</h2>
+  <mat-dialog-content>
+    <p><strong>Especialista:</strong> {{ data?.turno?.especialista }}</p>
+    <p><strong>Especialidad:</strong> {{ data?.turno?.especialidad }}</p>
+    <p><strong>Fecha:</strong> {{ data?.turno?.fecha | date:'shortDate' }} a las {{ data?.turno?.hora }}</p>
+    
+    <div style="margin-top: 16px; padding: 16px; background-color: #f5f5f5; border-radius: 4px;">
+      <p style="margin: 0; white-space: pre-wrap;">{{ data?.resena }}</p>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Cerrar</button>
   </mat-dialog-actions>
 </ng-template>
