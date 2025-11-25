@@ -308,6 +308,8 @@ export class MisTurnosEspecialistaComponent implements OnInit {
   // }
 
   /** Guarda historia clínica + cambia estado a FINALIZADO */
+
+  /** Guarda historia clínica + cambia estado a FINALIZADO */
   async guardarHistoriaClinica(turno: TurnoEspecialista, form: FormGroup): Promise<void> {
     try {
       const { data: sessionData } = await this.supa.getSession();

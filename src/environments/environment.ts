@@ -87,6 +87,12 @@ export const environment = {
         password: '123456',
         nombre: 'galileo galilei',
         avatar: 'https://tuwlrspqlkpqatnaintx.supabase.co/storage/v1/object/public/avatars/96e33286-0f5d-4aca-8321-2f7f61ea367d/1764045087133_1_galileo.jpg'
+      },
+        {
+        email: 'esteban@hotmail.com',
+        password: '123456',
+        nombre: 'esteban quiroz',
+        avatar: 'https://tuwlrspqlkpqatnaintx.supabase.co/storage/v1/object/public/avatars/d5c5dd71-44d3-4507-aa1e-0584e808ac26/1764054296009_1_esteban.jpg'
       }
     ],
 
