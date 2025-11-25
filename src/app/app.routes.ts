@@ -168,6 +168,30 @@ export const routes: Routes = [
             .then(m => m.TurnosPorDiaComponent)
       },
       {
+        path: 'pacientes-por-especialidad',
+        loadComponent: () =>
+          import('./components/pacientes-por-especialidad/pacientes-por-especialidad.component')
+            .then(m => m.PacientesPorEspecialidadComponent)
+      },
+      {
+        path: 'medicos-por-especialidad',
+        loadComponent: () =>
+          import('./components/medicos-por-especialidad/medicos-por-especialidad.component')
+            .then(m => m.MedicosPorEspecialidadComponent)
+      },
+      {
+        path: 'informe-encuestas',
+        loadComponent: () =>
+          import('./components/informe-encuestas/informe-encuestas.component')
+            .then(m => m.InformeEncuestasComponent)
+      },
+      {
+        path: 'turnos-por-paciente',
+        loadComponent: () =>
+          import('./components/turnos-por-paciente/turnos-por-paciente.component')
+            .then(m => m.TurnosPorPacienteComponent)
+      },
+      {
         path: 'turnos-especialidad',
         loadComponent: () =>
           import('./components/turnos-especialidad/turnos-especialidad.component')

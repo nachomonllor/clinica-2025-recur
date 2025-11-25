@@ -68,6 +68,34 @@ export class SeleccionEstadisticasComponent {
       icono: 'event',
       ruta: '/turnos-por-dia',
       aria: 'Ir a Turnos por Día'
+    },
+    {
+      titulo: 'Pacientes por Especialidad',
+      subtitulo: 'Cantidad de pacientes únicos por especialidad',
+      icono: 'people',
+      ruta: '/pacientes-por-especialidad',
+      aria: 'Ir a Pacientes por Especialidad'
+    },
+    {
+      titulo: 'Médicos por Especialidad',
+      subtitulo: 'Cantidad de médicos únicos por especialidad',
+      icono: 'medical_services',
+      ruta: '/medicos-por-especialidad',
+      aria: 'Ir a Médicos por Especialidad'
+    },
+    {
+      titulo: 'Informe de Encuestas',
+      subtitulo: 'Respuestas completas de las encuestas de atención',
+      icono: 'rate_review',
+      ruta: '/informe-encuestas',
+      aria: 'Ir a Informe de Encuestas'
+    },
+    {
+      titulo: 'Turnos por Paciente',
+      subtitulo: 'Visualiza todos los turnos de un paciente seleccionado',
+      icono: 'assignment_ind',
+      ruta: '/turnos-por-paciente',
+      aria: 'Ir a Turnos por Paciente'
     }
   ];
 

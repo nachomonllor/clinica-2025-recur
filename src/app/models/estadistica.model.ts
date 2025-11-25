@@ -132,3 +132,45 @@ export interface EstadisticaTurnosPorMedico {
   apellido: string | null;
   cantidad: number;
 }
+
+export interface EstadisticaPacientesPorEspecialidad {
+  especialidad: string;
+  cantidad_pacientes: number;
+}
+
+export interface EstadisticaMedicosPorEspecialidad {
+  especialidad: string;
+  cantidad_medicos: number;
+}
+
+export interface EncuestaCompleta {
+  id: string;
+  turno_id: string;
+  paciente_id: string;
+  especialista_id: string;
+  fecha_respuesta: string;
+  comentario: string | null;
+  estrellas: number | null;
+  respuesta_radio: string | null;
+  respuesta_checkbox: string | null;
+  valor_rango: number | null;
+  especialista_nombre: string | null;
+  especialista_apellido: string | null;
+  paciente_nombre: string | null;
+  paciente_apellido: string | null;
+  especialidad: string | null;
+  fecha_turno: string | null;
+}
+
+export interface TurnoPacienteCompleto {
+  id: string;
+  fecha_hora_inicio: string;
+  fecha_hora_fin: string;
+  estado: string;
+  estado_descripcion: string | null;
+  especialidad: string;
+  especialista_nombre: string | null;
+  especialista_apellido: string | null;
+  motivo: string | null;
+  comentario: string | null;
+}

@@ -667,6 +667,242 @@ export class EstadisticasService {
         return from(this.obtenerTurnosPorMedico(filtros));
     }
 
+    // =======================================================
+    // PACIENTES POR ESPECIALIDAD
+    // =======================================================
+    async obtenerPacientesPorEspecialidad(filtros?: {
+        desde?: string;
+        hasta?: string;
+    }): Promise<{ especialidad: string; cantidad_pacientes: number }[]> {
+        let query = this.supa.client
+            .from('turnos')
+            .select('paciente_id, especialidad_id');
+
+        if (filtros?.desde) {
+            query = query.gte('fecha_hora_inicio', filtros.desde);
+        }
+        if (filtros?.hasta) {
+            query = query.lte('fecha_hora_inicio', filtros.hasta);
+        }
+
+        const { data, error } = await query;
+
+        if (error) {
+            console.error('[EstadisticasService] Error al obtener turnos para pacientes por especialidad', error);
+            throw error;
+        }
+
+        const turnos = (data ?? []) as { paciente_id: string; especialidad_id: string }[];
+
+        // Agrupar por especialidad y contar pacientes únicos
+        const pacientesPorEspecialidad = new Map<string, Set<string>>();
+
+        for (const t of turnos) {
+            if (!t.especialidad_id || !t.paciente_id) continue;
+            if (!pacientesPorEspecialidad.has(t.especialidad_id)) {
+                pacientesPorEspecialidad.set(t.especialidad_id, new Set());
+            }
+            pacientesPorEspecialidad.get(t.especialidad_id)!.add(t.paciente_id);
+        }
+
+        // Obtener nombres de especialidades
+        const idsEspecialidad = Array.from(pacientesPorEspecialidad.keys());
+        const { data: espData, error: espError } = await this.supa.client
+            .from('especialidades')
+            .select('id, nombre')
+            .in('id', idsEspecialidad);
+
+        if (espError) {
+            console.error('[EstadisticasService] Error al obtener especialidades', espError);
+            throw espError;
+        }
+
+        const especialidades = (espData ?? []) as Especialidad[];
+        const espPorId = new Map<string, Especialidad>();
+        for (const e of especialidades) {
+            espPorId.set(e.id, e);
+        }
+
+        const resultado: { especialidad: string; cantidad_pacientes: number }[] = [];
+
+        for (const [espId, pacientesSet] of pacientesPorEspecialidad.entries()) {
+            const esp = espPorId.get(espId);
+            resultado.push({
+                especialidad: esp?.nombre ?? 'Sin nombre',
+                cantidad_pacientes: pacientesSet.size
+            });
+        }
+
+        resultado.sort((a, b) => b.cantidad_pacientes - a.cantidad_pacientes);
+
+        return resultado;
+    }
+
+    // =======================================================
+    // MÉDICOS POR ESPECIALIDAD
+    // =======================================================
+    async obtenerMedicosPorEspecialidad(filtros?: {
+        desde?: string;
+        hasta?: string;
+    }): Promise<{ especialidad: string; cantidad_medicos: number }[]> {
+        let query = this.supa.client
+            .from('turnos')
+            .select('especialista_id, especialidad_id');
+
+        if (filtros?.desde) {
+            query = query.gte('fecha_hora_inicio', filtros.desde);
+        }
+        if (filtros?.hasta) {
+            query = query.lte('fecha_hora_inicio', filtros.hasta);
+        }
+
+        const { data, error } = await query;
+
+        if (error) {
+            console.error('[EstadisticasService] Error al obtener turnos para médicos por especialidad', error);
+            throw error;
+        }
+
+        const turnos = (data ?? []) as { especialista_id: string; especialidad_id: string }[];
+
+        // Agrupar por especialidad y contar médicos únicos
+        const medicosPorEspecialidad = new Map<string, Set<string>>();
+
+        for (const t of turnos) {
+            if (!t.especialidad_id || !t.especialista_id) continue;
+            if (!medicosPorEspecialidad.has(t.especialidad_id)) {
+                medicosPorEspecialidad.set(t.especialidad_id, new Set());
+            }
+            medicosPorEspecialidad.get(t.especialidad_id)!.add(t.especialista_id);
+        }
+
+        // Obtener nombres de especialidades
+        const idsEspecialidad = Array.from(medicosPorEspecialidad.keys());
+        const { data: espData, error: espError } = await this.supa.client
+            .from('especialidades')
+            .select('id, nombre')
+            .in('id', idsEspecialidad);
+
+        if (espError) {
+            console.error('[EstadisticasService] Error al obtener especialidades', espError);
+            throw espError;
+        }
+
+        const especialidades = (espData ?? []) as Especialidad[];
+        const espPorId = new Map<string, Especialidad>();
+        for (const e of especialidades) {
+            espPorId.set(e.id, e);
+        }
+
+        const resultado: { especialidad: string; cantidad_medicos: number }[] = [];
+
+        for (const [espId, medicosSet] of medicosPorEspecialidad.entries()) {
+            const esp = espPorId.get(espId);
+            resultado.push({
+                especialidad: esp?.nombre ?? 'Sin nombre',
+                cantidad_medicos: medicosSet.size
+            });
+        }
+
+        resultado.sort((a, b) => b.cantidad_medicos - a.cantidad_medicos);
+
+        return resultado;
+    }
+
+    // =======================================================
+    // ENCUESTAS COMPLETAS
+    // =======================================================
+    async obtenerEncuestasCompletas(filtros?: {
+        desde?: string;
+        hasta?: string;
+        especialistaId?: string;
+    }): Promise<any[]> {
+        let query = this.supa.client
+            .from('encuestas_atencion')
+            .select(`
+                *,
+                turno:turnos!fk_encuesta_turno (
+                    especialidad:especialidades!fk_turno_especialidad ( nombre ),
+                    fecha_hora_inicio
+                ),
+                paciente:usuarios!fk_encuesta_paciente ( nombre, apellido ),
+                especialista:usuarios!fk_encuesta_especialista ( nombre, apellido )
+            `);
+
+        if (filtros?.desde) {
+            query = query.gte('fecha_respuesta', filtros.desde);
+        }
+        if (filtros?.hasta) {
+            query = query.lte('fecha_respuesta', filtros.hasta);
+        }
+        if (filtros?.especialistaId) {
+            query = query.eq('especialista_id', filtros.especialistaId);
+        }
+
+        const { data, error } = await query;
+
+        if (error) {
+            console.error('[EstadisticasService] Error al obtener encuestas completas', error);
+            throw error;
+        }
+
+        const encuestas = (data ?? []) as any[];
+
+        return encuestas.map(e => ({
+            id: e.id,
+            turno_id: e.turno_id,
+            paciente_id: e.paciente_id,
+            especialista_id: e.especialista_id,
+            fecha_respuesta: e.fecha_respuesta,
+            comentario: e.comentario,
+            estrellas: e.estrellas,
+            respuesta_radio: e.respuesta_radio,
+            respuesta_checkbox: e.respuesta_checkbox,
+            valor_rango: e.valor_rango,
+            especialista_nombre: e.especialista?.nombre ?? null,
+            especialista_apellido: e.especialista?.apellido ?? null,
+            paciente_nombre: e.paciente?.nombre ?? null,
+            paciente_apellido: e.paciente?.apellido ?? null,
+            especialidad: e.turno?.especialidad?.nombre ?? null,
+            fecha_turno: e.turno?.fecha_hora_inicio ?? null
+        }));
+    }
+
+    // =======================================================
+    // TURNOS POR PACIENTE
+    // =======================================================
+    async obtenerTurnosPorPaciente(pacienteId: string): Promise<any[]> {
+        const { data, error } = await this.supa.client
+            .from('turnos')
+            .select(`
+                *,
+                estado:estados_turno!fk_turno_estado ( codigo, descripcion ),
+                especialidad:especialidades!fk_turno_especialidad ( nombre ),
+                especialista:usuarios!fk_turno_especialista ( nombre, apellido )
+            `)
+            .eq('paciente_id', pacienteId)
+            .order('fecha_hora_inicio', { ascending: false });
+
+        if (error) {
+            console.error('[EstadisticasService] Error al obtener turnos por paciente', error);
+            throw error;
+        }
+
+        const turnos = (data ?? []) as any[];
+
+        return turnos.map(t => ({
+            id: t.id,
+            fecha_hora_inicio: t.fecha_hora_inicio,
+            fecha_hora_fin: t.fecha_hora_fin,
+            estado: t.estado?.codigo ?? 'PENDIENTE',
+            estado_descripcion: t.estado?.descripcion ?? null,
+            especialidad: t.especialidad?.nombre ?? 'Sin especialidad',
+            especialista_nombre: t.especialista?.nombre ?? null,
+            especialista_apellido: t.especialista?.apellido ?? null,
+            motivo: t.motivo,
+            comentario: t.comentario
+        }));
+    }
 
 }
 
