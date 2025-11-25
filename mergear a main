@@ -1,0 +1,91 @@
+
+Suponiendo que estar en `1-6-ultima-fecha-idiomas` y querer que *main* tenga esos cambios:
+
+---
+
+### 1. Asegurarte de tener todo commiteado en la rama actual
+
+```bash
+git status
+```
+
+Si hay archivos sin commitear:
+
+```bash
+git add .
+git commit -m "Tu mensaje de commit"
+```
+
+Opcional pero recomendable: subir la rama al remoto:
+
+```bash
+git push origin 1-6-ultima-fecha-idiomas
+```
+
+---
+
+### 2. Ir a la rama `main` y actualizarla
+
+```bash
+git checkout main
+git pull origin main
+```
+
+---
+
+### 3. Mergear tu rama en `main`
+
+```bash
+git merge 1-6-ultima-fecha-idiomas
+```
+
+* Si **NO** hay conflictos → listo, seguís al paso 4.
+* Si **HAY** conflictos:
+
+  1. Abrís los archivos marcados,
+  2. resolvés los conflictos,
+  3. luego:
+
+     ```bash
+     git add .
+     git commit
+     ```
+
+---
+
+### 4. Enviar `main` al remoto (y disparar el deploy)
+
+```bash
+git push origin main
+```
+
+Con eso, tu rama `1-6-ultima-fecha-idiomas` queda fusionada en `main` y el deploy automático debería arrancar.
+
+---
+
+### Resumen corto para que lo pegues en un bloc de notas
+
+```bash
+# Estando en la rama de trabajo
+git status
+git add .
+git commit -m "mensaje"
+git push origin 1-6-ultima-fecha-idiomas
+
+# Pasar a main y actualizar
+git checkout main
+git pull origin main
+
+# Mergear
+git merge 1-6-ultima-fecha-idiomas
+
+# Resolver conflictos si los hay:
+# (editar archivos, luego)
+git add .
+git commit  # solo si hubo conflictos
+
+# Subir main (deploy)
+git push origin main
+```
+
+Si querés, después también te dejo los comandos para borrar ramas locales/remotas viejas y mantener el repo prolijo.
