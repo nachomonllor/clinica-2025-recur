@@ -108,7 +108,7 @@ export class TurnosPorEspecialidadComponent implements OnInit {
     const isoHasta = this.toIso(hasta ?? undefined);
 
     try {
-      // 👇 usamos el método NUEVO del service (Promise, no Observable)
+      // USAMOS PROMISE NO OBSERVABLE
       const items: EstadisticaTurnosPorEspecialidad[] =
         await this.api.obtenerTurnosPorEspecialidad({ desde: isoDesde, hasta: isoHasta });
 
@@ -131,7 +131,7 @@ export class TurnosPorEspecialidadComponent implements OnInit {
     }
   }
 
-  // descargarPDF() queda igual que lo tenías
+  // descargarPDF() queda igual
   async descargarPDF(): Promise<void> {
     const el = document.getElementById('captura-pdf');
     if (!el) return;
