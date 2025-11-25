@@ -109,21 +109,20 @@ export class MisTurnosEspecialistaComponent implements OnInit {
       width: '500px'
     });
 
-    ref.afterClosed().subscribe(result => {
+    ref.afterClosed().subscribe(async result => {
       if (result && comentarioForm.valid) {
-        this.supa.client
-          .from('turnos')
-          .update({ estado_turno_id: this.codigoEstado('RECHAZADO') }) // si usás id, ajustalo
-          .eq('id', turno.id)
-          .then(({ error }) => {
-            if (error) {
-              this.snackBar.open(`Error al rechazar: ${error.message}`, 'Cerrar', { duration: 2500 });
-            } else {
-              turno.estado = 'RECHAZADO';
-              this.dataSource.data = [...this.dataSource.data];
-              this.snackBar.open('Turno rechazado', 'Cerrar', { duration: 2000 });
-            }
-          });
+        try {
+          await this.turnoService.cambiarEstadoPorCodigo(
+            turno.id, 
+            'RECHAZADO', 
+            comentarioForm.value.comentario
+          );
+          turno.estado = 'RECHAZADO';
+          this.dataSource.data = [...this.dataSource.data];
+          this.snackBar.open('Turno rechazado', 'Cerrar', { duration: 2000 });
+        } catch (error: any) {
+          this.snackBar.open(`Error al rechazar: ${error.message || 'Error desconocido'}`, 'Cerrar', { duration: 2500 });
+        }
       }
     });
   }
@@ -138,21 +137,20 @@ export class MisTurnosEspecialistaComponent implements OnInit {
       width: '500px'
     });
 
-    ref.afterClosed().subscribe(result => {
+    ref.afterClosed().subscribe(async result => {
       if (result && comentarioForm.valid) {
-        this.supa.client
-          .from('turnos')
-          .update({ estado_turno_id: this.codigoEstado('CANCELADO') })
-          .eq('id', turno.id)
-          .then(({ error }) => {
-            if (error) {
-              this.snackBar.open(`Error al cancelar: ${error.message}`, 'Cerrar', { duration: 2500 });
-            } else {
-              turno.estado = 'CANCELADO';
-              this.dataSource.data = [...this.dataSource.data];
-              this.snackBar.open('Turno cancelado', 'Cerrar', { duration: 2000 });
-            }
-          });
+        try {
+          await this.turnoService.cambiarEstadoPorCodigo(
+            turno.id, 
+            'CANCELADO', 
+            comentarioForm.value.comentario
+          );
+          turno.estado = 'CANCELADO';
+          this.dataSource.data = [...this.dataSource.data];
+          this.snackBar.open('Turno cancelado', 'Cerrar', { duration: 2000 });
+        } catch (error: any) {
+          this.snackBar.open(`Error al cancelar: ${error.message || 'Error desconocido'}`, 'Cerrar', { duration: 2500 });
+        }
       }
     });
   }
@@ -225,12 +223,7 @@ export class MisTurnosEspecialistaComponent implements OnInit {
 
       if (historiaError) throw historiaError;
 
-      const { error: turnoUpdateError } = await this.supa.client
-        .from('turnos')
-        .update({ estado_turno_id: this.codigoEstado('FINALIZADO') })
-        .eq('id', turno.id);
-
-      if (turnoUpdateError) throw turnoUpdateError;
+      await this.turnoService.cambiarEstadoPorCodigo(turno.id, 'FINALIZADO');
 
       turno.estado = 'FINALIZADO';
       this.dataSource.data = [...this.dataSource.data];
@@ -278,25 +271,25 @@ export class MisTurnosEspecialistaComponent implements OnInit {
   }
 
   aceptarTurno(turno: TurnoEspecialista): void {
-    const ref = this.dialog.open(this.confirmDialog, {
-      data: { message: `¿Aceptar el turno con ${turno.paciente}?` }
-    });
-
-    ref.afterClosed().subscribe(ok => {
-      if (ok) {
-        this.supa.client
-          .from('turnos')
-          .update({ estado_turno_id: this.codigoEstado('ACEPTADO') })
-          .eq('id', turno.id)
-          .then(({ error }) => {
-            if (error) {
-              this.snackBar.open(`Error al aceptar: ${error.message}`, 'Cerrar', { duration: 2500 });
-            } else {
-              turno.estado = 'ACEPTADO';
-              this.dataSource.data = [...this.dataSource.data];
-              this.snackBar.open('Turno aceptado', 'Cerrar', { duration: 2000 });
-            }
-          });
+    Swal.fire({
+      title: '¿Aceptar turno?',
+      text: `¿Estás seguro de que deseas aceptar el turno con ${turno.paciente}?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, aceptar',
+      cancelButtonText: 'Cancelar'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await this.turnoService.cambiarEstadoPorCodigo(turno.id, 'ACEPTADO');
+          turno.estado = 'ACEPTADO';
+          this.dataSource.data = [...this.dataSource.data];
+          this.snackBar.open('Turno aceptado', 'Cerrar', { duration: 2000 });
+        } catch (error: any) {
+          this.snackBar.open(`Error al aceptar: ${error.message || 'Error desconocido'}`, 'Cerrar', { duration: 2500 });
+        }
       }
     });
   }
@@ -314,17 +307,6 @@ export class MisTurnosEspecialistaComponent implements OnInit {
     return (ds.filteredData?.length ? ds.filteredData : ds.data) || [];
   }
 
-  /**
-   * Si finalmente usás id de estado (uuid) en vez del código, acá podrías
-   * hacer un mapa en memoria de 'PENDIENTE' -> uuid, etc.
-   * De momento está como stub.
-   */
-  private codigoEstado(codigo: 'PENDIENTE' | 'ACEPTADO' | 'RECHAZADO' | 'CANCELADO' | 'FINALIZADO'): any {
-    // TODO: reemplazar por map real si la tabla estados_turno se consulta antes.
-    // Por ahora devuelve el mismo código para que funcione con el esquema actual.
-    // directamente usar update({ estado: codigo }).
-    return codigo;
-  }
   
 }
 
