@@ -99,6 +99,34 @@ export class MisTurnosEspecialistaComponent implements OnInit {
   // ACCIONES SOBRE TURNOS
   // =========================================================
 
+  // rechazarTurno(turno: TurnoEspecialista): void {
+  //   const comentarioForm = this.fb.group({
+  //     comentario: ['', [Validators.required, Validators.minLength(10)]]
+  //   });
+
+  //   const ref = this.dialog.open(this.rechazarDialog, {
+  //     data: { turno, form: comentarioForm },
+  //     width: '500px'
+  //   });
+
+  //   ref.afterClosed().subscribe(async result => {
+  //     if (result && comentarioForm.valid) {
+  //       try {
+  //         await this.turnoService.cambiarEstadoPorCodigo(
+  //           turno.id,
+  //           'RECHAZADO',
+  //           comentarioForm.value.comentario
+  //         );
+  //         turno.estado = 'RECHAZADO';
+  //         this.dataSource.data = [...this.dataSource.data];
+  //         this.snackBar.open('Turno rechazado', 'Cerrar', { duration: 2000 });
+  //       } catch (error: any) {
+  //         this.snackBar.open(`Error al rechazar: ${error.message || 'Error desconocido'}`, 'Cerrar', { duration: 2500 });
+  //       }
+  //     }
+  //   });
+  // }
+
   rechazarTurno(turno: TurnoEspecialista): void {
     const comentarioForm = this.fb.group({
       comentario: ['', [Validators.required, Validators.minLength(10)]]
@@ -109,23 +137,53 @@ export class MisTurnosEspecialistaComponent implements OnInit {
       width: '500px'
     });
 
-    ref.afterClosed().subscribe(async result => {
+    ref.afterClosed().subscribe(result => {
       if (result && comentarioForm.valid) {
-        try {
-          await this.turnoService.cambiarEstadoPorCodigo(
-            turno.id,
-            'RECHAZADO',
-            comentarioForm.value.comentario
-          );
-          turno.estado = 'RECHAZADO';
-          this.dataSource.data = [...this.dataSource.data];
-          this.snackBar.open('Turno rechazado', 'Cerrar', { duration: 2000 });
-        } catch (error: any) {
-          this.snackBar.open(`Error al rechazar: ${error.message || 'Error desconocido'}`, 'Cerrar', { duration: 2500 });
-        }
+        const comentario = comentarioForm.get('comentario')?.value ?? null;
+
+        this.turnoService.cambiarEstadoPorCodigo(turno.id, 'RECHAZADO', comentario)
+          .then(() => {
+            turno.estado = 'RECHAZADO';
+            this.dataSource.data = [...this.dataSource.data];
+            this.snackBar.open('Turno rechazado', 'Cerrar', { duration: 2000 });
+          })
+          .catch(error => {
+            console.error('[MisTurnosEspecialista] Error al rechazar turno', error);
+            this.snackBar.open(`Error al rechazar: ${error.message ?? error}`, 'Cerrar', { duration: 2500 });
+          });
       }
     });
   }
+
+
+  // cancelarTurno(turno: TurnoEspecialista): void {
+  //   const comentarioForm = this.fb.group({
+  //     comentario: ['', [Validators.required, Validators.minLength(10)]]
+  //   });
+
+  //   const ref = this.dialog.open(this.cancelarDialog, {
+  //     data: { turno, form: comentarioForm },
+  //     width: '500px'
+  //   });
+
+  //   ref.afterClosed().subscribe(async result => {
+  //     if (result && comentarioForm.valid) {
+  //       try {
+  //         await this.turnoService.cambiarEstadoPorCodigo(
+  //           turno.id,
+  //           'CANCELADO',
+  //           comentarioForm.value.comentario
+  //         );
+  //         turno.estado = 'CANCELADO';
+  //         this.dataSource.data = [...this.dataSource.data];
+  //         this.snackBar.open('Turno cancelado', 'Cerrar', { duration: 2000 });
+  //       } catch (error: any) {
+  //         this.snackBar.open(`Error al cancelar: ${error.message || 'Error desconocido'}`, 'Cerrar', { duration: 2500 });
+  //       }
+  //     }
+  //   });
+  // }
+
 
   cancelarTurno(turno: TurnoEspecialista): void {
     const comentarioForm = this.fb.group({
@@ -137,20 +195,20 @@ export class MisTurnosEspecialistaComponent implements OnInit {
       width: '500px'
     });
 
-    ref.afterClosed().subscribe(async result => {
+    ref.afterClosed().subscribe(result => {
       if (result && comentarioForm.valid) {
-        try {
-          await this.turnoService.cambiarEstadoPorCodigo(
-            turno.id,
-            'CANCELADO',
-            comentarioForm.value.comentario
-          );
-          turno.estado = 'CANCELADO';
-          this.dataSource.data = [...this.dataSource.data];
-          this.snackBar.open('Turno cancelado', 'Cerrar', { duration: 2000 });
-        } catch (error: any) {
-          this.snackBar.open(`Error al cancelar: ${error.message || 'Error desconocido'}`, 'Cerrar', { duration: 2500 });
-        }
+        const comentario = comentarioForm.get('comentario')?.value ?? null;
+
+        this.turnoService.cambiarEstadoPorCodigo(turno.id, 'CANCELADO', comentario)
+          .then(() => {
+            turno.estado = 'CANCELADO';
+            this.dataSource.data = [...this.dataSource.data];
+            this.snackBar.open('Turno cancelado', 'Cerrar', { duration: 2000 });
+          })
+          .catch(error => {
+            console.error('[MisTurnosEspecialista] Error al cancelar turno', error);
+            this.snackBar.open(`Error al cancelar: ${error.message ?? error}`, 'Cerrar', { duration: 2500 });
+          });
       }
     });
   }
@@ -363,29 +421,51 @@ export class MisTurnosEspecialistaComponent implements OnInit {
     return !!(turno.resena && turno.resena.trim().length > 0);
   }
 
+  // aceptarTurno(turno: TurnoEspecialista): void {
+  //   Swal.fire({
+  //     title: '¿Aceptar turno?',
+  //     text: `¿Estás seguro de que deseas aceptar el turno con ${turno.paciente}?`,
+  //     icon: 'question',
+  //     showCancelButton: true,
+  //     confirmButtonColor: '#3085d6',
+  //     cancelButtonColor: '#d33',
+  //     confirmButtonText: 'Sí, aceptar',
+  //     cancelButtonText: 'Cancelar'
+  //   }).then(async (result) => {
+  //     if (result.isConfirmed) {
+  //       try {
+  //         await this.turnoService.cambiarEstadoPorCodigo(turno.id, 'ACEPTADO');
+  //         turno.estado = 'ACEPTADO';
+  //         this.dataSource.data = [...this.dataSource.data];
+  //         this.snackBar.open('Turno aceptado', 'Cerrar', { duration: 2000 });
+  //       } catch (error: any) {
+  //         this.snackBar.open(`Error al aceptar: ${error.message || 'Error desconocido'}`, 'Cerrar', { duration: 2500 });
+  //       }
+  //     }
+  //   });
+  // }
+
   aceptarTurno(turno: TurnoEspecialista): void {
-    Swal.fire({
-      title: '¿Aceptar turno?',
-      text: `¿Estás seguro de que deseas aceptar el turno con ${turno.paciente}?`,
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Sí, aceptar',
-      cancelButtonText: 'Cancelar'
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          await this.turnoService.cambiarEstadoPorCodigo(turno.id, 'ACEPTADO');
-          turno.estado = 'ACEPTADO';
-          this.dataSource.data = [...this.dataSource.data];
-          this.snackBar.open('Turno aceptado', 'Cerrar', { duration: 2000 });
-        } catch (error: any) {
-          this.snackBar.open(`Error al aceptar: ${error.message || 'Error desconocido'}`, 'Cerrar', { duration: 2500 });
-        }
+    const ref = this.dialog.open(this.confirmDialog, {
+      data: { message: `¿Aceptar el turno con ${turno.paciente}?` }
+    });
+
+    ref.afterClosed().subscribe(ok => {
+      if (ok) {
+        this.turnoService.cambiarEstadoPorCodigo(turno.id, 'ACEPTADO')
+          .then(() => {
+            turno.estado = 'ACEPTADO';
+            this.dataSource.data = [...this.dataSource.data];
+            this.snackBar.open('Turno aceptado', 'Cerrar', { duration: 2000 });
+          })
+          .catch(error => {
+            console.error('[MisTurnosEspecialista] Error al aceptar turno', error);
+            this.snackBar.open(`Error al aceptar: ${error.message ?? error}`, 'Cerrar', { duration: 2500 });
+          });
       }
     });
   }
+
 
   verResena(turno: TurnoEspecialista): void {
     this.snackBar.open(turno.resena ?? 'Sin reseña', 'Cerrar', { duration: 4000 });
