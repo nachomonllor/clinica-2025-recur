@@ -93,7 +93,7 @@
         </button>
 
         <!-- Ver reseña: si tiene reseña -->
-        <button mat-button (click)="verResena(t)" > <!-- /button> *ngIf="puedeVerResena(t)" -->
+        <button mat-button (click)="verResena(t)"  *ngIf="puedeVerResena(t)">
           <mat-icon>rate_review</mat-icon>
           Ver reseña
         </button>
