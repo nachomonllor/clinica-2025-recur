@@ -153,6 +153,47 @@ export class RegistroPacienteComponent implements OnInit {
     return `${y}-${m}-${d}`;
   }
 
+
+  private async validarDniYEmailUnicos(dni: string, email: string): Promise<void> {
+    const supabase = this.sb.client;
+
+    // 1) Verificar DNI
+    const { data: dniRows, error: dniError } = await supabase
+      .from('usuarios')
+      .select('id')
+      .eq('dni', dni)
+      .limit(1);
+
+    if (dniError) {
+      console.error('[validarDniYEmailUnicos] Error al validar DNI:', dniError);
+      throw new Error('No se pudo validar el DNI. Intentá nuevamente en unos minutos.');
+    }
+
+    if (dniRows && dniRows.length > 0) {
+      throw new Error('El DNI ya existe en el sistema.');
+    }
+
+    // 2) Verificar Email
+    const { data: emailRows, error: emailError } = await supabase
+      .from('usuarios')
+      .select('id')
+      .eq('email', email)
+      .limit(1);
+
+    if (emailError) {
+      console.error('[validarDniYEmailUnicos] Error al validar email:', emailError);
+      throw new Error('No se pudo validar el correo electrónico. Intentá nuevamente.');
+    }
+
+    if (emailRows && emailRows.length > 0) {
+      throw new Error('El correo ya está registrado en el sistema.');
+    }
+
+    // Si llega hasta acá, está todo libre 👌
+  }
+
+
+
   private mapPgError(err: any): string {
     const msg: string = (err?.message || '').toLowerCase();
     const code: string | undefined = err?.code;
@@ -206,13 +247,129 @@ export class RegistroPacienteComponent implements OnInit {
 
   // ---- SUBMIT ----
 
-  async onSubmit(): Promise<void> {
-    // Si querés volver a validar el formulario, podés descomentar esto:
-    // if (this.registroPacienteForm.invalid || !this.captchaValido) {
-    //   this.registroPacienteForm.markAllAsTouched();
-    //   return;
-    // }
+  // async onSubmit(): Promise<void> {
 
+  //   this.loading = true;
+  //   const supabase = this.sb.client;
+  //   const fv = this.registroPacienteForm.value!;
+
+  //   if (!fv.imagenPerfil1 || !fv.imagenPerfil2) {
+  //     Swal.fire('Error', 'Por favor, seleccioná ambas imágenes de perfil.', 'error');
+  //     this.loading = false;
+  //     return;
+  //   }
+
+  //   try {
+  //     // 1) Crear usuario en Auth con metadata básica
+  //     const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+  //       email: fv.email!,
+  //       password: fv.password!,
+  //       options: {
+  //         data: {
+  //           rol: 'PACIENTE',
+  //           nombre: fv.nombre,
+  //           apellido: fv.apellido,
+  //           dni: fv.dni,
+  //           fecha_nacimiento: fv.fechaNacimiento,
+  //           obra_social: fv.obraSocial,
+  //         }
+  //       }
+  //     });
+
+  //     if (signUpError) throw signUpError;
+
+  //     const user = signUpData.user;
+  //     if (!user) throw new Error('No se pudo crear el usuario.');
+
+  //     const userId = user.id;
+  //     const edadCalculada = this.calcEdadFromISO(fv.fechaNacimiento!);
+
+  //     // 2) Insert/Upsert en esquema_clinica.usuarios (reemplaza perfiles + pacientes)
+  //     const { error: usuarioError } = await supabase
+  //       .from('usuarios')
+  //       .upsert({
+  //         id: userId,
+  //         nombre: fv.nombre!,
+  //         apellido: fv.apellido!,
+  //         dni: fv.dni!,
+  //         email: fv.email!,
+  //         // Este password es solo para cumplir NOT NULL del esquema.
+  //         // En un sistema real deberías guardar un hash, no el texto plano.
+  //         password: fv.password!,
+  //         perfil: 'PACIENTE',
+  //         edad: edadCalculada,
+  //         obra_social: fv.obraSocial ?? null,
+  //         esta_aprobado: true,              // Pacientes se consideran aprobados
+  //         mail_verificado: !!signUpData.session
+  //       }, { onConflict: 'id' });
+
+  //     if (usuarioError) throw usuarioError;
+
+  //     // 3) Si NO hay sesión automática (email de verificación activo)
+  //     if (!signUpData.session) {
+  //       await Swal.fire({
+  //         icon: 'info',
+  //         title: 'Verifica tu correo',
+  //         html: `
+  //           <p>Te enviamos un email de verificación a <strong>${fv.email}</strong>.</p>
+  //           <p>Confírmalo para iniciar sesión y completar tu registro (subir imágenes).</p>
+  //         `,
+  //         confirmButtonText: 'Entendido'
+  //       });
+  //       this.registroPacienteForm.reset();
+  //       this.imagenPrevia1 = null;
+  //       this.imagenPrevia2 = null;
+  //       this.router.navigate(['/bienvenida']);
+  //       return;
+  //     }
+
+  //     // 4) Con sesión: subir imágenes y actualizarlas en usuarios
+  //     const file1 = fv.imagenPerfil1!;
+  //     const file2 = fv.imagenPerfil2!;
+
+  //     const url1 = await this.sb.uploadAvatar(userId, file1, 1);
+  //     const url2 = await this.sb.uploadAvatar(userId, file2, 2);
+
+  //     const { error: avatarError } = await supabase
+  //       .from('usuarios')
+  //       .update({
+  //         imagen_perfil_1: url1,
+  //         imagen_perfil_2: url2
+  //       })
+  //       .eq('id', userId);
+
+  //     if (avatarError) throw avatarError;
+
+  //     // 5) Éxito
+  //     await Swal.fire({
+  //       icon: 'success',
+  //       title: 'Paciente registrado con éxito',
+  //       showConfirmButton: false,
+  //       timer: 2000
+  //     });
+  //     this.registroPacienteForm.reset();
+  //     this.imagenPrevia1 = null;
+  //     this.imagenPrevia2 = null;
+  //     this.router.navigate(['/bienvenida']);
+
+  //   } catch (err: any) {
+  //     console.error('[Registro Paciente] Error completo:', {
+  //       error: err,
+  //       message: err?.message,
+  //       code: err?.code,
+  //       status: err?.status,
+  //       name: err?.name,
+  //       stack: err?.stack
+  //     });
+
+  //     const mensajeError = this.mapPgError(err);
+  //     Swal.fire('Error', mensajeError, 'error');
+  //   } finally {
+  //     this.loading = false;
+  //   }
+  // }
+
+  async onSubmit(): Promise<void> {
     this.loading = true;
     const supabase = this.sb.client;
     const fv = this.registroPacienteForm.value!;
@@ -224,6 +381,9 @@ export class RegistroPacienteComponent implements OnInit {
     }
 
     try {
+      //  ============> VALIDAR DNI Y EMAIL EN LA TABLA ANTES DE CREAR EL USUARIO EN AUTH
+      await this.validarDniYEmailUnicos(fv.dni!, fv.email!);
+
       // 1) Crear usuario en Auth con metadata básica
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email: fv.email!,
@@ -248,7 +408,7 @@ export class RegistroPacienteComponent implements OnInit {
       const userId = user.id;
       const edadCalculada = this.calcEdadFromISO(fv.fechaNacimiento!);
 
-      // 2) Insert/Upsert en esquema_clinica.usuarios (reemplaza perfiles + pacientes)
+      // 2) Upsert en esquema_clinica.usuarios
       const { error: usuarioError } = await supabase
         .from('usuarios')
         .upsert({
@@ -257,27 +417,25 @@ export class RegistroPacienteComponent implements OnInit {
           apellido: fv.apellido!,
           dni: fv.dni!,
           email: fv.email!,
-          // Este password es solo para cumplir NOT NULL del esquema.
-          // En un sistema real deberías guardar un hash, no el texto plano.
-          password: fv.password!,
+          password: fv.password!, // idealmente un hash
           perfil: 'PACIENTE',
           edad: edadCalculada,
           obra_social: fv.obraSocial ?? null,
-          esta_aprobado: true,              // Pacientes se consideran aprobados
+          esta_aprobado: true,
           mail_verificado: !!signUpData.session
         }, { onConflict: 'id' });
 
       if (usuarioError) throw usuarioError;
 
-      // 3) Si NO hay sesión automática (email de verificación activo)
+      // 3) Resto de tu código (verificación de mail, subida de imágenes, etc.)
       if (!signUpData.session) {
         await Swal.fire({
           icon: 'info',
           title: 'Verifica tu correo',
           html: `
-            <p>Te enviamos un email de verificación a <strong>${fv.email}</strong>.</p>
-            <p>Confírmalo para iniciar sesión y completar tu registro (subir imágenes).</p>
-          `,
+          <p>Te enviamos un email de verificación a <strong>${fv.email}</strong>.</p>
+          <p>Confírmalo para iniciar sesión y completar tu registro (subir imágenes).</p>
+        `,
           confirmButtonText: 'Entendido'
         });
         this.registroPacienteForm.reset();
@@ -287,7 +445,7 @@ export class RegistroPacienteComponent implements OnInit {
         return;
       }
 
-      // 4) Con sesión: subir imágenes y actualizarlas en usuarios
+      // Subida de imágenes...
       const file1 = fv.imagenPerfil1!;
       const file2 = fv.imagenPerfil2!;
 
@@ -304,7 +462,6 @@ export class RegistroPacienteComponent implements OnInit {
 
       if (avatarError) throw avatarError;
 
-      // 5) Éxito
       await Swal.fire({
         icon: 'success',
         title: 'Paciente registrado con éxito',
@@ -331,5 +488,9 @@ export class RegistroPacienteComponent implements OnInit {
     } finally {
       this.loading = false;
     }
+
   }
+
+
+
 }
