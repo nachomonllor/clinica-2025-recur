@@ -1,17 +1,13 @@
 {
-
-
   "COMMON": {
-  "LANGUAGE": "Idioma",
-  "ACCEPT": "Aceptar",
-  "CANCEL": "Cancelar",
-  "BACK": "Volver",
-  "LOGOUT": "Cerrar sesión",
-  "CLOSE": "Cerrar",
-  "ERROR_TITLE": "Error"
-},
-
-
+    "LANGUAGE": "Idioma",
+    "ACCEPT": "Aceptar",
+    "CANCEL": "Cancelar",
+    "BACK": "Volver",
+    "LOGOUT": "Cerrar sesión",
+    "CLOSE": "Cerrar",
+    "ERROR_TITLE": "Error"
+  },
   "LOGIN": {
     "TITLE": "Iniciar sesión",
     "EMAIL": "Correo electrónico",
@@ -27,63 +23,52 @@
     "AS_PATIENT": "Ingresar como paciente",
     "AS_DOCTOR": "Ingresar como especialista"
   },
-
-
   "APPOINTMENT": {
-  "TITLE": "Solicitar turno",
-  "TITLE_ADMIN": "Solicitar turno (Admin)",
-  "SUBTITLE": "Seleccioná especialidad, profesional, día y horario.",
-  "BADGE": "Atención online",
-
-  "STEPS": {
-    "SPECIALITY": "Especialidad",
-    "SPECIALIST": "Especialista",
-    "DAY": "Día",
-    "TIME": "Hora"
+    "TITLE": "Solicitar turno",
+    "TITLE_ADMIN": "Solicitar turno (Admin)",
+    "SUBTITLE": "Seleccioná especialidad, profesional, día y horario.",
+    "BADGE": "Atención online",
+    "STEPS": {
+      "SPECIALITY": "Especialidad",
+      "SPECIALIST": "Especialista",
+      "DAY": "Día",
+      "TIME": "Hora"
+    },
+    "FORM": {
+      "SPECIALITY_LABEL": "Especialidad",
+      "SPECIALITY_REQUIRED": "La especialidad es obligatoria",
+      "SPECIALIST_LABEL": "Especialista",
+      "SPECIALIST_REQUIRED": "El especialista es obligatorio",
+      "PATIENT_LABEL": "Paciente",
+      "PATIENT_REQUIRED": "El paciente es obligatorio",
+      "DAY_TITLE": "Día",
+      "TIME_TITLE": "Hora"
+    },
+    "SUMMARY": {
+      "TITLE": "Resumen",
+      "SPECIALITY": "Especialidad",
+      "SPECIALIST": "Especialista",
+      "DAY": "Día",
+      "TIME": "Hora"
+    },
+    "NOTE": "Los turnos se confirman por email. Si no recibís el correo en 5 minutos, revisá tu carpeta de spam.",
+    "ACTIONS": {
+      "CANCEL": "Cancelar",
+      "SUBMIT": "Solicitar turno",
+      "SUBMIT_LOADING": "Solicitando…"
+    },
+    "NO_SPECIALISTS": "No hay especialistas disponibles para {{speciality}}.",
+    "ERROR_LOAD_SPECIALTIES": "Error al cargar especialidades o especialistas.",
+    "ERROR_LOAD_PATIENTS": "Error al cargar pacientes.",
+    "ERROR_MISSING_FIELDS": "Faltan datos obligatorios del turno.",
+    "ERROR_PATIENT_NOT_FOUND": "No se pudo determinar el paciente.",
+    "ERROR_SLOT_TAKEN": "Ya existe un turno en ese horario. Por favor, seleccioná otro.",
+    "ERROR_SPECIALITY_NOT_FOUND": "No se encontró la especialidad seleccionada.",
+    "ERROR_STATUS_NOT_FOUND": "No se encontró el estado PENDIENTE.",
+    "ERROR_SUBMIT_GENERIC": "No se pudo solicitar el turno.",
+    "SUCCESS_TITLE": "Turno solicitado",
+    "SUCCESS_TEXT": "El turno ha sido solicitado exitosamente."
   },
-
-  "FORM": {
-    "SPECIALITY_LABEL": "Especialidad",
-    "SPECIALITY_REQUIRED": "La especialidad es obligatoria",
-    "SPECIALIST_LABEL": "Especialista",
-    "SPECIALIST_REQUIRED": "El especialista es obligatorio",
-    "PATIENT_LABEL": "Paciente",
-    "PATIENT_REQUIRED": "El paciente es obligatorio",
-    "DAY_TITLE": "Día",
-    "TIME_TITLE": "Hora"
-  },
-
-  "SUMMARY": {
-    "TITLE": "Resumen",
-    "SPECIALITY": "Especialidad",
-    "SPECIALIST": "Especialista",
-    "DAY": "Día",
-    "TIME": "Hora"
-  },
-
-  "NOTE": "Los turnos se confirman por email. Si no recibís el correo en 5 minutos, revisá tu carpeta de spam.",
-
-  "ACTIONS": {
-    "CANCEL": "Cancelar",
-    "SUBMIT": "Solicitar turno",
-    "SUBMIT_LOADING": "Solicitando…"
-  },
-
-  "NO_SPECIALISTS": "No hay especialistas disponibles para {{speciality}}.",
-  "ERROR_LOAD_SPECIALTIES": "Error al cargar especialidades o especialistas.",
-  "ERROR_LOAD_PATIENTS": "Error al cargar pacientes.",
-  "ERROR_MISSING_FIELDS": "Faltan datos obligatorios del turno.",
-  "ERROR_PATIENT_NOT_FOUND": "No se pudo determinar el paciente.",
-  "ERROR_SLOT_TAKEN": "Ya existe un turno en ese horario. Por favor, seleccioná otro.",
-  "ERROR_SPECIALITY_NOT_FOUND": "No se encontró la especialidad seleccionada.",
-  "ERROR_STATUS_NOT_FOUND": "No se encontró el estado PENDIENTE.",
-  "ERROR_SUBMIT_GENERIC": "No se pudo solicitar el turno.",
-  "SUCCESS_TITLE": "Turno solicitado",
-  "SUCCESS_TEXT": "El turno ha sido solicitado exitosamente."
-},
-
-
-
   "ROLES": {
     "PACIENTE": "Paciente",
     "ESPECIALISTA": "Especialista",
@@ -114,6 +99,51 @@
       "BUTTON": "Registrarse"
     },
     "FOOTER": "Clínica Online — UTN"
+  },
+  "PROFILE": {
+    "LOADING": "Cargando perfil...",
+    "ERROR_TITLE": "Hubo un problema",
+    "ERROR_NO_USER_DATA": "No se encontraron datos de usuario en la clínica.",
+    "ERROR_GENERIC": "Error al cargar el perfil.",
+    "GO_HOME": "Ir a inicio",
+    "STATUS_ENABLED": "HABILITADO",
+    "STATUS_DISABLED": "DESHABILITADO",
+    "AGE_YEARS": "{{age}} años",
+    "SECTIONS": {
+      "PERSONAL": "Información Personal",
+      "CONTACT": "Información de Contacto",
+      "PROFESSIONAL": "Información Profesional",
+      "COVERAGE": "Cobertura",
+      "QUICK_ACTIONS": "Acciones rápidas",
+      "RECENT_ACTIVITY": "Actividad reciente"
+    },
+    "FIELDS": {
+      "NAME": "Nombre",
+      "AGE": "Edad",
+      "DNI": "DNI",
+      "ABOUT": "Acerca",
+      "EMAIL": "Email",
+      "NO_EMAIL": "Sin email",
+      "PHONE": "Teléfono",
+      "ADDRESS": "Dirección",
+      "INSURANCE": "Obra social",
+      "SPECIALITIES": "Especialidades",
+      "NO_SPECIALITIES": "Sin especialidades"
+    },
+    "ACTIONS": {
+      "BACK": "Volver",
+      "MESSAGE": "Mensaje",
+      "DISABLE": "Deshabilitar",
+      "ENABLE": "Habilitar",
+      "VIEW_APPOINTMENTS": "Ver turnos"
+    },
+    "RECENT": {
+      "ITEM1_TIME": "Hoy 10:42",
+      "ITEM1_TEXT": "Actualizó su foto de perfil",
+      "ITEM2_TIME": "Ayer 18:20",
+      "ITEM2_TEXT": "Inicio de sesión exitoso",
+      "ITEM3_TIME": "08/11 09:10",
+      "ITEM3_TEXT": "Descargó reporte de turnos"
+    }
   }
-  
 }

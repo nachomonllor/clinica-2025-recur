@@ -215,7 +215,7 @@ export class MainNavComponent implements OnInit, OnDestroy {
         return [
           { label: 'Mis turnos', route: '/mis-turnos-especialista', icon: 'event_note' },
           { label: 'Pacientes', route: '/pacientes-especialista', icon: 'groups' },
-          { label: 'Mi perfil', route: '/perfil-usuario', icon: 'account_circle' }
+          { label: 'Mi perfil', route: '/mi-perfil', icon: 'account_circle' } // ----- <= USO MI-PERFIL PORQUE TIENE LOS HORARIOS QUE PUEDE ELEGIR EL ESPECIALISTA
         ];
 
       case 'ADMIN':

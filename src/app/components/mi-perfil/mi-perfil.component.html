@@ -5,38 +5,42 @@
   <!-- <section class="hero"> -->
 
 
-    <div class="hero-content glass">
+  <div class="hero-content glass">
 
-      <div class="hero-left">
-        <div class="avatar" [class.has-img]="!!p.avatar_url">
-          <img *ngIf="p.avatar_url" [src]="p.avatar_url" [alt]="nombreCompleto" />
-          <span *ngIf="!p.avatar_url">{{ avatarIniciales }}</span>
-        </div>
-        <div class="title">
-          <h1>{{ nombreCompleto }}</h1>
-          <div class="sub">
-            <span class="chip role">{{ rolUpper }}</span>
-            <span class="dot" *ngIf="p.fecha_nacimiento"></span>
-            <span *ngIf="p.fecha_nacimiento">{{ calcularEdad(p.fecha_nacimiento) }}</span>
-          </div>
-        </div>
+    <div class="hero-left">
+      <div class="avatar" [class.has-img]="!!p.avatar_url">
+        <img *ngIf="p.avatar_url" [src]="p.avatar_url" [alt]="nombreCompleto" />
+        <span *ngIf="!p.avatar_url">{{ avatarIniciales }}</span>
       </div>
-
-      <div class="hero-right">
-        
-        <div class="hero-actions">
-          <button class="btn primary ripple" *ngIf="esPaciente && historiasFiltradas.length" (click)="descargarPDF()">
-            <svg class="icon" viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg>
-            Descargar historia
-          </button>
-          <a class="btn ghost ripple" *ngIf="esEspecialista" (click)="scrollToHistoria()">
-            <svg class="icon" viewBox="0 0 24 24"><path d="M8 7h8M7 11h10M6 15h12"/></svg>
-            Ver historia
-          </a>
+      <div class="title">
+        <h1>{{ nombreCompleto }}</h1>
+        <div class="sub">
+          <span class="chip role">{{ rolUpper }}</span>
+          <span class="dot" *ngIf="p.fecha_nacimiento"></span>
+          <span *ngIf="p.fecha_nacimiento">{{ calcularEdad(p.fecha_nacimiento) }}</span>
         </div>
-
       </div>
     </div>
+
+    <div class="hero-right">
+
+      <div class="hero-actions">
+        <button class="btn primary ripple" *ngIf="esPaciente && historiasFiltradas.length" (click)="descargarPDF()">
+          <svg class="icon" viewBox="0 0 24 24">
+            <path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14" />
+          </svg>
+          Descargar historia
+        </button>
+        <a class="btn ghost ripple" *ngIf="esEspecialista" (click)="scrollToHistoria()">
+          <svg class="icon" viewBox="0 0 24 24">
+            <path d="M8 7h8M7 11h10M6 15h12" />
+          </svg>
+          Ver historia
+        </a>
+      </div>
+
+    </div>
+  </div>
 
 
   <!-- </section> -->
@@ -46,7 +50,9 @@
 
     <!-- Panel: Información personal -->
     <article class="panel">
-      <header class="panel-h"><h2>Información Personal</h2></header>
+      <header class="panel-h">
+        <h2>Información Personal</h2>
+      </header>
       <div class="panel-b info">
         <div class="info-row"><span class="label">Nombre</span><span class="value">{{ nombreCompleto }}</span></div>
         <div class="info-row"><span class="label">DNI</span><span class="value">{{ p.dni }}</span></div>
@@ -70,7 +76,9 @@
 
     <!-- Panel: Contacto -->
     <article class="panel">
-      <header class="panel-h"><h2>Contacto</h2></header>
+      <header class="panel-h">
+        <h2>Contacto</h2>
+      </header>
       <div class="panel-b info">
         <div class="info-row">
           <span class="label">Email</span>
@@ -81,11 +89,13 @@
 
     <!-- Panel: Mis Horarios (ESPECIALISTA) -->
     <article class="panel span-2" *ngIf="esEspecialista && formularioHorarios">
-      <header class="panel-h"><h2>Mis horarios</h2></header>
+      <header class="panel-h">
+        <h2>Mis horarios</h2>
+      </header>
       <div class="panel-b">
         <form [formGroup]="formularioHorarios" (ngSubmit)="guardarHorarios()">
           <div formArrayName="horarios" class="horarios-grid">
-            <mat-card *ngFor="let grupo of horariosArray.controls; let i = index" [formGroupName]="i" class="horario-card glass">
+            <!-- <mat-card *ngFor="let grupo of horariosArray.controls; let i = index" [formGroupName]="i" class="horario-card glass">
               <div class="horario-h"><h3>{{ getHorarioGroup(i).get('especialidad')?.value }}</h3></div>
               <div class="horario-b">
                 <div class="dias-section">
@@ -108,7 +118,42 @@
                   </div>
                 </div>
               </div>
+            </mat-card> -->
+
+            <mat-card *ngFor="let grupo of horariosArray.controls; let i = index" [formGroupName]="i"
+              class="horario-card glass">
+
+              <div class="horario-h">
+                <h3>{{ getHorarioGroup(i).get('especialidad')?.value }}</h3>
+              </div>
+
+              <div class="horario-b">
+                <!-- DÍAS -->
+                <div class="dias-section">
+                  <label>Días disponibles</label>
+                  <div class="toggle-row dias-row">
+                    <button type="button" class="pill-toggle pill-dia" *ngFor="let dia of diasSemana"
+                      [class.active]="diaActivoPorEspecialidad[i] === dia" [class.has-hours]="tieneHoras(i, dia)"
+                      (click)="seleccionarDia(i, dia)">
+                      {{ dia }}
+                    </button>
+                  </div>
+                </div>
+
+                <!-- HORAS DEL DÍA ACTIVO -->
+                <div class="horas-section">
+                  <label>Horarios para {{ diaActivoPorEspecialidad[i] }}</label>
+                  <div class="toggle-row horas-row">
+                    <button type="button" class="pill-toggle pill-hora" *ngFor="let hora of horariosDisponibles"
+                      [class.active]="isHoraActiva(i, hora)" (click)="toggleHora(i, hora)">
+                      {{ hora }}
+                    </button>
+                  </div>
+                </div>
+              </div>
             </mat-card>
+
+
           </div>
 
           <div class="actions">
@@ -132,7 +177,8 @@
               <mat-option *ngFor="let e of especialistasDisponibles" [value]="e.id">{{ e.nombre }}</mat-option>
             </mat-select>
           </mat-form-field>
-          <button mat-raised-button color="primary" (click)="descargarPDF()" [disabled]="historiasFiltradas.length === 0">
+          <button mat-raised-button color="primary" (click)="descargarPDF()"
+            [disabled]="historiasFiltradas.length === 0">
             <mat-icon>picture_as_pdf</mat-icon> Descargar PDF
           </button>
         </div>
@@ -144,7 +190,8 @@
         <mat-accordion *ngIf="historiasFiltradas.length > 0; else noFiltro" class="hist-accordion">
           <mat-expansion-panel *ngFor="let historia of historiasFiltradas">
             <mat-expansion-panel-header>
-              <mat-panel-title>{{ formatearFecha(historia.created_at) }} — {{ historia.especialistaNombre }}</mat-panel-title>
+              <mat-panel-title>{{ formatearFecha(historia.created_at) }} — {{ historia.especialistaNombre
+                }}</mat-panel-title>
             </mat-expansion-panel-header>
 
             <div class="historia-content">
