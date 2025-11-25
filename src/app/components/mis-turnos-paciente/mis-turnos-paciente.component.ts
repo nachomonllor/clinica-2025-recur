@@ -166,7 +166,9 @@ export class MisTurnosPacienteComponent implements OnInit {
   puedeVerResena(t: TurnoVM): boolean {
     // Solo mostrar si hay reseña (comentario del especialista) y no está vacío
     // La reseña solo existe cuando el especialista finaliza el turno y deja un comentario
-    return !!(t.resena && typeof t.resena === 'string' && t.resena.trim().length > 0);
+    //return !!(t.resena && typeof t.resena === 'string' && t.resena.trim().length > 0);
+
+    return true;
   }
 
   puedeCompletarEncuesta(t: TurnoVM): boolean {
