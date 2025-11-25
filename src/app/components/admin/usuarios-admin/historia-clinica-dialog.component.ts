@@ -121,23 +121,6 @@ export interface HistoriaClinicaDialogData {
 })
 
 
-// export class HistoriaClinicaDialogComponent {
-//   constructor(
-//     @Inject(MAT_DIALOG_DATA)
-//     public data: { pacienteNombre: string; historias: any[] }
-//   ) {}
-
-//   formatearFecha(fecha: string | undefined): string {
-//     if (!fecha) return 'N/A';
-//     return new Date(fecha).toLocaleDateString('es-AR', {
-//       year: 'numeric',
-//       month: 'long',
-//       day: 'numeric'
-//     });
-//   }
-// }
-
-
 export class HistoriaClinicaDialogComponent {
 
   constructor(
