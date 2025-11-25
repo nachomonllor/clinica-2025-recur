@@ -244,45 +244,43 @@ export class MisTurnosPacienteComponent implements OnInit {
     return (filtered && filtered.length ? filtered : ds.data) || [];
   }
 
-
-
   exportarHistoriaClinicaExcel(): void {
-    // 1) Fuente de verdad: lo que el paciente está viendo (respeta filtro)
-    const turnos = this.turnos;
+    const turnos = this.turnos;  // respeta el filtro actual
 
     if (!turnos.length) {
-      this.snackBar.open('No hay turnos para exportar.', 'Cerrar', { duration: 2500 });
+      this.snackBar.open('No hay turnos para exportar.', 'Cerrar', {
+        duration: 2500
+      });
       return;
     }
 
-    // 2) Armamos las filas a exportar
     const filas = turnos.map((t, idx) => ({
       Nro: idx + 1,
-      Fecha: formatDate(t.fecha, 'dd/MM/yyyy', 'es-AR'),
-      Hora: t.hora,
-      Estado: t.estado,                         // Podrías mapear a label si querés
-      Especialidad: t.especialidad,
-      Profesional: t.especialista,
+      Fecha: t.fecha ? t.fecha.toLocaleDateString('es-AR') : '',
+      Hora: t.hora ?? '',
+      Estado: t.estado ?? '',
+      Especialidad: t.especialidad ?? '',
+      Profesional: t.especialista ?? '',
       Calificación: t.calificacion ?? '',
       'Reseña del especialista': t.resena ?? '',
-      // Ajustá estos campos según tu modelo real
       'Historia clínica (texto)': (t as any).historiaClinica || t.historiaBusqueda || ''
-      // Podés agregar más columnas: diagnóstico, tratamientos, etc.
     }));
 
-    // 3) Creamos worksheet y workbook
     const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(filas);
     const wb: XLSX.WorkBook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Historia Clínica');
 
-    // 4) Nombre de archivo
-    const fechaArchivo = formatDate(new Date(), 'yyyyMMdd_HHmm', 'es-AR');
-    const fileName = `historia_clinica_${fechaArchivo}.xlsx`;
+    const ahora = new Date();
+    const fechaArchivo = `${ahora.getFullYear()}${(ahora.getMonth() + 1)
+      .toString()
+      .padStart(2, '0')}${ahora.getDate().toString().padStart(2, '0')}_${ahora
+        .getHours()
+        .toString()
+        .padStart(2, '0')}${ahora.getMinutes().toString().padStart(2, '0')}`;
 
-    // 5) Descargar
+    const fileName = `historia_clinica_${fechaArchivo}.xlsx`;
     XLSX.writeFile(wb, fileName);
   }
-
 
 }
 
