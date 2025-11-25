@@ -113,8 +113,8 @@ export class MisTurnosEspecialistaComponent implements OnInit {
       if (result && comentarioForm.valid) {
         try {
           await this.turnoService.cambiarEstadoPorCodigo(
-            turno.id, 
-            'RECHAZADO', 
+            turno.id,
+            'RECHAZADO',
             comentarioForm.value.comentario
           );
           turno.estado = 'RECHAZADO';
@@ -141,8 +141,8 @@ export class MisTurnosEspecialistaComponent implements OnInit {
       if (result && comentarioForm.valid) {
         try {
           await this.turnoService.cambiarEstadoPorCodigo(
-            turno.id, 
-            'CANCELADO', 
+            turno.id,
+            'CANCELADO',
             comentarioForm.value.comentario
           );
           turno.estado = 'CANCELADO';
@@ -181,6 +181,75 @@ export class MisTurnosEspecialistaComponent implements OnInit {
   }
 
   /** Guarda historia clínica + cambia estado a FINALIZADO */
+  // async guardarHistoriaClinica(turno: TurnoEspecialista, form: FormGroup): Promise<void> {
+  //   try {
+  //     const { data: sessionData } = await this.supa.getSession();
+  //     if (!sessionData?.session) {
+  //       throw new Error('No hay sesión activa');
+  //     }
+  //     const especialistaId = sessionData.session.user.id;
+  //     const fv = form.value;
+
+  //     // Obtener paciente_id del turno
+  //     const { data: turnoData, error: turnoError } = await this.supa.client
+  //       .from('turnos')
+  //       .select('paciente_id')
+  //       .eq('id', turno.id)
+  //       .single();
+
+  //     if (turnoError || !turnoData) {
+  //       throw new Error('No se pudo obtener el turno');
+  //     }
+
+  //     const datosDinamicos: DatoDinamico[] = [
+  //       { clave: 'Índice de riesgo', valor: Number(fv.riesgo), tipo: 'rango', unidad: '%' },
+  //       { clave: 'Nivel de glucosa', valor: Number(fv.nivelGlucosa), tipo: 'numero', unidad: 'mg/dL' },
+  //       { clave: 'Requiere seguimiento', valor: !!fv.requiereSeguimiento, tipo: 'booleano' }
+  //     ];
+
+  //     // Insertar en historia_clinica
+  //     const { error: historiaError } = await this.supa.client
+  //       .from('historia_clinica')
+  //       .insert({
+  //         paciente_id: turnoData.paciente_id,
+  //         especialista_id: especialistaId,
+  //         turno_id: turno.id,
+  //         altura: parseFloat(fv.altura),
+  //         peso: parseFloat(fv.peso),
+  //         temperatura: parseFloat(fv.temperatura),
+  //         presion: fv.presion,
+  //         //  ACA: mapear datos_dinamicos a la tabla historia_datos_dinamicos.
+
+  //       });
+
+  //     if (historiaError) throw historiaError;
+
+  //     // Guardar comentario/reseña del especialista en el turno
+  //     const comentario = fv.comentario?.trim() || null;
+  //     await this.turnoService.cambiarEstadoPorCodigo(turno.id, 'FINALIZADO', comentario);
+
+  //     turno.estado = 'FINALIZADO';
+  //     turno.resena = comentario;
+  //     this.dataSource.data = [...this.dataSource.data];
+
+  //     Swal.fire({
+  //       icon: 'success',
+  //       title: 'Historia clínica guardada',
+  //       text: 'El turno ha sido finalizado correctamente.',
+  //       timer: 2000,
+  //       showConfirmButton: false
+  //     });
+  //   } catch (error: any) {
+  //     console.error('[MisTurnosEspecialista] Error al guardar historia clínica:', error);
+  //     this.snackBar.open(
+  //       `Error: ${error.message || 'No se pudo guardar la historia clínica'}`,
+  //       'Cerrar',
+  //       { duration: 3000 }
+  //     );
+  //   }
+  // }
+
+  /** Guarda historia clínica + cambia estado a FINALIZADO */
   async guardarHistoriaClinica(turno: TurnoEspecialista, form: FormGroup): Promise<void> {
     try {
       const { data: sessionData } = await this.supa.getSession();
@@ -204,11 +273,11 @@ export class MisTurnosEspecialistaComponent implements OnInit {
       const datosDinamicos: DatoDinamico[] = [
         { clave: 'Índice de riesgo', valor: Number(fv.riesgo), tipo: 'rango', unidad: '%' },
         { clave: 'Nivel de glucosa', valor: Number(fv.nivelGlucosa), tipo: 'numero', unidad: 'mg/dL' },
-        { clave: 'Requiere seguimiento', valor: !!fv.requiereSeguimiento, tipo: 'booleano' }
+        { clave: 'Requiere seguimiento', valor: !!fv.requiereSeguimiento, tipo: 'booleano', unidad: null }
       ];
 
-      // Insertar en historia_clinica
-      const { error: historiaError } = await this.supa.client
+      // 1) Insertar en historia_clinica y recuperar el id de la historia
+      const { data: historiaData, error: historiaError } = await this.supa.client
         .from('historia_clinica')
         .insert({
           paciente_id: turnoData.paciente_id,
@@ -217,19 +286,35 @@ export class MisTurnosEspecialistaComponent implements OnInit {
           altura: parseFloat(fv.altura),
           peso: parseFloat(fv.peso),
           temperatura: parseFloat(fv.temperatura),
-          presion: fv.presion,
-          //  ACA: mapear datos_dinamicos a la tabla historia_datos_dinamicos.
-         
-        });
+          presion: fv.presion
+        })
+        .select('id')        // <- pedimos que nos devuelva el id insertado
+        .single();           // <- como es un solo registro
 
-      if (historiaError) throw historiaError;
+      if (historiaError || !historiaData) throw historiaError || new Error('No se pudo crear la historia clínica');
 
-      // Guardar comentario/reseña del especialista en el turno
-      const comentario = fv.comentario?.trim() || null;
-      await this.turnoService.cambiarEstadoPorCodigo(turno.id, 'FINALIZADO', comentario);
+      const historiaId = historiaData.id;
+
+      // 2) Mapear datos_dinamicos a la tabla historia_datos_dinamicos
+      const dinamicosPayload = datosDinamicos.map(d => ({
+        historia_id: historiaId,          // FK a historia_clinica.id  (ajusta si tu columna se llama distinto)
+        clave: d.clave,
+        valor: d.valor as any,            // si en la BD es text/JSON, podés hacer String(d.valor)
+        tipo: d.tipo,
+        unidad: d.unidad ?? null
+      }));
+
+      // 3) Insertar los datos dinámicos
+      const { error: dinamicosError } = await this.supa.client
+        .from('historia_datos_dinamicos')
+        .insert(dinamicosPayload);
+
+      if (dinamicosError) throw dinamicosError;
+
+      // Cambiar estado del turno
+      await this.turnoService.cambiarEstadoPorCodigo(turno.id, 'FINALIZADO');
 
       turno.estado = 'FINALIZADO';
-      turno.resena = comentario;
       this.dataSource.data = [...this.dataSource.data];
 
       Swal.fire({
@@ -248,6 +333,7 @@ export class MisTurnosEspecialistaComponent implements OnInit {
       );
     }
   }
+
 
   // =========================================================
   // HABILITACIONES POR ESTADO
@@ -314,7 +400,7 @@ export class MisTurnosEspecialistaComponent implements OnInit {
     return (ds.filteredData?.length ? ds.filteredData : ds.data) || [];
   }
 
-  
+
 }
 
 
