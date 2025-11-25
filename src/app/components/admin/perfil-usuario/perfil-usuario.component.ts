@@ -92,6 +92,45 @@ export class PerfilUsuarioComponent implements OnInit {
       this.esAdmin = rol === 'ADMIN';
 
       // 4) Especialidades: primero desde tablas, luego metadata como fallback
+      // let especialidades: string[] = [];
+
+
+      // if (rol === 'ESPECIALISTA') {
+      //   const { data: rels, error: relError } = await this.supa.client
+      //     .from('usuario_especialidad')
+      //     .select('especialidad_id')
+      //     .eq('usuario_id', userId);
+
+      //   if (relError) throw relError;
+
+      //   const ids = (rels ?? [])
+      //     .map((r: any) => r.especialidad_id as string)
+      //     .filter(Boolean);
+
+      //   if (ids.length) {
+      //     const { data: espData, error: espError } = await this.supa.client
+      //       .from('especialidades')
+      //       .select('nombre')
+      //       .in('id', ids);
+
+      //     if (espError) throw espError;
+
+      //     especialidades = (espData ?? [])
+      //       .map((e: any) => e.nombre as string)
+      //       .filter(Boolean);
+      //   }
+      // }
+
+      // // Fallback a metadata CSV
+      // if (!especialidades.length && meta.especialidades) {
+      //   especialidades = meta.especialidades
+      //     .split(',')
+      //     .map(s => s.trim())
+      //     .filter(Boolean);
+      // }
+
+
+      // 4) Especialidades: primero desde tablas, luego metadata como fallback
       let especialidades: string[] = [];
 
       if (rol === 'ESPECIALISTA') {
@@ -118,15 +157,23 @@ export class PerfilUsuarioComponent implements OnInit {
             .map((e: any) => e.nombre as string)
             .filter(Boolean);
         }
+
+        // Fallback a metadata SOLO para especialistas
+        if (!especialidades.length && meta.especialidades) {
+          if (Array.isArray(meta.especialidades)) {
+            especialidades = meta.especialidades
+              .map(e => String(e).trim())
+              .filter(Boolean);
+          } else if (typeof meta.especialidades === 'string') {
+            especialidades = meta.especialidades
+              .split(',')
+              .map(s => s.trim())
+              .filter(Boolean);
+          }
+        }
       }
 
-      // Fallback a metadata CSV
-      if (!especialidades.length && meta.especialidades) {
-        especialidades = meta.especialidades
-          .split(',')
-          .map(s => s.trim())
-          .filter(Boolean);
-      }
+
 
       // Edad: de la tabla, o calculada desde fecha_nacimiento en metadata
 
@@ -156,38 +203,6 @@ export class PerfilUsuarioComponent implements OnInit {
       }
 
 
-
-      //  Mapear al modelo de la UI (UsuarioPerfil)
-      // this.usuario = {
-      //   id: userId,
-      //   nombre: (u.nombre ?? meta.nombre) ?? '',
-      //   apellido: (u.apellido ?? meta.apellido) ?? '',
-      //   rol,
-      //   edad,
-      //   dni: (u.dni ?? meta.dni) ?? '',
-      //   email: (u.email ?? authUser.email) ?? '',
-
-      //   telefono: null,                // esos campos no existen en la tabla nueva
-      //   direccion: null,
-      //   ciudad: null,
-      //   obraSocial: u.obra_social ?? null,
-
-      //   especialidades,
-      //   habilitado: u.activo ?? true,
-
-      //   avatarUrl: u.imagen_perfil_1 ?? null,
-      //   bannerUrl: null,               // no tenemos banner_url en el esquema nuevo
-
-      //   bio:
-      //     rol === 'ESPECIALISTA'
-      //       ? (especialidades.length
-      //         ? `Especialista en ${especialidades.join(', ')}`
-      //         : 'Especialista de la clínica.')
-      //       : rol === 'ADMIN'
-      //         ? 'Administrador del sistema de la clínica.'
-      //         : 'Paciente de la clínica.',
-      // };
-
       // 8) Mapear al modelo de la UI
       this.usuario = {
         id: userId,
@@ -211,13 +226,6 @@ export class PerfilUsuarioComponent implements OnInit {
 
         bio
       };
-
-      // } catch (err: any) {
-      //   console.error('[PerfilUsuario] Error cargando perfil:', err);
-      //   this.error = err?.message || 'Error al cargar el perfil.';
-      // } finally {
-      //   this.cargando = false;
-      // }
 
     } catch (err: any) {
       console.error('[PerfilUsuario] Error cargando perfil:', err);

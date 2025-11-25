@@ -141,7 +141,7 @@ export class UsuariosAdminComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     this.maxDateISO = this.toISODateLocal(new Date());
     this.inicializarFormulario();
-    
+
     // Verificar si el usuario actual es admin
     try {
       const { data: sessionData } = await this.supa.getSession();
@@ -152,7 +152,7 @@ export class UsuariosAdminComponent implements OnInit {
           .select('perfil')
           .eq('id', userId)
           .single();
-        
+
         if (!error && usuario) {
           const perfil = String(usuario.perfil ?? '').toUpperCase();
           this.esAdmin = perfil === 'ADMIN';
@@ -161,7 +161,7 @@ export class UsuariosAdminComponent implements OnInit {
     } catch (e) {
       console.error('[UsuariosAdmin] Error al verificar rol', e);
     }
-    
+
     await this.cargarUsuarios();
   }
 
@@ -718,65 +718,54 @@ export class UsuariosAdminComponent implements OnInit {
     }
   }
 
-  /** ---------- Historia clínica (esquema nuevo) ---------- */
-  // async verHistoriaClinica(
-  //   pacienteId: string,
-  //   pacienteNombre: string
-  // ): Promise<void> {
+
+  // async verHistoriaClinica(pacienteId: string, pacienteNombre: string): Promise<void> {
   //   try {
+  //     const { data: sessionData } = await this.supa.getSession();
+  //     if (!sessionData?.session) return;
+
+  //     const especialistaId = sessionData.session.user.id;
+
   //     const { data: historias, error } = await this.supa.client
   //       .from('historia_clinica')
-  //       .select(
-  //         `
-  //         id,
-  //         paciente_id,
-  //         especialista_id,
-  //         turno_id,
-  //         fecha_registro,
-  //         altura,
-  //         peso,
-  //         temperatura,
-  //         presion,
-  //         datos_dinamicos:historia_datos_dinamicos (
-  //           id,
-  //           historia_id,
-  //           clave,
-  //           tipo_control,
-  //           valor_texto,
-  //           valor_numerico,
-  //           valor_boolean
-  //         ),
-  //         especialista:usuarios!fk_historia_especialista ( nombre, apellido ),
-  //         turno:turnos!fk_historia_turno ( fecha_hora_inicio )
-  //       `
-  //       )
+  //       .select('*')
   //       .eq('paciente_id', pacienteId)
+  //       .eq('especialista_id', especialistaId)
   //       .order('fecha_registro', { ascending: false });
 
   //     if (error) {
-  //       console.error('[UsuariosAdmin] Error historias', error);
-  //       Swal.fire('Error', 'No se pudo cargar la historia clínica', 'error');
+  //       console.error('[PacientesEspecialista] Error al cargar historia clínica', error);
   //       return;
   //     }
 
-  //     const historiasCompletas = (historias || []).map((h: any) => {
-  //       const especialistaNombre = h.especialista
-  //         ? `${h.especialista.nombre ?? ''} ${h.especialista.apellido ?? ''}`
-  //           .trim() || 'N/A'
-  //         : 'N/A';
+  //     const historiasCompletas: HistoriaClinicaConExtras[] = await Promise.all(
+  //       (historias || []).map(async (h: any) => {
+  //         const { data: turno } = await this.supa.client
+  //           .from('turnos')
+  //           .select('fecha_hora_inicio')
+  //           .eq('id', h.turno_id)
+  //           .single();
 
-  //       const fechaAtencion = h.turno?.fecha_hora_inicio
-  //         ? new Date(h.turno.fecha_hora_inicio).toLocaleDateString('es-AR')
-  //         : 'N/A';
+  //         const { data: especialista } = await this.supa.client
+  //           .from('usuarios')
+  //           .select('nombre, apellido')
+  //           .eq('id', h.especialista_id)
+  //           .single();
 
-  //       return {
-  //         ...h,
-  //         created_at: h.fecha_registro,
-  //         especialistaNombre,
-  //         fechaAtencion,
-  //         datos_dinamicos: h.datos_dinamicos ?? []
-  //       };
-  //     });
+  //         const especialistaNombre =
+  //           especialista ? `${especialista.nombre} ${especialista.apellido}` : 'N/A';
+
+  //         const fechaAtencion = turno?.fecha_hora_inicio
+  //           ? new Date(turno.fecha_hora_inicio).toLocaleDateString('es-AR')
+  //           : 'N/A';
+
+  //         return {
+  //           ...h,
+  //           especialistaNombre,
+  //           fechaAtencion
+  //         } as HistoriaClinicaConExtras;
+  //       })
+  //     );
 
   //     this.dialog.open(HistoriaClinicaDialogComponent, {
   //       width: '800px',
@@ -786,71 +775,78 @@ export class UsuariosAdminComponent implements OnInit {
   //       }
   //     });
   //   } catch (err: any) {
-  //     console.error('[UsuariosAdmin] Error al cargar historia clínica', err);
-  //     Swal.fire('Error', 'No se pudo cargar la historia clínica', 'error');
+  //     console.error('[PacientesEspecialista] Error al cargar historia clínica', err);
   //   }
   // }
 
 
   async verHistoriaClinica(pacienteId: string, pacienteNombre: string): Promise<void> {
-  try {
-    const { data: sessionData } = await this.supa.getSession();
-    if (!sessionData?.session) return;
+    try {
+      const { data: sessionData } = await this.supa.getSession();
+      if (!sessionData?.session) return;
 
-    const especialistaId = sessionData.session.user.id;
+      const userId = sessionData.session.user.id;
 
-    const { data: historias, error } = await this.supa.client
-      .from('historia_clinica')
-      .select('*')
-      .eq('paciente_id', pacienteId)
-      .eq('especialista_id', especialistaId)
-      .order('fecha_registro', { ascending: false });
+      // Base: todas las historias del paciente
+      let query = this.supa.client
+        .from('historia_clinica')
+        .select('*')
+        .eq('paciente_id', pacienteId)
+        .order('fecha_registro', { ascending: false });
 
-    if (error) {
-      console.error('[PacientesEspecialista] Error al cargar historia clínica', error);
-      return;
-    }
-
-    const historiasCompletas: HistoriaClinicaConExtras[] = await Promise.all(
-      (historias || []).map(async (h: any) => {
-        const { data: turno } = await this.supa.client
-          .from('turnos')
-          .select('fecha_hora_inicio')
-          .eq('id', h.turno_id)
-          .single();
-
-        const { data: especialista } = await this.supa.client
-          .from('usuarios')
-          .select('nombre, apellido')
-          .eq('id', h.especialista_id)
-          .single();
-
-        const especialistaNombre =
-          especialista ? `${especialista.nombre} ${especialista.apellido}` : 'N/A';
-
-        const fechaAtencion = turno?.fecha_hora_inicio
-          ? new Date(turno.fecha_hora_inicio).toLocaleDateString('es-AR')
-          : 'N/A';
-
-        return {
-          ...h,
-          especialistaNombre,
-          fechaAtencion
-        } as HistoriaClinicaConExtras;
-      })
-    );
-
-    this.dialog.open(HistoriaClinicaDialogComponent, {
-      width: '800px',
-      data: {
-        pacienteNombre,
-        historias: historiasCompletas
+      // Si NO es admin (ej. si reusás esta función para un especialista),
+      // filtrás por el especialista logueado:
+      if (!this.esAdmin) {
+        query = query.eq('especialista_id', userId);
       }
-    });
-  } catch (err: any) {
-    console.error('[PacientesEspecialista] Error al cargar historia clínica', err);
+
+      const { data: historias, error } = await query;
+
+      if (error) {
+        console.error('[UsuariosAdmin] Error al cargar historia clínica', error);
+        return;
+      }
+
+      const historiasCompletas: HistoriaClinicaConExtras[] = await Promise.all(
+        (historias || []).map(async (h: any) => {
+          const { data: turno } = await this.supa.client
+            .from('turnos')
+            .select('fecha_hora_inicio')
+            .eq('id', h.turno_id)
+            .single();
+
+          const { data: especialista } = await this.supa.client
+            .from('usuarios')
+            .select('nombre, apellido')
+            .eq('id', h.especialista_id)
+            .single();
+
+          const especialistaNombre =
+            especialista ? `${especialista.nombre} ${especialista.apellido}` : 'N/A';
+
+          const fechaAtencion = turno?.fecha_hora_inicio
+            ? new Date(turno.fecha_hora_inicio).toLocaleDateString('es-AR')
+            : 'N/A';
+
+          return {
+            ...h,
+            especialistaNombre,
+            fechaAtencion
+          } as HistoriaClinicaConExtras;
+        })
+      );
+
+      this.dialog.open(HistoriaClinicaDialogComponent, {
+        width: '800px',
+        data: {
+          pacienteNombre,
+          historias: historiasCompletas
+        }
+      });
+    } catch (err: any) {
+      console.error('[UsuariosAdmin] Error al cargar historia clínica', err);
+    }
   }
-}
 
 
   /** ---------- Descargar Excel de usuarios ---------- */
