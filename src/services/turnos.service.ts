@@ -392,7 +392,8 @@ export class TurnosService {
         paciente: pacienteNombre,
         estado: estadoCodigo,
         historiaBusqueda: (t.comentario ?? '') as string,
-        resena: t.comentario ?? null
+        // La reseña solo existe si hay un comentario no vacío (del especialista al finalizar)
+        resena: (t.comentario && String(t.comentario).trim().length > 0) ? String(t.comentario).trim() : null
       };
     });
   }
@@ -539,7 +540,8 @@ export class TurnosService {
         especialista: especialistaNombre,
         estado: estadoUI,
         historiaBusqueda: t.motivo ?? null,
-        resena: t.comentario ?? null,
+        // La reseña solo existe si hay un comentario no vacío (del especialista al finalizar)
+        resena: (t.comentario && String(t.comentario).trim().length > 0) ? String(t.comentario).trim() : null,
         encuesta: estrellas != null,
         calificacion: estrellas ?? undefined
       };

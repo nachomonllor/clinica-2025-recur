@@ -64,7 +64,7 @@ type ItemMedico = { medico: string; cantidad: number };
 export class TurnosPorMedicoComponent implements OnInit {
 
   //  arriba en la clase
-  private USO_EL_MOCK = true; // ← ponelo en false cuando conectes Supabase
+  private USO_EL_MOCK = false; // <=============== PONER EN FALSE PARA SACAR EL HARDOCODEO
 
   // Datos agregados listos para el chart (médico + cantidad)
   private readonly MOCK_ITEMS: Array<{ medico: string; cantidad: number }> = [
@@ -208,8 +208,8 @@ export class TurnosPorMedicoComponent implements OnInit {
 
   //         this.chartOptions = {
   //           ...this.chartOptions,
-  //           chart: { ...baseChart, type: 'bar', height: dynHeight },                // ✅ fija el tipo
-  //           xaxis: { ...(this.chartOptions.xaxis ?? {}), categories: categorias },  // ✅ spread correcto
+  //           chart: { ...baseChart, type: 'bar', height: dynHeight },                // fija el tipo
+  //           xaxis: { ...(this.chartOptions.xaxis ?? {}), categories: categorias },  // spread correcto
   //           // Si querés nice scale, hacelo en Y (no en X):
   //           // yaxis: { ...(this.chartOptions.yaxis ?? {}), forceNiceScale: true, title: { text: 'Especialistas' } }
   //         };

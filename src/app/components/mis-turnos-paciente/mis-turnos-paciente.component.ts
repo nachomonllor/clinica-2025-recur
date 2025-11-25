@@ -61,6 +61,7 @@ export class MisTurnosPacienteComponent implements OnInit {
 
   @ViewChild('cancelDialog') cancelDialog!: TemplateRef<unknown>;
   @ViewChild('calificarDialog') calificarDialog!: TemplateRef<unknown>;
+  @ViewChild('verResenaDialog') verResenaDialog!: TemplateRef<unknown>;
 
   constructor(
     private turnoService: TurnosService,
@@ -159,7 +160,9 @@ export class MisTurnosPacienteComponent implements OnInit {
   }
 
   puedeVerResena(t: TurnoVM): boolean {
-    return !!t.resena && t.resena.trim().length > 0;
+    // Solo mostrar si hay reseña (comentario del especialista) y no está vacío
+    // La reseña solo existe cuando el especialista finaliza el turno y deja un comentario
+    return !!(t.resena && typeof t.resena === 'string' && t.resena.trim().length > 0);
   }
 
   puedeCompletarEncuesta(t: TurnoVM): boolean {
@@ -171,7 +174,15 @@ export class MisTurnosPacienteComponent implements OnInit {
   }
 
   verResena(t: TurnoVM): void {
-    this.router.navigate(['/resenia', t.id]);
+    if (!t.resena || t.resena.trim().length === 0) {
+      this.snackBar.open('Este turno no tiene reseña disponible', 'Cerrar', { duration: 2500 });
+      return;
+    }
+    // Mostrar la reseña en un diálogo
+    this.dialog.open(this.verResenaDialog, {
+      data: { turno: t, resena: t.resena },
+      width: '500px'
+    });
   }
 
   completarEncuesta(t: TurnoVM): void {

@@ -235,6 +235,18 @@
                 <mat-slide-toggle formControlName="requiereSeguimiento" style="margin-top: 16px;">
                     Requiere seguimiento
                 </mat-slide-toggle>
+
+                <mat-form-field appearance="outline" style="grid-column: 1 / -1;">
+                    <mat-label>Comentario/Reseña del turno</mat-label>
+                    <textarea matInput formControlName="comentario" rows="4"
+                        placeholder="Deja un comentario sobre la consulta (mínimo 10 caracteres)"></textarea>
+                    <mat-error *ngIf="data?.form?.get('comentario')?.hasError('required')">
+                        El comentario es obligatorio
+                    </mat-error>
+                    <mat-error *ngIf="data?.form?.get('comentario')?.hasError('minlength')">
+                        Debe tener al menos 10 caracteres
+                    </mat-error>
+                </mat-form-field>
             </div>
         </form>
     </mat-dialog-content>
