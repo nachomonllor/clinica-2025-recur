@@ -41,6 +41,8 @@ interface PerfilCompleto {
   especialidades?: string[];
 }
 
+type HorasPorDia = { [dia: string]: string[] };
+
 @Component({
   selector: 'app-mi-perfil',
   standalone: true,
@@ -78,11 +80,25 @@ interface PerfilCompleto {
     ])
   ]
 })
+
+
+
+
 export class MiPerfilComponent implements OnInit {
   perfil: PerfilCompleto | null = null;
   esEspecialista = false;
   esPaciente = false;
   loading = false;
+
+  // -----------------------
+  especialidadesInfo: { id: string; nombre: string }[] = [];
+
+  // Mis horarios (por especialidad y día)
+  horariosPorEspecialidad: HorasPorDia[] = [];  // índice = tarjeta (especialidad)
+  diaActivoPorEspecialidad: string[] = [];      // día seleccionado en cada tarjeta
+  duracionTurnoMinutos = 30;                    // o el valor que uses en turnos
+
+  //----------------
 
   historiasClinicas: (HistoriaClinica & {
     especialistaNombre?: string;
@@ -119,7 +135,7 @@ export class MiPerfilComponent implements OnInit {
     private supa: SupabaseService,
     private fb: FormBuilder,
     private snackBar: MatSnackBar
-  ) {}
+  ) { }
 
   // ---------------- GETTERS ----------------
 
@@ -131,8 +147,8 @@ export class MiPerfilComponent implements OnInit {
     return this.esEspecialista
       ? 'ESPECIALISTA'
       : this.esPaciente
-      ? 'PACIENTE'
-      : (this.perfil?.rol || '').toUpperCase();
+        ? 'PACIENTE'
+        : (this.perfil?.rol || '').toUpperCase();
   }
 
   get avatarIniciales(): string {
@@ -184,19 +200,46 @@ export class MiPerfilComponent implements OnInit {
     let especialidades: string[] = [];
 
     // Si es especialista, buscamos sus especialidades en usuario_especialidad + especialidades
+    // if (this.esEspecialista) {
+    //   const { data: espData, error: espError } = await this.supa.client
+    //     .from('usuario_especialidad')
+    //     .select('especialidades ( nombre )')
+    //     .eq('usuario_id', userId);
+
+    //   if (espError) {
+    //     console.error('[MiPerfil] Error al cargar especialidades', espError);
+    //   } else {
+    //     especialidades =
+    //       espData
+    //         ?.map((r: any) => r.especialidades?.nombre as string | undefined)
+    //         .filter((n): n is string => !!n) || [];
+    //   }
+    // }
+
+
+    this.especialidadesInfo = [];
+
+    // Si es especialista, buscamos sus especialidades en usuario_especialidad + especialidades
     if (this.esEspecialista) {
       const { data: espData, error: espError } = await this.supa.client
         .from('usuario_especialidad')
-        .select('especialidades ( nombre )')
+        .select('especialidad_id, especialidades ( nombre )')
         .eq('usuario_id', userId);
 
       if (espError) {
         console.error('[MiPerfil] Error al cargar especialidades', espError);
       } else {
-        especialidades =
-          espData
-            ?.map((r: any) => r.especialidades?.nombre as string | undefined)
-            .filter((n): n is string => !!n) || [];
+        (espData || []).forEach((r: any) => {
+          const nombre = r.especialidades?.nombre as string | undefined;
+          const id = r.especialidad_id as string | undefined;
+
+          if (nombre) {
+            especialidades.push(nombre);
+          }
+          if (nombre && id) {
+            this.especialidadesInfo.push({ id, nombre });
+          }
+        });
       }
     }
 
@@ -221,21 +264,51 @@ export class MiPerfilComponent implements OnInit {
     this.especialidades = this.perfil.especialidades;
   }
 
+  // inicializarFormularioHorarios(): void {
+  //   this.formularioHorarios = this.fb.group({
+  //     horarios: this.fb.array<FormGroup>([])
+  //   });
+
+  //   // Un grupo de horarios por especialidad
+  //   this.especialidades.forEach((esp) => {
+  //     const grupoHorario = this.fb.group({
+  //       especialidad: [esp, Validators.required],
+  //       dias: this.fb.control<string[]>([]),
+  //       horas: this.fb.control<string[]>([])
+  //     });
+  //     this.horariosArray.push(grupoHorario);
+  //   });
+  // }
+
+
   inicializarFormularioHorarios(): void {
     this.formularioHorarios = this.fb.group({
       horarios: this.fb.array<FormGroup>([])
     });
 
-    // Un grupo de horarios por especialidad
-    this.especialidades.forEach((esp) => {
+    this.horariosPorEspecialidad = [];
+    this.diaActivoPorEspecialidad = [];
+
+    // Un grupo de horarios por especialidad (solo usamos el nombre en el card)
+    this.especialidades.forEach((esp, index) => {
       const grupoHorario = this.fb.group({
         especialidad: [esp, Validators.required],
-        dias: this.fb.control<string[]>([]),
+        dias: this.fb.control<string[]>([]),   // los dejamos por compatibilidad
         horas: this.fb.control<string[]>([])
       });
+
       this.horariosArray.push(grupoHorario);
+
+      // Estructura de horas por día para esta especialidad
+      const mapa: HorasPorDia = {};
+      this.diasSemana.forEach((dia) => (mapa[dia] = []));
+      this.horariosPorEspecialidad.push(mapa);
+
+      // Día activo por defecto: Lunes
+      this.diaActivoPorEspecialidad[index] = this.diasSemana[0];
     });
   }
+
 
   get horariosArray(): FormArray {
     return this.formularioHorarios.get('horarios') as FormArray;
@@ -244,6 +317,144 @@ export class MiPerfilComponent implements OnInit {
   getHorarioGroup(index: number): FormGroup {
     return this.horariosArray.at(index) as FormGroup;
   }
+
+  /// -----------nuevos: ------------
+
+  getDiaActivo(index: number): string {
+    return this.diaActivoPorEspecialidad[index] || this.diasSemana[0];
+  }
+
+  seleccionarDia(index: number, dia: string): void {
+    this.diaActivoPorEspecialidad[index] = dia;
+  }
+
+  // ¿Ese día tiene algún horario marcado (para ponerle un “estado” visual)?
+  tieneHoras(index: number, dia: string): boolean {
+    const mapa = this.horariosPorEspecialidad[index];
+    if (!mapa) return false;
+    return (mapa[dia] || []).length > 0;
+  }
+
+  // ¿La hora está activa para el día actualmente seleccionado?
+  isHoraActiva(index: number, hora: string): boolean {
+    const mapa = this.horariosPorEspecialidad[index];
+    if (!mapa) return false;
+    const dia = this.getDiaActivo(index);
+    return (mapa[dia] || []).includes(hora);
+  }
+
+  // Toggle de una hora para el día activo
+  toggleHora(index: number, hora: string): void {
+    const mapa = this.horariosPorEspecialidad[index];
+    if (!mapa) return;
+
+    const dia = this.getDiaActivo(index);
+    const actuales = mapa[dia] || [];
+
+    if (actuales.includes(hora)) {
+      mapa[dia] = actuales.filter((h) => h !== hora);
+    } else {
+      mapa[dia] = [...actuales, hora].sort();
+    }
+  }
+
+  private diaLabelToNumero(dia: string): number {
+    const index = this.diasSemana.indexOf(dia);
+    // 1 = Lunes, 2 = Martes, ... (dejamos 0 = domingo sin usar)
+    return index === -1 ? 0 : index + 1;
+  }
+
+  private sumarMinutosAHora(hora: string, minutos: number): string {
+    const [h, m] = hora.split(':').map(Number);
+    if (Number.isNaN(h) || Number.isNaN(m)) return `${hora}:00`;
+
+    const total = h * 60 + m + minutos;
+    const hh = Math.floor(total / 60) % 24;
+    const mm = total % 60;
+
+    return `${hh.toString().padStart(2, '0')}:${mm.toString().padStart(2, '0')}:00`;
+  }
+
+  async guardarHorarios(): Promise<void> {
+    if (!this.perfil?.id) return;
+
+    if (this.formularioHorarios.invalid) {
+      this.formularioHorarios.markAllAsTouched();
+      return;
+    }
+
+    const filas: any[] = [];
+    const especialistaId = this.perfil.id;
+
+    this.horariosPorEspecialidad.forEach((mapaDia, indexEsp) => {
+      const espInfo = this.especialidadesInfo[indexEsp];
+      const especialidadId = espInfo?.id ?? null;
+
+      this.diasSemana.forEach((diaLabel) => {
+        const horas = mapaDia[diaLabel] || [];
+        const diaNumero = this.diaLabelToNumero(diaLabel);
+
+        horas.forEach((horaStr) => {
+          const horaDesde = `${horaStr}:00`; // "HH:MM:00"
+          const horaHasta = this.sumarMinutosAHora(horaStr, this.duracionTurnoMinutos);
+
+          filas.push({
+            especialista_id: especialistaId,
+            especialidad_id: especialidadId,
+            dia_semana: diaNumero,
+            hora_desde: horaDesde,
+            hora_hasta: horaHasta,
+            duracion_turno_minutos: this.duracionTurnoMinutos
+          });
+        });
+      });
+    });
+
+    if (filas.length === 0) {
+      this.snackBar.open('Debes seleccionar al menos un horario.', 'Cerrar', {
+        duration: 2500
+      });
+      return;
+    }
+
+    this.loading = true;
+
+    try {
+      // Ojo con el schema: si la tabla está en esquema_clinica, usá 'esquema_clinica.horarios_especialista'
+      const { error: delError } = await this.supa.client
+        .from('horarios_especialista')
+        .delete()
+        .eq('especialista_id', especialistaId);
+
+      if (delError) throw delError;
+
+      const { error: insError } = await this.supa.client
+        .from('horarios_especialista')
+        .insert(filas);
+
+      if (insError) throw insError;
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Horarios guardados',
+        text: 'Los horarios han sido guardados exitosamente',
+        timer: 2000,
+        showConfirmButton: false
+      });
+    } catch (err: any) {
+      console.error('[MiPerfil] Error al guardar horarios', err);
+      Swal.fire('Error', err.message || 'No se pudieron guardar los horarios', 'error');
+    } finally {
+      this.loading = false;
+    }
+  }
+
+
+  // --------------------------
+
+
+
+
 
   onDiaChange(event: any, index: number): void {
     const grupo = this.getHorarioGroup(index);
@@ -281,31 +492,31 @@ export class MiPerfilComponent implements OnInit {
     return horas.includes(hora);
   }
 
-  async guardarHorarios(): Promise<void> {
-    if (this.formularioHorarios.invalid) {
-      this.formularioHorarios.markAllAsTouched();
-      return;
-    }
+  // async guardarHorarios(): Promise<void> {
+  //   if (this.formularioHorarios.invalid) {
+  //     this.formularioHorarios.markAllAsTouched();
+  //     return;
+  //   }
 
-    this.loading = true;
-    const horarios = this.formularioHorarios.value.horarios;
+  //   this.loading = true;
+  //   const horarios = this.formularioHorarios.value.horarios;
 
-    try {
-      // TODO: persistir en esquema_clinica.horarios_especialista cuando lo implementes
-      Swal.fire({
-        icon: 'success',
-        title: 'Horarios guardados',
-        text: 'Los horarios han sido guardados exitosamente',
-        timer: 2000,
-        showConfirmButton: false
-      });
-    } catch (err: any) {
-      console.error('[MiPerfil] Error al guardar horarios', err);
-      Swal.fire('Error', err.message || 'No se pudieron guardar los horarios', 'error');
-    } finally {
-      this.loading = false;
-    }
-  }
+  //   try {
+  //     // TODO: persistir en esquema_clinica.horarios_especialista cuando lo implementes
+  //     Swal.fire({
+  //       icon: 'success',
+  //       title: 'Horarios guardados',
+  //       text: 'Los horarios han sido guardados exitosamente',
+  //       timer: 2000,
+  //       showConfirmButton: false
+  //     });
+  //   } catch (err: any) {
+  //     console.error('[MiPerfil] Error al guardar horarios', err);
+  //     Swal.fire('Error', err.message || 'No se pudieron guardar los horarios', 'error');
+  //   } finally {
+  //     this.loading = false;
+  //   }
+  // }
 
   // ---------------- HISTORIA CLÍNICA (PACIENTE) ----------------
 
@@ -551,11 +762,11 @@ export class MiPerfilComponent implements OnInit {
         );
         const slugProfesional = profesional
           ? profesional.nombre
-              .toLowerCase()
-              .normalize('NFD')
-              .replace(/[\u0300-\u036f]/g, '')
-              .replace(/[^a-z0-9]+/g, '_')
-              .replace(/^_+|_+$/g, '')
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/[^a-z0-9]+/g, '_')
+            .replace(/^_+|_+$/g, '')
           : 'profesional';
         nombreArchivo = `historia_clinica_${nombrePaciente}_${slugProfesional}_${fecha}.pdf`;
       }

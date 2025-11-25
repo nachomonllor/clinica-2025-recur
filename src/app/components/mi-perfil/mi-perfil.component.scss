@@ -106,3 +106,76 @@
 /* Anti‑pozo (por si queda algún mat-card suelto) */
 ::ng-deep .mat-mdc-card-content{ padding-top:0!important; padding-bottom:0!important; }
 .profile-page > *{ margin:0 !important; }
+
+
+.horario-b {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.dias-section,
+.horas-section {
+  label {
+    display: block;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(226, 232, 240, 0.75);
+    margin-bottom: 0.4rem;
+  }
+}
+
+.toggle-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* Botón “pill” base */
+.pill-toggle {
+  border-radius: 999px;
+  padding: 0.35rem 0.9rem;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: rgba(15, 23, 42, 0.7);   // glass oscuro
+  color: #e5e7eb;
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  outline: none;
+  backdrop-filter: blur(12px);
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    transform 0.08s ease,
+    color 0.18s ease;
+}
+
+.pill-toggle:hover,
+.pill-toggle:focus-visible {
+  background: rgba(30, 64, 175, 0.85);
+  border-color: rgba(129, 140, 248, 0.9);
+  box-shadow: 0 8px 16px rgba(15, 23, 42, 0.5);
+  transform: translateY(-1px);
+}
+
+/* DÍA activo (botones de arriba) */
+.pill-dia.active {
+  background: linear-gradient(135deg, #6366f1, #22d3ee);
+  color: #0b1120;
+  border-color: rgba(248, 250, 252, 0.8);
+}
+
+/* Día que tiene horarios, aunque no esté seleccionado */
+.pill-dia.has-hours:not(.active) {
+  border-color: rgba(129, 140, 248, 0.8);
+  box-shadow: 0 0 0 1px rgba(129, 140, 248, 0.4);
+}
+
+/* HORAS activas (botones de abajo) */
+.pill-hora.active {
+  background: linear-gradient(135deg, #f97316, #facc15);
+  color: #0b1120;
+  border-color: rgba(254, 249, 195, 0.9);
+}
