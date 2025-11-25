@@ -485,6 +485,27 @@ export class MisTurnosEspecialistaComponent implements OnInit {
         };
       });
 
+      // // 3) Insertar los datos dinámicos
+      // const { error: dinamicosError } = await this.supa.client
+      //   .from('historia_datos_dinamicos')
+      //   .insert(dinamicosPayload);
+
+      // if (dinamicosError) throw dinamicosError;
+
+      // // Cambiar estado del turno
+      // await this.turnoService.cambiarEstadoPorCodigo(turno.id, 'FINALIZADO');
+
+      // turno.estado = 'FINALIZADO';
+      // this.dataSource.data = [...this.dataSource.data];
+
+      // Swal.fire({
+      //   icon: 'success',
+      //   title: 'Historia clínica guardada',
+      //   text: 'El turno ha sido finalizado correctamente.',
+      //   timer: 2000,
+      //   showConfirmButton: false
+      // });
+
       // 3) Insertar los datos dinámicos
       const { error: dinamicosError } = await this.supa.client
         .from('historia_datos_dinamicos')
@@ -492,10 +513,19 @@ export class MisTurnosEspecialistaComponent implements OnInit {
 
       if (dinamicosError) throw dinamicosError;
 
-      // Cambiar estado del turno
-      await this.turnoService.cambiarEstadoPorCodigo(turno.id, 'FINALIZADO');
+      // Tomar el comentario del formulario
+      const comentario: string | null = fv.comentario?.trim() || null;
 
+      //  Cambiar estado del turno y guardar la reseña en turnos.comentario
+      await this.turnoService.cambiarEstadoPorCodigo(
+        turno.id,
+        'FINALIZADO',
+        comentario
+      );
+
+      // Actualizar el objeto en memoria para que el especialista lo vea al instante
       turno.estado = 'FINALIZADO';
+      turno.resena = comentario ?? undefined;
       this.dataSource.data = [...this.dataSource.data];
 
       Swal.fire({
@@ -505,6 +535,8 @@ export class MisTurnosEspecialistaComponent implements OnInit {
         timer: 2000,
         showConfirmButton: false
       });
+
+
     } catch (error: any) {
       console.error('[MisTurnosEspecialista] Error al guardar historia clínica:', error);
       this.snackBar.open(
@@ -513,6 +545,10 @@ export class MisTurnosEspecialistaComponent implements OnInit {
         { duration: 3000 }
       );
     }
+
+
+
+
   }
 
 

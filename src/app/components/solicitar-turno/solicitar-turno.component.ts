@@ -115,6 +115,7 @@ export class SolicitarTurnoComponent implements OnInit {
 
   /// ========> PARA QUE SOLO PINTE LOS HORARIOS QUE TIENE DISPONIBLE EL ESPECIALISTA
 
+
   private async actualizarHorariosDisponiblesParaSeleccion(): Promise<void> {
     const especialidadCtrl = this.formularioTurno.get('especialidad') as FormControl<string | null>;
     const especialistaCtrl = this.formularioTurno.get('especialista') as FormControl<string | null>;
@@ -251,6 +252,10 @@ export class SolicitarTurnoComponent implements OnInit {
 
 
 
+
+
+
+
   // =================================================================
   // ------------------------- -  Ciclo de vida ngonini
   // =================================================================
@@ -294,6 +299,7 @@ export class SolicitarTurnoComponent implements OnInit {
 
     this.formularioInicializado = true;
   }
+
 
 
   private async actualizarDiasDisponiblesParaSeleccion(): Promise<void> {
@@ -359,6 +365,7 @@ export class SolicitarTurnoComponent implements OnInit {
       this.diasDisponibles = [];
     }
   }
+
 
 
 

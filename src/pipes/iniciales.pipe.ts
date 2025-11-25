@@ -11,8 +11,8 @@ export class InicialesPipe implements PipeTransform {
 
   /**
    * Permite dos formas de uso:
-   *  - {{ usuario | iniciales }}            // le pasás el objeto (ideal)
-   *  - {{ nombre | iniciales:apellido:email }} // le pasás strings sueltos
+   *  - {{ usuario | iniciales }}            <==== PARA OBJECTOS
+   *  - {{ nombre | iniciales:apellido:email }} <=== PARA STRING SUELTOS
    */
   transform(value: any, apellido?: string, email?: string): string {
     // Caso 1: viene un objeto usuario (tiene nombre/apellido/email)

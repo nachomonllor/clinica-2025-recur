@@ -22,8 +22,6 @@ import { StatusBadgeDirective } from '../../../directives/status-badge.directive
 import { ElevateOnHoverDirective } from '../../../directives/elevate-on-hover.directive';
 
 import * as XLSX from 'xlsx';
-import { formatDate } from '@angular/common';
-
 
 @Component({
   selector: 'app-mis-turnos-paciente',
@@ -132,6 +130,38 @@ export class MisTurnosPacienteComponent implements OnInit {
       width: '500px'
     });
 
+    // ref.afterClosed().subscribe(result => {
+    //   if (!result) return;
+
+    //   if (comentarioForm.invalid) {
+    //     this.snackBar.open(
+    //       'Debes ingresar un motivo de al menos 10 caracteres.',
+    //       'Cerrar',
+    //       { duration: 2500 }
+    //     );
+    //     return;
+    //   }
+
+    //   // TODO: guardar comentario si querés
+    //   this.turnoService.cancelarTurno(t.id).subscribe({
+    //     next: () => {
+    //       t.estado = 'cancelado';
+    //       this.dataSource.data = [...this.dataSource.data];
+    //       this.snackBar.open('Turno cancelado', 'Cerrar', { duration: 2000 });
+    //     },
+    //     error: (e: any) => {
+    //       console.error(e);
+    //       this.snackBar.open(
+    //         `Error al cancelar: ${e?.message || e}`,
+    //         'Cerrar',
+    //         { duration: 2500 }
+    //       );
+    //     }
+    //   });
+    // });
+
+
+    // dentro de ref.afterClosed()
     ref.afterClosed().subscribe(result => {
       if (!result) return;
 
@@ -144,8 +174,9 @@ export class MisTurnosPacienteComponent implements OnInit {
         return;
       }
 
-      // TODO: guardar comentario si querés
-      this.turnoService.cancelarTurno(t.id).subscribe({
+      const comentario = comentarioForm.value.comentario ?? '';
+
+      this.turnoService.cancelarTurno(t.id, comentario).subscribe({
         next: () => {
           t.estado = 'cancelado';
           this.dataSource.data = [...this.dataSource.data];
@@ -161,6 +192,7 @@ export class MisTurnosPacienteComponent implements OnInit {
         }
       });
     });
+
   }
 
   puedeVerResena(t: TurnoVM): boolean {

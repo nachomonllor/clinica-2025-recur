@@ -9,10 +9,14 @@ import { mapEstadoCodigoToUI, Turno, TurnoCreate, TurnoUpdate, TurnoVM } from '.
 import { from, map, Observable } from 'rxjs';
 import { TurnoEspecialista } from '../app/models/turno-especialista.model';
 
+import {  switchMap } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class TurnosService {
 
+
+  
+  private idEstadoCancelado?: string;
   // Cache simple en memoria para no golpear estados_turno todo el tiempo
   private estadosPorCodigo = new Map<EstadoTurnoCodigo, EstadoTurno>();
 
@@ -548,14 +552,61 @@ export class TurnosService {
     });
   }
 
-  /** Marca un turno como CANCELADO en la tabla turnos */
-  cancelarTurno(turnoId: string): Observable<void> {
-    return from(
-      this.supa.client
-        .from('turnos')
-        .update({ estado_turno_id: null, /* opcional: columna texto si la tenés */ })
-        .eq('id', turnoId)
-    ).pipe(
+  // /** Marca un turno como CANCELADO en la tabla turnos */
+  // cancelarTurno(turnoId: string): Observable<void> {
+  //   return from(
+  //     this.supa.client
+  //       .from('turnos')
+  //       .update({ estado_turno_id: null, /* opcional: columna texto si la tenés */ })
+  //       .eq('id', turnoId)
+  //   ).pipe(
+  //     map(({ error }) => {
+  //       if (error) {
+  //         console.error('[TurnosService] Error al cancelar turno', error);
+  //         throw error;
+  //       }
+  //       return;
+  //     })
+  //   );
+  // }
+
+
+  // Obtiene y cachea el id del estado CANCELADO
+  private getEstadoCanceladoId() {
+    // si ya lo traje una vez, lo reutilizo
+    if (this.idEstadoCancelado) {
+      return Promise.resolve(this.idEstadoCancelado);
+    }
+
+    return this.supa.client
+      .from('estados_turno')
+      .select('id')
+      .eq('codigo', 'CANCELADO')
+      .single()
+      .then(({ data, error }) => {
+        if (error || !data) {
+          console.error('[TurnosService] No se encontró estado CANCELADO', error);
+          throw new Error('No se pudo obtener el estado CANCELADO.');
+        }
+        this.idEstadoCancelado = data.id;
+        return data.id;
+      });
+  }
+
+  cancelarTurno(idTurno: string, comentario: string) {
+    return from(this.getEstadoCanceladoId()).pipe(
+      switchMap(idCancelado =>
+        from(
+          this.supa.client
+            .from('turnos')
+            .update({
+              estado_turno_id: idCancelado,              // 👈 clave del bug
+              comentario: comentario || null,
+              fecha_ultima_actualizacion: new Date().toISOString()
+            })
+            .eq('id', idTurno)
+        )
+      ),
       map(({ error }) => {
         if (error) {
           console.error('[TurnosService] Error al cancelar turno', error);
