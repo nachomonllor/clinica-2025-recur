@@ -232,7 +232,7 @@
                     </mat-error>
                 </mat-form-field>
 
-                <mat-slide-toggle formControlName="requiereSeguimiento" style="margin-top: 16px;">
+                <!-- <mat-slide-toggle formControlName="requiereSeguimiento" style="margin-top: 16px;">
                     Requiere seguimiento
                 </mat-slide-toggle>
 
@@ -246,7 +246,54 @@
                     <mat-error *ngIf="data?.form?.get('comentario')?.hasError('minlength')">
                         Debe tener al menos 10 caracteres
                     </mat-error>
+                </mat-form-field> -->
+
+                <mat-slide-toggle formControlName="requiereSeguimiento" style="margin-top: 16px;">
+                    Requiere seguimiento
+                </mat-slide-toggle>
+
+                <!-- Datos dinámicos (clave / valor, máx. 3) -->
+                <div formArrayName="datosDinamicos" style="grid-column: 1 / -1;">
+                    <div style="display:flex; align-items:center; justify-content: space-between; margin-bottom: 8px;">
+                        <h3 style="margin:0; font-size: 0.95rem;">Datos dinámicos (máx. 3)</h3>
+
+                        <button mat-mini-fab color="primary" type="button" (click)="agregarDatoDinamico(data.form)"
+                            [disabled]="getDatosDinamicos(data.form).length >= 3">
+                            <mat-icon>add</mat-icon>
+                        </button>
+                    </div>
+
+                    <div *ngFor="let g of getDatosDinamicos(data.form).controls; let i = index" [formGroupName]="i"
+                        style="display:flex; gap: 8px; align-items:flex-end; margin-bottom: 8px;">
+
+                        <mat-form-field appearance="outline" class="full-width">
+                            <mat-label>Clave</mat-label>
+                            <input matInput formControlName="clave" placeholder="Ej: Caries" />
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline" class="full-width">
+                            <mat-label>Valor</mat-label>
+                            <input matInput formControlName="valor" placeholder="Ej: 3" />
+                        </mat-form-field>
+
+                        <button mat-icon-button color="warn" type="button" (click)="eliminarDatoDinamico(data.form, i)">
+                            <mat-icon>delete</mat-icon>
+                        </button>
+                    </div>
+                </div>
+
+                <mat-form-field appearance="outline" style="grid-column: 1 / -1;">
+                    <mat-label>Comentario/Reseña del turno</mat-label>
+                    <textarea matInput formControlName="comentario" rows="4"
+                        placeholder="Deja un comentario sobre la consulta (mínimo 10 caracteres)"></textarea>
+                    <mat-error *ngIf="data?.form?.get('comentario')?.hasError('required')">
+                        El comentario es obligatorio
+                    </mat-error>
+                    <mat-error *ngIf="data?.form?.get('comentario')?.hasError('minlength')">
+                        Debe tener al menos 10 caracteres
+                    </mat-error>
                 </mat-form-field>
+
             </div>
         </form>
     </mat-dialog-content>
@@ -257,4 +304,3 @@
         </button>
     </mat-dialog-actions>
 </ng-template>
-
