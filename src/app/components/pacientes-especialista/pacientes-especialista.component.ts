@@ -16,8 +16,6 @@ import { HistoriaClinicaDialogComponent } from '../admin/usuarios-admin/historia
 import { PacienteAtendido, TurnoDetalle } from '../../models/pacientes-especialista.model';
 
 // ------------------------------------------------
-// ------------------------------------------------
-  
 
 @Component({
   selector: 'app-pacientes-especialista',
