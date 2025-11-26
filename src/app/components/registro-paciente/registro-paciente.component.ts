@@ -57,7 +57,7 @@ export class RegistroPacienteComponent implements OnInit {
     password: FormControl<string | null>;
     imagenPerfil1: FormControl<File | null>;
     imagenPerfil2: FormControl<File | null>;
-    recaptcha: FormControl<string | null>;   // 👈 AGREGADO
+    recaptcha: FormControl<string | null>;   // <= PARA EL CAPTCHA
   }>;
 
 
@@ -205,7 +205,7 @@ export class RegistroPacienteComponent implements OnInit {
       throw new Error('El correo ya está registrado en el sistema.');
     }
 
-    // Si llega hasta acá, está todo libre 👌
+    // Si llega hasta acá, está todo libre  <======================
   }
 
 
