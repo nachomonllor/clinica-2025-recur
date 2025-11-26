@@ -26,6 +26,7 @@ import { CaptchaComponent } from '../captcha/captcha.component';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatIconModule } from '@angular/material/icon';
 
+import { NgxCaptchaModule } from 'ngx-captcha';
 
 // ===== Validadores para selección múltiple =====
 function minSelected(min: number): ValidatorFn {
@@ -56,10 +57,9 @@ function maxSelected(max: number): ValidatorFn {
     MatCardModule,
     CaptchaComponent,
   
-    // MatSelectModule,  // <- ya no hace falta si no lo usás en otro lado
-   
-    MatButtonToggleModule, // NUEVO
-    MatIconModule,         // NUEVO
+    MatButtonToggleModule, // <=========
+    MatIconModule,         // <=========
+    NgxCaptchaModule
   ],
   templateUrl: './registro-especialista.component.html',
   styleUrls: ['./registro-especialista.component.scss']
@@ -73,6 +73,9 @@ export class RegistroEspecialistaComponent implements OnInit {
   // ===== Captcha =====
   captchaEnabled = environment.captchaEnabled;
   captchaValido = !environment.captchaEnabled;
+
+  siteKey: string = '6LfbWxksAAAAABoUdgGEoUv5pvnjJ_TPcje3jb7P';
+
 
   // ===== Fechas (mismo manejo que Paciente) =====
   maxDateISO!: string;               // hoy (p/ <input type="date">)
@@ -96,6 +99,9 @@ export class RegistroEspecialistaComponent implements OnInit {
     especialidades: FormControl<string[] | null>;
     otraEspecialidad: FormControl<string | null>;
     imagenPerfil: FormControl<File | null>;
+
+      recaptcha: FormControl<string | null>;   //  <= PARAE L CAPTCHA
+
   }>;
 
   get especialidadesSeleccionadas(): string[] {
@@ -130,6 +136,9 @@ export class RegistroEspecialistaComponent implements OnInit {
       ]),
       otraEspecialidad: this.fb.control<string | null>(null),
       imagenPerfil: this.fb.control<File | null>(null, Validators.required),
+
+        recaptcha: this.fb.control<string | null>(null, Validators.required),  //  <= para el CAPTCHA
+
     });
 
     // "Otro" => obliga a completar el campo libre

@@ -20,6 +20,9 @@ import Swal from 'sweetalert2';
 import { SupabaseService } from '../../../services/supabase.service';
 import { environment } from '../../../environments/environment';
 
+import { NgxCaptchaModule } from 'ngx-captcha';
+
+
 
 @Component({
   selector: 'app-registro-paciente',
@@ -31,6 +34,7 @@ import { environment } from '../../../environments/environment';
     MatInputModule,
     MatButtonModule,
     MatCardModule,
+    NgxCaptchaModule
   ],
   templateUrl: './registro-paciente.component.html',
   styleUrls: ['./registro-paciente.component.scss']
@@ -42,7 +46,7 @@ export class RegistroPacienteComponent implements OnInit {
   captchaEnabled = environment.captchaEnabled;
   captchaValido = !environment.captchaEnabled; // Si está deshabilitado, siempre válido
 
-  // Usamos fechaNacimiento en lugar de edad
+
   registroPacienteForm!: FormGroup<{
     nombre: FormControl<string | null>;
     apellido: FormControl<string | null>;
@@ -53,7 +57,12 @@ export class RegistroPacienteComponent implements OnInit {
     password: FormControl<string | null>;
     imagenPerfil1: FormControl<File | null>;
     imagenPerfil2: FormControl<File | null>;
+    recaptcha: FormControl<string | null>;   // 👈 AGREGADO
   }>;
+
+
+  siteKey: string = '6LfbWxksAAAAABoUdgGEoUv5pvnjJ_TPcje3jb7P';
+
 
   // Para limitar el <input type="date">
   maxDateISO!: string;        // hoy
@@ -77,12 +86,19 @@ export class RegistroPacienteComponent implements OnInit {
       ),
       dni: this.fb.control<string | null>(null, Validators.required),
       obraSocial: this.fb.control<string | null>(null, Validators.required),
-      email: this.fb.control<string | null>(null, [Validators.required, Validators.email]),
+      email: this.fb.control<string | null>(
+        null,
+        [Validators.required, Validators.email]
+      ),
       password: this.fb.control<string | null>(null, Validators.required),
       imagenPerfil1: this.fb.control<File | null>(null, Validators.required),
       imagenPerfil2: this.fb.control<File | null>(null, Validators.required),
+
+      //PARA EL CAPTCHA
+      recaptcha: this.fb.control<string | null>(null, Validators.required),
     });
   }
+
 
   // Manejo de archivos de imagen
   onFileChange(event: Event, idx: 1 | 2): void {
@@ -245,129 +261,7 @@ export class RegistroPacienteComponent implements OnInit {
     return mensajeOriginal;
   }
 
-  // ---- SUBMIT ----
-
-  // async onSubmit(): Promise<void> {
-
-  //   this.loading = true;
-  //   const supabase = this.sb.client;
-  //   const fv = this.registroPacienteForm.value!;
-
-  //   if (!fv.imagenPerfil1 || !fv.imagenPerfil2) {
-  //     Swal.fire('Error', 'Por favor, seleccioná ambas imágenes de perfil.', 'error');
-  //     this.loading = false;
-  //     return;
-  //   }
-
-  //   try {
-  //     // 1) Crear usuario en Auth con metadata básica
-  //     const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-  //       email: fv.email!,
-  //       password: fv.password!,
-  //       options: {
-  //         data: {
-  //           rol: 'PACIENTE',
-  //           nombre: fv.nombre,
-  //           apellido: fv.apellido,
-  //           dni: fv.dni,
-  //           fecha_nacimiento: fv.fechaNacimiento,
-  //           obra_social: fv.obraSocial,
-  //         }
-  //       }
-  //     });
-
-  //     if (signUpError) throw signUpError;
-
-  //     const user = signUpData.user;
-  //     if (!user) throw new Error('No se pudo crear el usuario.');
-
-  //     const userId = user.id;
-  //     const edadCalculada = this.calcEdadFromISO(fv.fechaNacimiento!);
-
-  //     // 2) Insert/Upsert en esquema_clinica.usuarios (reemplaza perfiles + pacientes)
-  //     const { error: usuarioError } = await supabase
-  //       .from('usuarios')
-  //       .upsert({
-  //         id: userId,
-  //         nombre: fv.nombre!,
-  //         apellido: fv.apellido!,
-  //         dni: fv.dni!,
-  //         email: fv.email!,
-  //         // Este password es solo para cumplir NOT NULL del esquema.
-  //         // En un sistema real deberías guardar un hash, no el texto plano.
-  //         password: fv.password!,
-  //         perfil: 'PACIENTE',
-  //         edad: edadCalculada,
-  //         obra_social: fv.obraSocial ?? null,
-  //         esta_aprobado: true,              // Pacientes se consideran aprobados
-  //         mail_verificado: !!signUpData.session
-  //       }, { onConflict: 'id' });
-
-  //     if (usuarioError) throw usuarioError;
-
-  //     // 3) Si NO hay sesión automática (email de verificación activo)
-  //     if (!signUpData.session) {
-  //       await Swal.fire({
-  //         icon: 'info',
-  //         title: 'Verifica tu correo',
-  //         html: `
-  //           <p>Te enviamos un email de verificación a <strong>${fv.email}</strong>.</p>
-  //           <p>Confírmalo para iniciar sesión y completar tu registro (subir imágenes).</p>
-  //         `,
-  //         confirmButtonText: 'Entendido'
-  //       });
-  //       this.registroPacienteForm.reset();
-  //       this.imagenPrevia1 = null;
-  //       this.imagenPrevia2 = null;
-  //       this.router.navigate(['/bienvenida']);
-  //       return;
-  //     }
-
-  //     // 4) Con sesión: subir imágenes y actualizarlas en usuarios
-  //     const file1 = fv.imagenPerfil1!;
-  //     const file2 = fv.imagenPerfil2!;
-
-  //     const url1 = await this.sb.uploadAvatar(userId, file1, 1);
-  //     const url2 = await this.sb.uploadAvatar(userId, file2, 2);
-
-  //     const { error: avatarError } = await supabase
-  //       .from('usuarios')
-  //       .update({
-  //         imagen_perfil_1: url1,
-  //         imagen_perfil_2: url2
-  //       })
-  //       .eq('id', userId);
-
-  //     if (avatarError) throw avatarError;
-
-  //     // 5) Éxito
-  //     await Swal.fire({
-  //       icon: 'success',
-  //       title: 'Paciente registrado con éxito',
-  //       showConfirmButton: false,
-  //       timer: 2000
-  //     });
-  //     this.registroPacienteForm.reset();
-  //     this.imagenPrevia1 = null;
-  //     this.imagenPrevia2 = null;
-  //     this.router.navigate(['/bienvenida']);
-
-  //   } catch (err: any) {
-  //     console.error('[Registro Paciente] Error completo:', {
-  //       error: err,
-  //       message: err?.message,
-  //       code: err?.code,
-  //       status: err?.status,
-  //       name: err?.name,
-  //       stack: err?.stack
-  //     });
-
-  //     const mensajeError = this.mapPgError(err);
-  //     Swal.fire('Error', mensajeError, 'error');
-  //   } finally {
-  //     this.loading = false;
-  //   }
-  // }
+  // ---- SUBMIT ---
 
   async onSubmit(): Promise<void> {
     this.loading = true;

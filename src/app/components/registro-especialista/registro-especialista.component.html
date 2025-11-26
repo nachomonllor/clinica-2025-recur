@@ -125,8 +125,20 @@
     </div>
 
     <!-- Captcha -->
-    <app-captcha [enabled]="captchaEnabled" (captchaValid)="onCaptchaValid($event)">
-    </app-captcha>
+    <!-- <app-captcha [enabled]="captchaEnabled" (captchaValid)="onCaptchaValid($event)">
+    </app-captcha> -->
+
+    <!-- CAPTCHA -->
+    <div class="captcha-wrapper" style="margin: 1rem 0;">
+      <ngx-recaptcha2
+        formControlName="recaptcha"
+        [siteKey]="siteKey">
+      </ngx-recaptcha2>
+
+      <mat-error *ngIf="f.get('recaptcha')?.invalid && f.get('recaptcha')?.touched">
+        Debes completar el captcha.
+      </mat-error>
+    </div>
 
     <button mat-raised-button color="accent" class="full-width" [disabled]="f.invalid || !captchaValido || loading"
       type="submit">
@@ -134,6 +146,3 @@
     </button>
   </form>
 </mat-card>
-
-
-
