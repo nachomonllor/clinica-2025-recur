@@ -102,17 +102,19 @@
     </div>
 
     <!-- Captcha -->
-    <!-- <app-captcha [enabled]="captchaEnabled" (captchaValid)="onCaptchaValid($event)">
-    </app-captcha> -->
 
-    <!-- <div class="captcha-wrapper">
-      <app-captcha-imagen (captchaValido)="onCaptchaValido($event)"></app-captcha-imagen>
-    </div> -->
+        <!-- CAPTCHA -->
+    <div class="captcha-wrapper" style="margin: 1rem 0;">
+      <ngx-recaptcha2 formControlName="recaptcha" [siteKey]="siteKey">
+      </ngx-recaptcha2>
 
-    <!-- <button mat-raised-button color="accent" class="full-width"
-      [disabled]="loading || registroPacienteForm.invalid || !captchaValido" type="submit">
-      {{ loading ? 'Registrando...' : 'Registrarse' }}
-    </button> -->
+      <!-- Si usás Angular Material y querés mostrar error: -->
+      <div class="error" *ngIf="registroPacienteForm.get('recaptcha')?.invalid 
+                             && registroPacienteForm.get('recaptcha')?.touched">
+        Debes completar el captcha.
+      </div>
+    </div>
+
 
     <button mat-raised-button color="primary" type="submit" [disabled]="registroPacienteForm.invalid">
       Registrarse
