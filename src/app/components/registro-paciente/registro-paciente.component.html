@@ -102,17 +102,6 @@
     </div>
 
     <!-- Captcha -->
-    <!-- <app-captcha [enabled]="captchaEnabled" (captchaValid)="onCaptchaValid($event)">
-    </app-captcha> -->
-
-    <!-- <div class="captcha-wrapper">
-      <app-captcha-imagen (captchaValido)="onCaptchaValido($event)"></app-captcha-imagen>
-    </div> -->
-
-    <!-- <button mat-raised-button color="accent" class="full-width"
-      [disabled]="loading || registroPacienteForm.invalid || !captchaValido" type="submit">
-      {{ loading ? 'Registrando...' : 'Registrarse' }}
-    </button> -->
 
     <button mat-raised-button color="primary" type="submit" [disabled]="registroPacienteForm.invalid">
       Registrarse
