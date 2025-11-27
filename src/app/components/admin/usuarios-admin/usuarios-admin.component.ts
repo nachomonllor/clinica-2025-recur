@@ -836,13 +836,24 @@ export class UsuariosAdminComponent implements OnInit {
         })
       );
 
+      // this.dialog.open(HistoriaClinicaDialogComponent, {
+      //   width: '800px',
+      //   data: {
+      //     pacienteNombre,
+      //     historias: historiasCompletas
+      //   }
+      // });
+
+
       this.dialog.open(HistoriaClinicaDialogComponent, {
-        width: '800px',
-        data: {
-          pacienteNombre,
-          historias: historiasCompletas
-        }
+        data: { pacienteNombre, historias },
+        panelClass: 'hc-dialog-panel'
       });
+
+
+
+
+
     } catch (err: any) {
       console.error('[UsuariosAdmin] Error al cargar historia clínica', err);
     }
