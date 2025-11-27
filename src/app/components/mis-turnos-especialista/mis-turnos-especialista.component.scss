@@ -363,6 +363,82 @@
 
 /* ------------------ PARA LA RESEÑA ---------------------- */
 
+/* Quitamos fondo del contenedor del diálogo */
+::ng-deep .resena-dialog .mat-mdc-dialog-container {
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+}
+
+/* Panel principal */
+.resena-panel {
+  max-width: 480px;
+  width: 90vw;
+  padding: 24px 24px 18px;
+  border-radius: 16px;
+  background: rgba(12, 20, 40, 0.95);  // fondo oscuro sólido
+  backdrop-filter: blur(10px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.75);
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Header */
+.resena-panel__title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.resena-panel__meta {
+  margin: 4px 0 0;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.85); // gris clarito, bien legible
+}
+
+/* Cuerpo */
+.resena-panel__body {
+  margin-top: 8px;
+}
+
+.resena-panel__texto {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+/* Footer y botón */
+.resena-panel__footer {
+  margin-top: 8px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.resena-panel__btn {
+  padding: 8px 20px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: transparent;
+  color: #ffffff;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+}
+
+.resena-panel__btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.15);
+}
+
+.resena-panel__btn:active {
+  transform: scale(0.97);
+}
+
+/* ----------------------------------------------------------------- */
+
 /* Hace que la “caja” del diálogo no tenga fondo propio */
 .resena-dialog-container .mdc-dialog__surface {
   background: transparent;

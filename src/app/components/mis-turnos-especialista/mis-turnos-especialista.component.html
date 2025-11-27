@@ -333,7 +333,39 @@
 
 <!-- ------------------ Diálogo para ver reseña ----------------------- -->
 
+
+<!-- Diálogo para ver reseña (sin Angular Material adentro) -->
 <ng-template #resenaDialog let-data>
+  <div class="resena-panel">
+    <header class="resena-panel__header">
+      <h2 class="resena-panel__title">Reseña del turno</h2>
+
+      <p class="resena-panel__meta">
+        {{ data?.paciente }} • {{ data?.especialidad }} •
+        {{ data?.fecha }} {{ data?.hora }}
+      </p>
+    </header>
+
+    <section class="resena-panel__body">
+      <p class="resena-panel__texto">
+        {{ data?.resena }}
+      </p>
+    </section>
+
+    <footer class="resena-panel__footer">
+      <button
+        type="button"
+        class="resena-panel__btn"
+        (click)="closeResenaDialog()">
+        Cerrar
+      </button>
+    </footer>
+  </div>
+</ng-template>
+
+<!---- ANGULAR MATERIAL -->
+
+<!-- <ng-template #resenaDialog let-data>
   <mat-card class="resena-card">
     <mat-card-header>
       <mat-card-title>Reseña del turno</mat-card-title>
@@ -356,4 +388,4 @@
       </button>
     </mat-card-actions>
   </mat-card>
-</ng-template>
+</ng-template> -->

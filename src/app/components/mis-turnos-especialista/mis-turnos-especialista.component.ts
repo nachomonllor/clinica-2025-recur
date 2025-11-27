@@ -60,6 +60,9 @@ export class MisTurnosEspecialistaComponent implements OnInit {
   @ViewChild('resenaDialog') resenaDialog!: TemplateRef<any>;
 
 
+  private resenaDialogRef?: MatDialogRef<any>;
+
+
   @ViewChild('confirmDialog') confirmDialog!: TemplateRef<unknown>;
   @ViewChild('rechazarDialog') rechazarDialog!: TemplateRef<unknown>;
   @ViewChild('cancelarDialog') cancelarDialog!: TemplateRef<unknown>;
@@ -487,14 +490,34 @@ export class MisTurnosEspecialistaComponent implements OnInit {
   // }
 
 
-  verResena(turno: TurnoEspecialista): void {
+  // verResena(turno: TurnoEspecialista): void {
 
-    this.dialog.open(this.resenaDialog, {
-      data: { turno },
-      panelClass: 'resena-dialog-container',
-      disableClose: false, // ponelo en true si NO querés que cierre clickeando fuera
+  //   this.dialog.open(this.resenaDialog, {
+  //     data: { turno },
+  //     panelClass: 'resena-dialog-container',
+  //     disableClose: false, // ponelo en true si NO querés que cierre clickeando fuera
+  //     autoFocus: false
+  //   });
+  // }
+
+
+  verResena(turno: any): void {
+    this.resenaDialogRef = this.dialog.open(this.resenaDialog, {
+      data: {
+        resena: turno.resena,
+        paciente: turno.paciente,
+        especialidad: turno.especialidad,
+        fecha: turno.fecha,
+        hora: turno.hora
+      },
+      panelClass: 'resena-dialog',
+      disableClose: true,  // sólo se cierra con el botón
       autoFocus: false
     });
+  }
+
+  closeResenaDialog(): void {
+    this.resenaDialogRef?.close();
   }
 
   // =========================================================
