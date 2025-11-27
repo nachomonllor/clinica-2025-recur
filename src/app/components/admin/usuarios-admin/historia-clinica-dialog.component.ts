@@ -412,55 +412,214 @@ export class HistoriaClinicaDialogComponent {
     return texto;
   }
 
+  // exportarPdf(): void {
+  //   const doc = new jsPDF();
+  //   const pageHeight = doc.internal.pageSize.getHeight();
+
+  //   doc.setFontSize(16);
+  //   doc.text(`Historia Clínica - ${this.data.pacienteNombre}`, 10, 15);
+
+  //   let y = 25;
+
+  //   const addLine = (texto: string) => {
+  //     const lineas = doc.splitTextToSize(texto, 190);
+  //     for (const linea of lineas) {
+  //       if (y > pageHeight - 10) {
+  //         doc.addPage();
+  //         y = 20;
+  //       }
+  //       doc.text(linea, 10, y);
+  //       y += 6;
+  //     }
+  //   };
+
+  //   this.data.historias.forEach((h, index: number) => {
+  //     addLine(`Atención #${index + 1} - ${h.fechaAtencion || 'N/A'}`);
+  //     addLine(`Especialista: ${h.especialistaNombre || 'N/A'}`);
+  //     addLine(`Fecha de registro: ${new Date(h.fecha_registro).toLocaleString('es-AR')}`);
+
+  //     addLine(
+  //       `Altura: ${h.altura ?? '-'} cm | ` +
+  //       `Peso: ${h.peso ?? '-'} kg | ` +
+  //       `Temperatura: ${h.temperatura ?? '-'} °C | ` +
+  //       `Presión: ${h.presion ?? '-'}`
+  //     );
+
+  //     (h.datos_dinamicos || []).forEach((d: DatoDinamico) => {
+  //       addLine(`${d.clave}: ${this.formatearDatoDinamico(d)}`);
+  //     });
+
+  //     y += 4;
+  //     if (y > pageHeight - 10) {
+  //       doc.addPage();
+  //       y = 20;
+  //     }
+  //   });
+
+  //   const nombreArchivo =
+  //     `historia_clinica_${this.data.pacienteNombre.replace(/\s+/g, '_').toLowerCase()}.pdf`;
+
+  //   doc.save(nombreArchivo);
+  // }
+
+
   exportarPdf(): void {
-    const doc = new jsPDF();
-    const pageHeight = doc.internal.pageSize.getHeight();
+  const doc = new jsPDF('p', 'mm', 'a4');
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
 
+  const marginX = 15;
+  const marginBottom = 15;
+  const cardPadding = 5;
+  const lineHeight = 5;
+  const paragraphSpacing = 2;
+
+  const drawHeader = () => {
+    // Faja superior oscura
+    doc.setFillColor(17, 24, 39); // #111827
+    doc.rect(0, 0, pageWidth, 28, 'F');
+
+    // Título
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'bold');
     doc.setFontSize(16);
-    doc.text(`Historia Clínica - ${this.data.pacienteNombre}`, 10, 15);
+    doc.text('Historia Clínica', marginX, 13);
 
-    let y = 25;
+    // Paciente
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(11);
+    doc.text(`Paciente: ${this.data.pacienteNombre}`, marginX, 20);
 
-    const addLine = (texto: string) => {
-      const lineas = doc.splitTextToSize(texto, 190);
-      for (const linea of lineas) {
-        if (y > pageHeight - 10) {
-          doc.addPage();
-          y = 20;
-        }
-        doc.text(linea, 10, y);
-        y += 6;
-      }
-    };
+    // Fecha de emisión
+    const hoy = new Date().toLocaleDateString('es-AR');
+    doc.setFontSize(9);
+    doc.setTextColor(209, 213, 219); // gris claro
+    doc.text(hoy, pageWidth - marginX, 13, { align: 'right' });
 
-    this.data.historias.forEach((h, index: number) => {
-      addLine(`Atención #${index + 1} - ${h.fechaAtencion || 'N/A'}`);
-      addLine(`Especialista: ${h.especialistaNombre || 'N/A'}`);
-      addLine(`Fecha de registro: ${new Date(h.fecha_registro).toLocaleString('es-AR')}`);
+    // Línea dorada de separación
+    doc.setDrawColor(251, 191, 36); // dorado
+    doc.setLineWidth(0.4);
+    doc.line(marginX, 24, pageWidth - marginX, 24);
+  };
 
-      addLine(
-        `Altura: ${h.altura ?? '-'} cm | ` +
-        `Peso: ${h.peso ?? '-'} kg | ` +
-        `Temperatura: ${h.temperatura ?? '-'} °C | ` +
-        `Presión: ${h.presion ?? '-'}`
-      );
+  drawHeader();
 
-      (h.datos_dinamicos || []).forEach((d: DatoDinamico) => {
-        addLine(`${d.clave}: ${this.formatearDatoDinamico(d)}`);
-      });
+  const headerBottom = 28;
+  let y = headerBottom + 8;
 
-      y += 4;
-      if (y > pageHeight - 10) {
-        doc.addPage();
-        y = 20;
-      }
-    });
+  // Caso sin historias
+  if (!this.data.historias.length) {
+    doc.setTextColor(55, 65, 81);
+    doc.setFontSize(12);
+    doc.text(
+      'No hay historias clínicas registradas para este paciente.',
+      pageWidth / 2,
+      pageHeight / 2,
+      { align: 'center' }
+    );
 
     const nombreArchivo =
       `historia_clinica_${this.data.pacienteNombre.replace(/\s+/g, '_').toLowerCase()}.pdf`;
-
     doc.save(nombreArchivo);
+    return;
   }
+
+  const contentWidth = pageWidth - marginX * 2;
+
+  this.data.historias.forEach((h, index: number) => {
+    const paragraphs: { lines: string[]; bold?: boolean }[] = [];
+    const anchoTexto = contentWidth - cardPadding * 2;
+
+    const addParagraph = (text: string, options?: { bold?: boolean }) => {
+      const rawLines = doc.splitTextToSize(text, anchoTexto);
+      paragraphs.push({ lines: rawLines, bold: options?.bold });
+    };
+
+    const fechaAt = h.fechaAtencion || 'N/A';
+    addParagraph(`Atención #${index + 1} · ${fechaAt}`, { bold: true });
+
+    addParagraph(`Especialista: ${h.especialistaNombre || 'N/A'}`);
+
+    const fechaReg = h.fecha_registro
+      ? new Date(h.fecha_registro).toLocaleString('es-AR')
+      : 'N/A';
+    addParagraph(`Fecha de registro: ${fechaReg}`);
+
+    addParagraph(
+      `Altura: ${h.altura ?? '-'} cm   |   ` +
+      `Peso: ${h.peso ?? '-'} kg   |   ` +
+      `Temp.: ${h.temperatura ?? '-'} °C   |   ` +
+      `Presión: ${h.presion ?? '-'}`
+    );
+
+    const datosDinamicos = h.datos_dinamicos || [];
+    if (datosDinamicos.length) {
+      addParagraph('Datos dinámicos:', { bold: true });
+      datosDinamicos.forEach((d: DatoDinamico) => {
+        addParagraph(`• ${d.clave}: ${this.formatearDatoDinamico(d)}`);
+      });
+    }
+
+    // Calcular alto de la card
+    let cardHeight = cardPadding * 2;
+    paragraphs.forEach((p, i) => {
+      cardHeight += p.lines.length * lineHeight;
+      if (i > 0) {
+        cardHeight += paragraphSpacing;
+      }
+    });
+
+    // Salto de página si no entra la card completa
+    if (y + cardHeight > pageHeight - marginBottom) {
+      doc.addPage();
+      drawHeader();
+      y = headerBottom + 8;
+    }
+
+    // Fondo de la card (amarillo suave) + borde
+    doc.setFillColor(255, 253, 231);      // #FFFDE7
+    doc.setDrawColor(251, 192, 45);       // #FBC02D
+    doc.setLineWidth(0.4);
+    doc.roundedRect(marginX, y, contentWidth, cardHeight, 3, 3, 'FD');
+
+    // Banda lateral tipo acento
+    doc.setFillColor(253, 230, 138);      // #FDE68A
+    doc.rect(marginX, y, 2, cardHeight, 'F');
+
+    // Texto dentro de la card
+    let textY = y + cardPadding + lineHeight;
+    doc.setTextColor(30, 41, 59);         // #1E293B
+    doc.setFontSize(10);
+
+    paragraphs.forEach((p, i) => {
+      if (p.bold) {
+        doc.setFont('helvetica', 'bold');
+      } else {
+        doc.setFont('helvetica', 'normal');
+      }
+
+      p.lines.forEach(line => {
+        doc.text(line, marginX + cardPadding + 2, textY);
+        textY += lineHeight;
+      });
+
+      if (i < paragraphs.length - 1) {
+        textY += paragraphSpacing;
+      }
+    });
+
+    y += cardHeight + 6; // espacio entre cards
+  });
+
+  const nombreArchivo =
+    `historia_clinica_${this.data.pacienteNombre.replace(/\s+/g, '_').toLowerCase()}.pdf`;
+
+  doc.save(nombreArchivo);
+}
+
+
+
+
 
   formatearFecha(fecha: string | undefined): string {
     if (!fecha) return 'N/A';
