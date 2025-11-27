@@ -74,21 +74,18 @@ export const routes: Routes = [
       //     roles: ['PACIENTE']
       //   }
       // },
- 
+
       {
-          path: 'mis-turnos-paciente',
-          canActivate: [RoleGuard], // OK si RoleGuard ya verifica sesión
-          loadComponent: () =>
-            import('./components/mis-turnos-paciente/mis-turnos-paciente.component')
-              .then(m => m.MisTurnosPacienteComponent),
-          data: {
-            animation: 'turnos',
-            roles: ['PACIENTE']
-          }
-        },
-
-
-
+        path: 'mis-turnos-paciente',
+        canActivate: [RoleGuard], // OK si RoleGuard ya verifica sesión
+        loadComponent: () =>
+          import('./components/mis-turnos-paciente/mis-turnos-paciente.component')
+            .then(m => m.MisTurnosPacienteComponent),
+        data: {
+          animation: 'turnos',
+          roles: ['PACIENTE']
+        }
+      },
 
 
       {
@@ -111,12 +108,25 @@ export const routes: Routes = [
       },
 
       // --- Especialista ---
+      // {
+      //   path: 'mis-turnos-especialista',
+      //   loadComponent: () =>
+      //     import('./components/mis-turnos-especialista/mis-turnos-especialista.component')
+      //       .then(m => m.MisTurnosEspecialistaComponent)
+      // },
+
       {
         path: 'mis-turnos-especialista',
+        canActivate: [RoleGuard], // o [AuthGuard, RoleGuard] si los separás
         loadComponent: () =>
           import('./components/mis-turnos-especialista/mis-turnos-especialista.component')
-            .then(m => m.MisTurnosEspecialistaComponent)
+            .then(m => m.MisTurnosEspecialistaComponent),
+        data: {
+          animation: 'turnos',
+          roles: ['ESPECIALISTA']
+        }
       },
+
       {
         path: 'pacientes-especialista',
         loadComponent: () =>
@@ -145,13 +155,13 @@ export const routes: Routes = [
       },
       {
         path: 'usuarios-admin',
-          canActivate: [RoleGuard],
+        canActivate: [RoleGuard],
         loadComponent: () =>
           import('./components/admin/usuarios-admin/usuarios-admin.component')
             .then(m => m.UsuariosAdminComponent),
-             data: { 
-              roles: ['ADMIN']         // <--  el guard ---------------------------------------------------------
-            }
+        data: {
+          roles: ['ADMIN']         // <--  el guard ---------------------------------------------------------
+        }
       },
       {
         path: 'log-ingreso',

@@ -1,15 +1,3 @@
-// import { Component } from '@angular/core';
-
-// @Component({
-//   selector: 'app-seleccionar-usuario-registro',
-//   standalone: true,
-//   imports: [],
-//   templateUrl: './seleccionar-usuario-registro.component.html',
-//   styleUrl: './seleccionar-usuario-registro.component.scss'
-// })
-// export class SeleccionarUsuarioRegistroComponent {
-
-// }
 
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';

@@ -9,8 +9,8 @@ import { Router } from '@angular/router';
     standalone:true,
     imports: [
         CommonModule,
-        MatCardModule, // ya lo usas en registro-paciente :contentReference[oaicite:0]{index=0}
-        MatButtonModule // idem :contentReference[oaicite:1]{index=1}
+        MatCardModule, //  
+        MatButtonModule //  
     ],
     templateUrl: './seleccionar-usuario-login.component.html',
     styleUrl: './seleccionar-usuario-login.component.scss'

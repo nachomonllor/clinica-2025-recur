@@ -1,36 +1,234 @@
+//  Paleta base (ideal: mover a un partial compartido)
+$login-primary: #3b82f6;
+$login-success: #22c55e;
+$bg-body: #020617;
+$bg-card: rgba(15, 23, 42, 0.9);
 
-.selector-container {
-  text-align: center;
-  padding: 2rem;
-}
-
-.cards {
-  display: flex;
-  justify-content: center;
-  gap: 2rem;
-  margin-top: 1.5rem;
-}
-
-.card {
-  cursor: pointer;
-  width: 200px;
-  padding: 1.5rem;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-}
-
-.icon {
-  height: 80px;
+// Fondo de página, igual que el login
+:host {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 1rem;
+  min-height: 100vh;
+  padding: 1.5rem;
+  box-sizing: border-box;
+  background:
+    radial-gradient(circle at top left, rgba(56, 189, 248, 0.35), transparent 55%),
+    radial-gradient(circle at bottom right, rgba(129, 140, 248, 0.4), transparent 55%),
+    linear-gradient(135deg, $bg-body, #0b1120);
 }
 
-.icon img {
-  max-height: 100%;
+//  Card principal del selector
+.selector-container {
+  width: 100%;
+  max-width: 720px;
+  padding: 2.25rem 2.25rem 2.5rem;
+  border-radius: 1.5rem;
+  background:
+    radial-gradient(circle at top left, rgba(148, 163, 184, 0.22), transparent 55%),
+    $bg-card;
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  box-shadow:
+    0 22px 55px rgba(15, 23, 42, 0.9),
+    0 0 0 1px rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  color: #e5e7eb;
+  animation: floatIn 280ms cubic-bezier(0.16, 1, 0.3, 1);
 }
+
+// Título “Selecciona tu tipo de usuario”
+.selector-container h2 {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: #f9fafb;
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+
+  &::after {
+    content: '';
+    display: block;
+    height: 3px;
+    width: 64px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, $login-primary, $login-success);
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: -0.9rem;
+  }
+}
+
+// Grid de cards (paciente / especialista)
+.cards {
+  margin-top: 2.4rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.3rem;
+
+  @media (max-width: 640px) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+// Estilo base del mat-card
+.card {
+  position: relative;
+  padding: 1.6rem 1.2rem 1.4rem;
+  border-radius: 1.25rem;
+  background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.82), rgba(15, 23, 42, 0.98));
+  border: 1px solid rgba(148, 163, 184, 0.55);
+  box-shadow:
+    0 14px 32px rgba(15, 23, 42, 0.9),
+    0 0 0 1px rgba(15, 23, 42, 0.8);
+  cursor: pointer;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.9rem;
+  transition:
+    transform 140ms ease,
+    box-shadow 140ms ease,
+    border-color 140ms ease,
+    background 140ms ease,
+    outline-color 140ms ease;
+
+  &:hover {
+    transform: translateY(-2px) scale(1.01);
+    box-shadow:
+      0 20px 40px rgba(15, 23, 42, 0.95),
+      0 0 0 1px rgba(15, 23, 42, 0.9);
+    border-color: rgba(226, 232, 240, 0.95);
+    background: radial-gradient(circle at top left, rgba(30, 64, 175, 0.65), rgba(15, 23, 42, 0.98));
+  }
+
+  &:active {
+    transform: translateY(0) scale(0.99);
+    box-shadow: 0 10px 26px rgba(15, 23, 42, 0.95);
+  }
+
+  // Si añadís tabindex="0" al mat-card, esto te da un focus lindo con teclado
+  &:focus-visible {
+    outline: 2px solid rgba($login-primary, 0.9);
+    outline-offset: 3px;
+  }
+
+  .icon {
+    width: 84px;
+    height: 84px;
+    border-radius: 999px;
+    padding: 4px;
+    background: radial-gradient(circle at top left, rgba(148, 163, 184, 0.55), rgba(15, 23, 42, 0.95));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.35rem;
+    box-shadow:
+      0 0 0 2px rgba(15, 23, 42, 1),
+      0 12px 26px rgba(15, 23, 42, 0.95);
+
+    img {
+      width: 100%;
+      height: 100%;
+      border-radius: inherit;
+      object-fit: cover;
+    }
+  }
+
+  // Botón “Paciente / Especialista”
+  button[mat-button] {
+    margin-top: 0.25rem;
+    padding: 0.55rem 1.7rem;
+    border-radius: 999px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-size: 0.83rem;
+    border: none;
+
+    // Ayuda a que el label respete nuestros colores
+    .mdc-button__label {
+      position: relative;
+      z-index: 1;
+    }
+  }
+}
+
+// 🌊 Card PACIENTE (primer mat-card)
+.cards .card:first-child {
+  border-color: rgba(56, 189, 248, 0.7);
+  background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.18), rgba(15, 23, 42, 0.96));
+
+  .icon {
+    background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.65), rgba(15, 23, 42, 0.96));
+  }
+
+  button[mat-button] {
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.95), rgba($login-primary, 0.95));
+    box-shadow:
+      0 14px 40px rgba(56, 189, 248, 0.65),
+      0 0 0 1px rgba(15, 23, 42, 0.9);
+
+    // Forzamos color sobre el label del botón de Material
+    &, .mdc-button__label {
+      color: #0f172a;
+    }
+  }
+}
+
+//  Card ESPECIALISTA (segundo mat-card)
+.cards .card:last-child {
+  border-color: rgba(52, 211, 153, 0.75);
+  background: radial-gradient(circle at top left, rgba(52, 211, 153, 0.18), rgba(15, 23, 42, 0.96));
+
+  .icon {
+    background: radial-gradient(circle at top left, rgba(52, 211, 153, 0.65), rgba(15, 23, 42, 0.96));
+  }
+
+  button[mat-button] {
+    background: linear-gradient(135deg, rgba(52, 211, 153, 0.95), rgba($login-success, 0.98));
+    box-shadow:
+      0 14px 40px rgba(52, 211, 153, 0.7),
+      0 0 0 1px rgba(15, 23, 42, 0.9);
+
+    &, .mdc-button__label {
+      color: #022c22;
+    }
+  }
+}
+
+//  Responsive
+@media (max-width: 600px) {
+  :host {
+    padding: 1.25rem;
+  }
+
+  .selector-container {
+    padding: 1.9rem 1.6rem 2.1rem;
+    border-radius: 1.25rem;
+  }
+
+  .selector-container h2 {
+    font-size: 1.4rem;
+  }
+}
+
+// Reutilizamos la animación del login
+@keyframes floatIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+

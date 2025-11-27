@@ -124,12 +124,16 @@
       </div>
     </div>
 
-
     <!-- CAPTCHA -->
-    <div class="captcha-wrapper" style="margin: 1rem 0;">
-      <ngx-recaptcha2
-        formControlName="recaptcha"
-        [siteKey]="siteKey">
+
+    <div class="captcha-wrapper" style="margin: 1rem 0;" *ngIf="captchaEnabled">
+      <ngx-recaptcha2 formControlName="recaptcha" [siteKey]="siteKey" (success)="
+      registroForm.get('recaptcha')?.setValue($event);
+      onCaptchaValid(true);
+    " (expire)="
+      registroForm.get('recaptcha')?.reset();
+      onCaptchaValid(false);
+    " (error)="onCaptchaValid(false)">
       </ngx-recaptcha2>
 
       <mat-error *ngIf="f.get('recaptcha')?.invalid && f.get('recaptcha')?.touched">
@@ -137,9 +141,17 @@
       </mat-error>
     </div>
 
-    <button mat-raised-button color="accent" class="full-width" [disabled]="f.invalid || !captchaValido || loading"
+
+    <!-- <button mat-raised-button color="accent" class="full-width" [disabled]="f.invalid || !captchaValido || loading"
       type="submit">
       {{ loading ? 'Registrando...' : 'Registrarse' }}
+    </button> -->
+
+    <button mat-raised-button color="accent" class="full-width" type="submit"
+      [disabled]="f.invalid || (captchaEnabled && !captchaValido) || loading">
+      {{ loading ? 'Registrando...' : 'Registrarse' }}
     </button>
+
+
   </form>
 </mat-card>
