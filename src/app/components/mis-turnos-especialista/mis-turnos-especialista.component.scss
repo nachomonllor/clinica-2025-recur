@@ -359,3 +359,37 @@
   }
 }
 
+
+
+/* ------------------ PARA LA RESEÑA ---------------------- */
+
+/* Hace que la “caja” del diálogo no tenga fondo propio */
+.resena-dialog-container .mdc-dialog__surface {
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+}
+
+/* Card interna semitransparente */
+.resena-card {
+  background: rgba(10, 20, 40, 0.92); /* oscuro con un poco de transparencia */
+  color: #fff;
+  min-width: 320px;
+  max-width: min(480px, 90vw);
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px); /* efecto glass */
+}
+
+.resena-card__texto {
+  margin-top: 1rem;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.resena-card__acciones {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: flex-end;
+}

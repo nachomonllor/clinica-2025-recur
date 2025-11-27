@@ -45,7 +45,7 @@
       <mat-icon>download</mat-icon>
       Exportar historia clínica
     </button>
-    
+
   </div>
 
   <!-- LISTA DE TURNOS COMO CARDS -->
@@ -93,7 +93,7 @@
         </button>
 
         <!-- Ver reseña: si tiene reseña -->
-        <button mat-button (click)="verResena(t)"  *ngIf="puedeVerResena(t)">
+        <button mat-button (click)="verResena(t)" *ngIf="puedeVerResena(t)">
           <mat-icon>rate_review</mat-icon>
           Ver reseña
         </button>
@@ -213,4 +213,8 @@
   <mat-dialog-actions align="end">
     <button mat-button mat-dialog-close>Cerrar</button>
   </mat-dialog-actions>
+
+
+
+
 </ng-template>

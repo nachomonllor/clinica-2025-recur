@@ -57,6 +57,9 @@ export class MisTurnosEspecialistaComponent implements OnInit {
 
   dataSource = new MatTableDataSource<TurnoEspecialista>([]);
 
+  @ViewChild('resenaDialog') resenaDialog!: TemplateRef<any>;
+
+
   @ViewChild('confirmDialog') confirmDialog!: TemplateRef<unknown>;
   @ViewChild('rechazarDialog') rechazarDialog!: TemplateRef<unknown>;
   @ViewChild('cancelarDialog') cancelarDialog!: TemplateRef<unknown>;
@@ -74,7 +77,8 @@ export class MisTurnosEspecialistaComponent implements OnInit {
     private snackBar: MatSnackBar,
     public router: Router,
     private fb: FormBuilder,
-    private supa: SupabaseService
+    private supa: SupabaseService,
+
   ) { }
 
   ngOnInit(): void {
@@ -478,8 +482,19 @@ export class MisTurnosEspecialistaComponent implements OnInit {
   }
 
 
+  // verResena(turno: TurnoEspecialista): void {
+  //   this.snackBar.open(turno.resena ?? 'Sin reseña', 'Cerrar', { duration: 4000 });
+  // }
+
+
   verResena(turno: TurnoEspecialista): void {
-    this.snackBar.open(turno.resena ?? 'Sin reseña', 'Cerrar', { duration: 4000 });
+
+    this.dialog.open(this.resenaDialog, {
+      data: { turno },
+      panelClass: 'resena-dialog-container',
+      disableClose: false, // ponelo en true si NO querés que cierre clickeando fuera
+      autoFocus: false
+    });
   }
 
   // =========================================================
