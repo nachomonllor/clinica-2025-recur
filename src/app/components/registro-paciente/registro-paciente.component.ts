@@ -125,8 +125,13 @@ export class RegistroPacienteComponent implements OnInit {
   }
 
   onCaptchaValid(esValido: boolean): void {
+    console.log('[Captcha] onCaptchaValid', esValido);
     this.captchaValido = esValido;
   }
+
+  // onCaptchaValid(esValido: boolean): void {
+  //   this.captchaValido = esValido;
+  // }
 
   // ---- VALIDACIONES y HELPERS ----
 
@@ -263,7 +268,144 @@ export class RegistroPacienteComponent implements OnInit {
 
   // ---- SUBMIT ---
 
+  // async onSubmit(): Promise<void> {
+  //   this.loading = true;
+  //   const supabase = this.sb.client;
+  //   const fv = this.registroPacienteForm.value!;
+
+  //   if (!fv.imagenPerfil1 || !fv.imagenPerfil2) {
+  //     Swal.fire('Error', 'Por favor, seleccioná ambas imágenes de perfil.', 'error');
+  //     this.loading = false;
+  //     return;
+  //   }
+
+  //   try {
+  //     //  ============> VALIDAR DNI Y EMAIL EN LA TABLA ANTES DE CREAR EL USUARIO EN AUTH
+  //     await this.validarDniYEmailUnicos(fv.dni!, fv.email!);
+
+  //     // 1) Crear usuario en Auth con metadata básica
+  //     const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+  //       email: fv.email!,
+  //       password: fv.password!,
+  //       options: {
+  //         data: {
+  //           rol: 'PACIENTE',
+  //           nombre: fv.nombre,
+  //           apellido: fv.apellido,
+  //           dni: fv.dni,
+  //           fecha_nacimiento: fv.fechaNacimiento,
+  //           obra_social: fv.obraSocial,
+  //         }
+  //       }
+  //     });
+
+  //     if (signUpError) throw signUpError;
+
+  //     const user = signUpData.user;
+  //     if (!user) throw new Error('No se pudo crear el usuario.');
+
+  //     const userId = user.id;
+  //     const edadCalculada = this.calcEdadFromISO(fv.fechaNacimiento!);
+
+  //     // 2) Upsert en esquema_clinica.usuarios
+  //     const { error: usuarioError } = await supabase
+  //       .from('usuarios')
+  //       .upsert({
+  //         id: userId,
+  //         nombre: fv.nombre!,
+  //         apellido: fv.apellido!,
+  //         dni: fv.dni!,
+  //         email: fv.email!,
+  //         password: fv.password!, // idealmente un hash
+  //         perfil: 'PACIENTE',
+  //         edad: edadCalculada,
+  //         obra_social: fv.obraSocial ?? null,
+  //         esta_aprobado: true,
+  //         mail_verificado: !!signUpData.session
+  //       }, { onConflict: 'id' });
+
+  //     if (usuarioError) throw usuarioError;
+
+  //     // 3) Resto de tu código (verificación de mail, subida de imágenes, etc.)
+  //     if (!signUpData.session) {
+  //       await Swal.fire({
+  //         icon: 'info',
+  //         title: 'Verifica tu correo',
+  //         html: `
+  //         <p>Te enviamos un email de verificación a <strong>${fv.email}</strong>.</p>
+  //         <p>Confírmalo para iniciar sesión y completar tu registro (subir imágenes).</p>
+  //       `,
+  //         confirmButtonText: 'Entendido'
+  //       });
+  //       this.registroPacienteForm.reset();
+  //       this.imagenPrevia1 = null;
+  //       this.imagenPrevia2 = null;
+  //       this.router.navigate(['/bienvenida']);
+  //       return;
+  //     }
+
+  //     // Subida de imágenes...
+  //     const file1 = fv.imagenPerfil1!;
+  //     const file2 = fv.imagenPerfil2!;
+
+  //     const url1 = await this.sb.uploadAvatar(userId, file1, 1);
+  //     const url2 = await this.sb.uploadAvatar(userId, file2, 2);
+
+  //     const { error: avatarError } = await supabase
+  //       .from('usuarios')
+  //       .update({
+  //         imagen_perfil_1: url1,
+  //         imagen_perfil_2: url2
+  //       })
+  //       .eq('id', userId);
+
+  //     if (avatarError) throw avatarError;
+
+  //     await Swal.fire({
+  //       icon: 'success',
+  //       title: 'Paciente registrado con éxito',
+  //       showConfirmButton: false,
+  //       timer: 2000
+  //     });
+  //     this.registroPacienteForm.reset();
+  //     this.imagenPrevia1 = null;
+  //     this.imagenPrevia2 = null;
+  //     this.router.navigate(['/bienvenida']);
+
+  //   } catch (err: any) {
+  //     console.error('[Registro Paciente] Error completo:', {
+  //       error: err,
+  //       message: err?.message,
+  //       code: err?.code,
+  //       status: err?.status,
+  //       name: err?.name,
+  //       stack: err?.stack
+  //     });
+
+  //     const mensajeError = this.mapPgError(err);
+  //     Swal.fire('Error', mensajeError, 'error');
+  //   } finally {
+  //     this.loading = false;
+  //   }
+
+  // }
+
+
+
+
   async onSubmit(): Promise<void> {
+    // 1) Validaciones rápidas antes de tocar Supabase
+    if (this.registroPacienteForm.invalid) {
+      this.registroPacienteForm.markAllAsTouched();
+      return;
+    }
+
+    // 2) Validar captcha si está habilitado
+    if (this.captchaEnabled && !this.captchaValido) {
+      Swal.fire('Captcha', 'Por favor resolvé el captcha antes de continuar.', 'warning');
+      return;
+    }
+
     this.loading = true;
     const supabase = this.sb.client;
     const fv = this.registroPacienteForm.value!;
@@ -321,25 +463,30 @@ export class RegistroPacienteComponent implements OnInit {
 
       if (usuarioError) throw usuarioError;
 
-      // 3) Resto de tu código (verificación de mail, subida de imágenes, etc.)
+      // 3) Caso: Supabase NO devuelve session (requiere verificar email)
       if (!signUpData.session) {
         await Swal.fire({
           icon: 'info',
-          title: 'Verifica tu correo',
+          title: 'Verificá tu correo',
           html: `
           <p>Te enviamos un email de verificación a <strong>${fv.email}</strong>.</p>
-          <p>Confírmalo para iniciar sesión y completar tu registro (subir imágenes).</p>
+          <p>Confírmalo para iniciar sesión y completar tu registro.</p>
         `,
           confirmButtonText: 'Entendido'
         });
+
         this.registroPacienteForm.reset();
         this.imagenPrevia1 = null;
         this.imagenPrevia2 = null;
+
+        // Por si había alguna sesión previa (otro usuario)
+        await supabase.auth.signOut();
+
         this.router.navigate(['/bienvenida']);
         return;
       }
 
-      // Subida de imágenes...
+      // 4) Caso: sí hay sesión -> subimos avatares
       const file1 = fv.imagenPerfil1!;
       const file2 = fv.imagenPerfil2!;
 
@@ -362,9 +509,14 @@ export class RegistroPacienteComponent implements OnInit {
         showConfirmButton: false,
         timer: 2000
       });
+
       this.registroPacienteForm.reset();
       this.imagenPrevia1 = null;
       this.imagenPrevia2 = null;
+
+      // >>>>>> Cerramos sesión para obligar a pasar por /login antes de ver pantallas privadas
+      await supabase.auth.signOut();
+
       this.router.navigate(['/bienvenida']);
 
     } catch (err: any) {
@@ -382,8 +534,10 @@ export class RegistroPacienteComponent implements OnInit {
     } finally {
       this.loading = false;
     }
-
   }
+
+
+
 
 
 

@@ -62,18 +62,35 @@ export const routes: Routes = [
 
     children: [
       // --- Paciente ---
-      {
-        path: 'mis-turnos-paciente',
-        canActivate: [RoleGuard],   // <-- AGREGADO GUard ---------------------------------------------------------
+      // {
+      //   path: 'mis-turnos-paciente',
+      //   canActivate: [RoleGuard],   // <-- AGREGADO GUard ---------------------------------------------------------
 
-        loadComponent: () =>
-          import('./components/mis-turnos-paciente/mis-turnos-paciente.component')
-            .then(m => m.MisTurnosPacienteComponent),
-        data: {
-          animation: 'turnos',
-          roles: ['PACIENTE']
-        }
-      },
+      //   loadComponent: () =>
+      //     import('./components/mis-turnos-paciente/mis-turnos-paciente.component')
+      //       .then(m => m.MisTurnosPacienteComponent),
+      //   data: {
+      //     animation: 'turnos',
+      //     roles: ['PACIENTE']
+      //   }
+      // },
+ 
+      {
+          path: 'mis-turnos-paciente',
+          canActivate: [RoleGuard], // OK si RoleGuard ya verifica sesión
+          loadComponent: () =>
+            import('./components/mis-turnos-paciente/mis-turnos-paciente.component')
+              .then(m => m.MisTurnosPacienteComponent),
+          data: {
+            animation: 'turnos',
+            roles: ['PACIENTE']
+          }
+        },
+
+
+
+
+
       {
         path: 'solicitar-turno',
         loadComponent: () =>

@@ -101,19 +101,31 @@
       </div>
     </div>
 
-    <!-- Captcha -->
 
-        <!-- CAPTCHA -->
+
+    <!-- CAPTCHA -->
+    <!-- 
     <div class="captcha-wrapper" style="margin: 1rem 0;">
       <ngx-recaptcha2 formControlName="recaptcha" [siteKey]="siteKey">
       </ngx-recaptcha2>
 
-      <!-- Si usás Angular Material y querés mostrar error: -->
       <div class="error" *ngIf="registroPacienteForm.get('recaptcha')?.invalid 
                              && registroPacienteForm.get('recaptcha')?.touched">
         Debes completar el captcha.
       </div>
+    </div> -->
+
+    <div class="captcha-wrapper" *ngIf="captchaEnabled">
+      <ngx-recaptcha2 #captchaElem [siteKey]="siteKey" formControlName="recaptcha" (success)="
+      registroPacienteForm.get('recaptcha')?.setValue($event);
+      onCaptchaValid(true)
+    " (expire)="
+      registroPacienteForm.get('recaptcha')?.reset();
+      onCaptchaValid(false)
+    " (error)="onCaptchaValid(false)">
+      </ngx-recaptcha2>
     </div>
+
 
 
     <button mat-raised-button color="primary" type="submit" [disabled]="registroPacienteForm.invalid">
@@ -122,7 +134,3 @@
 
   </form>
 </mat-card>
-
-
-
-

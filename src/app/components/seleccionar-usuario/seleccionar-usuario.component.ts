@@ -29,15 +29,3 @@ export class SeleccionarUsuarioComponent {
 }
 
 
-// import { Component } from '@angular/core';
-
-// @Component({
-//   selector: 'app-seleccionar-usuario',
-//   standalone: true,
-//   imports: [],
-//   templateUrl: './seleccionar-usuario.component.html',
-//   styleUrl: './seleccionar-usuario.component.scss'
-// })
-// export class SeleccionarUsuarioComponent {
-
-// }

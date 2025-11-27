@@ -55,7 +55,7 @@ function maxSelected(max: number): ValidatorFn {
     MatSelectModule,
     MatButtonModule,
     MatCardModule,
-    CaptchaComponent,
+    //CaptchaComponent,
   
     MatButtonToggleModule, // <=========
     MatIconModule,         // <=========
