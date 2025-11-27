@@ -1,15 +1,91 @@
+// Paleta base global (podés ir moviendo acá las que ya usaste en login)
+$color-bg-deep: #020617;  // casi negro azulado
+$color-bg-mid: #02091b;
+$color-bg-soft: #0b1120;
+$color-accent-blue: #3b82f6;
+$color-accent-cyan: #22d3ee;
+
+// FONDO GENERAL DE LA APP
+:host {
+  display: block;
+  min-height: 100vh;
+  color: #e5e7eb;
+
+  background:
+    radial-gradient(circle at top left, rgba(56, 189, 248, 0.18), transparent 55%),
+    radial-gradient(circle at bottom right, rgba(129, 140, 248, 0.22), transparent 55%),
+    linear-gradient(135deg, $color-bg-deep, $color-bg-soft);
+}
+
+// Contenedor principal
 .app-shell {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+}
 
-  app-main-nav {
-    flex: 0 0 auto;
-  }
+// Zona donde viven las pantallas
+.app-main {
+  flex: 1;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  padding: 1.5rem;
+  box-sizing: border-box;
+}
 
-  &__content {
-    flex: 1 1 auto;
-    display: flex;
-    flex-direction: column;
+
+/* -------------------------------------------- */
+
+// Página centrada (lo que usás en login, selector, etc.)
+.page-centered {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+
+  @media (max-width: 600px) {
+    padding: 1.1rem;
   }
+}
+
+// Card “glass” genérica para toda la app
+.app-glass-card {
+  border-radius: 1.5rem;
+  padding: 1.8rem 1.8rem 2rem;
+  background:
+    radial-gradient(circle at top left, rgba(148, 163, 184, 0.18), transparent 55%),
+    rgba(15, 23, 42, 0.94);
+  border: 1px solid rgba(148, 163, 184, 0.55);
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.9),
+    0 0 0 1px rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+// Variante “sección” para tablas / listados grandes
+.app-section-card {
+  border-radius: 1.25rem;
+  padding: 1.4rem 1.5rem;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(31, 41, 55, 0.9);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.95);
+}
+
+// Títulos estándar de secciones
+.app-section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: #f9fafb;
+}
+
+.app-section-subtitle {
+  margin-top: 0.15rem;
+  font-size: 0.86rem;
+  color: #9ca3af;
 }
