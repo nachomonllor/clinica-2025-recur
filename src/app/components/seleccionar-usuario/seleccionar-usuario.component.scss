@@ -160,7 +160,7 @@ $bg-card: rgba(15, 23, 42, 0.9);
   }
 }
 
-// 🌊 Card PACIENTE (primer mat-card)
+//  Card PACIENTE (primer mat-card)
 .cards .card:first-child {
   border-color: rgba(56, 189, 248, 0.7);
   background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.18), rgba(15, 23, 42, 0.96));
@@ -177,7 +177,7 @@ $bg-card: rgba(15, 23, 42, 0.9);
 
     // Forzamos color sobre el label del botón de Material
     &, .mdc-button__label {
-      color: #0f172a;
+      color: #060644;
     }
   }
 }

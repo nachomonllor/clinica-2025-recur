@@ -34,9 +34,6 @@ $color-accent-cyan: #22d3ee;
   box-sizing: border-box;
 }
 
-
-/* -------------------------------------------- */
-
 // Página centrada (lo que usás en login, selector, etc.)
 .page-centered {
   width: 100%;
@@ -88,4 +85,67 @@ $color-accent-cyan: #22d3ee;
   margin-top: 0.15rem;
   font-size: 0.86rem;
   color: #9ca3af;
+}
+
+/* =========================================================
+   Estilos para el diálogo de Historia Clínica (modo oscuro legible)
+   ========================================================= */
+.historia-dialog-dark .mdc-dialog__surface {
+  background-color: #020617;  /* azul muy oscuro */
+  color: #f9fafb;             /* casi blanco */
+  border-radius: 16px;
+}
+
+/* Títulos y texto general */
+.historia-dialog-dark h2[mat-dialog-title],
+.historia-dialog-dark mat-dialog-content,
+.historia-dialog-dark mat-dialog-content p,
+.historia-dialog-dark mat-dialog-content strong {
+  color: #f9fafb;
+}
+
+/* Labels, errores, pequeños textos */
+.historia-dialog-dark .mat-mdc-form-field-subscript-wrapper,
+.historia-dialog-dark .mat-mdc-slide-toggle-label,
+.historia-dialog-dark .mat-mdc-form-field .mdc-floating-label {
+  color: #e5e7eb;
+}
+
+/* Inputs con fondo ligeramente más claro que el fondo general */
+.historia-dialog-dark .mat-mdc-text-field-wrapper {
+  background-color: rgba(15, 23, 42, 0.95); /* un poco más claro que el fondo */
+  border-radius: 8px;
+}
+
+/* Texto dentro de los inputs */
+.historia-dialog-dark .mat-mdc-form-field-input-control,
+.historia-dialog-dark .mat-mdc-input-element {
+  color: #f9fafb;
+}
+
+/* Placeholder más apagado pero legible */
+.historia-dialog-dark .mat-mdc-input-element::placeholder {
+  color: #9ca3af;
+}
+
+/* Slider: texto del valor en claro */
+.historia-dialog-dark .mdc-slider__value-indicator-text {
+  color: #0f172a; /* oscuro sobre el globito del slider, que es claro */
+}
+
+/* Botones de acción */
+.historia-dialog-dark mat-dialog-actions button {
+  font-weight: 500;
+}
+
+
+.historia-dialog-dark .mdc-dialog__surface {
+  background-color: #f9fafb;  /* claro */
+  color: #020617;             /* casi negro */
+}
+.historia-dialog-dark mat-dialog-content,
+.historia-dialog-dark mat-dialog-content p,
+.historia-dialog-dark mat-dialog-content strong,
+.historia-dialog-dark h2[mat-dialog-title] {
+  color: #020617;
 }

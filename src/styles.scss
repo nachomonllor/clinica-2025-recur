@@ -1,80 +1,211 @@
 
+/* =========================================================
+   Estilos para el diálogo de Historia Clínica (modo oscuro legible)
+   ========================================================= */
+.historia-dialog-dark .mdc-dialog__surface {
+  background-color: #020617;  /* azul muy oscuro */
+  color: #f9fafb;             /* casi blanco */
+  border-radius: 16px;
+}
 
-// Fondo global para TODA la app 
-// :root {
-//   --bg-blue-spot: rgba(123, 178, 223, 0.25);
-//   --bg-green-spot: rgba(76,175,80,.25);
-//   --bg-top: #172a3d;
-//   --bg-mid: #445361;
-//   --bg-bottom: #263849;
-// }
+/* Títulos y texto general */
+.historia-dialog-dark h2[mat-dialog-title],
+.historia-dialog-dark mat-dialog-content,
+.historia-dialog-dark mat-dialog-content p,
+.historia-dialog-dark mat-dialog-content strong {
+  color: #f9fafb;
+}
 
-// html, body {
-//   height: 100%;
-// }
+/* Labels, errores, pequeños textos */
+.historia-dialog-dark .mat-mdc-form-field-subscript-wrapper,
+.historia-dialog-dark .mat-mdc-slide-toggle-label,
+.historia-dialog-dark .mat-mdc-form-field .mdc-floating-label {
+  color: #e5e7eb;
+}
 
-// body {
-//   margin: 0;
-//   background-color: var(--bg-mid);
-//   background:
-//     radial-gradient(1200px 600px at 80% -10%, var(--bg-blue-spot), transparent),
-//     radial-gradient(900px 500px at -10% 20%, var(--bg-green-spot), transparent),
-//     linear-gradient(180deg, var(--bg-top) 0%, var(--bg-mid) 40%, var(--bg-bottom) 100%);
-//   background-attachment: fixed;    
-//   background-repeat: no-repeat;
-//   background-size: cover;
-//   min-height: 100dvh;              
-// }
+/* Inputs con fondo ligeramente más claro que el fondo general */
+.historia-dialog-dark .mat-mdc-text-field-wrapper {
+  background-color: rgba(15, 23, 42, 0.95); /* un poco más claro que el fondo */
+  border-radius: 8px;
+}
 
-// .mdc-card, .mat-mdc-card {
-//   background: rgba(255,255,255,0.06) !important;
-//   color: #eaf2fb;
-//   border: 1px solid rgba(255,255,255,0.10);
-//   backdrop-filter: blur(6px);
-// }
+/* Texto dentro de los inputs */
+.historia-dialog-dark .mat-mdc-form-field-input-control,
+.historia-dialog-dark .mat-mdc-input-element {
+  color: #f9fafb;
+}
 
-// .hero {
-//   min-height: 100dvh;
-//   display: grid;
-//   grid-template-rows: auto auto 1fr auto;
-// }
+/* Placeholder más apagado pero legible */
+.historia-dialog-dark .mat-mdc-input-element::placeholder {
+  color: #9ca3af;
+}
 
-// html, body { height: 100%; }
-// body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+/* Slider: texto del valor en claro */
+.historia-dialog-dark .mdc-slider__value-indicator-text {
+  color: #0f172a; /* oscuro sobre el globito del slider, que es claro */
+}
 
-// .badge {
-//   border-radius: 999px;
-//   padding: 0.1rem 0.6rem;
-//   display: inline-flex;
-//   align-items: center;
-//   gap: 0.3rem;
-//   font-weight: 600;
-//   text-transform: capitalize;
-//   border: 1px solid transparent;
-//   background: rgba(255,255,255,0.08);
-//   color: #f5f5f5;
-// }
+/* Botones de acción */
+.historia-dialog-dark mat-dialog-actions button {
+  font-weight: 500;
+}
 
-// .badge-ok {
-//   border-color: rgba(76, 175, 80, 0.4);
-//   background: rgba(76, 175, 80, 0.15);
-//   color: #a5d6a7;
-// }
 
-// .badge-warn {
-//   border-color: rgba(255, 193, 7, 0.4);
-//   background: rgba(255, 193, 7, 0.12);
-//   color: #ffe082;
-// }
 
-// .badge-bad {
-//   border-color: rgba(229, 57, 53, 0.4);
-//   background: rgba(229, 57, 53, 0.15);
-//   color: #ef9a9a;
-// }
+/* ------------------------- */  
 
-// .hover-elevated {
-//   transition: transform 200ms ease, box-shadow 200ms ease;
-//   transform: translateY(-4px);
-//   box-shadow: 0 12px 24px rgba(0,0,0,0.25);
-// }
+
+
+// Paleta base global (podés ir moviendo acá las que ya usaste en login)
+$color-bg-deep: #020617;  // casi negro azulado
+$color-bg-mid: #02091b;
+$color-bg-soft: #0b1120;
+$color-accent-blue: #3b82f6;
+$color-accent-cyan: #22d3ee;
+
+// FONDO GENERAL DE LA APP
+:host {
+  display: block;
+  min-height: 100vh;
+  color: #e5e7eb;
+
+  background:
+    radial-gradient(circle at top left, rgba(56, 189, 248, 0.18), transparent 55%),
+    radial-gradient(circle at bottom right, rgba(129, 140, 248, 0.22), transparent 55%),
+    linear-gradient(135deg, $color-bg-deep, $color-bg-soft);
+}
+
+// Contenedor principal
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+// Zona donde viven las pantallas
+.app-main {
+  flex: 1;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  padding: 1.5rem;
+  box-sizing: border-box;
+}
+
+// Página centrada (lo que usás en login, selector, etc.)
+.page-centered {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+
+  @media (max-width: 600px) {
+    padding: 1.1rem;
+  }
+}
+
+// Card “glass” genérica para toda la app
+.app-glass-card {
+  border-radius: 1.5rem;
+  padding: 1.8rem 1.8rem 2rem;
+  background:
+    radial-gradient(circle at top left, rgba(148, 163, 184, 0.18), transparent 55%),
+    rgba(15, 23, 42, 0.94);
+  border: 1px solid rgba(148, 163, 184, 0.55);
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.9),
+    0 0 0 1px rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+// Variante “sección” para tablas / listados grandes
+.app-section-card {
+  border-radius: 1.25rem;
+  padding: 1.4rem 1.5rem;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(31, 41, 55, 0.9);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.95);
+}
+
+// Títulos estándar de secciones
+.app-section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: #f9fafb;
+}
+
+.app-section-subtitle {
+  margin-top: 0.15rem;
+  font-size: 0.86rem;
+  color: #9ca3af;
+}
+
+/* =========================================================
+   Estilos para el diálogo de Historia Clínica (modo oscuro legible)
+   ========================================================= */
+.historia-dialog-dark .mdc-dialog__surface {
+  background-color: #020617;  /* azul muy oscuro */
+  color: #f9fafb;             /* casi blanco */
+  border-radius: 16px;
+}
+
+/* Títulos y texto general */
+.historia-dialog-dark h2[mat-dialog-title],
+.historia-dialog-dark mat-dialog-content,
+.historia-dialog-dark mat-dialog-content p,
+.historia-dialog-dark mat-dialog-content strong {
+  color: #f9fafb;
+}
+
+/* Labels, errores, pequeños textos */
+.historia-dialog-dark .mat-mdc-form-field-subscript-wrapper,
+.historia-dialog-dark .mat-mdc-slide-toggle-label,
+.historia-dialog-dark .mat-mdc-form-field .mdc-floating-label {
+  color: #e5e7eb;
+}
+
+/* Inputs con fondo ligeramente más claro que el fondo general */
+.historia-dialog-dark .mat-mdc-text-field-wrapper {
+  background-color: rgba(15, 23, 42, 0.95); /* un poco más claro que el fondo */
+  border-radius: 8px;
+}
+
+/* Texto dentro de los inputs */
+.historia-dialog-dark .mat-mdc-form-field-input-control,
+.historia-dialog-dark .mat-mdc-input-element {
+  color: #f9fafb;
+}
+
+/* Placeholder más apagado pero legible */
+.historia-dialog-dark .mat-mdc-input-element::placeholder {
+  color: #9ca3af;
+}
+
+/* Slider: texto del valor en claro */
+.historia-dialog-dark .mdc-slider__value-indicator-text {
+  color: #0f172a; /* oscuro sobre el globito del slider, que es claro */
+}
+
+/* Botones de acción */
+.historia-dialog-dark mat-dialog-actions button {
+  font-weight: 500;
+}
+
+
+.historia-dialog-dark .mdc-dialog__surface {
+  background-color: #f9fafb;  /* claro */
+  color: #020617;             /* casi negro */
+}
+.historia-dialog-dark mat-dialog-content,
+.historia-dialog-dark mat-dialog-content p,
+.historia-dialog-dark mat-dialog-content strong,
+.historia-dialog-dark h2[mat-dialog-title] {
+  color: #020617;
+}
+
+

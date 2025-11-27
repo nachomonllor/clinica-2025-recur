@@ -163,7 +163,237 @@
 </ng-template>
 
 <!-- Diálogo para finalizar turno con historia clínica -->
+
+<!-- Diálogo para finalizar turno con historia clínica (SIN Angular Material dentro) -->
 <ng-template #historiaClinicaDialog let-data>
+  <div class="hc-dialog">
+    <header class="hc-dialog__header">
+      <h2>Finalizar Turno - Historia Clínica</h2>
+
+      <div class="hc-dialog__meta">
+        <p><strong>Paciente:</strong> {{ data?.turno?.paciente }}</p>
+        <p><strong>Especialidad:</strong> {{ data?.turno?.especialidad }}</p>
+        <p><strong>Fecha:</strong> {{ data?.turno?.fecha }} a las {{ data?.turno?.hora }}</p>
+      </div>
+    </header>
+
+    <section class="hc-dialog__body">
+      <form [formGroup]="data?.form" class="hc-form" (submit)="$event.preventDefault()">
+        <div class="hc-grid">
+
+          <!-- Altura -->
+          <div class="hc-field">
+            <label for="altura">Altura (cm)*</label>
+            <input
+              id="altura"
+              type="number"
+              min="0"
+              step="0.1"
+              formControlName="altura"
+            />
+            <div class="hc-error" *ngIf="data?.form?.get('altura')?.touched">
+              <span *ngIf="data?.form?.get('altura')?.hasError('required')">
+                La altura es obligatoria
+              </span>
+              <span *ngIf="data?.form?.get('altura')?.hasError('min')">
+                La altura debe ser mayor a 0
+              </span>
+            </div>
+          </div>
+
+          <!-- Peso -->
+          <div class="hc-field">
+            <label for="peso">Peso (kg)*</label>
+            <input
+              id="peso"
+              type="number"
+              min="0"
+              step="0.1"
+              formControlName="peso"
+            />
+            <div class="hc-error" *ngIf="data?.form?.get('peso')?.touched">
+              <span *ngIf="data?.form?.get('peso')?.hasError('required')">
+                El peso es obligatorio
+              </span>
+              <span *ngIf="data?.form?.get('peso')?.hasError('min')">
+                El peso debe ser mayor a 0
+              </span>
+            </div>
+          </div>
+
+          <!-- Temperatura -->
+          <div class="hc-field">
+            <label for="temperatura">Temperatura (°C)*</label>
+            <input
+              id="temperatura"
+              type="number"
+              min="0"
+              step="0.1"
+              formControlName="temperatura"
+            />
+            <div class="hc-error" *ngIf="data?.form?.get('temperatura')?.touched">
+              <span *ngIf="data?.form?.get('temperatura')?.hasError('required')">
+                La temperatura es obligatoria
+              </span>
+              <span *ngIf="data?.form?.get('temperatura')?.hasError('min')">
+                La temperatura debe ser mayor a 0
+              </span>
+            </div>
+          </div>
+
+          <!-- Presión -->
+          <div class="hc-field">
+            <label for="presion">Presión*</label>
+            <input
+              id="presion"
+              type="text"
+              placeholder="Ej: 120/80"
+              formControlName="presion"
+            />
+            <div class="hc-error" *ngIf="data?.form?.get('presion')?.touched">
+              <span *ngIf="data?.form?.get('presion')?.hasError('required')">
+                La presión es obligatoria
+              </span>
+            </div>
+          </div>
+
+          <!-- Índice de riesgo -->
+          <div class="hc-field hc-field--full">
+            <label for="riesgo">Índice de riesgo (%)</label>
+            <div class="hc-range-row">
+              <input
+                id="riesgo"
+                type="range"
+                min="0"
+                max="100"
+                step="1"
+                formControlName="riesgo"
+              />
+              <span class="hc-range-value">
+                {{ data?.form?.get('riesgo')?.value }}%
+              </span>
+            </div>
+          </div>
+
+          <!-- Glucosa -->
+          <div class="hc-field">
+            <label for="glucosa">Nivel de glucosa (mg/dL)*</label>
+            <input
+              id="glucosa"
+              type="number"
+              min="0"
+              step="0.1"
+              formControlName="nivelGlucosa"
+            />
+            <div class="hc-error" *ngIf="data?.form?.get('nivelGlucosa')?.touched">
+              <span *ngIf="data?.form?.get('nivelGlucosa')?.hasError('required')">
+                El nivel de glucosa es obligatorio
+              </span>
+              <span *ngIf="data?.form?.get('nivelGlucosa')?.hasError('min')">
+                El nivel de glucosa debe ser mayor a 0
+              </span>
+            </div>
+          </div>
+
+          <!-- Requiere seguimiento -->
+          <div class="hc-field hc-field--inline">
+            <label class="hc-toggle">
+              <input type="checkbox" formControlName="requiereSeguimiento" />
+              <span>Requiere seguimiento</span>
+            </label>
+          </div>
+
+          <!-- DATOS DINÁMICOS -->
+          <div class="hc-field hc-field--full" formArrayName="datosDinamicos">
+            <div class="hc-datos-header">
+              <h3>Datos dinámicos (máx. 3)</h3>
+              <button
+                type="button"
+                class="hc-btn hc-btn--small"
+                (click)="agregarDatoDinamico(data.form)"
+                [disabled]="getDatosDinamicos(data.form).length >= 3"
+              >
+                + Agregar
+              </button>
+            </div>
+
+            <div
+              class="hc-dato-row"
+              *ngFor="let g of getDatosDinamicos(data.form).controls; let i = index"
+              [formGroupName]="i"
+            >
+              <div class="hc-field">
+                <label>Clave</label>
+                <input type="text" formControlName="clave" placeholder="Ej: Caries" />
+              </div>
+
+              <div class="hc-field">
+                <label>Valor</label>
+                <input type="text" formControlName="valor" placeholder="Ej: 3" />
+              </div>
+
+              <button
+                type="button"
+                class="hc-btn hc-btn--icon"
+                (click)="eliminarDatoDinamico(data.form, i)"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+
+          <!-- Comentario -->
+          <div class="hc-field hc-field--full">
+            <label for="comentario">Comentario / Reseña del turno*</label>
+            <textarea
+              id="comentario"
+              rows="4"
+              formControlName="comentario"
+              placeholder="Deja un comentario sobre la consulta (mínimo 10 caracteres)"
+            ></textarea>
+            <div class="hc-error" *ngIf="data?.form?.get('comentario')?.touched">
+              <span *ngIf="data?.form?.get('comentario')?.hasError('required')">
+                El comentario es obligatorio
+              </span>
+              <span *ngIf="data?.form?.get('comentario')?.hasError('minlength')">
+                Debe tener al menos 10 caracteres
+              </span>
+            </div>
+          </div>
+
+        </div>
+      </form>
+    </section>
+
+    <footer class="hc-dialog__footer">
+      <button
+        type="button"
+        class="hc-btn hc-btn--ghost"
+        (click)="closeHistoriaDialog(false)"
+      >
+        Cancelar
+      </button>
+
+      <button
+        type="button"
+        class="hc-btn hc-btn--primary"
+        [class.hc-btn--disabled]="!data?.form?.valid"
+        [disabled]="!data?.form?.valid"
+        (click)="closeHistoriaDialog(true)"
+      >
+        Guardar Historia Clínica
+      </button>
+    </footer>
+  </div>
+</ng-template>
+
+
+
+
+
+
+
+<!-- <ng-template #historiaClinicaDialog let-data>
     <h2 mat-dialog-title>Finalizar Turno - Historia Clínica</h2>
     <mat-dialog-content>
         <p><strong>Paciente:</strong> {{ data?.turno?.paciente }}</p>
@@ -232,27 +462,13 @@
                     </mat-error>
                 </mat-form-field>
 
-                <!-- <mat-slide-toggle formControlName="requiereSeguimiento" style="margin-top: 16px;">
-                    Requiere seguimiento
-                </mat-slide-toggle>
-
-                <mat-form-field appearance="outline" style="grid-column: 1 / -1;">
-                    <mat-label>Comentario/Reseña del turno</mat-label>
-                    <textarea matInput formControlName="comentario" rows="4"
-                        placeholder="Deja un comentario sobre la consulta (mínimo 10 caracteres)"></textarea>
-                    <mat-error *ngIf="data?.form?.get('comentario')?.hasError('required')">
-                        El comentario es obligatorio
-                    </mat-error>
-                    <mat-error *ngIf="data?.form?.get('comentario')?.hasError('minlength')">
-                        Debe tener al menos 10 caracteres
-                    </mat-error>
-                </mat-form-field> -->
+     
 
                 <mat-slide-toggle formControlName="requiereSeguimiento" style="margin-top: 16px;">
                     Requiere seguimiento
                 </mat-slide-toggle>
 
-                <!-- Datos dinámicos (clave / valor, máx. 3) -->
+                Datos dinámicos (clave / valor, máx. 3) 
                 <div formArrayName="datosDinamicos" style="grid-column: 1 / -1;">
                     <div style="display:flex; align-items:center; justify-content: space-between; margin-bottom: 8px;">
                         <h3 style="margin:0; font-size: 0.95rem;">Datos dinámicos (máx. 3)</h3>
@@ -303,4 +519,4 @@
             Guardar Historia Clínica
         </button>
     </mat-dialog-actions>
-</ng-template>
+</ng-template> -->

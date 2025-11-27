@@ -25,6 +25,8 @@ import { StatusLabelPipe } from '../../../pipes/status-label.pipe';
 import { StatusBadgeDirective } from '../../../directives/status-badge.directive';
 import { TurnosService } from '../../../services/turnos.service';
 
+import { MatDialogRef } from '@angular/material/dialog';
+
 
 @Component({
   selector: 'app-mis-turnos-especialista',
@@ -59,6 +61,8 @@ export class MisTurnosEspecialistaComponent implements OnInit {
   @ViewChild('rechazarDialog') rechazarDialog!: TemplateRef<unknown>;
   @ViewChild('cancelarDialog') cancelarDialog!: TemplateRef<unknown>;
   @ViewChild('historiaClinicaDialog') historiaClinicaDialog!: TemplateRef<unknown>;
+
+  private historiaDialogRef?: MatDialogRef<any>;
 
   displayedColumns = [
     'id', 'fecha', 'hora', 'especialidad', 'paciente', 'estado', 'acciones'
@@ -165,13 +169,15 @@ export class MisTurnosEspecialistaComponent implements OnInit {
   //     riesgo: [50, [Validators.required, Validators.min(0), Validators.max(100)]],
   //     nivelGlucosa: [null, [Validators.required, Validators.min(0)]],
   //     requiereSeguimiento: [false],
+  //     datosDinamicos: this.fb.array([]),        // <==================================== NUEVO PARA DATOS DINAMICOS
   //     comentario: ['', [Validators.required, Validators.minLength(10)]]
   //   });
 
   //   const ref = this.dialog.open(this.historiaClinicaDialog, {
   //     data: { turno, form: historiaForm },
   //     width: '600px',
-  //     disableClose: true
+  //     disableClose: true,
+  //     panelClass: 'historia-dialog-dark'   // <============ CLASE CSS PARA ESTILAR
   //   });
 
   //   ref.afterClosed().subscribe(result => {
@@ -180,6 +186,33 @@ export class MisTurnosEspecialistaComponent implements OnInit {
   //     }
   //   });
   // }
+
+  // finalizarTurno(turno: TurnoEspecialista): void {
+  //   const historiaForm = this.fb.group({
+  //     altura: [null, [Validators.required, Validators.min(0)]],
+  //     peso: [null, [Validators.required, Validators.min(0)]],
+  //     temperatura: [null, [Validators.required, Validators.min(0)]],
+  //     presion: ['', Validators.required],
+  //     riesgo: [50, [Validators.required, Validators.min(0), Validators.max(100)]],
+  //     nivelGlucosa: [null, [Validators.required, Validators.min(0)]],
+  //     requiereSeguimiento: [false],
+  //     datosDinamicos: this.fb.array([]),
+  //     comentario: ['', [Validators.required, Validators.minLength(10)]]
+  //   });
+
+  //   this.historiaDialogRef = this.dialog.open(this.historiaClinicaDialog, {
+  //     data: { turno, form: historiaForm },
+  //     width: '600px',
+  //     disableClose: true
+  //   });
+
+  //   this.historiaDialogRef.afterClosed().subscribe(result => {
+  //     if (result && historiaForm.valid) {
+  //       this.guardarHistoriaClinica(turno, historiaForm);
+  //     }
+  //   });
+  // }
+
 
   finalizarTurno(turno: TurnoEspecialista): void {
     const historiaForm = this.fb.group({
@@ -190,23 +223,32 @@ export class MisTurnosEspecialistaComponent implements OnInit {
       riesgo: [50, [Validators.required, Validators.min(0), Validators.max(100)]],
       nivelGlucosa: [null, [Validators.required, Validators.min(0)]],
       requiereSeguimiento: [false],
-      datosDinamicos: this.fb.array([]),        // <==================================== NUEVO PARA DATOS DINAMICOS
+      datosDinamicos: this.fb.array([]),
       comentario: ['', [Validators.required, Validators.minLength(10)]]
     });
 
-    const ref = this.dialog.open(this.historiaClinicaDialog, {
+    this.historiaDialogRef = this.dialog.open(this.historiaClinicaDialog, {
       data: { turno, form: historiaForm },
       width: '600px',
       disableClose: true
     });
 
-    ref.afterClosed().subscribe(result => {
+    this.historiaDialogRef.afterClosed().subscribe(result => {
       if (result && historiaForm.valid) {
         this.guardarHistoriaClinica(turno, historiaForm);
       }
     });
   }
 
+
+  // closeHistoriaDialog(ok: boolean): void {
+  //   this.historiaDialogRef?.close(ok);
+  // }
+
+  closeHistoriaDialog(ok: boolean): void {
+    console.log('[HistoriaClinica] closeHistoriaDialog', ok);
+    this.historiaDialogRef?.close(ok);
+  }
 
   // ===== Datos dinámicos libres (clave/valor) =====
 
@@ -234,165 +276,8 @@ export class MisTurnosEspecialistaComponent implements OnInit {
   }
 
 
-
-
-
   // ---------------------------------------------------------------------------------------------------------------------------------
   // ---------------------------------------------------------------------------------------------------------------------------------
-  // ---------------------------------------------------------------------------------------------------------------------------------
-
-
-
-  // async guardarHistoriaClinica(turno: TurnoEspecialista, form: FormGroup): Promise<void> {
-  //   try {
-  //     const { data: sessionData } = await this.supa.getSession();
-  //     if (!sessionData?.session) {
-  //       throw new Error('No hay sesión activa');
-  //     }
-  //     const especialistaId = sessionData.session.user.id;
-  //     const fv = form.value;
-
-  //     // Obtener paciente_id del turno
-  //     const { data: turnoData, error: turnoError } = await this.supa.client
-  //       .from('turnos')
-  //       .select('paciente_id')
-  //       .eq('id', turno.id)
-  //       .single();
-
-  //     if (turnoError || !turnoData) {
-  //       throw new Error('No se pudo obtener el turno');
-  //     }
-
-  //     const datosDinamicos: DatoDinamico[] = [
-  //       { clave: 'Índice de riesgo', valor: Number(fv.riesgo), tipo: 'rango', unidad: '%' },
-  //       { clave: 'Nivel de glucosa', valor: Number(fv.nivelGlucosa), tipo: 'numero', unidad: 'mg/dL' },
-  //       { clave: 'Requiere seguimiento', valor: !!fv.requiereSeguimiento, tipo: 'booleano', unidad: null }
-  //     ];
-
-  //     // 1) Insertar en historia_clinica y recuperar el id de la historia
-  //     const { data: historiaData, error: historiaError } = await this.supa.client
-  //       .from('historia_clinica')
-  //       .insert({
-  //         paciente_id: turnoData.paciente_id,
-  //         especialista_id: especialistaId,
-  //         turno_id: turno.id,
-  //         altura: parseFloat(fv.altura),
-  //         peso: parseFloat(fv.peso),
-  //         temperatura: parseFloat(fv.temperatura),
-  //         presion: fv.presion
-  //       })
-  //       .select('id')
-  //       .single();
-
-  //     if (historiaError || !historiaData) {
-  //       throw historiaError || new Error('No se pudo crear la historia clínica');
-  //     }
-
-  //     const historiaId = historiaData.id;
-
-  //     // 2) Mapear datos_dinamicos a la tabla historia_datos_dinamicos
-  //     const dinamicosPayload = datosDinamicos.map(d => {
-  //       let tipo_control: string | null = null;
-  //       let valor_texto: string | null = null;
-  //       let valor_numerico: number | null = null;
-  //       let valor_boolean: boolean | null = null;
-
-  //       switch (d.tipo) {
-  //         case 'rango':
-  //           tipo_control = 'RANGO_0_100';
-  //           valor_numerico = Number(d.valor);
-  //           break;
-
-  //         case 'numero':
-  //           tipo_control = 'NUMERICO';
-  //           valor_numerico = Number(d.valor);
-  //           break;
-
-  //         case 'booleano':
-  //           tipo_control = 'SI_NO';
-  //           valor_boolean = Boolean(d.valor);
-  //           break;
-
-  //         default:
-  //           tipo_control = 'OTRO';
-  //           valor_texto = String(d.valor);
-  //           break;
-  //       }
-
-  //       return {
-  //         historia_id: historiaId,
-  //         clave: d.clave,
-  //         tipo_control,
-  //         valor_texto,
-  //         valor_numerico,
-  //         valor_boolean
-  //         // unidad NO se guarda porque la tabla no la tiene
-  //       };
-  //     });
-
-  //     // // 3) Insertar los datos dinámicos
-  //     // const { error: dinamicosError } = await this.supa.client
-  //     //   .from('historia_datos_dinamicos')
-  //     //   .insert(dinamicosPayload);
-
-  //     // if (dinamicosError) throw dinamicosError;
-
-  //     // // Cambiar estado del turno
-  //     // await this.turnoService.cambiarEstadoPorCodigo(turno.id, 'FINALIZADO');
-
-  //     // turno.estado = 'FINALIZADO';
-  //     // this.dataSource.data = [...this.dataSource.data];
-
-  //     // Swal.fire({
-  //     //   icon: 'success',
-  //     //   title: 'Historia clínica guardada',
-  //     //   text: 'El turno ha sido finalizado correctamente.',
-  //     //   timer: 2000,
-  //     //   showConfirmButton: false
-  //     // });
-
-  //     // 3) Insertar los datos dinámicos
-  //     const { error: dinamicosError } = await this.supa.client
-  //       .from('historia_datos_dinamicos')
-  //       .insert(dinamicosPayload);
-
-  //     if (dinamicosError) throw dinamicosError;
-
-  //     // Tomar el comentario del formulario
-  //     const comentario: string | null = fv.comentario?.trim() || null;
-
-  //     //  Cambiar estado del turno y guardar la reseña en turnos.comentario
-  //     await this.turnoService.cambiarEstadoPorCodigo(
-  //       turno.id,
-  //       'FINALIZADO',
-  //       comentario
-  //     );
-
-  //     // Actualizar el objeto en memoria para que el especialista lo vea al instante
-  //     turno.estado = 'FINALIZADO';
-  //     turno.resena = comentario ?? undefined;
-  //     this.dataSource.data = [...this.dataSource.data];
-
-  //     Swal.fire({
-  //       icon: 'success',
-  //       title: 'Historia clínica guardada',
-  //       text: 'El turno ha sido finalizado correctamente.',
-  //       timer: 2000,
-  //       showConfirmButton: false
-  //     });
-
-
-  //   } catch (error: any) {
-  //     console.error('[MisTurnosEspecialista] Error al guardar historia clínica:', error);
-  //     this.snackBar.open(
-  //       `Error: ${error.message || 'No se pudo guardar la historia clínica'}`,
-  //       'Cerrar',
-  //       { duration: 3000 }
-  //     );
-  //   }
-
-  // }
-
 
   async guardarHistoriaClinica(turno: TurnoEspecialista, form: FormGroup): Promise<void> {
     try {
