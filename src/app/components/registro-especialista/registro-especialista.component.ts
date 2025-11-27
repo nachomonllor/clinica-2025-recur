@@ -724,6 +724,167 @@ export class RegistroEspecialistaComponent implements OnInit {
 
 
 
+  // async onSubmit(): Promise<void> {
+  //   if (this.registroForm.invalid || !this.captchaValido) {
+  //     this.registroForm.markAllAsTouched();
+  //     return;
+  //   }
+
+  //   const fv = this.registroForm.value;
+  //   this.loading = true;
+
+  //   try {
+  //     // 1) Normalizar especialidades (multi + "Otro")
+  //     const seleccion = (fv.especialidades ?? []).filter(Boolean);
+  //     let especialidades = seleccion.filter(e => e !== 'Otro');
+  //     if (seleccion.includes('Otro') && fv.otraEspecialidad) {
+  //       especialidades.push(fv.otraEspecialidad.trim());
+  //     }
+  //     especialidades = Array.from(new Set(especialidades.map(s => s?.trim()))).filter(Boolean) as string[];
+  //     const primeraEspecialidad = especialidades[0] || 'Sin especialidad';
+
+  //     // 2) Alta en Auth (Supabase Auth)
+  //     const { data, error }: any = await this.supa.client.auth.signUp({
+  //       email: fv.email!,
+  //       password: fv.password!,
+  //       options: {
+  //         data: {
+  //           rol: 'ESPECIALISTA',
+  //           nombre: fv.nombre,
+  //           apellido: fv.apellido,
+  //           dni: fv.dni,
+  //           fecha_nacimiento: fv.fechaNacimiento,
+  //           especialidad_principal: primeraEspecialidad,
+  //           especialidades
+  //         }
+  //       }
+  //     });
+  //     if (error) throw error;
+
+  //     const userId = data.user?.id as string;
+  //     if (!userId) throw new Error('No se pudo crear el usuario.');
+
+  //     // 3) Insert/Upsert en esquema_clinica.usuarios
+  //     const edadCalculada = this.calcEdadFromISO(fv.fechaNacimiento!);
+
+  //     const { error: usuarioError } = await this.supa.client
+  //       .from('usuarios')
+  //       .upsert({
+  //         id: userId,
+  //         nombre: fv.nombre!,
+  //         apellido: fv.apellido!,
+  //         dni: fv.dni!,
+  //         email: fv.email!,
+  //         password: fv.password!,          // campo "dummy" para cumplir NOT NULL
+  //         perfil: 'ESPECIALISTA',
+  //         edad: edadCalculada,
+  //         esta_aprobado: false,
+  //         mail_verificado: !!data.session
+  //       }, { onConflict: 'id' });
+
+  //     if (usuarioError) throw usuarioError;
+
+  //     // 4) Alta de especialidades + relación usuario_especialidad
+  //     const especialidadIds: string[] = [];
+  //     for (const nombre of especialidades) {
+  //       const normalizado = nombre.trim();
+  //       if (!normalizado) continue;
+
+  //       // buscar especialidad por nombre
+  //       const { data: espExisting, error: espExistingError } = await this.supa.client
+  //         .from('especialidades')
+  //         .select('id')
+  //         .eq('nombre', normalizado)
+  //         .maybeSingle();
+
+  //       if (espExistingError) throw espExistingError;
+
+  //       let especialidadId = espExisting?.id as string | undefined;
+
+  //       if (!especialidadId) {
+  //         const { data: espInsert, error: espInsertError } = await this.supa.client
+  //           .from('especialidades')
+  //           .insert({ nombre: normalizado })
+  //           .select('id')
+  //           .single();
+
+  //         if (espInsertError) throw espInsertError;
+  //         especialidadId = espInsert.id as string;
+  //       }
+
+  //       especialidadIds.push(especialidadId);
+  //     }
+
+  //     if (especialidadIds.length) {
+  //       const rows = especialidadIds.map(id => ({
+  //         usuario_id: userId,
+  //         especialidad_id: id
+  //       }));
+
+  //       const { error: ueError } = await this.supa.client
+  //         .from('usuario_especialidad')
+  //         .upsert(rows, { onConflict: 'usuario_id,especialidad_id' });
+
+  //       if (ueError) throw ueError;
+  //     }
+
+  //     // 5) Si NO hay sesión (email de verificación obligatorio) -> no intentamos subir imagen
+  //     if (!data.session) {
+  //       await Swal.fire({
+  //         icon: 'info',
+  //         title: 'Verifica tu correo',
+  //         html: `
+  //           <p>Te enviamos un email de verificación a <strong>${fv.email}</strong>.</p>
+  //           <p>Confírmalo para iniciar sesión y completar tu registro (subir imagen).</p>
+  //           <p><strong>Importante:</strong> Un administrador debe aprobar tu cuenta antes de poder ingresar.</p>
+  //         `,
+  //         confirmButtonText: 'Entendido'
+  //       });
+  //       this.registroForm.reset();
+  //       this.imagenPrevia = null;
+
+
+  //       this.router.navigate(['/bienvenida']);
+  //       return;
+  //     }
+
+  //     // 6) Con sesión activa: subir avatar y actualizar imagen_perfil_1
+  //     if (fv.imagenPerfil) {
+  //       const avatarUrl = await this.supa.uploadAvatar(userId, fv.imagenPerfil, 1);
+  //       const { error: avatarError } = await this.supa.client
+  //         .from('usuarios')
+  //         .update({ imagen_perfil_1: avatarUrl })
+  //         .eq('id', userId);
+
+  //       if (avatarError) throw avatarError;
+  //     }
+
+  //     await Swal.fire({
+  //       icon: 'success',
+  //       title: 'Registro enviado',
+  //       text: 'Verificá tu email. Un administrador debe aprobar tu cuenta antes de ingresar.',
+  //       timer: 3500,
+  //       showConfirmButton: false
+  //     });
+  //     this.registroForm.reset();
+  //     this.imagenPrevia = null;
+
+
+
+  //     this.router.navigate(['/bienvenida']);
+
+  //   } catch (e: any) {
+  //     console.error('[Registro Especialista] Error completo:', {
+  //       error: e, message: e?.message, code: e?.code, status: e?.status, name: e?.name, stack: e?.stack
+  //     });
+  //     const mensajeError = this.mapPgError(e);
+  //     Swal.fire('Error', mensajeError, 'error');
+  //   } finally {
+  //     this.loading = false;
+  //   }
+  // }
+
+
   async onSubmit(): Promise<void> {
     if (this.registroForm.invalid || !this.captchaValido) {
       this.registroForm.markAllAsTouched();
@@ -790,7 +951,6 @@ export class RegistroEspecialistaComponent implements OnInit {
         const normalizado = nombre.trim();
         if (!normalizado) continue;
 
-        // buscar especialidad por nombre
         const { data: espExisting, error: espExistingError } = await this.supa.client
           .from('especialidades')
           .select('id')
@@ -828,20 +988,25 @@ export class RegistroEspecialistaComponent implements OnInit {
         if (ueError) throw ueError;
       }
 
-      // 5) Si NO hay sesión (email de verificación obligatorio) -> no intentamos subir imagen
+      // 5) Si NO hay sesión ==============>  no intentamos subir imagen
       if (!data.session) {
         await Swal.fire({
           icon: 'info',
           title: 'Verifica tu correo',
           html: `
-            <p>Te enviamos un email de verificación a <strong>${fv.email}</strong>.</p>
-            <p>Confírmalo para iniciar sesión y completar tu registro (subir imagen).</p>
-            <p><strong>Importante:</strong> Un administrador debe aprobar tu cuenta antes de poder ingresar.</p>
-          `,
+          <p>Te enviamos un email de verificación a <strong>${fv.email}</strong>.</p>
+          <p>Confírmalo para iniciar sesión y completar tu registro (subir imagen).</p>
+          <p><strong>Importante:</strong> Un administrador debe aprobar tu cuenta antes de poder ingresar.</p>
+        `,
           confirmButtonText: 'Entendido'
         });
+
         this.registroForm.reset();
         this.imagenPrevia = null;
+
+        // ==============>  CERRAR SESIÓN POR SI QUEDÓ ALGUNA (otro usuario logueado, etc.)
+        await this.supa.client.auth.signOut();
+
         this.router.navigate(['/bienvenida']);
         return;
       }
@@ -864,8 +1029,13 @@ export class RegistroEspecialistaComponent implements OnInit {
         timer: 3500,
         showConfirmButton: false
       });
+
       this.registroForm.reset();
       this.imagenPrevia = null;
+
+      // ==============> IMPORTANTE: cerrar la sesión creada por signUp
+      await this.supa.client.auth.signOut();
+
       this.router.navigate(['/bienvenida']);
 
     } catch (e: any) {
@@ -878,8 +1048,6 @@ export class RegistroEspecialistaComponent implements OnInit {
       this.loading = false;
     }
   }
-
-
 
 
 
