@@ -1,211 +1,61 @@
-
-/* =========================================================
-   Estilos para el diálogo de Historia Clínica (modo oscuro legible)
-   ========================================================= */
-.historia-dialog-dark .mdc-dialog__surface {
-  background-color: #020617;  /* azul muy oscuro */
-  color: #f9fafb;             /* casi blanco */
-  border-radius: 16px;
-}
-
-/* Títulos y texto general */
-.historia-dialog-dark h2[mat-dialog-title],
-.historia-dialog-dark mat-dialog-content,
-.historia-dialog-dark mat-dialog-content p,
-.historia-dialog-dark mat-dialog-content strong {
-  color: #f9fafb;
-}
-
-/* Labels, errores, pequeños textos */
-.historia-dialog-dark .mat-mdc-form-field-subscript-wrapper,
-.historia-dialog-dark .mat-mdc-slide-toggle-label,
-.historia-dialog-dark .mat-mdc-form-field .mdc-floating-label {
-  color: #e5e7eb;
-}
-
-/* Inputs con fondo ligeramente más claro que el fondo general */
-.historia-dialog-dark .mat-mdc-text-field-wrapper {
-  background-color: rgba(15, 23, 42, 0.95); /* un poco más claro que el fondo */
-  border-radius: 8px;
-}
-
-/* Texto dentro de los inputs */
-.historia-dialog-dark .mat-mdc-form-field-input-control,
-.historia-dialog-dark .mat-mdc-input-element {
-  color: #f9fafb;
-}
-
-/* Placeholder más apagado pero legible */
-.historia-dialog-dark .mat-mdc-input-element::placeholder {
-  color: #9ca3af;
-}
-
-/* Slider: texto del valor en claro */
-.historia-dialog-dark .mdc-slider__value-indicator-text {
-  color: #0f172a; /* oscuro sobre el globito del slider, que es claro */
-}
-
-/* Botones de acción */
-.historia-dialog-dark mat-dialog-actions button {
-  font-weight: 500;
-}
-
-
-
-/* ------------------------- */  
-
-
-
-// Paleta base global (podés ir moviendo acá las que ya usaste en login)
-$color-bg-deep: #020617;  // casi negro azulado
+/* =========================================
+   VARIABLES GLOBALES
+   ========================================= */
+$color-bg-deep: #020617; 
 $color-bg-mid: #02091b;
 $color-bg-soft: #0b1120;
 $color-accent-blue: #3b82f6;
 $color-accent-cyan: #22d3ee;
+$color-text-main: #e9eef8;
+$color-text-muted: #aeb6c7;
 
-// FONDO GENERAL DE LA APP
-:host {
-  display: block;
-  min-height: 100vh;
-  color: #e5e7eb;
+/* =========================================
+   FONDO Y RESET GENERAL
+   ========================================= */
+html, body { 
+    height: 100%; 
+    margin: 0; 
+    font-family: 'Roboto', sans-serif;
+}
 
-  background:
-    radial-gradient(circle at top left, rgba(56, 189, 248, 0.18), transparent 55%),
-    radial-gradient(circle at bottom right, rgba(129, 140, 248, 0.22), transparent 55%),
+body {
+    background:
+    radial-gradient(circle at top left, rgba(56, 189, 248, 0.15), transparent 55%),
+    radial-gradient(circle at bottom right, rgba(129, 140, 248, 0.18), transparent 55%),
     linear-gradient(135deg, $color-bg-deep, $color-bg-soft);
+    color: $color-text-main;
+    min-height: 100vh;
 }
 
-// Contenedor principal
-.app-shell {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
+/* =========================================
+   CLASES DE UTILIDAD (LAYOUT)
+   ========================================= */
 
-// Zona donde viven las pantallas
-.app-main {
-  flex: 1;
-  display: flex;
-  align-items: stretch;
-  justify-content: center;
-  padding: 1.5rem;
-  box-sizing: border-box;
-}
-
-// Página centrada (lo que usás en login, selector, etc.)
+/* Contenedor principal que centra el contenido */
 .page-centered {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1.5rem;
+    width: 100%;
+    /* AQUÍ CONTROLAS EL ANCHO: 1400px es amplio, 100% es total */
+    max-width: 1400px; 
+    margin: 0 auto;
+    padding: 2rem;
+    box-sizing: border-box;
 
-  @media (max-width: 600px) {
-    padding: 1.1rem;
-  }
+    @media (max-width: 768px) {
+        padding: 1rem;
+    }
 }
 
-// Card “glass” genérica para toda la app
-.app-glass-card {
-  border-radius: 1.5rem;
-  padding: 1.8rem 1.8rem 2rem;
-  background:
-    radial-gradient(circle at top left, rgba(148, 163, 184, 0.18), transparent 55%),
-    rgba(15, 23, 42, 0.94);
-  border: 1px solid rgba(148, 163, 184, 0.55);
-  box-shadow:
-    0 24px 60px rgba(0, 0, 0, 0.9),
-    0 0 0 1px rgba(15, 23, 42, 0.85);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+/* =========================================
+   OVERRIDES DE ANGULAR MATERIAL (DARK MODE)
+   ========================================= */
+// Inputs, Selects y Form Fields
+.mat-mdc-form-field-infix, .mat-mdc-select-value { color: $color-text-main !important; }
+.mat-mdc-text-field-wrapper, .mat-mdc-select-panel { background: rgba(15, 23, 42, 0.8) !important; }
+.mdc-notched-outline__leading, .mdc-notched-outline__notch, .mdc-notched-outline__trailing { border-color: rgba(255,255,255,0.2) !important; }
+
+// Dialogs
+.mat-mdc-dialog-container .mdc-dialog__surface {
+    background-color: $color-bg-deep !important;
+    color: $color-text-main !important;
+    border: 1px solid rgba(255,255,255,0.1);
 }
-
-// Variante “sección” para tablas / listados grandes
-.app-section-card {
-  border-radius: 1.25rem;
-  padding: 1.4rem 1.5rem;
-  background: rgba(15, 23, 42, 0.9);
-  border: 1px solid rgba(31, 41, 55, 0.9);
-  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.95);
-}
-
-// Títulos estándar de secciones
-.app-section-title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  letter-spacing: 0.03em;
-  color: #f9fafb;
-}
-
-.app-section-subtitle {
-  margin-top: 0.15rem;
-  font-size: 0.86rem;
-  color: #9ca3af;
-}
-
-/* =========================================================
-   Estilos para el diálogo de Historia Clínica (modo oscuro legible)
-   ========================================================= */
-.historia-dialog-dark .mdc-dialog__surface {
-  background-color: #020617;  /* azul muy oscuro */
-  color: #f9fafb;             /* casi blanco */
-  border-radius: 16px;
-}
-
-/* Títulos y texto general */
-.historia-dialog-dark h2[mat-dialog-title],
-.historia-dialog-dark mat-dialog-content,
-.historia-dialog-dark mat-dialog-content p,
-.historia-dialog-dark mat-dialog-content strong {
-  color: #f9fafb;
-}
-
-/* Labels, errores, pequeños textos */
-.historia-dialog-dark .mat-mdc-form-field-subscript-wrapper,
-.historia-dialog-dark .mat-mdc-slide-toggle-label,
-.historia-dialog-dark .mat-mdc-form-field .mdc-floating-label {
-  color: #e5e7eb;
-}
-
-/* Inputs con fondo ligeramente más claro que el fondo general */
-.historia-dialog-dark .mat-mdc-text-field-wrapper {
-  background-color: rgba(15, 23, 42, 0.95); /* un poco más claro que el fondo */
-  border-radius: 8px;
-}
-
-/* Texto dentro de los inputs */
-.historia-dialog-dark .mat-mdc-form-field-input-control,
-.historia-dialog-dark .mat-mdc-input-element {
-  color: #f9fafb;
-}
-
-/* Placeholder más apagado pero legible */
-.historia-dialog-dark .mat-mdc-input-element::placeholder {
-  color: #9ca3af;
-}
-
-/* Slider: texto del valor en claro */
-.historia-dialog-dark .mdc-slider__value-indicator-text {
-  color: #0f172a; /* oscuro sobre el globito del slider, que es claro */
-}
-
-/* Botones de acción */
-.historia-dialog-dark mat-dialog-actions button {
-  font-weight: 500;
-}
-
-
-.historia-dialog-dark .mdc-dialog__surface {
-  background-color: #f9fafb;  /* claro */
-  color: #020617;             /* casi negro */
-}
-.historia-dialog-dark mat-dialog-content,
-.historia-dialog-dark mat-dialog-content p,
-.historia-dialog-dark mat-dialog-content strong,
-.historia-dialog-dark h2[mat-dialog-title] {
-  color: #020617;
-}
-
-

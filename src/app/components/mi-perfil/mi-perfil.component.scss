@@ -1,181 +1,514 @@
-:host{
-  --bg-1:#0a1020; --bg-2:#0b152b;
-  --glass: rgba(255,255,255,.06);
-  --glass-strong: rgba(255,255,255,.12);
-  --border: rgba(255,255,255,.14);
-  --text:#e9eef8; --muted:#aeb6c7;
-  --success:#22c55e; --danger:#ef4444;
-  --blue:#2563eb; --purple:#7c3aed; --teal:#06b6d4; --pink:#ec4899; --orange:#f97316;
-  color:var(--text); display:block;
+/* -----------------------------------------------------------
+   ESTILOS BASE (MANTENIDOS)
+----------------------------------------------------------- */
+:host {
+  --bg-1: #0a1020;
+  --bg-2: #0b152b;
+  --glass: rgba(255, 255, 255, .06);
+  --glass-strong: rgba(255, 255, 255, .12);
+  --border: rgba(255, 255, 255, .14);
+  --text: #e9eef8;
+  --muted: #aeb6c7;
+  --success: #22c55e;
+  --danger: #ef4444;
+  --blue: #2563eb;
+  --purple: #7c3aed;
+  --teal: #06b6d4;
+  --pink: #ec4899;
+  --orange: #f97316;
+  color: var(--text);
+  display: block;
 }
 
 /* FONDO */
-.profile-page{
-  min-height:100vh;
+.profile-page {
+  min-height: 100vh;
   background:
     radial-gradient(1200px 700px at 10% -10%, #0ea5ea22, transparent),
     radial-gradient(1000px 600px at 110% 120%, #a78bfa22, transparent),
     linear-gradient(180deg, var(--bg-1), var(--bg-2));
-  padding: clamp(16px,3vw,32px);
+  padding: clamp(16px, 3vw, 32px);
 }
 
 /* HERO */
-.hero{ position:relative; margin-bottom:20px; }
-.hero-content{
-  display:grid; grid-template-columns:1fr auto; gap:16px; align-items:center;
-  padding:16px; margin-top:-8px; border-radius:16px; border:1px solid var(--border);
-  box-shadow:0 12px 30px rgba(0,0,0,.32);
-  background: var(--glass); backdrop-filter: blur(8px);
+.hero {
+  position: relative;
+  margin-bottom: 20px;
 }
-.hero-left{ display:grid; grid-template-columns:auto 1fr; gap:12px; align-items:center; }
-.avatar{ width:64px; height:64px; border-radius:16px; display:grid; place-items:center; overflow:hidden;
-  border:1px solid var(--border); background:linear-gradient(135deg,#1e293b,#0f172a); color:#93c5fd; font-weight:700;
+
+.hero-content {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 16px;
+  align-items: center;
+  padding: 16px;
+  margin-top: -8px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, .32);
+  background: var(--glass);
+  backdrop-filter: blur(8px);
 }
-.avatar.has-img img{ width:100%; height:100%; object-fit:cover; }
-.title h1{ margin:0; font-size: clamp(18px,2.2vw,24px); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.title .sub{ margin-top:4px; display:flex; align-items:center; gap:8px; color:var(--muted); font-size:12px; }
-.title .sub .dot::before{ content:'•'; color:#64748b; }
-.hero-right{ display:flex; gap:10px; align-items:center; justify-content:flex-end; flex-wrap:wrap; }
+
+.hero-left {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px;
+  align-items: center;
+}
+
+.avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: linear-gradient(135deg, #1e293b, #0f172a);
+  color: #93c5fd;
+  font-weight: 700;
+}
+
+.avatar.has-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.title h1 {
+  margin: 0;
+  font-size: clamp(18px, 2.2vw, 24px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.title .sub {
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.title .sub .dot::before {
+  content: '•';
+  color: #64748b;
+}
+
+.hero-right {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
 
 /* BOTONES / CHIPS */
-.btn{ position:relative; display:inline-flex; gap:8px; align-items:center; border-radius:12px; padding:10px 12px;
-  font-weight:600; border:1px solid var(--border); background:#ffffff10; color:var(--text);
-  transition:transform 160ms, box-shadow 160ms, background 160ms; cursor:pointer; white-space:nowrap;
+.btn {
+  position: relative;
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-weight: 600;
+  border: 1px solid var(--border);
+  background: #ffffff10;
+  color: var(--text);
+  transition: transform 160ms, box-shadow 160ms, background 160ms;
+  cursor: pointer;
+  white-space: nowrap;
 }
-.btn:hover{ transform: translateY(-1px); background:#ffffff14; box-shadow:0 6px 16px rgba(0,0,0,.28);}
-.btn.primary{ background: linear-gradient(135deg, #2563eb66, #7c3aed66); border-color:#ffffff33; }
-.btn.ghost{ background: transparent; }
-.btn .icon{ width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:2; }
 
-.chip{ border:1px solid var(--border); border-radius:999px; padding:6px 12px; font-size:12px; background:#ffffff10; }
-.chip.role{ background: linear-gradient(135deg,#2563eb66,#7c3aed66); border-color:#ffffff33; }
+.btn:hover {
+  transform: translateY(-1px);
+  background: #ffffff14;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, .28);
+}
+
+.btn.primary {
+  background: linear-gradient(135deg, #2563eb66, #7c3aed66);
+  border-color: #ffffff33;
+}
+
+.btn.ghost {
+  background: transparent;
+}
+
+.btn .icon {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+}
+
+.chip {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 12px;
+  background: #ffffff10;
+}
+
+.chip.role {
+  background: linear-gradient(135deg, #2563eb66, #7c3aed66);
+  border-color: #ffffff33;
+}
 
 /* GRID + PANELS */
-.content-grid{ display:grid; grid-template-columns:repeat(12,1fr); gap:20px; }
-.panel{ grid-column:span 6; border:1px solid var(--border); border-radius:16px; background:var(--glass);
-  backdrop-filter:blur(6px); box-shadow:0 12px 30px rgba(0,0,0,.28); container-type:inline-size;
+.content-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 20px;
 }
-.panel.span-2{ grid-column:span 12; }
-@media (max-width:920px){ .panel{ grid-column:span 12; } }
 
-.panel-h{ padding:14px 16px 8px; border-bottom:1px solid #ffffff1a; display:flex; align-items:end; justify-content:space-between; gap:12px; }
-.panel-h h2{ margin:0; font-size:16px; }
-.panel-b{ padding:12px 16px 16px; }
-
-/* Info filas */
-.info{ display:grid; gap:10px; min-width:0; }
-.info-row{ display:grid; grid-template-columns:140px minmax(0,1fr); gap:10px; align-items:center; }
-.info-row .label{ color:var(--muted); font-size:12px; }
-.info-row .value{ font-size:14px; overflow-wrap:break-word; }
-.value.tag{ display:inline-block; padding:3px 8px; border-radius:999px; border:1px solid var(--glass-strong); background:#ffffff14; }
-.chips-line{ display:flex; flex-wrap:wrap; gap:6px; }
-.email{ color:inherit; text-decoration:none; } .email:hover{ text-decoration:underline; }
-
-/* Horarios: tarjetas glass */
-.horarios-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:12px; }
-.horario-card{ border-radius:14px; border:1px solid var(--border); background:var(--glass); backdrop-filter:blur(8px); }
-.horario-h{ padding:10px 12px 6px; border-bottom:1px solid #ffffff1a; }
-.horario-h h3{ margin:0; font-size:14px; }
-.horario-b{ padding:10px 12px; }
-.dias-section, .horas-section{ margin-top:8px; }
-.dias-section label, .horas-section label{ display:block; font-weight:700; margin-bottom:6px; color:#dbeafe; }
-.checkboxes{ display:grid; grid-template-columns:repeat(auto-fill, minmax(120px,1fr)); gap:6px 12px; }
-
-/* Historia clínica: acordeón glass */
-.hist-accordion ::ng-deep .mat-expansion-panel{
-  background: var(--glass)!important; border:1px solid var(--border)!important; border-radius:12px!important; color:var(--text)!important; margin-bottom:10px;
+.panel {
+  grid-column: span 6;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--glass);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, .28);
+  container-type: inline-size;
 }
-.historia-content{ padding:10px 16px 16px; }
-.historia-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:6px 14px; margin-bottom:8px; }
-.historia-item strong{ color:var(--muted); }
-.datos-dinamicos{ border-top:1px dashed #ffffff1a; padding-top:8px; }
-.muted{ color:var(--muted); }
 
-/* Material inputs/selects en dark */
-::ng-deep .mat-mdc-form-field-infix, 
-::ng-deep .mat-mdc-select-value{ color:var(--text)!important; }
-::ng-deep .mat-mdc-text-field-wrapper, 
-::ng-deep .mat-mdc-select-panel{ background: #0f172a !important; }
-::ng-deep .mdc-notched-outline__leading,
-::ng-deep .mdc-notched-outline__notch,
-::ng-deep .mdc-notched-outline__trailing{ border-color:#ffffff22 !important; }
-::ng-deep .mdc-text-field--focused .mdc-notched-outline__leading,
-::ng-deep .mdc-text-field--focused .mdc-notched-outline__notch,
-::ng-deep .mdc-text-field--focused .mdc-notched-outline__trailing{ border-color:var(--orange) !important; }
+.panel.span-2 {
+  grid-column: span 12;
+}
 
-/* Anti‑pozo (por si queda algún mat-card suelto) */
-::ng-deep .mat-mdc-card-content{ padding-top:0!important; padding-bottom:0!important; }
-.profile-page > *{ margin:0 !important; }
+@media (max-width: 920px) {
+  .panel {
+    grid-column: span 12;
+  }
+}
 
+.panel-h {
+  padding: 14px 16px 8px;
+  border-bottom: 1px solid #ffffff1a;
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.panel-h h2 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.panel-b {
+  padding: 12px 16px 16px;
+}
+
+/* INFO FILAS */
+.info {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+.info-row {
+  display: grid;
+  grid-template-columns: 140px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+}
+
+.info-row .label {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.info-row .value {
+  font-size: 14px;
+  overflow-wrap: break-word;
+}
+
+.value.tag {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--glass-strong);
+  background: #ffffff14;
+}
+
+.chips-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.email {
+  color: inherit;
+  text-decoration: none;
+}
+
+.email:hover {
+  text-decoration: underline;
+}
+
+/* TARJETAS HORARIOS BASE */
+// .horarios-grid {
+//   display: grid;
+//   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+//   gap: 12px;
+// }
+
+// .horario-card {
+//   border-radius: 14px;
+//   border: 1px solid var(--border);
+//   background: var(--glass);
+//   backdrop-filter: blur(8px);
+// }
+
+/* --- POR ESTO (FLEX + ANCHO TOTAL) --- */
+.horarios-grid {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  /* <--- LA CLAVE DEL ÉXITO */
+  gap: 24px;
+}
+
+/* Asegurar que la tarjeta interna también ceda */
+.horario-card {
+  width: 100%;
+  box-sizing: border-box;
+  width: 60%;
+  /*  <--============================ANCHO */
+  gap: 24px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--glass);
+  backdrop-filter: blur(8px);
+}
+
+
+/* ---------------------------------- */
+
+.horario-h {
+  padding: 10px 12px 6px;
+  border-bottom: 1px solid #ffffff1a;
+}
+
+.horario-h h3 {
+  margin: 0;
+  font-size: 14px;
+}
 
 .horario-b {
+  padding: 10px 12px;
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
 }
 
-.dias-section,
-.horas-section {
-  label {
-    display: block;
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: rgba(226, 232, 240, 0.75);
-    margin-bottom: 0.4rem;
-  }
+/* HISTORIA CLÍNICA */
+.hist-accordion ::ng-deep .mat-expansion-panel {
+  background: var(--glass) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 12px !important;
+  color: var(--text) !important;
+  margin-bottom: 10px;
 }
 
-.toggle-row {
+.historia-content {
+  padding: 10px 16px 16px;
+}
+
+.historia-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 6px 14px;
+  margin-bottom: 8px;
+}
+
+.historia-item strong {
+  color: var(--muted);
+}
+
+.datos-dinamicos {
+  border-top: 1px dashed #ffffff1a;
+  padding-top: 8px;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+/* MATERIAL UI OVERRIDES (Dark Theme) */
+::ng-deep .mat-mdc-form-field-infix,
+::ng-deep .mat-mdc-select-value {
+  color: var(--text) !important;
+}
+
+::ng-deep .mat-mdc-text-field-wrapper,
+::ng-deep .mat-mdc-select-panel {
+  background: #0f172a !important;
+}
+
+::ng-deep .mdc-notched-outline__leading,
+::ng-deep .mdc-notched-outline__notch,
+::ng-deep .mdc-notched-outline__trailing {
+  border-color: #ffffff22 !important;
+}
+
+::ng-deep .mdc-text-field--focused .mdc-notched-outline__leading,
+::ng-deep .mdc-text-field--focused .mdc-notched-outline__notch,
+::ng-deep .mdc-text-field--focused .mdc-notched-outline__trailing {
+  border-color: var(--orange) !important;
+}
+
+/* UTILIDADES */
+::ng-deep .mat-mdc-card-content {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.profile-page>* {
+  margin: 0 !important;
+}
+
+/* -----------------------------------------------------------
+   NUEVOS ESTILOS PARA EL SLIDER (HORARIOS V2)
+----------------------------------------------------------- */
+
+.instruccion {
+  font-size: 0.9rem;
+  color: var(--muted);
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+// Contenedor principal de la lista
+.lista-dias-slider {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
+  flex-direction: column;
+  gap: 20px;
 }
 
-/* Botón “pill” base */
-.pill-toggle {
-  border-radius: 999px;
-  padding: 0.35rem 0.9rem;
-  border: 1px solid rgba(148, 163, 184, 0.35);
-  background: rgba(15, 23, 42, 0.7);   // glass oscuro
-  color: #e5e7eb;
-  font-size: 0.82rem;
-  letter-spacing: 0.02em;
-  cursor: pointer;
-  outline: none;
-  backdrop-filter: blur(12px);
-  transition:
-    background 0.18s ease,
-    border-color 0.18s ease,
-    box-shadow 0.18s ease,
-    transform 0.08s ease,
-    color 0.18s ease;
-}
+// Fila de cada día
+.dia-row {
+  display: flex;
+  align-items: center;
+  padding: 15px 20px;
+  border-radius: 16px;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+  background: rgba(255, 255, 255, 0.02); // Fondo sutil por defecto
 
-.pill-toggle:hover,
-.pill-toggle:focus-visible {
-  background: rgba(30, 64, 175, 0.85);
-  border-color: rgba(129, 140, 248, 0.9);
-  box-shadow: 0 8px 16px rgba(15, 23, 42, 0.5);
-  transform: translateY(-1px);
-}
+  // Estado ACTIVO (Checkbox tildado)
+  &.activo {
+    background: rgba(30, 41, 59, 0.6); // Azul muy oscuro translúcido
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  }
 
-/* DÍA activo (botones de arriba) */
-.pill-dia.active {
-  background: linear-gradient(135deg, #6366f1, #22d3ee);
-  color: #0b1120;
-  border-color: rgba(248, 250, 252, 0.8);
-}
+  // Estilos del Checkbox
+  .check-dia {
+    width: 140px;
 
-/* Día que tiene horarios, aunque no esté seleccionado */
-.pill-dia.has-hours:not(.active) {
-  border-color: rgba(129, 140, 248, 0.8);
-  box-shadow: 0 0 0 1px rgba(129, 140, 248, 0.4);
-}
+    ::ng-deep .mdc-form-field {
+      color: var(--text) !important;
+      font-weight: 500;
+      font-size: 1rem;
+      letter-spacing: 0.5px;
+    }
 
-/* HORAS activas (botones de abajo) */
-.pill-hora.active {
-  background: linear-gradient(135deg, #f97316, #facc15);
-  color: #0b1120;
-  border-color: rgba(254, 249, 195, 0.9);
+    // Checkbox pintado de azul cuando está activo
+    ::ng-deep .mdc-checkbox .mdc-checkbox__native-control:enabled:checked~.mdc-checkbox__background {
+      background-color: var(--blue) !important;
+      border-color: var(--blue) !important;
+    }
+  }
+
+  // Contenedor Slider + Badges
+  .slider-wrapper {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+
+    // CUSTOMIZACIÓN PROFUNDA DE ANGULAR MATERIAL SLIDER
+    mat-slider {
+      flex: 1;
+      width: 100%;
+      min-width: 200px;
+      height: 40px;
+
+      // 1. TRACK INACTIVO (Gris)
+      ::ng-deep .mdc-slider__track--inactive {
+        background-color: rgba(255, 255, 255, 0.1) !important;
+        height: 8px !important; // Más grueso
+        border-radius: 4px;
+        opacity: 1 !important;
+      }
+
+      // 2. TRACK ACTIVO (Gradiente Azul-Cyan)
+      ::ng-deep .mdc-slider__track--active_fill {
+        background: linear-gradient(90deg, var(--blue) 0%, var(--teal) 100%);
+        border: none !important;
+        height: 8px !important;
+        border-radius: 4px;
+        opacity: 1 !important;
+      }
+
+      // 3. KNOBS (Círculos)
+      ::ng-deep .mdc-slider__thumb-knob {
+        background-color: #fff !important;
+        border: 4px solid var(--blue) !important;
+        width: 24px !important;
+        height: 24px !important;
+        box-shadow: 0 0 10px rgba(37, 99, 235, 0.5); // Glow azul
+        transition: transform 0.1s;
+      }
+
+      // Efecto hover/drag
+      ::ng-deep .mdc-slider__thumb--focused .mdc-slider__thumb-knob {
+        transform: scale(1.2);
+        box-shadow: 0 0 15px rgba(6, 182, 212, 0.7); // Glow cyan
+      }
+    }
+
+    // BADGES DE HORA (Cápsulas doradas)
+    .hora-label {
+      background: rgba(249, 115, 22, 0.15); // Naranja muy suave
+      color: var(--orange);
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(249, 115, 22, 0.3);
+      font-family: 'Roboto Mono', monospace;
+      font-weight: 700;
+      font-size: 0.9rem;
+      min-width: 75px;
+      text-align: center;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  // Texto inactivo
+  .mensaje-inactivo {
+    flex: 1;
+    color: var(--muted);
+    font-style: italic;
+    font-size: 0.95rem;
+    padding-left: 20px;
+    display: flex;
+    align-items: center;
+
+    &::before {
+      content: '';
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--muted);
+      margin-right: 10px;
+      opacity: 0.5;
+    }
+  }
 }
