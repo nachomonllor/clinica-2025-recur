@@ -1,0 +1,33 @@
+<p>mis-horarios-especialista works!</p>
+
+
+<div class="horarios-container">
+  <h3>Configurar Disponibilidad Semanal</h3>
+  <p class="text-muted">Active el día y arrastre los controles para definir su rango horario.</p>
+
+  <div class="lista-dias">
+    <div class="dia-row" *ngFor="let dia of semanaDisponibilidad">
+
+      <mat-checkbox [(ngModel)]="dia.activo" class="dia-check">
+        {{ dia.nombre }}
+      </mat-checkbox>
+
+      <div class="slider-container" *ngIf="dia.activo">
+
+        <span class="rango-texto">
+          {{ formatLabel(dia.inicio) }} a {{ formatLabel(dia.fin) }}
+        </span>
+
+        <mat-slider min="{{dia.minHora}}" max="{{dia.maxHora}}" step="1" discrete [displayWith]="formatLabel">
+          <input matSliderStartThumb [(ngModel)]="dia.inicio">
+          <input matSliderEndThumb [(ngModel)]="dia.fin">
+        </mat-slider>
+
+      </div>
+    </div>
+  </div>
+
+  <button class="btn-guardar" (click)="guardarHorarios()">
+    Guardar Horarios
+  </button>
+</div>

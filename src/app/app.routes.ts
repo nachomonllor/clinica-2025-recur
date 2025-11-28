@@ -3,6 +3,7 @@ import { Routes } from '@angular/router';
 import { MainNavComponent } from './components/main-nav/main-nav.component';
 
 import { RoleGuard } from './guards/role.guard';
+import { MisHorariosEspecialistaComponent } from './components/mis-horarios-especialista/mis-horarios-especialista.component';
 
 
 export const routes: Routes = [
@@ -17,6 +18,12 @@ export const routes: Routes = [
         .then(m => m.BienvenidaComponent),
     data: { animation: 'bienvenida' }
   },
+
+  {
+     path: 'mis-horarios-especialista' , component: MisHorariosEspecialistaComponent
+
+  },
+
   {
     path: 'login',
     loadComponent: () =>
