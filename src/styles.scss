@@ -1,43 +1,35 @@
-/* =========================================
-   VARIABLES GLOBALES
-   ========================================= */
-$color-bg-deep: #020617; 
-$color-bg-mid: #02091b;
-$color-bg-soft: #0b1120;
-$color-accent-blue: #3b82f6;
-$color-accent-cyan: #22d3ee;
-$color-text-main: #e9eef8;
-$color-text-muted: #aeb6c7;
+/* src/styles.scss */
 
-/* =========================================
-   FONDO Y RESET GENERAL
-   ========================================= */
+/* 1. VARIABLES GLOBALES */
+$color-bg-deep: #020617; 
+$color-bg-soft: #0b1120;
+$text-main: #e9eef8;
+$text-muted: #9ca3af;
+
+/* 2. RESET Y FONDO (Ocupa toda la pantalla) */
 html, body { 
     height: 100%; 
     margin: 0; 
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Roboto', sans-serif; /* O la fuente que uses */
+    background-color: $color-bg-deep;
 }
 
 body {
+    /* El gradiente global */
     background:
-    radial-gradient(circle at top left, rgba(56, 189, 248, 0.15), transparent 55%),
-    radial-gradient(circle at bottom right, rgba(129, 140, 248, 0.18), transparent 55%),
-    linear-gradient(135deg, $color-bg-deep, $color-bg-soft);
-    color: $color-text-main;
-    min-height: 100vh;
+      radial-gradient(circle at top left, rgba(56, 189, 248, 0.15), transparent 55%),
+      radial-gradient(circle at bottom right, rgba(129, 140, 248, 0.18), transparent 55%),
+      linear-gradient(135deg, $color-bg-deep, $color-bg-soft);
+    background-attachment: fixed; /* Para que el fondo no se mueva al scrollear */
+    color: $text-main;
 }
 
-/* =========================================
-   CLASES DE UTILIDAD (LAYOUT)
-   ========================================= */
-
-/* Contenedor principal que centra el contenido */
+/* 3. CONTENEDOR PRINCIPAL (Define el ancho máximo) */
 .page-centered {
     width: 100%;
-    /* AQUÍ CONTROLAS EL ANCHO: 1400px es amplio, 100% es total */
-    max-width: 1400px; 
-    margin: 0 auto;
-    padding: 2rem;
+    max-width: 1400px; /* <--- AQUÍ REGULAS EL ANCHO MÁXIMO (antes tenías 1200px) */
+    margin: 0 auto;    /* Centrado horizontal */
+    padding: 2rem;     /* Margen interno */
     box-sizing: border-box;
 
     @media (max-width: 768px) {
@@ -45,17 +37,69 @@ body {
     }
 }
 
-/* =========================================
-   OVERRIDES DE ANGULAR MATERIAL (DARK MODE)
-   ========================================= */
-// Inputs, Selects y Form Fields
-.mat-mdc-form-field-infix, .mat-mdc-select-value { color: $color-text-main !important; }
-.mat-mdc-text-field-wrapper, .mat-mdc-select-panel { background: rgba(15, 23, 42, 0.8) !important; }
+/* 4. ARREGLOS DE ANGULAR MATERIAL (Dark Mode) */
+
+/* Inputs y Selects legibles */
+.mat-mdc-form-field-infix, .mat-mdc-select-value { color: $text-main !important; }
+.mat-mdc-text-field-wrapper, .mat-mdc-select-panel { background: rgba(15, 23, 42, 0.9) !important; }
 .mdc-notched-outline__leading, .mdc-notched-outline__notch, .mdc-notched-outline__trailing { border-color: rgba(255,255,255,0.2) !important; }
 
-// Dialogs
+/* Dialogs (Popups) oscuros */
 .mat-mdc-dialog-container .mdc-dialog__surface {
-    background-color: $color-bg-deep !important;
-    color: $color-text-main !important;
+    background-color: #0f172a !important; /* Slate 900 */
+    color: $text-main !important;
     border: 1px solid rgba(255,255,255,0.1);
+}
+
+/* Títulos de Dialogs */
+.mat-mdc-dialog-title, .mat-mdc-dialog-content { color: $text-main !important; }
+
+
+/* =========================================================
+   OVERRIDES DE ANGULAR MATERIAL (DARK MODE) - DESPLEGABLES
+   ========================================================= */
+
+/* 1. El Panel Flotante (El recuadro que se abre) */
+.mat-mdc-select-panel {
+    background-color: #1e293b !important; /* Azul grisáceo oscuro */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px !important;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5) !important;
+}
+
+/* 2. Las Opciones (Cada ítem de la lista) */
+.mat-mdc-option {
+    color: #e2e8f0 !important; /* Texto claro */
+    transition: background 0.2s;
+
+    /* Hover sobre la opción */
+    &:hover, &.mat-mdc-option-active {
+        background-color: rgba(255, 255, 255, 0.08) !important;
+    }
+
+    /* Opción Seleccionada */
+    &.mdc-list-item--selected {
+        background-color: rgba(59, 130, 246, 0.15) !important; /* Azul suave */
+        .mdc-list-item__primary-text {
+            color: #60a5fa !important; /* Texto azul brillante */
+            font-weight: 600;
+        }
+    }
+}
+
+/* 3. El texto del valor seleccionado (dentro del input cerrado) */
+.mat-mdc-select-value { 
+    color: #f8fafc !important; 
+}
+
+/* 4. La flechita del select */
+.mat-mdc-select-arrow {
+    color: #94a3b8 !important; 
+}
+
+/* 5. Estilos para Autocomplete (si usas mat-autocomplete también) */
+.mat-mdc-autocomplete-panel {
+    background-color: #1e293b !important;
+    color: #e2e8f0 !important;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }

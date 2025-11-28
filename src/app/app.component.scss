@@ -1,0 +1,31 @@
+// VARIABLES (Opcional si ya las tienes globales, pero no está de más)
+$color-bg-deep: #020617; 
+$color-bg-soft: #0b1120;
+
+// CONTENEDOR PRINCIPAL
+.app-shell {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    /* Asegura que el fondo cubra todo si el styles.scss falla */
+    background: linear-gradient(135deg, $color-bg-deep, $color-bg-soft); 
+}
+
+// ZONA DE CONTENIDO
+.app-main {
+    flex: 1; /* Empuja el footer hacia abajo si tuvieras uno */
+    display: flex;
+    flex-direction: column; 
+    align-items: center; 
+    width: 100%;
+    position: relative;
+    z-index: 1;
+}
+
+// ANIMACIONES DE TRANSICIÓN (Opcional)
+// Si usas [@routeAnimations] en el router-outlet
+::ng-deep .route-container {
+    width: 100%;
+    display: flex; 
+    justify-content: center;
+}
