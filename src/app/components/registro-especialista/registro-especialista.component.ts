@@ -21,12 +21,12 @@ import { MatSelectModule } from '@angular/material/select';
 import Swal from 'sweetalert2';
 import { SupabaseService } from '../../../services/supabase.service';
 import { environment } from '../../../environments/environment';
-import { CaptchaComponent } from '../captcha/captcha.component';
 
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatIconModule } from '@angular/material/icon';
 
 import { NgxCaptchaModule } from 'ngx-captcha';
+import { MatChipsModule } from '@angular/material/chips';
 
 // ===== Validadores para selección múltiple =====
 function minSelected(min: number): ValidatorFn {
@@ -59,7 +59,10 @@ function maxSelected(max: number): ValidatorFn {
 
     MatButtonToggleModule, // <=========
     MatIconModule,         // <=========
-    NgxCaptchaModule
+    NgxCaptchaModule,
+
+    MatChipsModule           // <--- IMPORTANTE AGREGARLO AQUÍ
+    
   ],
   templateUrl: './registro-especialista.component.html',
   styleUrls: ['./registro-especialista.component.scss']

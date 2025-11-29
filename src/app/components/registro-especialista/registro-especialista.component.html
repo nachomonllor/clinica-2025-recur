@@ -48,7 +48,7 @@
     </mat-form-field>
 
     <!-- ESPECIALIDADES (botones, no combo) -->
-    <div class="especialidades-section"
+    <!-- <div class="especialidades-section"
       [class.has-error]="f.get('especialidades')?.invalid && f.get('especialidades')?.touched">
       <div class="especialidades-header">
         <span class="label">Especialidades</span>
@@ -86,7 +86,51 @@
           Máximo {{ maxEspecialidades }} especialidades.
         </span>
       </div>
+    </div> -->
+    
+    <div class="especialidades-section" 
+         [class.has-error]="f.get('especialidades')?.invalid && f.get('especialidades')?.touched">
+      
+      <div class="especialidades-header">
+        <span class="label">Seleccioná tus especialidades</span>
+        <span class="counter">
+          {{ especialidadesSeleccionadas.length }}/{{ maxEspecialidades }}
+        </span>
+      </div>
+
+      <mat-chip-listbox 
+        formControlName="especialidades" 
+        multiple 
+        aria-label="Selección de especialidades">
+        
+        <mat-chip-option 
+          *ngFor="let esp of especialidadesBase" 
+          [value]="esp"
+          color="accent" 
+          [selected]="especialidadesSeleccionadas.includes(esp)"
+          [disabled]="loading || (!especialidadesSeleccionadas.includes(esp) && especialidadesSeleccionadas.length >= maxEspecialidades)">
+          
+          <mat-icon matChipAvatar *ngIf="especialidadesSeleccionadas.includes(esp)">check</mat-icon>
+          {{ esp }}
+          
+        </mat-chip-option>
+      
+      </mat-chip-listbox>
+
+      <div class="especialidades-hint">
+        Elegí entre 1 y {{ maxEspecialidades }} especialidades.
+      </div>
+
+      <div class="especialidades-error" *ngIf="f.get('especialidades')?.touched">
+        <span *ngIf="f.get('especialidades')?.hasError('required') || f.get('especialidades')?.hasError('minSelected')">
+          Seleccioná al menos una.
+        </span>
+        <span *ngIf="f.get('especialidades')?.hasError('maxSelected')">
+          Máximo {{ maxEspecialidades }} especialidades.
+        </span>
+      </div>
     </div>
+    
     <!-- FIN ESPECIALIDADES -->
 
     <mat-form-field *ngIf="especialidadesSeleccionadas.includes('Otro')" appearance="outline" class="full-width">
