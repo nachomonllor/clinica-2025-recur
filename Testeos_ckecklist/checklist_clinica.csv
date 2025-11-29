@@ -1,0 +1,80 @@
+Sprint;Categoría;Requerimiento;Estado
+1;General;Favicon personalizado;Pendiente
+1;General;Subido a la web (Hosting);Pendiente
+1;General;Loading en pantallas de carga;Pendiente
+1;Bienvenida;Accesos visibles a Login y Registro;Pendiente
+1;Registro;Validación de campos según corresponda;Pendiente
+1;Registro Paciente;Campos: Nombre, Apellido, Edad, DNI, Obra Social, Mail, Password;Pendiente
+1;Registro Paciente;Carga de 2 imágenes de perfil;Pendiente
+1;Registro Especialista;Campos: Nombre, Apellido, Edad, DNI, Especialidad, Mail, Password;Pendiente
+1;Registro Especialista;Posibilidad de elegir especialidad existente o agregar una nueva;Pendiente
+1;Registro Especialista;Carga de 1 imagen de perfil;Pendiente
+1;Login;Botones de acceso rápido (hardcodeados para test);Pendiente
+1;Login;Validación: Especialista solo entra si fue aprobado por Admin y verificó mail;Pendiente
+1;Login;Validación: Paciente solo entra si verificó mail;Pendiente
+1;Sección Usuarios (Admin);Visible solo para Administrador;Pendiente
+1;Sección Usuarios (Admin);Listado con información de usuarios;Pendiente
+1;Sección Usuarios (Admin);Acción: Habilitar/Inhabilitar acceso a Especialistas;Pendiente
+1;Sección Usuarios (Admin);Acción: Registrar nuevos usuarios (Admin, Paciente, Especialista) desde acá;Pendiente
+2;General;Captcha en Registro (Google o Propio);Pendiente
+2;Documentación;Readme con explicación, pantallas y accesos;Pendiente
+2;Mis Turnos (Paciente);Filtro único (Especialidad/Especialista) - NO USAR COMBOBOX;Pendiente
+2;Mis Turnos (Paciente);Acción: Cancelar turno (visible si no realizado, requiere comentario);Pendiente
+2;Mis Turnos (Paciente);Acción: Ver reseña (visible si existe);Pendiente
+2;Mis Turnos (Paciente);Acción: Completar encuesta (visible si realizado y con reseña);Pendiente
+2;Mis Turnos (Paciente);Acción: Calificar atención (visible si realizado, requiere comentario);Pendiente
+2;Mis Turnos (Paciente);Estado del turno bien visible;Pendiente
+2;Turnos (Especialista);Filtro único (Especialidad/Paciente) - NO USAR COMBOBOX;Pendiente
+2;Turnos (Especialista);Acción: Cancelar turno (no realizado/aceptado/rechazado, requiere comentario);Pendiente
+2;Turnos (Especialista);Acción: Rechazar turno (no realizado/aceptado/cancelado, requiere comentario);Pendiente
+2;Turnos (Especialista);Acción: Aceptar turno (no realizado/cancelado/rechazado);Pendiente
+2;Turnos (Especialista);Acción: Finalizar turno (solo si Aceptado, requiere reseña/diagnóstico);Pendiente
+2;Turnos (Especialista);Acción: Ver reseña (si existe);Pendiente
+2;Turnos (Admin);Listado de todos los turnos;Pendiente
+2;Turnos (Admin);Filtro único (Especialidad/Especialista) - NO USAR COMBOBOX;Pendiente
+2;Turnos (Admin);Acción: Cancelar turno (no realizado/aceptado/rechazado, requiere comentario);Pendiente
+2;Solicitar Turno;Acceso para Paciente y Admin;Pendiente
+2;Solicitar Turno;Selección: Especialidad -> Especialista -> Día y Horario;Pendiente
+2;Solicitar Turno;Paciente ve próximos 15 días según disponibilidad del médico;Pendiente
+2;Solicitar Turno;NO USAR Datepicker;Pendiente
+2;Solicitar Turno;Admin debe poder seleccionar el Paciente al cual asignarle el turno;Pendiente
+2;Mi Perfil;Mostrar datos del usuario e imágenes;Pendiente
+2;Mis Horarios (Especialista);Marcar disponibilidad horaria (considerar múltiples especialidades);Pendiente
+2;Lógica Turnos;Duración mínima 30 min (modificable por especialista);Pendiente
+3;Exportación;Opción A: Excel de usuarios (Admin) O Opción B: PDF Historia Clínica (Paciente);Pendiente
+3;Exportación;Si es PDF: Logo, título y fecha de emisión;Pendiente
+3;UX/UI;Al menos 2 animaciones de transición entre componentes;Pendiente
+3;Historia Clínica;Carga al finalizar turno (Especialista);Pendiente
+3;Historia Clínica;Datos fijos: Altura, Peso, Temperatura, Presión;Pendiente
+3;Historia Clínica;Datos dinámicos: Máximo 3 pares Clave-Valor (ej: Caries: 4);Pendiente
+3;Historia Clínica;Visibilidad: Mi Perfil (Paciente);Pendiente
+3;Historia Clínica;Visibilidad: Sección Usuarios (Admin);Pendiente
+3;Historia Clínica;Visibilidad: Sección Pacientes (Especialista - solo pacientes atendidos);Pendiente
+3;Búsqueda Avanzada;Mejorar filtro de turnos: buscar por cualquier campo (incluida la HC y datos dinámicos);Pendiente
+4;Técnico;Uso de al menos 3 Pipes personalizados;Pendiente
+4;Técnico;Uso de al menos 3 Directivas personalizadas;Pendiente
+4;Informes (Admin);Log de ingresos al sistema (Usuario, día, horario);Pendiente
+4;Informes (Admin);Cantidad de turnos por especialidad;Pendiente
+4;Informes (Admin);Cantidad de turnos por día;Pendiente
+4;Informes (Admin);Turnos solicitados por médico (en lapso de tiempo);Pendiente
+4;Informes (Admin);Turnos finalizados por médico (en lapso de tiempo);Pendiente
+4;Exportación;Descarga de informes/gráficos en Excel o PDF;Pendiente
+5;Historia Clínica;Agregar 3 nuevos datos dinámicos obligatorios;Pendiente
+5;Historia Clínica;Control 1: Rango (0 a 100);Pendiente
+5;Historia Clínica;Control 2: Numérico;Pendiente
+5;Historia Clínica;Control 3: Switch (Si/No);Pendiente
+5;Captcha Propio;Generar Directiva de Captcha propio;Pendiente
+5;Captcha Propio;Comunicación por Input/Output;Pendiente
+5;Captcha Propio;Usar en todas las altas (Pacientes/Profesionales);Pendiente
+5;Captcha Propio;Opción para deshabilitar el captcha;Pendiente
+5;UX/UI;Al menos 6 animaciones de transición en total en la app;Pendiente
+6;Idiomas;Soporte para Inglés, Español y Portugués;Pendiente
+6;Idiomas;Traducir al menos 3 pantallas completas;Pendiente
+6;Encuesta;Encuesta de satisfacción del paciente (mínimo 5 controles);Pendiente
+6;Encuesta;Controles: 1 Textbox (solo uno), Estrellas, Radio, Checkbox, Rango;Pendiente
+6;Estadísticas Avanzadas;Datos mínimos de prueba: 30 días de antigüedad;Pendiente
+6;Estadísticas Avanzadas;Informe: Cantidad de visitas a la clínica;Pendiente
+6;Estadísticas Avanzadas;Informe: Cantidad de pacientes por especialidad (Descarga imagen gráfico);Pendiente
+6;Estadísticas Avanzadas;Informe: Cantidad de médicos por especialidad (Descarga imagen gráfico);Pendiente
+6;Estadísticas Avanzadas;Informe: Resultados de la encuesta (respuestas);Pendiente
+6;Estadísticas Avanzadas;Historial completo de turnos al seleccionar un paciente (Admin);Pendiente
