@@ -59,9 +59,7 @@ export class MisTurnosEspecialistaComponent implements OnInit {
 
   @ViewChild('resenaDialog') resenaDialog!: TemplateRef<any>;
 
-
   private resenaDialogRef?: MatDialogRef<any>;
-
 
   @ViewChild('confirmDialog') confirmDialog!: TemplateRef<unknown>;
   @ViewChild('rechazarDialog') rechazarDialog!: TemplateRef<unknown>;
@@ -84,12 +82,52 @@ export class MisTurnosEspecialistaComponent implements OnInit {
 
   ) { }
 
+  // ngOnInit(): void {
+  //   this.turnoService.getTurnosEspecialista$().subscribe({
+  //     next: (ts: TurnoEspecialista[]) => {
+  //       this.dataSource.data = ts;
+
+  //       // filtro por especialidad, paciente, estado, historia
+  //       this.dataSource.filterPredicate = (t, f) => {
+  //         const haystack = `${t.especialidad} ${t.paciente} ${t.estado} ${t.historiaBusqueda || ''}`.toLowerCase();
+  //         return haystack.includes(f);
+  //       };
+  //     },
+  //     error: (e) => console.error('[MisTurnosEspecialista] Error', e)
+  //   });
+  // }
+
+
+  // modifico el codigo para que los pacientes con turnos PENDIENTE aparezcan arriba en lista
   ngOnInit(): void {
     this.turnoService.getTurnosEspecialista$().subscribe({
       next: (ts: TurnoEspecialista[]) => {
-        this.dataSource.data = ts;
+        
+        // --- LÓGICA DE ORDENAMIENTO ---
+        const turnosOrdenados = ts.sort((a, b) => {
+          const estadoA = String(a.estado || '').toUpperCase();
+          const estadoB = String(b.estado || '').toUpperCase();
 
-        // filtro por especialidad, paciente, estado, historia
+          // 1. Prioridad absoluta: PENDIENTE va primero (-1 sube, 1 baja)
+          if (estadoA === 'PENDIENTE' && estadoB !== 'PENDIENTE') return -1;
+          if (estadoA !== 'PENDIENTE' && estadoB === 'PENDIENTE') return 1;
+
+          // 2. Orden secundario: Por fecha (los más viejos o próximos primero)
+          // Esto ayuda a que dentro de los "Pendientes" o "Aceptados" haya orden cronológico
+          if (a.fecha < b.fecha) return -1;
+          if (a.fecha > b.fecha) return 1;
+
+          // 3. Orden terciario: Por hora
+          if (a.hora < b.hora) return -1;
+          if (a.hora > b.hora) return 1;
+
+          return 0;
+        });
+
+        // Asignamos la lista ya ordenada
+        this.dataSource.data = turnosOrdenados;
+
+        // Configuración del filtro (esto lo tenías igual)
         this.dataSource.filterPredicate = (t, f) => {
           const haystack = `${t.especialidad} ${t.paciente} ${t.estado} ${t.historiaBusqueda || ''}`.toLowerCase();
           return haystack.includes(f);
@@ -109,7 +147,6 @@ export class MisTurnosEspecialistaComponent implements OnInit {
   }
 
   //  -----------------------  ACCIONES SOBRE TURNOS -------------------------
-
   rechazarTurno(turno: TurnoEspecialista): void {
     const comentarioForm = this.fb.group({
       comentario: ['', [Validators.required, Validators.minLength(10)]]
@@ -137,7 +174,6 @@ export class MisTurnosEspecialistaComponent implements OnInit {
       }
     });
   }
-
 
   cancelarTurno(turno: TurnoEspecialista): void {
     const comentarioForm = this.fb.group({
