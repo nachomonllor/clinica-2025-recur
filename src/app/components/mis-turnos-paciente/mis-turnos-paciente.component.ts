@@ -74,12 +74,31 @@ export class MisTurnosPacienteComponent implements OnInit {
     private supa: SupabaseService
   ) { }
 
+  // ngOnInit(): void {
+  //   this.turnoService.getTurnosPacienteVM$().subscribe({
+  //     next: (ts: TurnoVM[]) => {
+  //       this.dataSource.data = ts;
+  //       this.dataSource.filterPredicate = (t, f) => {
+  //         const haystack = `${t.especialidad} ${t.especialista} ${t.estado} ${t.historiaBusqueda || ''}`.toLowerCase();
+  //         return haystack.includes(f);
+  //       };
+  //     },
+  //     error: (e: any) =>
+  //       console.error('[MisTurnosPaciente] Error al cargar turnos', e)
+  //   });
+  // }
+
   ngOnInit(): void {
     this.turnoService.getTurnosPacienteVM$().subscribe({
       next: (ts: TurnoVM[]) => {
         this.dataSource.data = ts;
+
+        // CONFIGURACIÓN DEL FILTRO
         this.dataSource.filterPredicate = (t, f) => {
-          const haystack = `${t.especialidad} ${t.especialista} ${t.estado} ${t.historiaBusqueda || ''}`.toLowerCase();
+          // Concatenamos todos los campos donde queremos buscar
+          // Agregué: ${t.resena || ''}
+          const haystack = `${t.especialidad} ${t.especialista} ${t.estado} ${t.historiaBusqueda || ''} ${t.resena || ''}`.toLowerCase();
+          
           return haystack.includes(f);
         };
       },
