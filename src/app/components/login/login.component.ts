@@ -242,7 +242,7 @@ export class LoginComponent implements OnInit {
   //     // 2) Obtener datos de la sesión activa
   //     const { data: userData, error: eUser } = await this.supa.obtenerUsuarioActual();
   //     if (eUser || !userData?.user) throw eUser || new Error('No se pudo verificar la sesión.');
-      
+
   //     const user = userData.user;
 
   //     // 3) Verificación de correo (OBLIGATORIO)
@@ -264,10 +264,10 @@ export class LoginComponent implements OnInit {
   //     // Intentamos crearlo (Self-healing)
   //     if (!usuario) {
   //       console.warn('[Login] Usuario fantasma detectado. Intentando reparar perfil...');
-        
+
   //       const md: any = user.user_metadata || {};
   //       const rolMeta = (md.perfil || md.rol || 'PACIENTE').toString().toUpperCase();
-        
+
   //       // Validación de seguridad para roles
   //       const rolDb: Rol = (rolMeta === 'ESPECIALISTA' || rolMeta === 'ADMIN') ? rolMeta : 'PACIENTE';
 
@@ -291,12 +291,12 @@ export class LoginComponent implements OnInit {
   //       };
 
   //       const { data: creado, error: eUpsert } = await this.supa.upsertUsuario(nuevoUsuario);
-        
+
   //       if (eUpsert || !creado) {
   //         console.error('[Login] Falló la autoreparación del usuario:', eUpsert);
   //         throw new Error('Tu usuario no tiene un perfil asociado y no se pudo crear automáticamente. Contacta al soporte.');
   //       }
-        
+
   //       usuario = creado as Usuario;
   //     }
 
@@ -325,7 +325,7 @@ export class LoginComponent implements OnInit {
   //     if (faltaAvatar1 || faltaAvatar2) {
   //       let msg = 'Falta cargar tu imagen de perfil.';
   //       if (usuario.perfil === 'PACIENTE' && faltaAvatar1 && faltaAvatar2) msg = 'Faltan tus dos imágenes de perfil.';
-        
+
   //       await Swal.fire({
   //         icon: 'info',
   //         title: 'Perfil incompleto',
@@ -374,7 +374,147 @@ export class LoginComponent implements OnInit {
   // }
 
 
-  async iniciarSesion(): Promise<void> {
+  // async iniciarSesion(): Promise<void> {
+  //   console.log('🚀 [LOGIN] Inicio del proceso');
+
+  //   if (this.formularioLogin.invalid) {
+  //     this.formularioLogin.markAllAsTouched();
+  //     return;
+  //   }
+
+  //   this.cargando = true;
+  //   this.error = '';
+
+  //   try {
+  //     const { email, password } = this.formularioLogin.getRawValue();
+
+  //     // PASO 1: Auth
+  //     console.log('1️⃣ Autenticando con Supabase Auth...');
+  //     const { error: eLogin } = await this.supa.iniciarSesion(email, password);
+  //     if (eLogin) throw eLogin;
+  //     console.log('✅ Auth OK');
+
+  //     // PASO 2: Obtener User
+  //     console.log('2️⃣ Obteniendo usuario de sesión...');
+  //     const { data: userData, error: eUser } = await this.supa.obtenerUsuarioActual();
+  //     if (eUser || !userData?.user) throw eUser || new Error('Error usuario Auth');
+  //     const user = userData.user;
+  //     console.log('✅ Usuario Auth obtenido:', user.id);
+
+  //     // PASO 3: Verificar Email
+  //     if (!user.email_confirmed_at) {
+  //       await this.supa.cerrarSesion();
+  //       throw new Error('Debes verificar tu correo.');
+  //     }
+
+  //     // PASO 4: Buscar en DB
+  //     console.log('3️⃣ Buscando perfil en tabla usuarios...');
+  //     let { data: usuario, error: eUsuario } = await this.supa.obtenerUsuarioPorId(user.id);
+
+  //     // Si no existe (usuario fantasma), intentamos crearlo
+  //     if (!usuario) {
+  //       console.warn('⚠️ Usuario no encontrado en tabla. Intentando crear fallback...');
+  //       // ... (Tu lógica de creación de usuario fantasma que ya tenías) ...
+  //       const md: any = user.user_metadata || {};
+  //       const rolMeta = (md.perfil || md.rol || 'PACIENTE').toString().toUpperCase();
+  //       const rolDb: Rol = (rolMeta === 'ESPECIALISTA' || rolMeta === 'ADMIN') ? rolMeta : 'PACIENTE';
+
+  //       // OJO: upsertUsuario devuelve {data, error}
+  //       const { data: nuevo, error: eUpsert } = await this.supa.upsertUsuario({
+  //         id: user.id,
+  //         nombre: md.nombre || 'Usuario',
+  //         apellido: md.apellido || 'Sin Apellido',
+  //         edad: md.edad || null,
+  //         dni: md.dni || '',
+  //         obra_social: md.obra_social || null,
+  //         email: user.email || '',
+  //         password: 'auth_managed',
+  //         perfil: rolDb,
+  //         imagen_perfil_1: md.imagen_perfil_1 || null,
+  //         imagen_perfil_2: md.imagen_perfil_2 || null,
+  //         esta_aprobado: rolDb === 'ESPECIALISTA' ? false : true,
+  //         mail_verificado: true,
+  //         activo: true,
+  //         idioma_preferido: 'es'
+  //       });
+
+  //       if (eUpsert) throw eUpsert;
+  //       usuario = nuevo;
+  //       console.log('✅ Usuario fallback creado');
+  //     }
+
+  //     console.log('✅ Perfil de usuario listo:', usuario?.perfil);
+
+  //     // PASO 5: Validaciones de negocio
+  //     if (usuario?.perfil === 'ESPECIALISTA' && !usuario.esta_aprobado) {
+  //       await this.supa.cerrarSesion();
+  //       throw new Error('Cuenta pendiente de aprobación.');
+  //     }
+
+  //     // PASO 6: Mensaje de bienvenida
+  //     console.log('4️⃣ Mostrando alerta de bienvenida...');
+  //     // Hack: No usamos await en el Swal para no bloquear si el usuario tarda en cerrar
+  //     Swal.fire({
+  //       icon: 'success',
+  //       title: `Bienvenido, ${usuario?.nombre}`,
+  //       timer: 1500,
+  //       showConfirmButton: false,
+  //       toast: true,
+  //       position: 'top-end'
+  //     });
+
+  //     // PASO 7: Log (Sin await para no bloquear)
+  //     console.log('5️⃣ Registrando log (background)...');
+  //     this.logIngresos.registrarIngreso().catch(err => console.error('Log error', err));
+
+  //     // PASO 8: Navegación
+  //     console.log('6️⃣ Intentando navegar...');
+  //     let ruta = '/bienvenida';
+  //     if (usuario?.perfil === 'PACIENTE') ruta = '/mis-turnos-paciente';
+  //     else if (usuario?.perfil === 'ESPECIALISTA') ruta = '/mis-turnos-especialista';
+  //     else if (usuario?.perfil === 'ADMIN') ruta = '/turnos-admin';
+
+  //     console.log('🚀 Navegando a:', ruta);
+
+  //     // IMPORTANTE: Aquí es donde suele colgarse si el Guard falla
+  //     //const navResult = await this.router.navigateByUrl(ruta);
+
+  //     // ... (código anterior del switch de rutas) ...
+
+  //     console.log('🚀 Navegando a:', ruta);
+
+  //     const navResult = await this.router.navigateByUrl(ruta);
+
+  //     console.log('🏁 Navegación resultado:', navResult); 
+
+  //     if (!navResult) {
+  //       // Si el router devuelve false (bloqueado por Guard o error), forzamos stop loading
+  //       console.warn('⚠️ La navegación fue bloqueada o cancelada.');
+  //       this.cargando = false; 
+
+  //       // Opcional: Intentar ir a bienvenida si falló la ruta específica
+  //       // await this.router.navigateByUrl('/bienvenida');
+  //     }
+
+
+  //     // ------------------------------------------------
+
+  //     console.log('🏁 Navegación resultado:', navResult); 
+  //     // Si navResult es false, el Guard rechazó la navegación
+
+
+  //   } catch (e: any) {
+  //     console.error('❌ EXCEPCIÓN:', e);
+  //     this.error = this.traducirError(e);
+  //     Swal.fire('Error', this.error, 'error');
+  //   } finally {
+  //     console.log('🏁 Fin del proceso (Finally). Quitamos spinner.');
+  //     this.cargando = false; 
+  //   }
+  // }
+
+
+ async iniciarSesion(): Promise<void> {
     console.log('🚀 [LOGIN] Inicio del proceso');
 
     if (this.formularioLogin.invalid) {
@@ -388,10 +528,20 @@ export class LoginComponent implements OnInit {
     try {
       const { email, password } = this.formularioLogin.getRawValue();
 
+      // --- borramos esta linea
+      // await this.supa.client.auth.signOut();  <=== la volamos 
+
       // PASO 1: Auth
       console.log('1️⃣ Autenticando con Supabase Auth...');
+      
+      // Agregamos un log justo antes para asegurar que entra acá
       const { error: eLogin } = await this.supa.iniciarSesion(email, password);
-      if (eLogin) throw eLogin;
+      
+      if (eLogin) {
+        console.error('❌ Error Supabase Auth:', eLogin);
+        throw eLogin;
+      }
+      
       console.log('✅ Auth OK');
 
       // PASO 2: Obtener User
@@ -475,33 +625,31 @@ export class LoginComponent implements OnInit {
       else if (usuario?.perfil === 'ADMIN') ruta = '/turnos-admin';
 
       console.log('🚀 Navegando a:', ruta);
-      
+
       // IMPORTANTE: Aquí es donde suele colgarse si el Guard falla
       //const navResult = await this.router.navigateByUrl(ruta);
-      
+
       // ... (código anterior del switch de rutas) ...
 
       console.log('🚀 Navegando a:', ruta);
-      
+
       const navResult = await this.router.navigateByUrl(ruta);
-      
-      console.log('🏁 Navegación resultado:', navResult); 
+
+      console.log('🏁 Navegación resultado:', navResult);
 
       if (!navResult) {
         // Si el router devuelve false (bloqueado por Guard o error), forzamos stop loading
         console.warn('⚠️ La navegación fue bloqueada o cancelada.');
-        this.cargando = false; 
-        
+        this.cargando = false;
+
         // Opcional: Intentar ir a bienvenida si falló la ruta específica
         // await this.router.navigateByUrl('/bienvenida');
       }
 
-
       // ------------------------------------------------
 
-      console.log('🏁 Navegación resultado:', navResult); 
+      console.log('🏁 Navegación resultado:', navResult);
       // Si navResult es false, el Guard rechazó la navegación
-
 
     } catch (e: any) {
       console.error('❌ EXCEPCIÓN:', e);
@@ -509,7 +657,7 @@ export class LoginComponent implements OnInit {
       Swal.fire('Error', this.error, 'error');
     } finally {
       console.log('🏁 Fin del proceso (Finally). Quitamos spinner.');
-      this.cargando = false; 
+      this.cargando = false;
     }
   }
 
