@@ -93,7 +93,6 @@ export class MisTurnosPacienteComponent implements OnInit {
   }
 
   // ---------- Reglas de negocio ----------
-
   puedeCancelar(t: TurnoVM): boolean {
     if (t.estado === 'realizado' || t.estado === 'cancelado') return false;
 
@@ -129,37 +128,6 @@ export class MisTurnosPacienteComponent implements OnInit {
       data: { turno: t, form: comentarioForm },
       width: '500px'
     });
-
-    // ref.afterClosed().subscribe(result => {
-    //   if (!result) return;
-
-    //   if (comentarioForm.invalid) {
-    //     this.snackBar.open(
-    //       'Debes ingresar un motivo de al menos 10 caracteres.',
-    //       'Cerrar',
-    //       { duration: 2500 }
-    //     );
-    //     return;
-    //   }
-
-    //   // TODO: guardar comentario si querés
-    //   this.turnoService.cancelarTurno(t.id).subscribe({
-    //     next: () => {
-    //       t.estado = 'cancelado';
-    //       this.dataSource.data = [...this.dataSource.data];
-    //       this.snackBar.open('Turno cancelado', 'Cerrar', { duration: 2000 });
-    //     },
-    //     error: (e: any) => {
-    //       console.error(e);
-    //       this.snackBar.open(
-    //         `Error al cancelar: ${e?.message || e}`,
-    //         'Cerrar',
-    //         { duration: 2500 }
-    //       );
-    //     }
-    //   });
-    // });
-
 
     // dentro de ref.afterClosed()
     ref.afterClosed().subscribe(result => {
@@ -205,7 +173,7 @@ export class MisTurnosPacienteComponent implements OnInit {
   puedeVerResena(t: TurnoVM): boolean {
     // Verificamos si existe la propiedad y si tiene texto real (no solo espacios)
     const tieneTexto = t.resena && typeof t.resena === 'string' && t.resena.trim().length > 0;
-    
+
     // Solo mostramos el botón si hay texto real
     return !!tieneTexto;
   }
