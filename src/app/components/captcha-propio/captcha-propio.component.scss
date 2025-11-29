@@ -1,0 +1,39 @@
+.captcha-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    max-width: 300px;
+    /* Para que no se estire demasiado */
+}
+
+.captcha-visual {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+
+    canvas {
+        border-radius: 8px;
+        border: 1px solid rgba(56, 189, 248, 0.3);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        cursor: pointer;
+    }
+
+    button {
+        color: #94a3b8;
+
+        &:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.1);
+        }
+    }
+}
+
+/* Ocultar el espacio extra de errores/hints para que quede compacto */
+::ng-deep .no-subscript .mat-mdc-form-field-subscript-wrapper {
+    display: none !important;
+}

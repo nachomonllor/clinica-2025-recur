@@ -1,0 +1,26 @@
+<p>captcha-propio works!</p>
+
+
+<div class="captcha-container">
+
+    <div class="captcha-visual">
+        <canvas #canvasCaptcha [width]="200" [height]="60"></canvas>
+
+        <button mat-icon-button (click)="generarCaptcha()" type="button" matTooltip="Cambiar código">
+            <mat-icon>refresh</mat-icon>
+        </button>
+    </div>
+
+    <div class="captcha-input">
+        <mat-form-field appearance="outline" class="full-width no-subscript">
+            <mat-label>Ingrese el código</mat-label>
+            <input matInput [(ngModel)]="inputUsuario" (ngModelChange)="validar()" autocomplete="off"
+                placeholder="Copie las letras de la imagen">
+
+            <mat-icon matSuffix *ngIf="inputUsuario.toUpperCase() === codigoGenerado" style="color: #22c55e;">
+                check_circle
+            </mat-icon>
+        </mat-form-field>
+    </div>
+
+</div>
