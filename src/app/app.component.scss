@@ -29,3 +29,16 @@ $color-bg-soft: #0b1120;
     display: flex; 
     justify-content: center;
 }
+
+/* FORZAR dialogos OSCUROS */
+.mat-mdc-dialog-container .mdc-dialog__surface {
+    background-color: #0f172a !important; /* Azul oscuro (Slate 900) */
+    color: #e2e8f0 !important;            /* Texto claro */
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+/* Titulos y Contenido de Dialogs */
+.mat-mdc-dialog-title, 
+.mat-mdc-dialog-content { 
+    color: #e2e8f0 !important; 
+}

@@ -251,11 +251,6 @@ export class SolicitarTurnoComponent implements OnInit {
   }
 
 
-
-
-
-
-
   // =================================================================
   // ------------------------- -  Ciclo de vida ngonini
   // =================================================================
@@ -398,68 +393,6 @@ export class SolicitarTurnoComponent implements OnInit {
     diaCtrl.disable({ emitEvent: false });
     horaCtrl.disable({ emitEvent: false });
 
-    // Cuando cambia la especialidad, filtramos especialistas
-    // especialidadCtrl.valueChanges.subscribe(esp => {
-    //   if (esp) {
-    //     this.especialistasFiltrados = this.especialistas.filter(e => e.especialidad === esp);
-
-    //     // if (this.especialistasFiltrados.length === 0) {
-    //     //   this.snackBar.open(`No hay especialistas disponibles para ${esp}`, 'Cerrar', { duration: 3000 });
-    //     // }
-
-    //     if (this.especialistasFiltrados.length === 0) {
-    //       this.snackBar.open(
-    //         this.translate.instant('APPOINTMENT.NO_SPECIALISTS', { speciality: esp }),
-    //         this.translate.instant('COMMON.CLOSE'),
-    //         { duration: 3000 }
-    //       );
-    //     }
-
-    //     especialistaCtrl.reset();
-    //     especialistaCtrl.enable({ emitEvent: false });
-    //     diaCtrl.reset();
-    //     diaCtrl.disable({ emitEvent: false });
-    //     horaCtrl.reset();
-    //     horaCtrl.disable({ emitEvent: false });
-    //   } else {
-    //     this.especialistasFiltrados = [];
-    //     especialistaCtrl.reset();
-    //     especialistaCtrl.disable({ emitEvent: false });
-    //     diaCtrl.reset();
-    //     diaCtrl.disable({ emitEvent: false });
-    //     horaCtrl.reset();
-    //     horaCtrl.disable({ emitEvent: false });
-    //   }
-    // });
-
-    // Al elegir especialista se habilita día
-    // especialistaCtrl.valueChanges.subscribe(especialista => {
-    //   if (especialista) {
-    //     diaCtrl.enable({ emitEvent: false });
-    //   } else {
-    //     diaCtrl.reset();
-    //     diaCtrl.disable({ emitEvent: false });
-    //     horaCtrl.reset();
-    //     horaCtrl.disable({ emitEvent: false });
-    //   }
-    // });
-
-    // especialistaCtrl.valueChanges.subscribe(especialista => {
-    //   if (especialista) {
-    //     diaCtrl.enable({ emitEvent: false });
-    //     this.horariosDisponibles = [];
-    //     horaCtrl.reset();
-    //     horaCtrl.disable({ emitEvent: false });
-    //   } else {
-    //     diaCtrl.reset();
-    //     diaCtrl.disable({ emitEvent: false });
-    //     this.horariosDisponibles = [];
-    //     horaCtrl.reset();
-    //     horaCtrl.disable({ emitEvent: false });
-    //   }
-    // });
-
-
     especialistaCtrl.valueChanges.subscribe(especialista => {
       if (especialista) {
         // recalculamos días según los horarios de ese especialista
@@ -479,7 +412,6 @@ export class SolicitarTurnoComponent implements OnInit {
         horaCtrl.disable({ emitEvent: false });
       }
     });
-
 
 
     especialidadCtrl.valueChanges.subscribe(esp => {
@@ -517,18 +449,6 @@ export class SolicitarTurnoComponent implements OnInit {
       }
     });
 
-
-
-    // Al elegir día se habilita hora
-    //   diaCtrl.valueChanges.subscribe(dia => {
-    //     if (dia) {
-    //       horaCtrl.enable({ emitEvent: false });
-    //     } else {
-    //       horaCtrl.reset();
-    //       horaCtrl.disable({ emitEvent: false });
-    //     }
-    //   });
-    // }
 
     diaCtrl.valueChanges.subscribe(dia => {
       if (dia) {
@@ -674,10 +594,6 @@ export class SolicitarTurnoComponent implements OnInit {
     } catch (e: any) {
       console.error('[SolicitarTurno] Error al cargar pacientes', e);
 
-
-      // this.snackBar.open('Error al cargar pacientes', 'Cerrar', { duration: 2500 });
-
-
       this.snackBar.open(
         this.translate.instant('APPOINTMENT.ERROR_LOAD_PATIENTS'),
         this.translate.instant('COMMON.CLOSE'),
@@ -740,14 +656,6 @@ export class SolicitarTurnoComponent implements OnInit {
     const fv = this.formularioTurno.value;
 
     try {
-      // if (!fv.especialidad || !fv.especialista || !fv.dia || !fv.hora) {
-      //   throw new Error('Faltan datos obligatorios del turno.');
-      // }
-
-      // const pacienteIdFinal = this.esAdmin ? fv.paciente! : this.pacienteId!;
-      // if (!pacienteIdFinal) {
-      //   throw new Error('No se pudo determinar el paciente.');
-      // }
 
       if (!fv.especialidad || !fv.especialista || !fv.dia || !fv.hora) {
         throw new Error(this.translate.instant('APPOINTMENT.ERROR_MISSING_FIELDS'));
@@ -788,9 +696,6 @@ export class SolicitarTurnoComponent implements OnInit {
         return codigo === 'PENDIENTE' || codigo === 'ACEPTADO';
       });
 
-      // if (hayChoque) {
-      //   throw new Error('Ya existe un turno en ese horario. Por favor, seleccioná otro.');
-      // }
 
       if (hayChoque) {
         throw new Error(this.translate.instant('APPOINTMENT.ERROR_SLOT_TAKEN'));
@@ -799,12 +704,6 @@ export class SolicitarTurnoComponent implements OnInit {
       // 2) Obtener id de la especialidad elegida
       const nombreEsp = fv.especialidad;
       const especialidadId = this.especialidadIdPorNombre.get(nombreEsp);
-
-
-      // if (!especialidadId) {
-      //   throw new Error('No se encontró la especialidad seleccionada.');
-      // }
-
 
       if (!especialidadId) {
         throw new Error(this.translate.instant('APPOINTMENT.ERROR_SPECIALITY_NOT_FOUND'));
@@ -816,10 +715,6 @@ export class SolicitarTurnoComponent implements OnInit {
         .select('id, codigo')
         .eq('codigo', 'PENDIENTE')
         .single();
-
-      // if (estadoErr || !estadoPend) {
-      //   throw estadoErr || new Error('No se encontró el estado PENDIENTE.');
-      // }
 
       if (estadoErr || !estadoPend) {
         throw estadoErr || new Error(this.translate.instant('APPOINTMENT.ERROR_STATUS_NOT_FOUND'));
@@ -839,15 +734,6 @@ export class SolicitarTurnoComponent implements OnInit {
         });
 
       if (insertErr) throw insertErr;
-
-      // Swal.fire({
-      //   icon: 'success',
-      //   title: 'Turno solicitado',
-      //   text: 'El turno ha sido solicitado exitosamente',
-      //   timer: 2000,
-      //   showConfirmButton: false
-      // });
-
 
       Swal.fire({
         icon: 'success',
@@ -874,7 +760,6 @@ export class SolicitarTurnoComponent implements OnInit {
     } finally {
       this.loading = false;
     }
-
 
   }
 

@@ -195,12 +195,19 @@ export class MisTurnosPacienteComponent implements OnInit {
 
   }
 
-  puedeVerResena(t: TurnoVM): boolean {
-    // Solo mostrar si hay reseña (comentario del especialista) y no está vacío
-    // La reseña solo existe cuando el especialista finaliza el turno y deja un comentario
-    //return !!(t.resena && typeof t.resena === 'string' && t.resena.trim().length > 0);
+  // puedeVerResena(t: TurnoVM): boolean {
+  //   // Solo mostrar si hay reseña (comentario del especialista) y no está vacío
+  //   // La reseña solo existe cuando el especialista finaliza el turno y deja un comentario
+  //   return !!(t.resena && typeof t.resena === 'string' && t.resena.trim().length > 0);
+  //  // return true;
+  // }
 
-    return true;
+  puedeVerResena(t: TurnoVM): boolean {
+    // Verificamos si existe la propiedad y si tiene texto real (no solo espacios)
+    const tieneTexto = t.resena && typeof t.resena === 'string' && t.resena.trim().length > 0;
+    
+    // Solo mostramos el botón si hay texto real
+    return !!tieneTexto;
   }
 
   puedeCompletarEncuesta(t: TurnoVM): boolean {
