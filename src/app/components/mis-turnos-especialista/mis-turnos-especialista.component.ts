@@ -98,26 +98,63 @@ export class MisTurnosEspecialistaComponent implements OnInit {
   // }
 
 
-  // modifico el codigo para que los pacientes con turnos PENDIENTE aparezcan arriba en lista
+  // // modifico el codigo para que los pacientes con turnos PENDIENTE aparezcan arriba en lista
+  // ngOnInit(): void {
+  //   this.turnoService.getTurnosEspecialista$().subscribe({
+  //     next: (ts: TurnoEspecialista[]) => {
+
+  //       // --- LÓGICA DE ORDENAMIENTO ---
+  //       const turnosOrdenados = ts.sort((a, b) => {
+  //         const estadoA = String(a.estado || '').toUpperCase();
+  //         const estadoB = String(b.estado || '').toUpperCase();
+
+  //         // 1. Prioridad absoluta: PENDIENTE va primero (-1 sube, 1 baja)
+  //         if (estadoA === 'PENDIENTE' && estadoB !== 'PENDIENTE') return -1;
+  //         if (estadoA !== 'PENDIENTE' && estadoB === 'PENDIENTE') return 1;
+
+  //         // 2. Orden secundario: Por fecha (los más viejos o próximos primero)
+  //         // Esto ayuda a que dentro de los "Pendientes" o "Aceptados" haya orden cronológico
+  //         if (a.fecha < b.fecha) return -1;
+  //         if (a.fecha > b.fecha) return 1;
+
+  //         // 3. Orden terciario: Por hora
+  //         if (a.hora < b.hora) return -1;
+  //         if (a.hora > b.hora) return 1;
+
+  //         return 0;
+  //       });
+
+  //       // Asignamos la lista ya ordenada
+  //       this.dataSource.data = turnosOrdenados;
+
+  //       // Configuración del filtro (esto lo tenías igual)
+  //       this.dataSource.filterPredicate = (t, f) => {
+  //         const haystack = `${t.especialidad} ${t.paciente} ${t.estado} ${t.historiaBusqueda || ''}`.toLowerCase();
+  //         return haystack.includes(f);
+  //       };
+  //     },
+  //     error: (e) => console.error('[MisTurnosEspecialista] Error', e)
+  //   });
+  // }
+
   ngOnInit(): void {
     this.turnoService.getTurnosEspecialista$().subscribe({
       next: (ts: TurnoEspecialista[]) => {
-        
-        // --- LÓGICA DE ORDENAMIENTO ---
+
+        // 1. LÓGICA DE ORDENAMIENTO (PENDIENTE PRIMERO)
         const turnosOrdenados = ts.sort((a, b) => {
           const estadoA = String(a.estado || '').toUpperCase();
           const estadoB = String(b.estado || '').toUpperCase();
 
-          // 1. Prioridad absoluta: PENDIENTE va primero (-1 sube, 1 baja)
+          // Prioridad absoluta: PENDIENTE va primero (-1 sube, 1 baja)
           if (estadoA === 'PENDIENTE' && estadoB !== 'PENDIENTE') return -1;
           if (estadoA !== 'PENDIENTE' && estadoB === 'PENDIENTE') return 1;
 
-          // 2. Orden secundario: Por fecha (los más viejos o próximos primero)
-          // Esto ayuda a que dentro de los "Pendientes" o "Aceptados" haya orden cronológico
+          // Orden secundario: Por fecha (los más viejos o próximos primero)
           if (a.fecha < b.fecha) return -1;
           if (a.fecha > b.fecha) return 1;
 
-          // 3. Orden terciario: Por hora
+          // Orden terciario: Por hora
           if (a.hora < b.hora) return -1;
           if (a.hora > b.hora) return 1;
 
@@ -127,9 +164,12 @@ export class MisTurnosEspecialistaComponent implements OnInit {
         // Asignamos la lista ya ordenada
         this.dataSource.data = turnosOrdenados;
 
-        // Configuración del filtro (esto lo tenías igual)
+        // 2. CONFIGURACIÓN DEL FILTRO (INCLUYENDO RESEÑA)
         this.dataSource.filterPredicate = (t, f) => {
-          const haystack = `${t.especialidad} ${t.paciente} ${t.estado} ${t.historiaBusqueda || ''}`.toLowerCase();
+          // Concatenamos especialidad, paciente, estado, historia clínica...
+          // Y AHORA AGREGAMOS: ${t.resena || ''}
+          const haystack = `${t.especialidad} ${t.paciente} ${t.estado} ${t.historiaBusqueda || ''} ${t.resena || ''}`.toLowerCase();
+
           return haystack.includes(f);
         };
       },

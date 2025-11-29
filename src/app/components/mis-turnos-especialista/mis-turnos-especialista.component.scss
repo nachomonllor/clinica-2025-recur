@@ -17,31 +17,85 @@
 .mts-shell>*{ margin:0 !important; }
 
 /* HERO compacto con buscador inline */
-.hero{ padding:8px 12px; background:linear-gradient(135deg,#040914,#0a1326);
-  border-bottom:1px solid rgba(148,163,184,.28);
-}
-.hero--inline{ display:grid; grid-template-columns:1fr auto; align-items:center; gap:10px; }
-.hero-left h2{ margin:0; font-size:20px; line-height:1.1; }
-.hero-left p{ margin:2px 0 0; font-size:12px; opacity:.85; }
-.hero-right{ display:flex; align-items:center; gap:8px; }
-.toolbar__filtro{ width:clamp(240px,40vw,560px); margin:0; }
+// .hero{ padding:8px 12px; background:linear-gradient(135deg,#040914,#0a1326);
+//   border-bottom:1px solid rgba(148,163,184,.28);
+// }
+// .hero--inline{ display:grid; grid-template-columns:1fr auto; align-items:center; gap:10px; }
+// .hero-left h2{ margin:0; font-size:20px; line-height:1.1; }
+// .hero-left p{ margin:2px 0 0; font-size:12px; opacity:.85; }
+// .hero-right{ display:flex; align-items:center; gap:8px; }
+// .toolbar__filtro{ width:clamp(240px,40vw,560px); margin:0; }
 
-/* Input pill translúcido */
-::ng-deep .hero-right .mat-mdc-text-field-wrapper{
-  min-height:34px !important; border-radius:999px !important;
-  background:rgba(255,255,255,.06) !important;
+// ::ng-deep .hero-right .mat-mdc-text-field-wrapper{
+//   min-height:34px !important; border-radius:999px !important;
+//   background:rgba(255,255,255,.06) !important;
+// }
+// ::ng-deep .hero-right .mdc-notched-outline__leading,
+// ::ng-deep .hero-right .mdc-notched-outline__notch,
+// ::ng-deep .hero-right .mdc-notched-outline__trailing{
+//   border-color:rgba(255,255,255,.20) !important;
+// }
+// ::ng-deep .hero-right .mdc-text-field--focused .mdc-notched-outline__leading,
+// ::ng-deep .hero-right .mdc-text-field--focused .mdc-notched-outline__notch,
+// ::ng-deep .hero-right .mdc-text-field--focused .mdc-notched-outline__trailing{
+//   border-color:var(--orange-500) !important;
+// }
+ 
+/* --- COPIA Y PEGA ESTO EN TU SCSS --- */
+
+/* Estilos de la barra de herramientas (donde vive el buscador) */
+.hero-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  /* Asegúrate de que el input tenga ancho */
+  flex: 1; 
+  //justify-content: flex-end;
+  justify-content: flex-start;
 }
+
+.toolbar__filtro { 
+  width: clamp(240px, 40vw, 560px); 
+  margin: 0; 
+}
+
+/* 1. El contenedor del input (Pill shape) */
+::ng-deep .hero-right .mat-mdc-text-field-wrapper {
+  min-height: 36px !important; 
+  border-radius: 999px !important;
+  background: rgba(255, 255, 255, 0.06) !important; /* Fondo grisáceo transparente */
+  padding: 0 16px !important;
+}
+
+/* 2. Bordes del outline */
 ::ng-deep .hero-right .mdc-notched-outline__leading,
 ::ng-deep .hero-right .mdc-notched-outline__notch,
-::ng-deep .hero-right .mdc-notched-outline__trailing{
-  border-color:rgba(255,255,255,.20) !important;
-}
-::ng-deep .hero-right .mdc-text-field--focused .mdc-notched-outline__leading,
-::ng-deep .hero-right .mdc-text-field--focused .mdc-notched-outline__notch,
-::ng-deep .hero-right .mdc-text-field--focused .mdc-notched-outline__trailing{
-  border-color:var(--orange-500) !important;
+::ng-deep .hero-right .mdc-notched-outline__trailing {
+  border-color: rgba(255, 255, 255, 0.2) !important;
 }
 
+/* 3. Bordes al hacer foco (Naranja) */
+::ng-deep .hero-right .mdc-text-field--focused .mdc-notched-outline__leading,
+::ng-deep .hero-right .mdc-text-field--focused .mdc-notched-outline__notch,
+::ng-deep .hero-right .mdc-text-field--focused .mdc-notched-outline__trailing {
+  border-color: var(--orange-500) !important;
+}
+
+/* 4. COLOR DEL TEXTO (CRÍTICO: Esto hace que se vea la letra) */
+::ng-deep .hero-right input.mat-mdc-input-element {
+  color: var(--text-1) !important; /* Blanco/Claro */
+  caret-color: var(--orange-500);  /* Cursor naranja */
+}
+
+/* 5. Color del Placeholder y Label */
+::ng-deep .hero-right .mat-mdc-floating-label {
+  color: rgba(229, 231, 235, 0.6) !important; /* Gris claro */
+}
+::ng-deep .hero-right .mdc-text-field--focused .mat-mdc-floating-label {
+  color: var(--orange-500) !important; /* Naranja al flotar */
+}
+
+/* ------------------------------------------------------------------------------ */
 /* LISTA pegada al hero */
 .lista{
   padding:8px 10px 10px;
