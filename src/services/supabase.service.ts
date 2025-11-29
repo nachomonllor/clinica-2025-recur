@@ -21,6 +21,28 @@ export class SupabaseService {
   private usuarioSubject = new BehaviorSubject<Usuario | null>(null);
   public usuario$ = this.usuarioSubject.asObservable();
 
+  // constructor() {
+  //   this._client = createClient(environment.supabaseUrl, environment.supabaseKey, {
+  //     db: { schema: 'esquema_clinica' },
+  //     auth: {
+  //       persistSession: true,
+  //       autoRefreshToken: true,
+  //       detectSessionInUrl: true,
+  //       storage: localStorage,
+
+  //       // multiTab: false,
+  //       storageKey: 'sb-clinica-online-auth-2025',
+  //     },
+  //   });
+
+  //   //  Escuchar cambios de Auth automáticamente
+  //   this.inicializarAuthListener();
+  // }
+
+  // src/app/services/supabase.service.ts
+
+  // src/app/services/supabase.service.ts
+
   constructor() {
     this._client = createClient(environment.supabaseUrl, environment.supabaseKey, {
       db: { schema: 'esquema_clinica' },
@@ -30,14 +52,20 @@ export class SupabaseService {
         detectSessionInUrl: true,
         storage: localStorage,
 
-        // multiTab: false,
-        storageKey: 'sb-clinica-online-auth-2025',
+        // Mantenemos el flujo moderno (Recomendado)
+        flowType: 'pkce',
+
+        // Mantenemos el cambio de nombre para soltar el candado viejo (CRUCIAL)
+        storageKey: 'sb-clinica-online-auth-v2',
+
+ 
       },
     });
 
-    //  Escuchar cambios de Auth automáticamente
+    // Escuchar cambios de Auth automáticamente
     this.inicializarAuthListener();
   }
+
 
   get client(): SupabaseClient<any, any, any, any, any> {
     return this._client;
