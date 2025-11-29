@@ -167,59 +167,6 @@ export class MisTurnosEspecialistaComponent implements OnInit {
     });
   }
 
-  // finalizarTurno(turno: TurnoEspecialista): void {
-  //   const historiaForm = this.fb.group({
-  //     altura: [null, [Validators.required, Validators.min(0)]],
-  //     peso: [null, [Validators.required, Validators.min(0)]],
-  //     temperatura: [null, [Validators.required, Validators.min(0)]],
-  //     presion: ['', Validators.required],
-  //     riesgo: [50, [Validators.required, Validators.min(0), Validators.max(100)]],
-  //     nivelGlucosa: [null, [Validators.required, Validators.min(0)]],
-  //     requiereSeguimiento: [false],
-  //     datosDinamicos: this.fb.array([]),        // <==================================== NUEVO PARA DATOS DINAMICOS
-  //     comentario: ['', [Validators.required, Validators.minLength(10)]]
-  //   });
-
-  //   const ref = this.dialog.open(this.historiaClinicaDialog, {
-  //     data: { turno, form: historiaForm },
-  //     width: '600px',
-  //     disableClose: true,
-  //     panelClass: 'historia-dialog-dark'   // <============ CLASE CSS PARA ESTILAR
-  //   });
-
-  //   ref.afterClosed().subscribe(result => {
-  //     if (result && historiaForm.valid) {
-  //       this.guardarHistoriaClinica(turno, historiaForm);
-  //     }
-  //   });
-  // }
-
-  // finalizarTurno(turno: TurnoEspecialista): void {
-  //   const historiaForm = this.fb.group({
-  //     altura: [null, [Validators.required, Validators.min(0)]],
-  //     peso: [null, [Validators.required, Validators.min(0)]],
-  //     temperatura: [null, [Validators.required, Validators.min(0)]],
-  //     presion: ['', Validators.required],
-  //     riesgo: [50, [Validators.required, Validators.min(0), Validators.max(100)]],
-  //     nivelGlucosa: [null, [Validators.required, Validators.min(0)]],
-  //     requiereSeguimiento: [false],
-  //     datosDinamicos: this.fb.array([]),
-  //     comentario: ['', [Validators.required, Validators.minLength(10)]]
-  //   });
-
-  //   this.historiaDialogRef = this.dialog.open(this.historiaClinicaDialog, {
-  //     data: { turno, form: historiaForm },
-  //     width: '600px',
-  //     disableClose: true
-  //   });
-
-  //   this.historiaDialogRef.afterClosed().subscribe(result => {
-  //     if (result && historiaForm.valid) {
-  //       this.guardarHistoriaClinica(turno, historiaForm);
-  //     }
-  //   });
-  // }
-
 
   finalizarTurno(turno: TurnoEspecialista): void {
     const historiaForm = this.fb.group({
@@ -484,23 +431,6 @@ export class MisTurnosEspecialistaComponent implements OnInit {
     });
   }
 
-
-  // verResena(turno: TurnoEspecialista): void {
-  //   this.snackBar.open(turno.resena ?? 'Sin reseña', 'Cerrar', { duration: 4000 });
-  // }
-
-
-  // verResena(turno: TurnoEspecialista): void {
-
-  //   this.dialog.open(this.resenaDialog, {
-  //     data: { turno },
-  //     panelClass: 'resena-dialog-container',
-  //     disableClose: false, // ponelo en true si NO querés que cierre clickeando fuera
-  //     autoFocus: false
-  //   });
-  // }
-
-
   verResena(turno: any): void {
     this.resenaDialogRef = this.dialog.open(this.resenaDialog, {
       data: {
@@ -521,7 +451,7 @@ export class MisTurnosEspecialistaComponent implements OnInit {
   }
 
   // =========================================================
-  // HELPERS
+  // ------- HELPERS
   // =========================================================
 
   get turnos(): TurnoEspecialista[] {
