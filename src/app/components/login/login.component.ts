@@ -91,8 +91,291 @@ export class LoginComponent implements OnInit {
     return this.iniciarSesion();
   }
 
+  // async iniciarSesion(): Promise<void> {
+  //   console.log('funcion iniciarSesion()');
+
+  //   if (this.formularioLogin.invalid) {
+  //     this.formularioLogin.markAllAsTouched();
+  //     return;
+  //   }
+
+  //   this.cargando = true;
+  //   this.error = '';
+
+  //   try {
+  //     const { email, password } = this.formularioLogin.getRawValue();
+
+  //     // 1) Login (auth)
+  //     const { error: eLogin } = await this.supa.iniciarSesion(email, password);
+  //     if (eLogin) throw eLogin;
+
+  //     // 2) Usuario desde Auth
+  //     const { data: userData, error: eUser } = await this.supa.obtenerUsuarioActual();
+  //     if (eUser || !userData?.user) throw eUser || new Error('No se pudo obtener el usuario de Auth.');
+  //     const user = userData.user;
+
+  //     // 3) Verificación de correo (requisito para todos)
+  //     if (!user.email_confirmed_at) {
+  //       await this.supa.cerrarSesion();
+  //       throw new Error('Debes verificar tu correo antes de ingresar.');
+  //     }
+
+  //     // 4) Usuario en esquema_clinica.usuarios (intento 1)
+  //     let { data: usuario, error: eUsuario } = await this.supa.obtenerUsuarioPorId(user.id);
+
+  //     if (eUsuario) {
+  //       console.error('[Login] Error al obtener usuario en tabla usuarios', eUsuario);
+  //       throw eUsuario;
+  //     }
+
+  //     // 4b) Fallback: si no hay usuario, lo creo y reintento
+  //     if (!usuario) {
+  //       const md: any = user.user_metadata || {};
+
+  //       const rolMeta = (md.perfil ?? md.rol ?? 'PACIENTE').toString().toUpperCase();
+  //       const rolDb: Rol =
+  //         rolMeta === 'ESPECIALISTA' || rolMeta === 'ADMIN' ? rolMeta : 'PACIENTE';
+
+  //       const nuevoUsuario: UsuarioCreate = {
+  //         id: user.id,
+  //         nombre: md.nombre ?? '',
+  //         apellido: md.apellido ?? '',
+  //         edad: md.edad ?? null,
+  //         dni: md.dni ?? '',
+  //         obra_social: md.obra_social ?? null,
+  //         email: user.email ?? '',
+  //         // Campo password en la tabla usuarios: sólo para cumplir NOT NULL.
+  //         // La autenticación real la maneja Supabase Auth.
+  //         password: 'auth_managed',
+  //         perfil: rolDb,
+  //         imagen_perfil_1: md.imagen_perfil_1 ?? null,
+  //         imagen_perfil_2: md.imagen_perfil_2 ?? null,
+  //         esta_aprobado: rolDb === 'ESPECIALISTA' ? false : true,
+  //         mail_verificado: !!user.email_confirmed_at,
+  //         activo: true,
+  //         idioma_preferido: 'es',
+  //         fecha_registro: undefined,
+  //       };
+
+  //       const { data: creado, error: eUpsert } = await this.supa.upsertUsuario(nuevoUsuario);
+  //       if (eUpsert) {
+  //         console.error('[Login] Error al crear usuario', eUpsert);
+  //         throw eUpsert;
+  //       }
+
+  //       usuario = creado as Usuario | null;
+  //       if (!usuario) throw new Error('No se pudo crear/leer el usuario.');
+  //     }
+
+  //     // 5) Regla solo para ESPECIALISTA: requiere aprobación
+  //     if (usuario.perfil === 'ESPECIALISTA' && !usuario.esta_aprobado) {
+  //       await this.supa.cerrarSesion();
+  //       throw new Error('Tu cuenta de especialista aún no ha sido aprobada por un administrador.');
+  //     }
+
+  //     // 6) Avisos de perfil incompleto (imágenes)
+  //     const tieneAvatar1 = !!(usuario.imagen_perfil_1 && String(usuario.imagen_perfil_1).trim());
+  //     const tieneAvatar2 = !!(usuario.imagen_perfil_2 && String(usuario.imagen_perfil_2).trim());
+
+  //     const faltaAvatar1 = !tieneAvatar1;
+  //     const faltaAvatar2 = usuario.perfil === 'PACIENTE' && !tieneAvatar2;
+
+  //     if (faltaAvatar1 || faltaAvatar2) {
+  //       const msg = faltaAvatar1 && faltaAvatar2
+  //         ? 'Faltan ambas imágenes de perfil.'
+  //         : faltaAvatar1 ? 'Falta la primera imagen de perfil.' : 'Falta la segunda imagen de perfil.';
+  //       await Swal.fire({
+  //         icon: 'info',
+  //         title: 'Completar perfil',
+  //         html: `<p>${msg}</p><p>Podés subirlas desde "Mi Perfil".</p>`,
+  //         confirmButtonText: 'Entendido'
+  //       });
+  //     } else {
+  //       await Swal.fire({
+  //         icon: 'success',
+  //         title: 'Bienvenido',
+  //         timer: 1200,
+  //         showConfirmButton: false
+  //       });
+  //     }
+
+  //     // 7) Log de ingreso
+  //     await this.logIngresos.registrarIngreso();
+
+  //     // 8) Navegación según rol
+  //     if (usuario.perfil === 'PACIENTE') {
+  //       await this.router.navigate(['/mis-turnos-paciente']);
+  //     } else if (usuario.perfil === 'ESPECIALISTA') {
+  //       await this.router.navigate(['/mis-turnos-especialista']);
+  //     } else {
+  //       // Admin → página principal admin (ajustá a tu ruta)
+  //       await this.router.navigate(['/turnos-admin']);
+  //     }
+
+  //   } catch (e) {
+  //     this.error = this.traducirError(e);
+  //     await Swal.fire('Error', this.error || 'Ocurrió un error al iniciar sesión', 'error');
+  //   } finally {
+  //     this.cargando = false;
+  //   }
+  // }
+
+
+  // async iniciarSesion(): Promise<void> {
+  //   console.log('iniciarSesion() ejecutándose...');
+
+  //   if (this.formularioLogin.invalid) {
+  //     this.formularioLogin.markAllAsTouched();
+  //     return;
+  //   }
+
+  //   this.cargando = true;
+  //   this.error = '';
+
+  //   try {
+  //     const { email, password } = this.formularioLogin.getRawValue();
+
+  //     // 1) Login en Supabase Auth
+  //     const { error: eLogin } = await this.supa.iniciarSesion(email, password);
+  //     if (eLogin) throw eLogin;
+
+  //     // 2) Obtener datos de la sesión activa
+  //     const { data: userData, error: eUser } = await this.supa.obtenerUsuarioActual();
+  //     if (eUser || !userData?.user) throw eUser || new Error('No se pudo verificar la sesión.');
+      
+  //     const user = userData.user;
+
+  //     // 3) Verificación de correo (OBLIGATORIO)
+  //     if (!user.email_confirmed_at) {
+  //       await this.supa.cerrarSesion();
+  //       throw new Error('Debes verificar tu correo electrónico antes de ingresar.');
+  //     }
+
+  //     // 4) Buscar perfil en tabla 'usuarios'
+  //     let { data: usuario, error: eUsuario } = await this.supa.obtenerUsuarioPorId(user.id);
+
+  //     // Si hay error de conexión o base de datos (distinto a "no encontrado")
+  //     if (eUsuario && eUsuario.code !== 'PGRST116') {
+  //       console.error('[Login] Error consultando tabla usuarios:', eUsuario);
+  //       throw new Error('Error de conexión con la base de datos de usuarios.');
+  //     }
+
+  //     // 4b) FALLBACK: Si no existe en tabla 'usuarios' pero sí en Auth (Inconsistencia)
+  //     // Intentamos crearlo (Self-healing)
+  //     if (!usuario) {
+  //       console.warn('[Login] Usuario fantasma detectado. Intentando reparar perfil...');
+        
+  //       const md: any = user.user_metadata || {};
+  //       const rolMeta = (md.perfil || md.rol || 'PACIENTE').toString().toUpperCase();
+        
+  //       // Validación de seguridad para roles
+  //       const rolDb: Rol = (rolMeta === 'ESPECIALISTA' || rolMeta === 'ADMIN') ? rolMeta : 'PACIENTE';
+
+  //       const nuevoUsuario: UsuarioCreate = {
+  //         id: user.id,
+  //         nombre: md.nombre || 'Usuario', // Evitar NULL
+  //         apellido: md.apellido || 'Sin Apellido', // Evitar NULL
+  //         edad: md.edad || null,
+  //         dni: md.dni || '',
+  //         obra_social: md.obra_social || null,
+  //         email: user.email || '',
+  //         password: 'auth_managed',
+  //         perfil: rolDb,
+  //         imagen_perfil_1: md.imagen_perfil_1 || null,
+  //         imagen_perfil_2: md.imagen_perfil_2 || null,
+  //         esta_aprobado: rolDb === 'ESPECIALISTA' ? false : true,
+  //         mail_verificado: true,
+  //         activo: true,
+  //         idioma_preferido: 'es'
+  //         // NO ENVIAMOS fecha_registro, dejamos que la BD ponga el default now()
+  //       };
+
+  //       const { data: creado, error: eUpsert } = await this.supa.upsertUsuario(nuevoUsuario);
+        
+  //       if (eUpsert || !creado) {
+  //         console.error('[Login] Falló la autoreparación del usuario:', eUpsert);
+  //         throw new Error('Tu usuario no tiene un perfil asociado y no se pudo crear automáticamente. Contacta al soporte.');
+  //       }
+        
+  //       usuario = creado as Usuario;
+  //     }
+
+  //     // 5) Validar reglas de negocio (Aprobación Especialistas)
+  //     if (usuario.perfil === 'ESPECIALISTA' && !usuario.esta_aprobado) {
+  //       await this.supa.cerrarSesion();
+  //       throw new Error('Tu cuenta de especialista está pendiente de aprobación por un administrador.');
+  //     }
+
+  //     // 5b) Validar si está activo (Ban)
+  //     if (!usuario.activo) {
+  //       await this.supa.cerrarSesion();
+  //       throw new Error('Tu cuenta ha sido desactivada. Contacta al administrador.');
+  //     }
+
+  //     // 6) Alertas de Perfil Incompleto (No bloqueantes)
+  //     const tieneAvatar1 = !!(usuario.imagen_perfil_1 && usuario.imagen_perfil_1.trim());
+  //     const tieneAvatar2 = !!(usuario.imagen_perfil_2 && usuario.imagen_perfil_2.trim());
+  //     const faltaAvatar1 = !tieneAvatar1;
+  //     const faltaAvatar2 = usuario.perfil === 'PACIENTE' && !tieneAvatar2;
+
+  //     // 7) Registrar Log de Ingreso (No bloqueante - try/catch interno en el servicio)
+  //     // Lo hacemos antes de la alerta para que se registre aunque el usuario tarde en cerrar el Swal
+  //     this.logIngresos.registrarIngreso().catch(err => console.error('Error log ingreso:', err));
+
+  //     if (faltaAvatar1 || faltaAvatar2) {
+  //       let msg = 'Falta cargar tu imagen de perfil.';
+  //       if (usuario.perfil === 'PACIENTE' && faltaAvatar1 && faltaAvatar2) msg = 'Faltan tus dos imágenes de perfil.';
+        
+  //       await Swal.fire({
+  //         icon: 'info',
+  //         title: 'Perfil incompleto',
+  //         text: msg,
+  //         confirmButtonText: 'Entendido'
+  //       });
+  //     } else {
+  //       // Toast rápido de éxito
+  //       const Toast = Swal.mixin({
+  //         toast: true,
+  //         position: 'top-end',
+  //         showConfirmButton: false,
+  //         timer: 1500,
+  //         timerProgressBar: true
+  //       });
+  //       Toast.fire({ icon: 'success', title: `Bienvenido, ${usuario.nombre}` });
+  //     }
+
+  //     // 8) Redirección según Rol
+  //     switch (usuario.perfil) {
+  //       case 'PACIENTE':
+  //         this.router.navigateByUrl('/mis-turnos-paciente');
+  //         break;
+  //       case 'ESPECIALISTA':
+  //         this.router.navigateByUrl('/mis-turnos-especialista');
+  //         break;
+  //       case 'ADMIN':
+  //         this.router.navigateByUrl('/turnos-admin');
+  //         break;
+  //       default:
+  //         this.router.navigateByUrl('/bienvenida');
+  //     }
+
+  //   } catch (e) {
+  //     console.error('[Login] Excepción capturada:', e);
+  //     this.error = this.traducirError(e);
+  //     Swal.fire({
+  //       icon: 'error',
+  //       title: 'Error de ingreso',
+  //       text: this.error,
+  //       confirmButtonText: 'Cerrar'
+  //     });
+  //   } finally {
+  //     this.cargando = false; // <=== ESTO ASEGURA QUE EL SPINNER SE VAYA SIEMPRE
+  //   }
+  // }
+
+
   async iniciarSesion(): Promise<void> {
-    console.log('funcion iniciarSesion()');
+    console.log('🚀 [LOGIN] Inicio del proceso');
 
     if (this.formularioLogin.invalid) {
       this.formularioLogin.markAllAsTouched();
@@ -105,118 +388,128 @@ export class LoginComponent implements OnInit {
     try {
       const { email, password } = this.formularioLogin.getRawValue();
 
-      // 1) Login (auth)
+      // PASO 1: Auth
+      console.log('1️⃣ Autenticando con Supabase Auth...');
       const { error: eLogin } = await this.supa.iniciarSesion(email, password);
       if (eLogin) throw eLogin;
+      console.log('✅ Auth OK');
 
-      // 2) Usuario desde Auth
+      // PASO 2: Obtener User
+      console.log('2️⃣ Obteniendo usuario de sesión...');
       const { data: userData, error: eUser } = await this.supa.obtenerUsuarioActual();
-      if (eUser || !userData?.user) throw eUser || new Error('No se pudo obtener el usuario de Auth.');
+      if (eUser || !userData?.user) throw eUser || new Error('Error usuario Auth');
       const user = userData.user;
+      console.log('✅ Usuario Auth obtenido:', user.id);
 
-      // 3) Verificación de correo (requisito para todos)
+      // PASO 3: Verificar Email
       if (!user.email_confirmed_at) {
         await this.supa.cerrarSesion();
-        throw new Error('Debes verificar tu correo antes de ingresar.');
+        throw new Error('Debes verificar tu correo.');
       }
 
-      // 4) Usuario en esquema_clinica.usuarios (intento 1)
+      // PASO 4: Buscar en DB
+      console.log('3️⃣ Buscando perfil en tabla usuarios...');
       let { data: usuario, error: eUsuario } = await this.supa.obtenerUsuarioPorId(user.id);
 
-      if (eUsuario) {
-        console.error('[Login] Error al obtener usuario en tabla usuarios', eUsuario);
-        throw eUsuario;
-      }
-
-      // 4b) Fallback: si no hay usuario, lo creo y reintento
+      // Si no existe (usuario fantasma), intentamos crearlo
       if (!usuario) {
+        console.warn('⚠️ Usuario no encontrado en tabla. Intentando crear fallback...');
+        // ... (Tu lógica de creación de usuario fantasma que ya tenías) ...
         const md: any = user.user_metadata || {};
+        const rolMeta = (md.perfil || md.rol || 'PACIENTE').toString().toUpperCase();
+        const rolDb: Rol = (rolMeta === 'ESPECIALISTA' || rolMeta === 'ADMIN') ? rolMeta : 'PACIENTE';
 
-        const rolMeta = (md.perfil ?? md.rol ?? 'PACIENTE').toString().toUpperCase();
-        const rolDb: Rol =
-          rolMeta === 'ESPECIALISTA' || rolMeta === 'ADMIN' ? rolMeta : 'PACIENTE';
-
-        const nuevoUsuario: UsuarioCreate = {
+        // OJO: upsertUsuario devuelve {data, error}
+        const { data: nuevo, error: eUpsert } = await this.supa.upsertUsuario({
           id: user.id,
-          nombre: md.nombre ?? '',
-          apellido: md.apellido ?? '',
-          edad: md.edad ?? null,
-          dni: md.dni ?? '',
-          obra_social: md.obra_social ?? null,
-          email: user.email ?? '',
-          // Campo password en la tabla usuarios: sólo para cumplir NOT NULL.
-          // La autenticación real la maneja Supabase Auth.
+          nombre: md.nombre || 'Usuario',
+          apellido: md.apellido || 'Sin Apellido',
+          edad: md.edad || null,
+          dni: md.dni || '',
+          obra_social: md.obra_social || null,
+          email: user.email || '',
           password: 'auth_managed',
           perfil: rolDb,
-          imagen_perfil_1: md.imagen_perfil_1 ?? null,
-          imagen_perfil_2: md.imagen_perfil_2 ?? null,
+          imagen_perfil_1: md.imagen_perfil_1 || null,
+          imagen_perfil_2: md.imagen_perfil_2 || null,
           esta_aprobado: rolDb === 'ESPECIALISTA' ? false : true,
-          mail_verificado: !!user.email_confirmed_at,
+          mail_verificado: true,
           activo: true,
-          idioma_preferido: 'es',
-          fecha_registro: undefined,
-        };
+          idioma_preferido: 'es'
+        });
 
-        const { data: creado, error: eUpsert } = await this.supa.upsertUsuario(nuevoUsuario);
-        if (eUpsert) {
-          console.error('[Login] Error al crear usuario', eUpsert);
-          throw eUpsert;
-        }
-
-        usuario = creado as Usuario | null;
-        if (!usuario) throw new Error('No se pudo crear/leer el usuario.');
+        if (eUpsert) throw eUpsert;
+        usuario = nuevo;
+        console.log('✅ Usuario fallback creado');
       }
 
-      // 5) Regla solo para ESPECIALISTA: requiere aprobación
-      if (usuario.perfil === 'ESPECIALISTA' && !usuario.esta_aprobado) {
+      console.log('✅ Perfil de usuario listo:', usuario?.perfil);
+
+      // PASO 5: Validaciones de negocio
+      if (usuario?.perfil === 'ESPECIALISTA' && !usuario.esta_aprobado) {
         await this.supa.cerrarSesion();
-        throw new Error('Tu cuenta de especialista aún no ha sido aprobada por un administrador.');
+        throw new Error('Cuenta pendiente de aprobación.');
       }
 
-      // 6) Avisos de perfil incompleto (imágenes)
-      const tieneAvatar1 = !!(usuario.imagen_perfil_1 && String(usuario.imagen_perfil_1).trim());
-      const tieneAvatar2 = !!(usuario.imagen_perfil_2 && String(usuario.imagen_perfil_2).trim());
+      // PASO 6: Mensaje de bienvenida
+      console.log('4️⃣ Mostrando alerta de bienvenida...');
+      // Hack: No usamos await en el Swal para no bloquear si el usuario tarda en cerrar
+      Swal.fire({
+        icon: 'success',
+        title: `Bienvenido, ${usuario?.nombre}`,
+        timer: 1500,
+        showConfirmButton: false,
+        toast: true,
+        position: 'top-end'
+      });
 
-      const faltaAvatar1 = !tieneAvatar1;
-      const faltaAvatar2 = usuario.perfil === 'PACIENTE' && !tieneAvatar2;
+      // PASO 7: Log (Sin await para no bloquear)
+      console.log('5️⃣ Registrando log (background)...');
+      this.logIngresos.registrarIngreso().catch(err => console.error('Log error', err));
 
-      if (faltaAvatar1 || faltaAvatar2) {
-        const msg = faltaAvatar1 && faltaAvatar2
-          ? 'Faltan ambas imágenes de perfil.'
-          : faltaAvatar1 ? 'Falta la primera imagen de perfil.' : 'Falta la segunda imagen de perfil.';
-        await Swal.fire({
-          icon: 'info',
-          title: 'Completar perfil',
-          html: `<p>${msg}</p><p>Podés subirlas desde "Mi Perfil".</p>`,
-          confirmButtonText: 'Entendido'
-        });
-      } else {
-        await Swal.fire({
-          icon: 'success',
-          title: 'Bienvenido',
-          timer: 1200,
-          showConfirmButton: false
-        });
+      // PASO 8: Navegación
+      console.log('6️⃣ Intentando navegar...');
+      let ruta = '/bienvenida';
+      if (usuario?.perfil === 'PACIENTE') ruta = '/mis-turnos-paciente';
+      else if (usuario?.perfil === 'ESPECIALISTA') ruta = '/mis-turnos-especialista';
+      else if (usuario?.perfil === 'ADMIN') ruta = '/turnos-admin';
+
+      console.log('🚀 Navegando a:', ruta);
+      
+      // IMPORTANTE: Aquí es donde suele colgarse si el Guard falla
+      //const navResult = await this.router.navigateByUrl(ruta);
+      
+      // ... (código anterior del switch de rutas) ...
+
+      console.log('🚀 Navegando a:', ruta);
+      
+      const navResult = await this.router.navigateByUrl(ruta);
+      
+      console.log('🏁 Navegación resultado:', navResult); 
+
+      if (!navResult) {
+        // Si el router devuelve false (bloqueado por Guard o error), forzamos stop loading
+        console.warn('⚠️ La navegación fue bloqueada o cancelada.');
+        this.cargando = false; 
+        
+        // Opcional: Intentar ir a bienvenida si falló la ruta específica
+        // await this.router.navigateByUrl('/bienvenida');
       }
 
-      // 7) Log de ingreso
-      await this.logIngresos.registrarIngreso();
 
-      // 8) Navegación según rol
-      if (usuario.perfil === 'PACIENTE') {
-        await this.router.navigate(['/mis-turnos-paciente']);
-      } else if (usuario.perfil === 'ESPECIALISTA') {
-        await this.router.navigate(['/mis-turnos-especialista']);
-      } else {
-        // Admin → página principal admin (ajustá a tu ruta)
-        await this.router.navigate(['/turnos-admin']);
-      }
+      // ------------------------------------------------
 
-    } catch (e) {
+      console.log('🏁 Navegación resultado:', navResult); 
+      // Si navResult es false, el Guard rechazó la navegación
+
+
+    } catch (e: any) {
+      console.error('❌ EXCEPCIÓN:', e);
       this.error = this.traducirError(e);
-      await Swal.fire('Error', this.error || 'Ocurrió un error al iniciar sesión', 'error');
+      Swal.fire('Error', this.error, 'error');
     } finally {
-      this.cargando = false;
+      console.log('🏁 Fin del proceso (Finally). Quitamos spinner.');
+      this.cargando = false; 
     }
   }
 
