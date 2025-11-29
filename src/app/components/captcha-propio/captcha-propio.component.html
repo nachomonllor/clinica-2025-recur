@@ -1,26 +1,67 @@
-<p>captcha-propio works!</p>
 
 
-<div class="captcha-container">
+<div class="captcha-wrapper" *ngIf="habilitado">
+  
+  <div class="captcha-header">
+    <span class="titulo">Seguridad</span>
+    <p class="consigna" *ngIf="objetivo">
+      Seleccioná la imagen de: <strong class="objetivo-texto">{{ objetivo.nombre }}</strong>
+    </p>
+  </div>
 
-    <div class="captcha-visual">
-        <canvas #canvasCaptcha [width]="200" [height]="60"></canvas>
-
-        <button mat-icon-button (click)="generarCaptcha()" type="button" matTooltip="Cambiar código">
-            <mat-icon>refresh</mat-icon>
-        </button>
+  <div class="captcha-grid">
+    <div 
+      class="captcha-card" 
+      *ngFor="let opt of opcionesVisibles"
+      [class.selected]="seleccionado === opt"
+      [class.success]="esCorrecto && seleccionado === opt"
+      [class.error]="!esCorrecto && seleccionado === opt && seleccionado !== null"
+      (click)="seleccionar(opt)">
+      
+      <img [src]="opt.imagen" [alt]="opt.nombre" class="captcha-img-real">
+      
     </div>
+  </div>
 
-    <div class="captcha-input">
-        <mat-form-field appearance="outline" class="full-width no-subscript">
-            <mat-label>Ingrese el código</mat-label>
-            <input matInput [(ngModel)]="inputUsuario" (ngModelChange)="validar()" autocomplete="off"
-                placeholder="Copie las letras de la imagen">
-
-            <mat-icon matSuffix *ngIf="inputUsuario.toUpperCase() === codigoGenerado" style="color: #22c55e;">
-                check_circle
-            </mat-icon>
-        </mat-form-field>
+  <div class="captcha-footer">
+    <button mat-button color="warn" (click)="generarJuego()" *ngIf="!esCorrecto" class="btn-refresh">
+      <mat-icon>refresh</mat-icon> Probar otro
+    </button>
+    
+    <div class="mensaje-exito" *ngIf="esCorrecto">
+      <mat-icon>check_circle</mat-icon> ¡Humano verificado!
     </div>
+  </div>
 
 </div>
+
+
+
+
+
+<!-- 
+<div class="captcha-wrapper" *ngIf="habilitado">
+  <div class="captcha-header">
+    <span class="titulo">Seguridad</span>
+    <p class="consigna" *ngIf="objetivo">
+      Seleccioná la imagen de: <strong class="objetivo-texto">{{ objetivo.nombre }}</strong>
+    </p>
+  </div>
+  <div class="captcha-grid">
+    <div class="captcha-card" *ngFor="let opt of opcionesVisibles" [class.selected]="seleccionado === opt"
+      [class.success]="esCorrecto && seleccionado === opt"
+      [class.error]="!esCorrecto && seleccionado === opt && seleccionado !== null" (click)="seleccionar(opt)">
+      <mat-icon class="captcha-img">{{ opt.imagen }}</mat-icon>
+    </div>
+  </div>
+  <div class="captcha-footer">
+    <button mat-button color="warn" (click)="generarJuego()" *ngIf="!esCorrecto" class="btn-refresh">
+      <mat-icon>refresh</mat-icon> Probar otro
+    </button>
+
+    <div class="mensaje-exito" *ngIf="esCorrecto">
+      <mat-icon>check_circle</mat-icon> ¡Humano verificado!
+    </div>
+  </div>
+
+</div> -->

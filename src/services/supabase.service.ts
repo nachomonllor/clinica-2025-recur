@@ -21,28 +21,6 @@ export class SupabaseService {
   private usuarioSubject = new BehaviorSubject<Usuario | null>(null);
   public usuario$ = this.usuarioSubject.asObservable();
 
-  // constructor() {
-  //   this._client = createClient(environment.supabaseUrl, environment.supabaseKey, {
-  //     db: { schema: 'esquema_clinica' },
-  //     auth: {
-  //       persistSession: true,
-  //       autoRefreshToken: true,
-  //       detectSessionInUrl: true,
-  //       storage: localStorage,
-
-  //       // multiTab: false,
-  //       storageKey: 'sb-clinica-online-auth-2025',
-  //     },
-  //   });
-
-  //   //  Escuchar cambios de Auth automáticamente
-  //   this.inicializarAuthListener();
-  // }
-
-  // src/app/services/supabase.service.ts
-
-  // src/app/services/supabase.service.ts
-
   constructor() {
     this._client = createClient(environment.supabaseUrl, environment.supabaseKey, {
       db: { schema: 'esquema_clinica' },
@@ -55,10 +33,8 @@ export class SupabaseService {
         // Mantenemos el flujo moderno (Recomendado)
         flowType: 'pkce',
 
-        // Mantenemos el cambio de nombre para soltar el candado viejo (CRUCIAL)
+        // Mantenemos el cambio de nombre 
         storageKey: 'sb-clinica-online-auth-v2',
-
- 
       },
     });
 
@@ -66,69 +42,9 @@ export class SupabaseService {
     this.inicializarAuthListener();
   }
 
-
   get client(): SupabaseClient<any, any, any, any, any> {
     return this._client;
   }
-
-  // --- LOGICA DE ESTADO AUTOMATICA --------------
-  // private inicializarAuthListener() {
-  //   this.client.auth.onAuthStateChange(async (event, session) => {
-  //     // console.log('Auth Event:', event); // Debug
-
-  //     if (session?.user) {
-  //       // Si hay sesión, buscamos el perfil en la BD
-  //       const { data } = await this.obtenerUsuarioPorId(session.user.id);
-
-  //       // Emitimos el valor al BehaviorSubject (toda la app se entera)
-  //       if (data) {
-  //           this.usuarioSubject.next(data);
-  //       } else {
-  //           // Caso raro: Logueado en Auth pero sin perfil en tabla usuarios
-  //           this.usuarioSubject.next(null); 
-  //       }
-  //     } else {
-  //       // Si no hay sesión (Logout), emitimos null
-  //       this.usuarioSubject.next(null);
-  //     }
-  //   });
-  // }
-
-
-  // --- LOGICA DE ESTADO AUTOMATICA (BLINDADA) --------------
-  // private inicializarAuthListener() {
-  //   this.client.auth.onAuthStateChange(async (event, session) => {
-  //     console.log('🔄 [Supabase Auth Change]', event); // Debug para ver si se dispara
-
-  //     try {
-  //       if (session?.user) {
-  //         // Si hay sesión, buscamos el perfil en la BD
-  //         const { data, error } = await this.obtenerUsuarioPorId(session.user.id);
-
-  //         if (error) {
-  //           console.warn('⚠️ Error al recuperar perfil automático:', error.message);
-  //           // No emitimos error fatal, solo null o el usuario incompleto si quisieras
-  //           this.usuarioSubject.next(null);
-  //         } else if (data) {
-  //           this.usuarioSubject.next(data);
-  //         } else {
-  //           // Usuario en Auth pero no en BD
-  //           this.usuarioSubject.next(null); 
-  //         }
-  //       } else {
-  //         // Logout o sin sesión
-  //         this.usuarioSubject.next(null);
-  //       }
-  //     } catch (err) {
-  //       console.error('❌ Error crítico en listener de Auth:', err);
-  //       // Importante: No dejar el subject colgado
-  //       this.usuarioSubject.next(null);
-  //     }
-  //   });
-  // }
-
-
-  // src/app/services/supabase.service.ts
 
   // --- LOGICA DE ESTADO AUTOMATICA (DESACOPLADA) --------------
   private inicializarAuthListener() {
@@ -166,12 +82,7 @@ export class SupabaseService {
     });
   }
 
-
-
-
-
   // LOGIN REGITRO
-
   iniciarSesion(email: string, password: string): Promise<AuthResponse> {
     return this.client.auth.signInWithPassword({ email, password });
   }
@@ -231,5 +142,25 @@ export class SupabaseService {
     const { data: pubData } = this.client.storage.from('avatars').getPublicUrl(path);
     return pubData.publicUrl;
   }
+
+
+  // --------------- CAPTCHA --- 
+
+  async estaHabilitadoCaptcha(): Promise<boolean> {
+    try {
+      const { data, error } = await this.client
+        .from('configuracion_sistema')
+        .select('valor_boolean')
+        .eq('clave', 'captcha_habilitado')
+        .single();
+
+      if (error || !data) return true; // ========> si falla asumimos activado
+      return data.valor_boolean ?? true;
+    } catch (e) {
+      return true;
+    }
+  }
+
+
 }
 
