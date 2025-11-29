@@ -119,3 +119,21 @@
   .hero-left p{ display:none; }
   .lista{ padding:8px; }
 }
+
+
+/* Estilos para el diálogo de reseña */
+.resena-box {
+  margin-top: 16px;
+  padding: 16px;
+  background-color: rgba(255, 255, 255, 0.05); /* Fondo sutilmente claro sobre oscuro */
+  border: 1px solid rgba(255, 255, 255, 0.1);  /* Borde fino */
+  border-radius: 8px;
+}
+
+.resena-text {
+  margin: 0;
+  white-space: pre-wrap; /* Respeta los saltos de línea */
+  color: #e2e8f0;        /* Texto gris claro legible */
+  font-family: 'Roboto', sans-serif;
+  line-height: 1.5;
+}
