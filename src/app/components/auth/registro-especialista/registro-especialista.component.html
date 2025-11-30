@@ -1,4 +1,4 @@
-<mat-card class="registro-container" *ngIf="registroForm as f">
+<!-- <mat-card class="registro-container" *ngIf="registroForm as f">
   <mat-card-title>Registro de Especialista</mat-card-title>
 
   <form [formGroup]="f" (ngSubmit)="onSubmit()">
@@ -67,11 +67,10 @@
       </mat-error>
     </div>
 
-<<<<<<< HEAD:src/app/components/auth/registro-especialista/registro-especialista.component.html
-    <!-- === CAPTCHA === -->
+
     <div class="full-width mt-2">
       <label class="block mb-1">Validación anti-bots</label>
-      <!-- <div
+      <div
         appCaptcha
         [appCaptchaEnabled]="captchaEnabled"
         (appCaptchaSolved)="onCaptcha($event)"
@@ -90,26 +89,25 @@
  
 
 
-      <div class="error" *ngIf="f.controls.captcha.invalid && f.controls.captcha.touched">
+      <!-- <div class="error" *ngIf="f.controls.captcha.invalid && f.controls.captcha.touched">
         Responda correctamente el captcha.
       </div>
     </div>
 
-    <button mat-raised-button color="accent" class="full-width" [disabled]="f.invalid" type="submit">
-=======
+    <button mat-raised-button color="accent" class="full-width" [disabled]="f.invalid" type="submit"> -->
+
     <!-- Captcha -->
-    <app-captcha 
+    <!-- <app-captcha 
       [enabled]="captchaEnabled" 
       (captchaValid)="onCaptchaValid($event)">
     </app-captcha>
 
     <button mat-raised-button color="accent" class="full-width" [disabled]="f.invalid || !captchaValido" type="submit">
->>>>>>> 1-6-mas-estilos:src/app/components/registro-especialista/registro-especialista.component.html
       Registrarse
     </button>
 
   </form>
-</mat-card>
+</mat-card> -->
 
 
 
@@ -194,4 +192,4 @@
   </form>
 </mat-card>
 
- -->
+ --> 

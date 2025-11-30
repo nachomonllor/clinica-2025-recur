@@ -37,31 +37,3 @@
 
 
 
-
-
-<!-- 
-<div class="captcha-wrapper" *ngIf="habilitado">
-  <div class="captcha-header">
-    <span class="titulo">Seguridad</span>
-    <p class="consigna" *ngIf="objetivo">
-      Seleccioná la imagen de: <strong class="objetivo-texto">{{ objetivo.nombre }}</strong>
-    </p>
-  </div>
-  <div class="captcha-grid">
-    <div class="captcha-card" *ngFor="let opt of opcionesVisibles" [class.selected]="seleccionado === opt"
-      [class.success]="esCorrecto && seleccionado === opt"
-      [class.error]="!esCorrecto && seleccionado === opt && seleccionado !== null" (click)="seleccionar(opt)">
-      <mat-icon class="captcha-img">{{ opt.imagen }}</mat-icon>
-    </div>
-  </div>
-  <div class="captcha-footer">
-    <button mat-button color="warn" (click)="generarJuego()" *ngIf="!esCorrecto" class="btn-refresh">
-      <mat-icon>refresh</mat-icon> Probar otro
-    </button>
-
-    <div class="mensaje-exito" *ngIf="esCorrecto">
-      <mat-icon>check_circle</mat-icon> ¡Humano verificado!
-    </div>
-  </div>
-
-</div> -->

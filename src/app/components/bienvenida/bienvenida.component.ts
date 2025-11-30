@@ -58,7 +58,7 @@ export class BienvenidaComponent implements OnInit, OnDestroy {
     this.translate.use(inicial);
   }
 
-  // 👇 NUEVO
+  // PARA LAS PANTALLAS DE IDIOMA
   protected cambiarIdioma(lang: string): void {
     if (!this.idiomas.includes(lang as any)) return;
     this.idiomaActual.set(lang);
