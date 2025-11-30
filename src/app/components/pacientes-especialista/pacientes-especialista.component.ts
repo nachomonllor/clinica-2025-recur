@@ -1,3 +1,4 @@
+
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
@@ -200,22 +201,19 @@ export class PacientesEspecialistaComponent implements OnInit {
       return;
     }
     
-    // AQUÍ ESTÁ EL CAMBIO PRINCIPAL:
-    // Agregamos 'paciente: this.nombreCompletoSeleccionado' al objeto data
     this.dialog.open(this.verResenaDialog, {
       data: { 
         turno: t, 
         resena: t.resena, 
         fecha: t.fechaTexto, 
         especialidad: t.especialidad,
-        paciente: this.nombreCompletoSeleccionado // <--- Nuevo dato enviado
+        paciente: this.nombreCompletoSeleccionado 
       },
       width: '500px'
     });
   }
 
   mostrarResena(resena: string): void {
-    // Método auxiliar por si lo usabas directo en el template anterior
     this.snackBar.open(resena, 'Cerrar', { duration: 3500 });
   }
 
@@ -226,6 +224,7 @@ export class PacientesEspecialistaComponent implements OnInit {
 
       const especialistaId = sessionData.session.user.id;
 
+      // 1. Buscamos historias + datos dinámicos
       const { data: historias, error } = await this.supa.client
         .from('historia_clinica')
         .select(`
@@ -241,10 +240,12 @@ export class PacientesEspecialistaComponent implements OnInit {
         return;
       }
 
+      // 2. Mapeamos datos extra
       const historiasCompletas = await Promise.all((historias || []).map(async (h: any) => {
+        // CAMBIO: Agregamos 'comentario' al select para obtener la reseña
         const { data: turno } = await this.supa.client
           .from('turnos')
-          .select('fecha_hora_inicio, especialidades(nombre)')
+          .select('fecha_hora_inicio, comentario, especialidades(nombre)')
           .eq('id', h.turno_id)
           .single();
 
@@ -264,7 +265,9 @@ export class PacientesEspecialistaComponent implements OnInit {
           especialistaNombre: especialista ? `${especialista.nombre} ${especialista.apellido}` : '',
           fechaAtencion: turno?.fecha_hora_inicio
             ? new Date(turno.fecha_hora_inicio).toLocaleDateString('es-AR')
-            : ''
+            : '',
+          // CAMBIO: Mapeamos el comentario del turno a la propiedad 'resena'
+          resena: turno?.comentario || ''
         };
       }));
 
@@ -281,6 +284,23 @@ export class PacientesEspecialistaComponent implements OnInit {
     }
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -303,9 +323,6 @@ export class PacientesEspecialistaComponent implements OnInit {
 
 // import { PacienteAtendido, TurnoDetalle } from '../../models/pacientes-especialista.model';
 // import { CapitalizarNombrePipe } from "../../../pipes/capitalizar-nombre.pipe";
-// import { TurnoVM } from '../../models/turno.model';
-
-// // ------------------------------------------------
 
 // @Component({
 //   selector: 'app-pacientes-especialista',
@@ -332,9 +349,7 @@ export class PacientesEspecialistaComponent implements OnInit {
 //   pacienteSeleccionado?: PacienteAtendido;
 //   turnosPaciente: TurnoDetalle[] = [];
 
-
 //   @ViewChild('verResenaDialog') verResenaDialog!: TemplateRef<unknown>;
-
 
 //   cargandoDetalle = false;
 //   filtro = '';
@@ -364,7 +379,6 @@ export class PacientesEspecialistaComponent implements OnInit {
 //     const especialistaId = sessionData.session.user.id;
 
 //     try {
-//       // historias_clinicas sigue siendo válida: paciente_id / especialista_id
 //       const { data: historias, error: historiasError } = await this.supa.client
 //         .from('historia_clinica')
 //         .select('paciente_id')
@@ -384,12 +398,11 @@ export class PacientesEspecialistaComponent implements OnInit {
 //         return;
 //       }
 
-//       // CAMBIO: ahora usamos esquema_clinica.usuarios en vez de perfiles
 //       const { data: pacientes, error: pacientesError } = await this.supa.client
 //         .from('usuarios')
 //         .select('id, nombre, apellido, dni, email, imagen_perfil_1, perfil')
 //         .in('id', pacienteIds)
-//         .eq('perfil', 'PACIENTE'); // check del DDL
+//         .eq('perfil', 'PACIENTE');
 
 //       if (pacientesError) {
 //         console.error('[PacientesEspecialista] Error al cargar pacientes', pacientesError);
@@ -402,7 +415,6 @@ export class PacientesEspecialistaComponent implements OnInit {
 //         apellido: p.apellido || '',
 //         dni: p.dni || '',
 //         email: p.email || '',
-//         // CAMBIO: usamos imagen_perfil_1 como avatar
 //         avatar_url: p.imagen_perfil_1 || undefined
 //       }));
 
@@ -449,7 +461,6 @@ export class PacientesEspecialistaComponent implements OnInit {
 
 //       const especialistaId = sessionData.session.user.id;
 
-//       // CAMBIO: usamos columnas nuevas de turnos y aprovechamos FK a especialidades / estados_turno
 //       const { data, error } = await this.supa.client
 //         .from('turnos')
 //         .select(`
@@ -482,7 +493,6 @@ export class PacientesEspecialistaComponent implements OnInit {
 //           especialidad: especialidadNombre,
 //           estado: estadoCodigo,
 //           fechaTexto,
-//           // CAMBIO: usamos comentario como “reseña”
 //           resena: (t.comentario || '').trim() || undefined
 //         } as TurnoDetalle;
 //       });
@@ -491,16 +501,29 @@ export class PacientesEspecialistaComponent implements OnInit {
 //     }
 //   }
 
-
 //   verResena(t: TurnoDetalle): void {
 //     if (!t.resena || t.resena.trim().length === 0) {
 //       this.snackBar.open('Este turno no tiene reseña disponible', 'Cerrar', { duration: 2500 });
 //       return;
 //     }
+    
+//     // AQUÍ ESTÁ EL CAMBIO PRINCIPAL:
+//     // Agregamos 'paciente: this.nombreCompletoSeleccionado' al objeto data
 //     this.dialog.open(this.verResenaDialog, {
-//       data: {  turno: t, resena: t.resena, fecha: t.fechaTexto, especialidad: t.especialidad },
+//       data: { 
+//         turno: t, 
+//         resena: t.resena, 
+//         fecha: t.fechaTexto, 
+//         especialidad: t.especialidad,
+//         paciente: this.nombreCompletoSeleccionado // <--- Nuevo dato enviado
+//       },
 //       width: '500px'
 //     });
+//   }
+
+//   mostrarResena(resena: string): void {
+//     // Método auxiliar por si lo usabas directo en el template anterior
+//     this.snackBar.open(resena, 'Cerrar', { duration: 3500 });
 //   }
 
 //   async verHistoriaClinica(pacienteId: string, pacienteNombre: string): Promise<void> {
@@ -510,7 +533,6 @@ export class PacientesEspecialistaComponent implements OnInit {
 
 //       const especialistaId = sessionData.session.user.id;
 
-//       // 1. Buscamos las historias
 //       const { data: historias, error } = await this.supa.client
 //         .from('historia_clinica')
 //         .select(`
@@ -526,31 +548,26 @@ export class PacientesEspecialistaComponent implements OnInit {
 //         return;
 //       }
 
-//       // 2. Mapeamos datos extra
 //       const historiasCompletas = await Promise.all((historias || []).map(async (h: any) => {
-
-//         // Query al turno para sacar la especialidad
 //         const { data: turno } = await this.supa.client
 //           .from('turnos')
 //           .select('fecha_hora_inicio, especialidades(nombre)')
 //           .eq('id', h.turno_id)
 //           .single();
 
-//         // Query al especialista (por si acaso no es el usuario actual, aunque debería)
 //         const { data: especialista } = await this.supa.client
 //           .from('usuarios')
 //           .select('nombre, apellido')
 //           .eq('id', h.especialista_id)
 //           .single();
 
-//         // --- SOLUCIÓN DEL ERROR ROJO ---
 //         const dataEspec: any = turno?.especialidades;
 //         const nombreEspecialidad = dataEspec?.nombre || dataEspec?.[0]?.nombre || '';
 
 //         return {
 //           ...h,
-//           paciente: pacienteNombre, // El nombre que viene por parámetro (PACIENTE)
-//           especialidad: nombreEspecialidad, // El nombre de la especialidad (o vacío)
+//           paciente: pacienteNombre,
+//           especialidad: nombreEspecialidad,
 //           especialistaNombre: especialista ? `${especialista.nombre} ${especialista.apellido}` : '',
 //           fechaAtencion: turno?.fecha_hora_inicio
 //             ? new Date(turno.fecha_hora_inicio).toLocaleDateString('es-AR')
@@ -570,7 +587,7 @@ export class PacientesEspecialistaComponent implements OnInit {
 //       console.error('[PacientesEspecialista] Error al cargar historia clínica', err);
 //     }
 //   }
-
-
-
 // }
+
+
+
