@@ -6,6 +6,7 @@ import { HistoriaClinicaConExtras } from '../../../models/historia-clinica.model
 import { DatoDinamico } from '../../../models/dato-dinamico.model';
 import { DatoDinamicoPipe } from '../../../../pipes/dato-dinamico.pipe';
 
+
 export interface HistoriaClinicaDialogData {
   pacienteNombre: string;
   historias: HistoriaClinicaConExtras[];
@@ -380,6 +381,8 @@ export class HistoriaClinicaDialogComponent {
   // primer card abierta por default
   panelAbiertoIndex: number | null = 0;
 
+
+
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: HistoriaClinicaDialogData,
     private dialogRef: MatDialogRef<HistoriaClinicaDialogComponent>
@@ -412,210 +415,511 @@ export class HistoriaClinicaDialogComponent {
     return texto;
   }
 
-  // exportarPdf(): void {
-  //   const doc = new jsPDF();
-  //   const pageHeight = doc.internal.pageSize.getHeight();
 
-  //   doc.setFontSize(16);
-  //   doc.text(`Historia Clínica - ${this.data.pacienteNombre}`, 10, 15);
 
-  //   let y = 25;
+//   exportarPdf(): void {
+//   const doc = new jsPDF('p', 'mm', 'a4');
+//   const pageWidth = doc.internal.pageSize.getWidth();
+//   const pageHeight = doc.internal.pageSize.getHeight();
 
-  //   const addLine = (texto: string) => {
-  //     const lineas = doc.splitTextToSize(texto, 190);
-  //     for (const linea of lineas) {
-  //       if (y > pageHeight - 10) {
-  //         doc.addPage();
-  //         y = 20;
-  //       }
-  //       doc.text(linea, 10, y);
-  //       y += 6;
-  //     }
-  //   };
+//   const marginX = 15;
+//   const marginBottom = 15;
+//   const cardPadding = 5;
+//   const lineHeight = 5;
+//   const paragraphSpacing = 2;
 
-  //   this.data.historias.forEach((h, index: number) => {
-  //     addLine(`Atención #${index + 1} - ${h.fechaAtencion || 'N/A'}`);
-  //     addLine(`Especialista: ${h.especialistaNombre || 'N/A'}`);
-  //     addLine(`Fecha de registro: ${new Date(h.fecha_registro).toLocaleString('es-AR')}`);
+//   const drawHeader = () => {
+//     // Faja superior oscura
+//     doc.setFillColor(17, 24, 39); // #111827
+//     doc.rect(0, 0, pageWidth, 28, 'F');
 
-  //     addLine(
-  //       `Altura: ${h.altura ?? '-'} cm | ` +
-  //       `Peso: ${h.peso ?? '-'} kg | ` +
-  //       `Temperatura: ${h.temperatura ?? '-'} °C | ` +
-  //       `Presión: ${h.presion ?? '-'}`
-  //     );
+//     // Título
+//     doc.setTextColor(255, 255, 255);
+//     doc.setFont('helvetica', 'bold');
+//     doc.setFontSize(16);
+//     doc.text('Historia Clínica', marginX, 13);
 
-  //     (h.datos_dinamicos || []).forEach((d: DatoDinamico) => {
-  //       addLine(`${d.clave}: ${this.formatearDatoDinamico(d)}`);
-  //     });
+//     // Paciente
+//     doc.setFont('helvetica', 'normal');
+//     doc.setFontSize(11);
+//     doc.text(`Paciente: ${this.data.pacienteNombre}`, marginX, 20);
 
-  //     y += 4;
-  //     if (y > pageHeight - 10) {
-  //       doc.addPage();
-  //       y = 20;
-  //     }
-  //   });
+//     // Fecha de emisión
+//     const hoy = new Date().toLocaleDateString('es-AR');
+//     doc.setFontSize(9);
+//     doc.setTextColor(209, 213, 219); // gris claro
+//     doc.text(hoy, pageWidth - marginX, 13, { align: 'right' });
 
-  //   const nombreArchivo =
-  //     `historia_clinica_${this.data.pacienteNombre.replace(/\s+/g, '_').toLowerCase()}.pdf`;
+//     // Línea dorada de separación
+//     doc.setDrawColor(251, 191, 36); // dorado
+//     doc.setLineWidth(0.4);
+//     doc.line(marginX, 24, pageWidth - marginX, 24);
+//   };
 
-  //   doc.save(nombreArchivo);
-  // }
+//   drawHeader();
+
+//   const headerBottom = 28;
+//   let y = headerBottom + 8;
+
+//   // Caso sin historias
+//   if (!this.data.historias.length) {
+//     doc.setTextColor(55, 65, 81);
+//     doc.setFontSize(12);
+//     doc.text(
+//       'No hay historias clínicas registradas para este paciente.',
+//       pageWidth / 2,
+//       pageHeight / 2,
+//       { align: 'center' }
+//     );
+
+//     const nombreArchivo =
+//       `historia_clinica_${this.data.pacienteNombre.replace(/\s+/g, '_').toLowerCase()}.pdf`;
+//     doc.save(nombreArchivo);
+//     return;
+//   }
+
+//   const contentWidth = pageWidth - marginX * 2;
+
+//   this.data.historias.forEach((h, index: number) => {
+//     const paragraphs: { lines: string[]; bold?: boolean }[] = [];
+//     const anchoTexto = contentWidth - cardPadding * 2;
+
+//     const addParagraph = (text: string, options?: { bold?: boolean }) => {
+//       const rawLines = doc.splitTextToSize(text, anchoTexto);
+//       paragraphs.push({ lines: rawLines, bold: options?.bold });
+//     };
+
+//     const fechaAt = h.fechaAtencion || 'N/A';
+//     addParagraph(`Atención #${index + 1} · ${fechaAt}`, { bold: true });
+
+//     addParagraph(`Especialista: ${h.especialistaNombre || 'N/A'}`);
+
+//     const fechaReg = h.fecha_registro
+//       ? new Date(h.fecha_registro).toLocaleString('es-AR')
+//       : 'N/A';
+//     addParagraph(`Fecha de registro: ${fechaReg}`);
+
+//     addParagraph(
+//       `Altura: ${h.altura ?? '-'} cm   |   ` +
+//       `Peso: ${h.peso ?? '-'} kg   |   ` +
+//       `Temp.: ${h.temperatura ?? '-'} °C   |   ` +
+//       `Presión: ${h.presion ?? '-'}`
+//     );
+
+//     const datosDinamicos = h.datos_dinamicos || [];
+//     if (datosDinamicos.length) {
+//       addParagraph('Datos dinámicos:', { bold: true });
+//       datosDinamicos.forEach((d: DatoDinamico) => {
+//         addParagraph(`• ${d.clave}: ${this.formatearDatoDinamico(d)}`);
+//       });
+//     }
+
+//     // Calcular alto de la card
+//     let cardHeight = cardPadding * 2;
+//     paragraphs.forEach((p, i) => {
+//       cardHeight += p.lines.length * lineHeight;
+//       if (i > 0) {
+//         cardHeight += paragraphSpacing;
+//       }
+//     });
+
+//     // Salto de página si no entra la card completa
+//     if (y + cardHeight > pageHeight - marginBottom) {
+//       doc.addPage();
+//       drawHeader();
+//       y = headerBottom + 8;
+//     }
+
+//     // Fondo de la card (amarillo suave) + borde
+//     doc.setFillColor(255, 253, 231);      // #FFFDE7
+//     doc.setDrawColor(251, 192, 45);       // #FBC02D
+//     doc.setLineWidth(0.4);
+//     doc.roundedRect(marginX, y, contentWidth, cardHeight, 3, 3, 'FD');
+
+//     // Banda lateral tipo acento
+//     doc.setFillColor(253, 230, 138);      // #FDE68A
+//     doc.rect(marginX, y, 2, cardHeight, 'F');
+
+//     // Texto dentro de la card
+//     let textY = y + cardPadding + lineHeight;
+//     doc.setTextColor(30, 41, 59);         // #1E293B
+//     doc.setFontSize(10);
+
+//     paragraphs.forEach((p, i) => {
+//       if (p.bold) {
+//         doc.setFont('helvetica', 'bold');
+//       } else {
+//         doc.setFont('helvetica', 'normal');
+//       }
+
+//       p.lines.forEach(line => {
+//         doc.text(line, marginX + cardPadding + 2, textY);
+//         textY += lineHeight;
+//       });
+
+//       if (i < paragraphs.length - 1) {
+//         textY += paragraphSpacing;
+//       }
+//     });
+
+//     y += cardHeight + 6; // espacio entre cards
+//   });
+
+//   const nombreArchivo =
+//     `historia_clinica_${this.data.pacienteNombre.replace(/\s+/g, '_').toLowerCase()}.pdf`;
+
+//   doc.save(nombreArchivo);
+// }
+
+
+
+ 
+
+
+//   exportarPdf(): void {
+//   const doc = new jsPDF('p', 'mm', 'a4');
+//   const pageWidth = doc.internal.pageSize.getWidth();
+//   const pageHeight = doc.internal.pageSize.getHeight();
+  
+//   // Configuración de medidas
+//   const marginX = 15;
+//   const marginBottom = 15;
+//   const cardPadding = 5;
+//   const lineHeight = 5;
+//   const paragraphSpacing = 2;
+//   const headerBottom = 28;
+
+//   // --- LÓGICA PRINCIPAL DE GENERACIÓN (SEPARADA) ---
+//   const generarDocumento = (imgLogo?: HTMLImageElement) => {
+    
+//     const drawHeader = () => {
+//       // 1. Faja superior oscura
+//       doc.setFillColor(17, 24, 39); // #111827
+//       doc.rect(0, 0, pageWidth, 28, 'F');
+
+//       // 2. Logo (Solo si existe y cargó bien)
+//       let textOffsetX = 0;
+//       if (imgLogo) {
+//         doc.addImage(imgLogo, 'JPEG', marginX, 6, 15, 15);
+//         textOffsetX = 18; // Desplazamos el texto si hay logo
+//       }
+
+//       // 3. Título
+//       doc.setTextColor(255, 255, 255);
+//       doc.setFont('helvetica', 'bold');
+//       doc.setFontSize(16);
+//       doc.text('Historia Clínica', marginX + textOffsetX, 13);
+
+//       // 4. Paciente
+//       doc.setFont('helvetica', 'normal');
+//       doc.setFontSize(11);
+//       doc.text(`Paciente: ${this.data.pacienteNombre}`, marginX + textOffsetX, 20);
+
+//       // 5. Fecha de emisión
+//       const hoy = new Date().toLocaleDateString('es-AR');
+//       doc.setFontSize(9);
+//       doc.setTextColor(209, 213, 219);
+//       doc.text(hoy, pageWidth - marginX, 13, { align: 'right' });
+
+//       // 6. Línea dorada
+//       doc.setDrawColor(251, 191, 36);
+//       doc.setLineWidth(0.4);
+//       doc.line(marginX, 24, pageWidth - marginX, 24);
+//     };
+
+//     drawHeader();
+//     let y = headerBottom + 8;
+
+//     // --- CASO SIN HISTORIAS ---
+//     if (!this.data.historias.length) {
+//       doc.setTextColor(55, 65, 81);
+//       doc.setFontSize(12);
+//       doc.text(
+//         'No hay historias clínicas registradas para este paciente.',
+//         pageWidth / 2,
+//         pageHeight / 2,
+//         { align: 'center' }
+//       );
+//       const nombreArchivo = `historia_clinica_${this.data.pacienteNombre.replace(/\s+/g, '_').toLowerCase()}.pdf`;
+//       doc.save(nombreArchivo);
+//       return;
+//     }
+
+//     // --- LOOP DE HISTORIAS ---
+//     const contentWidth = pageWidth - marginX * 2;
+
+//     this.data.historias.forEach((h: any, index: number) => {
+//       const paragraphs: { lines: string[]; bold?: boolean }[] = [];
+//       const anchoTexto = contentWidth - cardPadding * 2;
+
+//       const addParagraph = (text: string, options?: { bold?: boolean }) => {
+//         const rawLines = doc.splitTextToSize(text, anchoTexto);
+//         paragraphs.push({ lines: rawLines, bold: options?.bold });
+//       };
+
+//       const fechaAt = h.fechaAtencion || 'N/A';
+//       addParagraph(`Atención #${index + 1} · ${fechaAt}`, { bold: true });
+//       addParagraph(`Especialista: ${h.especialistaNombre || 'N/A'}`);
+
+//       const fechaReg = h.fecha_registro
+//         ? new Date(h.fecha_registro).toLocaleString('es-AR')
+//         : 'N/A';
+//       addParagraph(`Fecha de registro: ${fechaReg}`);
+
+//       addParagraph(
+//         `Altura: ${h.altura ?? '-'} cm   |   ` +
+//         `Peso: ${h.peso ?? '-'} kg   |   ` +
+//         `Temp.: ${h.temperatura ?? '-'} °C   |   ` +
+//         `Presión: ${h.presion ?? '-'}`
+//       );
+
+//       const datosDinamicos = h.datos_dinamicos || [];
+//       if (datosDinamicos.length) {
+//         addParagraph('Datos dinámicos:', { bold: true });
+//         datosDinamicos.forEach((d: any) => {
+//           // Ajusta aquí según tu estructura de datos
+//           addParagraph(`• ${d.clave}: ${d.valor}`); 
+//         });
+//       }
+
+//       // Calcular alto
+//       let cardHeight = cardPadding * 2;
+//       paragraphs.forEach((p, i) => {
+//         cardHeight += p.lines.length * lineHeight;
+//         if (i > 0) cardHeight += paragraphSpacing;
+//       });
+
+//       // Salto de página
+//       if (y + cardHeight > pageHeight - marginBottom) {
+//         doc.addPage();
+//         drawHeader();
+//         y = headerBottom + 8;
+//       }
+
+//       // Dibujar Card
+//       doc.setFillColor(255, 253, 231);
+//       doc.setDrawColor(251, 192, 45);
+//       doc.setLineWidth(0.4);
+//       doc.roundedRect(marginX, y, contentWidth, cardHeight, 3, 3, 'FD');
+
+//       doc.setFillColor(253, 230, 138);
+//       doc.rect(marginX, y, 2, cardHeight, 'F');
+
+//       let textY = y + cardPadding + lineHeight;
+//       doc.setTextColor(30, 41, 59);
+//       doc.setFontSize(10);
+
+//       paragraphs.forEach((p, i) => {
+//         doc.setFont('helvetica', p.bold ? 'bold' : 'normal');
+//         p.lines.forEach(line => {
+//           doc.text(line, marginX + cardPadding + 2, textY);
+//           textY += lineHeight;
+//         });
+//         if (i < paragraphs.length - 1) textY += paragraphSpacing;
+//       });
+
+//       y += cardHeight + 6;
+//     });
+
+//     const nombreArchivo = `historia_clinica_${this.data.pacienteNombre.replace(/\s+/g, '_').toLowerCase()}.pdf`;
+//     doc.save(nombreArchivo);
+//   };
+
+//   // --- CARGA DE IMAGEN ---
+//   const logo = new Image();
+//   // IMPORTANTE: La barra al inicio '/' busca desde la raíz (localhost:4200/assets/...)
+//   logo.src = '/assets/logo_clinica.jpg'; 
+
+//   logo.onload = () => {
+//     // Si carga bien, generamos con logo
+//     generarDocumento(logo);
+//   };
+
+//   logo.onerror = () => {
+//     console.warn('No se encontró el logo o ruta incorrecta. Generando PDF sin imagen.');
+//     // Si falla, generamos SIN logo (pasamos undefined)
+//     generarDocumento(); 
+//   };
+// }
 
 
   exportarPdf(): void {
   const doc = new jsPDF('p', 'mm', 'a4');
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
-
+  
   const marginX = 15;
   const marginBottom = 15;
   const cardPadding = 5;
   const lineHeight = 5;
   const paragraphSpacing = 2;
+  const headerBottom = 32;
 
-  const drawHeader = () => {
-    // Faja superior oscura
-    doc.setFillColor(17, 24, 39); // #111827
-    doc.rect(0, 0, pageWidth, 28, 'F');
+  // 1. TU SVG (Limpio y listo)
+  const svgLogo = `
+  <svg width="600" height="200" viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="gradBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#0099ff;stop-opacity:1" /> 
+        <stop offset="100%" style="stop-color:#0055b3;stop-opacity:1" /> 
+      </linearGradient>
+      <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur in="SourceAlpha" stdDeviation="3" />
+        <feOffset dx="2" dy="4" result="offsetblur"/>
+        <feComponentTransfer><feFuncA type="linear" slope="0.2"/></feComponentTransfer>
+        <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+    <g transform="translate(50, 50)" filter="url(#softShadow)">
+      <path d="M 80 0 H 120 A 10 10 0 0 1 130 10 V 80 H 200 A 10 10 0 0 1 210 90 V 130 A 10 10 0 0 1 200 140 H 130 V 210 A 10 10 0 0 1 120 220 H 80 A 10 10 0 0 1 70 210 V 140 H 0 A 10 10 0 0 1 -10 130 V 90 A 10 10 0 0 1 0 80 H 70 V 10 A 10 10 0 0 1 80 0 Z" fill="url(#gradBlue)" transform="scale(0.5) translate(30,30)"/>
+      <path d="M 60 115 L 90 145 L 150 85" stroke="white" stroke-width="14" fill="none" stroke-linecap="round" stroke-linejoin="round" transform="scale(0.5) translate(30,30)"/>
+    </g>
+    <g transform="translate(180, 115)">
+      <text x="0" y="-25" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="500" font-size="28" fill="#0077cc" letter-spacing="2px">CLINICA</text>
+      <text x="0" y="25" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="800" font-size="52" fill="#003366">MONLLOR</text>
+    </g>
+  </svg>`;
 
-    // Título
-    doc.setTextColor(255, 255, 255);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(16);
-    doc.text('Historia Clínica', marginX, 13);
+  // 2. Convertir string SVG a Base64
+  const svgBase64 = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgLogo)));
 
-    // Paciente
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(11);
-    doc.text(`Paciente: ${this.data.pacienteNombre}`, marginX, 20);
+  // --- FUNCIÓN GENERADORA (Recibe la imagen ya como PNG DATA URL) ---
+  const generarDocumento = (pngDataUrl?: string) => {
+    
+    const drawHeader = () => {
+      // Fondo oscuro
+      doc.setFillColor(17, 24, 39); 
+      doc.rect(0, 0, pageWidth, headerBottom, 'F');
 
-    // Fecha de emisión
-    const hoy = new Date().toLocaleDateString('es-AR');
-    doc.setFontSize(9);
-    doc.setTextColor(209, 213, 219); // gris claro
-    doc.text(hoy, pageWidth - marginX, 13, { align: 'right' });
+      if (pngDataUrl) {
+        // Fondo blanco estilo "tarjeta" para el logo
+        doc.setFillColor(255, 255, 255);
+        doc.roundedRect(marginX - 2, 5, 65, 22, 2, 2, 'F');
 
-    // Línea dorada de separación
-    doc.setDrawColor(251, 191, 36); // dorado
-    doc.setLineWidth(0.4);
-    doc.line(marginX, 24, pageWidth - marginX, 24);
-  };
+        // IMPORTANTE: Aquí ahora usamos 'PNG' porque ya lo convertimos
+        doc.addImage(pngDataUrl, 'PNG', marginX, 6, 60, 20);
+      }
 
-  drawHeader();
+      // Título y Datos
+      doc.setTextColor(255, 255, 255);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(16);
+      doc.text('Historia Clínica', pageWidth - marginX, 18, { align: 'right' });
 
-  const headerBottom = 28;
-  let y = headerBottom + 8;
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      doc.text(`Paciente: ${this.data.pacienteNombre}`, pageWidth - marginX, 24, { align: 'right' });
+      
+      const hoy = new Date().toLocaleDateString('es-AR');
+      doc.setTextColor(209, 213, 219);
+      doc.setFontSize(8);
+      doc.text(`Emisión: ${hoy}`, pageWidth - marginX, 28, { align: 'right' });
 
-  // Caso sin historias
-  if (!this.data.historias.length) {
-    doc.setTextColor(55, 65, 81);
-    doc.setFontSize(12);
-    doc.text(
-      'No hay historias clínicas registradas para este paciente.',
-      pageWidth / 2,
-      pageHeight / 2,
-      { align: 'center' }
-    );
-
-    const nombreArchivo =
-      `historia_clinica_${this.data.pacienteNombre.replace(/\s+/g, '_').toLowerCase()}.pdf`;
-    doc.save(nombreArchivo);
-    return;
-  }
-
-  const contentWidth = pageWidth - marginX * 2;
-
-  this.data.historias.forEach((h, index: number) => {
-    const paragraphs: { lines: string[]; bold?: boolean }[] = [];
-    const anchoTexto = contentWidth - cardPadding * 2;
-
-    const addParagraph = (text: string, options?: { bold?: boolean }) => {
-      const rawLines = doc.splitTextToSize(text, anchoTexto);
-      paragraphs.push({ lines: rawLines, bold: options?.bold });
+      // Línea dorada
+      doc.setDrawColor(251, 191, 36);
+      doc.setLineWidth(0.4);
+      doc.line(marginX, headerBottom - 1, pageWidth - marginX, headerBottom - 1);
     };
 
-    const fechaAt = h.fechaAtencion || 'N/A';
-    addParagraph(`Atención #${index + 1} · ${fechaAt}`, { bold: true });
+    drawHeader();
+    let y = headerBottom + 8;
 
-    addParagraph(`Especialista: ${h.especialistaNombre || 'N/A'}`);
-
-    const fechaReg = h.fecha_registro
-      ? new Date(h.fecha_registro).toLocaleString('es-AR')
-      : 'N/A';
-    addParagraph(`Fecha de registro: ${fechaReg}`);
-
-    addParagraph(
-      `Altura: ${h.altura ?? '-'} cm   |   ` +
-      `Peso: ${h.peso ?? '-'} kg   |   ` +
-      `Temp.: ${h.temperatura ?? '-'} °C   |   ` +
-      `Presión: ${h.presion ?? '-'}`
-    );
-
-    const datosDinamicos = h.datos_dinamicos || [];
-    if (datosDinamicos.length) {
-      addParagraph('Datos dinámicos:', { bold: true });
-      datosDinamicos.forEach((d: DatoDinamico) => {
-        addParagraph(`• ${d.clave}: ${this.formatearDatoDinamico(d)}`);
-      });
+    // --- CONTENIDO (Misma lógica de siempre) ---
+    if (!this.data.historias.length) {
+      doc.setTextColor(55, 65, 81);
+      doc.setFontSize(12);
+      doc.text('No hay historias clínicas registradas.', pageWidth / 2, pageHeight / 2, { align: 'center' });
+      doc.save(`historia_clinica_${this.data.pacienteNombre.replace(/\s+/g, '_').toLowerCase()}.pdf`);
+      return;
     }
 
-    // Calcular alto de la card
-    let cardHeight = cardPadding * 2;
-    paragraphs.forEach((p, i) => {
-      cardHeight += p.lines.length * lineHeight;
-      if (i > 0) {
-        cardHeight += paragraphSpacing;
-      }
-    });
+    const contentWidth = pageWidth - marginX * 2;
+    this.data.historias.forEach((h: any, index: number) => {
+      const paragraphs: { lines: string[]; bold?: boolean }[] = [];
+      const anchoTexto = contentWidth - cardPadding * 2;
 
-    // Salto de página si no entra la card completa
-    if (y + cardHeight > pageHeight - marginBottom) {
-      doc.addPage();
-      drawHeader();
-      y = headerBottom + 8;
-    }
+      const addParagraph = (text: string, opts?: { bold?: boolean }) => {
+        paragraphs.push({ lines: doc.splitTextToSize(text, anchoTexto), bold: opts?.bold });
+      };
 
-    // Fondo de la card (amarillo suave) + borde
-    doc.setFillColor(255, 253, 231);      // #FFFDE7
-    doc.setDrawColor(251, 192, 45);       // #FBC02D
-    doc.setLineWidth(0.4);
-    doc.roundedRect(marginX, y, contentWidth, cardHeight, 3, 3, 'FD');
+      const fechaAt = h.fechaAtencion || 'N/A';
+      addParagraph(`Atención #${index + 1} · ${fechaAt}`, { bold: true });
+      addParagraph(`Especialista: ${h.especialistaNombre || 'N/A'}`);
+      const fechaReg = h.fecha_registro ? new Date(h.fecha_registro).toLocaleString('es-AR') : 'N/A';
+      addParagraph(`Fecha de registro: ${fechaReg}`);
+      addParagraph(`Altura: ${h.altura ?? '-'} cm | Peso: ${h.peso ?? '-'} kg | Temp.: ${h.temperatura ?? '-'} °C | Presión: ${h.presion ?? '-'}`);
 
-    // Banda lateral tipo acento
-    doc.setFillColor(253, 230, 138);      // #FDE68A
-    doc.rect(marginX, y, 2, cardHeight, 'F');
-
-    // Texto dentro de la card
-    let textY = y + cardPadding + lineHeight;
-    doc.setTextColor(30, 41, 59);         // #1E293B
-    doc.setFontSize(10);
-
-    paragraphs.forEach((p, i) => {
-      if (p.bold) {
-        doc.setFont('helvetica', 'bold');
-      } else {
-        doc.setFont('helvetica', 'normal');
+      if (h.datos_dinamicos?.length) {
+        addParagraph('Datos dinámicos:', { bold: true });
+        h.datos_dinamicos.forEach((d: any) => addParagraph(`• ${d.clave}: ${d.valor}`));
       }
 
-      p.lines.forEach(line => {
-        doc.text(line, marginX + cardPadding + 2, textY);
-        textY += lineHeight;
+      let cardHeight = cardPadding * 2;
+      paragraphs.forEach((p, i) => {
+        cardHeight += p.lines.length * lineHeight;
+        if (i > 0) cardHeight += paragraphSpacing;
       });
 
-      if (i < paragraphs.length - 1) {
-        textY += paragraphSpacing;
+      if (y + cardHeight > pageHeight - marginBottom) {
+        doc.addPage();
+        drawHeader();
+        y = headerBottom + 8;
       }
+
+      doc.setFillColor(255, 253, 231);
+      doc.setDrawColor(251, 192, 45);
+      doc.setLineWidth(0.4);
+      doc.roundedRect(marginX, y, contentWidth, cardHeight, 3, 3, 'FD');
+      doc.setFillColor(253, 230, 138);
+      doc.rect(marginX, y, 2, cardHeight, 'F');
+
+      let textY = y + cardPadding + lineHeight;
+      doc.setTextColor(30, 41, 59);
+      doc.setFontSize(10);
+      paragraphs.forEach((p, i) => {
+        doc.setFont('helvetica', p.bold ? 'bold' : 'normal');
+        p.lines.forEach(l => { doc.text(l, marginX + cardPadding + 2, textY); textY += lineHeight; });
+        if (i < paragraphs.length - 1) textY += paragraphSpacing;
+      });
+
+      y += cardHeight + 6;
     });
 
-    y += cardHeight + 6; // espacio entre cards
-  });
+    const nombreArchivo = `historia_clinica_${this.data.pacienteNombre.replace(/\s+/g, '_').toLowerCase()}.pdf`;
+    doc.save(nombreArchivo);
+  };
 
-  const nombreArchivo =
-    `historia_clinica_${this.data.pacienteNombre.replace(/\s+/g, '_').toLowerCase()}.pdf`;
+  // 3. CARGA Y CONVERSIÓN (RASTERIZACIÓN)
+  const img = new Image();
+  img.src = svgBase64;
 
-  doc.save(nombreArchivo);
+  img.onload = () => {
+    // A. Crear un canvas invisible
+    const canvas = document.createElement('canvas');
+    // B. Darle el mismo tamaño que el viewBox del SVG (600x200)
+    canvas.width = 600;
+    canvas.height = 200;
+    
+    // C. Dibujar la imagen SVG en el canvas
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+      ctx.drawImage(img, 0, 0);
+      // D. Extraer como PNG Data URL
+      const pngData = canvas.toDataURL('image/png');
+      // E. Generar PDF pasando el PNG
+      generarDocumento(pngData);
+    } else {
+      // Fallback raro si no hay contexto
+      generarDocumento();
+    }
+  };
+
+  img.onerror = () => {
+    console.warn('Error procesando SVG, generando sin logo.');
+    generarDocumento();
+  };
 }
+
 
 
 
