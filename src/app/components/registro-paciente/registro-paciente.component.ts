@@ -21,6 +21,7 @@ import { SupabaseService } from '../../../services/supabase.service';
 import { environment } from '../../../environments/environment';
 
 import { NgxCaptchaModule } from 'ngx-captcha';
+import { FavBienvenidaComponent } from "../fav-bienvenida/fav-bienvenida.component";
 
 
 @Component({
@@ -34,9 +35,8 @@ import { NgxCaptchaModule } from 'ngx-captcha';
     MatButtonModule,
     MatCardModule,
     NgxCaptchaModule,
-
-   // CaptchaPropioComponent // <--- LO AGREGAMOS
-  ],
+    FavBienvenidaComponent
+],
   templateUrl: './registro-paciente.component.html',
   styleUrls: ['./registro-paciente.component.scss']
 })

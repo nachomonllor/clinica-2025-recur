@@ -25,6 +25,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CaptchaPropioComponent } from '../captcha-propio/captcha-propio.component';
 import { CapitalizarNombrePipe } from "../../../pipes/capitalizar-nombre.pipe";
+import { FavBienvenidaComponent } from "../fav-bienvenida/fav-bienvenida.component";
 
 
 @Component({
@@ -36,7 +37,8 @@ import { CapitalizarNombrePipe } from "../../../pipes/capitalizar-nombre.pipe";
     MatTooltipModule, MatProgressSpinnerModule, MatSnackBarModule,
     AutoFocusDirective,
     TranslateModule,
-    CapitalizarNombrePipe
+    CapitalizarNombrePipe,
+    FavBienvenidaComponent
 ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']

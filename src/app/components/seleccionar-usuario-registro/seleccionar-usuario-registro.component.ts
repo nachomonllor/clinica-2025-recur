@@ -5,16 +5,18 @@ import { Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatRippleModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
+import { FavBienvenidaComponent } from "../fav-bienvenida/fav-bienvenida.component";
 
 @Component({
     selector: 'app-seleccionar-usuario-registro',
     standalone:true,
     imports: [
-        CommonModule,
-        MatCardModule,
-        MatRippleModule,
-        MatIconModule
-    ],
+    CommonModule,
+    MatCardModule,
+    MatRippleModule,
+    MatIconModule,
+    FavBienvenidaComponent
+],
     templateUrl: './seleccionar-usuario-registro.component.html',
     styleUrl: './seleccionar-usuario-registro.component.scss'
 })
