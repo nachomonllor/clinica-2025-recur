@@ -1,4 +1,3 @@
-
 <section class="ingresos-page" *ngIf="isAdmin; else noAdmin">
   <header class="topbar">
     <button class="btn ghost" routerLink="/seleccion-estadisticas" aria-label="Volver al Dashboard">
@@ -9,9 +8,17 @@
     <h1 class="title">Registro de Ingresos</h1>
 
     <ng-container *ngIf="(logs$ | async) as all">
-      <button class="btn success" (click)="exportarExcel(all)">
-        Exportar Excel
-      </button>
+      <div class="actions">
+        <!-- Botón PDF Nuevo -->
+        <button class="btn" style="background-color: #ef4444; color: white; border: none; margin-right: 8px;"
+          (click)="exportarPDF(all)">
+          Exportar PDF
+        </button>
+
+        <button class="btn success" (click)="exportarExcel(all)">
+          Exportar Excel
+        </button>
+      </div>
     </ng-container>
   </header>
 
@@ -53,6 +60,98 @@
 
       <ng-container *ngFor="let p of vm.pages">
         <ng-container *ngIf="p !== '…'; else dots">
+          <button class="page" [class.active]="(p - 1) === vm.pageIndex" (click)="setPage(p - 1)"
+            [attr.aria-current]="(p - 1) === vm.pageIndex ? 'page' : null">
+            {{ p }}
+          </button>
+        </ng-container>
+        <ng-template #dots><span class="dots">…</span></ng-template>
+      </ng-container>
+
+      <button class="pg" [disabled]="vm.pageIndex === vm.pageCount - 1" (click)="next(vm.pageCount)">
+        <span>Siguiente</span><span class="chev right" aria-hidden="true"></span>
+      </button>
+      <button class="pg square" [disabled]="vm.pageIndex === vm.pageCount - 1" (click)="last(vm.pageCount)"
+        aria-label="Última página">»</button>
+
+    </nav>
+  </main>
+</section>
+
+<ng-template #loading>
+  <div class="loading">Cargando registros…</div>
+</ng-template>
+
+<ng-template #noAdmin>
+  <section class="ingresos-page">
+    <div class="not-allowed">No tenés permisos para ver este recurso.</div>
+  </section>
+</ng-template>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 
+<section class="ingresos-page" *ngIf="isAdmin; else noAdmin">
+  <header class="topbar">
+    <button class="btn ghost" routerLink="/seleccion-estadisticas" aria-label="Volver al Dashboard">
+      <span class="icon icon-back" aria-hidden="true"></span>
+      <span>Volver al Dashboard</span>
+    </button>
+
+    <h1 class="title">Registro de Ingresos</h1>
+
+    <ng-container *ngIf="(logs$ | async) as all">
+      <button class="btn success" (click)="exportarExcel(all)">
+        Exportar Excel
+      </button>
+    </ng-container>
+  </header>
+
+  <main class="table-wrap" *ngIf="vm$ | async as vm; else loading">
+    <div class="table">
+      <div class="row head">
+        <div class="col user">
+          <span class="icon icon-user" aria-hidden="true"></span>
+          <span>Usuario</span>
+        </div>
+        <div class="col date">
+          <span class="icon icon-calendar" aria-hidden="true"></span>
+          <span>Fecha y Hora</span>
+        </div>
+      </div>
+
+      <div class="row" *ngFor="let log of vm.items; trackBy: trackByIndex">
+        <div class="col user">
+          <span class="badge icon-mail" aria-hidden="true"></span>
+          <span class="email" [title]="log.email">{{ log.email }}</span>
+        </div>
+        <div class="col date">
+          <span class="dot" aria-hidden="true"></span>
+          <span class="when">{{ formatDate(log.createdAt) }}</span>
+        </div>
+      </div>
+
+      <div class="empty" *ngIf="!vm.items.length">No hay ingresos para mostrar.</div>
+    </div>
+
+    <nav class="paginator" *ngIf="vm.pageCount > 1" aria-label="Paginación de registros">
+      <button class="pg square" [disabled]="vm.pageIndex === 0" (click)="first()" aria-label="Primera página">«</button>
+      <button class="pg" [disabled]="vm.pageIndex === 0" (click)="prev()">
+        <span class="chev left" aria-hidden="true"></span><span>Anterior</span>
+      </button>
+
+      <ng-container *ngFor="let p of vm.pages">
+        <ng-container *ngIf="p !== '…'; else dots">
           <button
             class="page"
             [class.active]="(p - 1) === vm.pageIndex"
@@ -83,9 +182,5 @@
   </section>
 </ng-template>
 
-<!-- DESCOMENTAR PARA VER EL JSON --> 
-<!-- <pre class="debug">
-  {{ (logs$ | async) | json }}
-</pre>
- -->
 
+ -->
