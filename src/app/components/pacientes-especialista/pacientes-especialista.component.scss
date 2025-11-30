@@ -1,222 +1,545 @@
 :host {
   display: block;
-  padding: clamp(16px, 4vw, 32px);
+  padding: 24px;
+  // Opcional: si el fondo global no cubre todo, esto asegura un container base
+  min-height: 80vh;
 }
 
+// --- CONTAINER PRINCIPAL (LA TARJETA) ---
 .pacientes-container {
-  border-radius: 20px;
-  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.12);
+  max-width: 1200px;
+  margin: 0 auto;
+  border-radius: 24px;
   overflow: hidden;
+  
+  // FONDO PRINCIPAL: Azul oscuro degradado a verde azulado (Teal) con transparencia
+  background: 
+    linear-gradient(
+      135deg, 
+      rgba(15, 23, 42, 0.95) 0%,   // Slate 900 (Azul muy oscuro)
+      rgba(13, 148, 136, 0.15) 100% // Teal 600 (Verde azulado sutil)
+    );
+  
+  backdrop-filter: blur(12px); // Efecto vidrio
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); // Sombra profunda
+
+  // Ajustes de texto globales para el modo oscuro
+  color: #f1f5f9; // Slate 100 (Blanco hueso)
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+
+  mat-card-header {
+    padding: 24px 32px 0;
+    margin-bottom: 20px;
+
+    mat-card-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      
+      // Título con degradado dorado/blanco
+      background: linear-gradient(to right, #fbbf24, #f8fafc); 
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    mat-card-subtitle {
+      color: #94a3b8; // Slate 400 (Gris azulado)
+      margin-top: 8px;
+      font-size: 0.95rem;
+    }
+  }
 }
 
+// --- LAYOUT GRID (Izquierda lista / Derecha detalle) ---
 .pacientes-layout {
   display: grid;
-  gap: 28px;
-  grid-template-columns: minmax(280px, 320px) minmax(0, 1fr);
+  grid-template-columns: 350px 1fr;
+  gap: 24px;
+  padding: 0 32px 32px;
+  align-items: start;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr; // En móviles, una columna
+  }
 }
 
+// --- PANELES GENÉRICOS (Listado y Detalle) ---
 .panel {
-  background: rgba(248, 250, 252, 0.8);
-  border-radius: 18px;
+  background: rgba(0, 0, 0, 0.2); // Fondo negro semitransparente para separar áreas
+  border-radius: 16px;
   padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  height: 100%;
+  min-height: 500px;
   display: flex;
   flex-direction: column;
-  gap: 18px;
 }
 
+// --- SECCIÓN IZQUIERDA: LISTADO ---
 .panel-listado {
-  background: rgba(255, 255, 255, 0.85);
+  .buscador {
+    width: 100%;
+    margin-bottom: 16px;
+
+    // Overrides de Material para inputs oscuros
+    ::ng-deep .mat-mdc-form-field-flex {
+      background-color: rgba(255, 255, 255, 0.05) !important;
+      border-radius: 12px;
+    }
+    ::ng-deep .mat-mdc-input-element {
+      color: #fff !important;
+      &::placeholder { color: rgba(255,255,255,0.4); }
+    }
+    ::ng-deep .mat-mdc-form-field-icon-suffix {
+      color: rgba(255,255,255,0.6);
+    }
+    ::ng-deep .mdc-notched-outline__leading,
+    ::ng-deep .mdc-notched-outline__notch,
+    ::ng-deep .mdc-notched-outline__trailing {
+      border-color: transparent !important; // Quitar bordes feos de Material
+    }
+  }
+
+  .paciente-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow-y: auto;
+    max-height: 600px;
+    padding-right: 4px;
+
+    // Scrollbar fina y oscura
+    &::-webkit-scrollbar { width: 6px; }
+    &::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+  }
+
+  .paciente-card {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    color: inherit;
+    width: 100%;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.05);
+      transform: translateX(4px);
+    }
+
+    &.activo {
+      // Estado activo: Borde brillante y fondo azulado
+      background: rgba(59, 130, 246, 0.15); // Azul con transparencia
+      border-color: #60a5fa; // Azul claro
+      box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+    }
+
+    .avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      overflow: hidden;
+      flex-shrink: 0;
+      border: 2px solid rgba(255,255,255,0.1);
+      
+      img { width: 100%; height: 100%; object-fit: cover; }
+    }
+
+    .texto {
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+
+      .nombre {
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: #f8fafc;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        text-transform: capitalize;
+      }
+
+      .meta {
+        font-size: 0.75rem;
+        color: #94a3b8;
+      }
+    }
+
+    mat-icon {
+      color: #64748b;
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
 }
 
-.buscador {
-  width: 100%;
-}
-
-.paciente-grid {
-  display: grid;
-  gap: 14px;
-}
-
-.paciente-card {
-  all: unset;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  gap: 14px;
-  align-items: center;
-  padding: 14px 16px;
-  border-radius: 18px;
-  cursor: pointer;
-  background: rgba(226, 232, 240, 0.55);
-  border: 1px solid transparent;
-  transition: transform 160ms ease, box-shadow 160ms ease, border 160ms ease;
-}
-
-.paciente-card:hover,
-.paciente-card:focus-visible {
-  transform: translateY(-3px);
-  border-color: rgba(59, 130, 246, 0.5);
-  box-shadow: 0 16px 32px rgba(30, 64, 175, 0.18);
-}
-
-.paciente-card:focus-visible {
-  outline: 3px solid rgba(59, 130, 246, 0.6);
-  outline-offset: 4px;
-}
-
-.paciente-card.activo {
-  border-color: rgba(59, 130, 246, 0.8);
-  background: rgba(191, 219, 254, 0.45);
-}
-
-.paciente-card .avatar {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  overflow: hidden;
-  border: 3px solid rgba(59, 130, 246, 0.55);
-  background: #fff;
-}
-
-.paciente-card .avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.paciente-card .texto {
-  display: grid;
-  gap: 4px;
-}
-
-.paciente-card .nombre {
-  font-weight: 700;
-  color: rgba(15, 23, 42, 0.92);
-}
-
-.paciente-card .meta {
-  font-size: .85rem;
-  color: rgba(15, 23, 42, 0.6);
-}
-
-.paciente-card mat-icon {
-  color: rgba(15, 23, 42, 0.45);
-}
-
+// --- SECCIÓN DERECHA: DETALLE ---
 .panel-detalle {
   position: relative;
-  min-height: 260px;
+
+  .detalle-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+    h3 {
+      margin: 0 0 8px 0;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #fff;
+      text-transform: capitalize;
+    }
+
+    .meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #cbd5e1; // Slate 300
+      margin: 4px 0;
+      font-size: 0.9rem;
+
+      mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+        color: #2dd4bf; // Teal brillante para iconos
+      }
+    }
+  }
+
+  .turno-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .turno-item {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background 0.2s;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .turno-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+
+      .especialidad {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #f1f5f9;
+      }
+
+      .fecha {
+        font-size: 0.85rem;
+        color: #94a3b8;
+      }
+
+      .estado {
+        display: inline-block;
+        font-size: 0.7rem;
+        padding: 2px 8px;
+        border-radius: 4px;
+        text-transform: uppercase;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        width: fit-content;
+        margin-top: 4px;
+
+        &.estado-finalizado { color: #4ade80; background: rgba(74, 222, 128, 0.1); }
+        &.estado-cancelado { color: #f87171; background: rgba(248, 113, 113, 0.1); }
+        &.estado-pendiente { color: #fbbf24; background: rgba(251, 191, 36, 0.1); }
+      }
+    }
+
+    .turno-acciones {
+      display: flex;
+      gap: 8px;
+    }
+  }
 }
 
-.detalle-header {
+// --- ESTADOS VACÍOS (Placeholders) ---
+.detalle-placeholder, .sin-datos {
   display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  align-items: flex-start;
-}
-
-.detalle-header h3 {
-  margin: 0;
-  font-size: 1.3rem;
-  font-weight: 700;
-  color: rgba(15, 23, 42, 0.94);
-}
-
-.detalle-header .meta {
-  display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 6px;
-  margin: 0;
-  color: rgba(15, 23, 42, 0.6);
-  font-size: .9rem;
+  justify-content: center;
+  text-align: center;
+  color: #64748b;
+  height: 100%;
+  min-height: 200px;
+
+  mat-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    opacity: 0.5;
+    margin-bottom: 16px;
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #94a3b8;
+  }
+
+  p {
+    margin: 8px 0 0;
+    font-size: 0.9rem;
+  }
 }
 
 .detalle-cargando {
-  display: grid;
-  place-items: center;
-  gap: 12px;
-  padding: 28px 0;
-  color: rgba(15, 23, 42, 0.7);
-}
-
-.turno-lista {
-  display: grid;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  color: #94a3b8;
   gap: 16px;
 }
 
-.turno-item {
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 16px;
-  padding: 16px 18px;
-  display: grid;
-  gap: 12px;
-  border: 1px solid rgba(148, 163, 184, 0.2);
-}
 
-.turno-info {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 16px;
-  align-items: center;
-}
+// :host {
+//   display: block;
+//   padding: clamp(16px, 4vw, 32px);
+// }
 
-.turno-info .especialidad {
-  font-weight: 600;
-  color: rgba(15, 23, 42, 0.9);
-}
+// .pacientes-container {
+//   border-radius: 20px;
+//   box-shadow: 0 18px 42px rgba(15, 23, 42, 0.12);
+//   overflow: hidden;
+// }
 
-.turno-info .fecha {
-  color: rgba(15, 23, 42, 0.6);
-  font-size: .9rem;
-}
+// .pacientes-layout {
+//   display: grid;
+//   gap: 28px;
+//   grid-template-columns: minmax(280px, 320px) minmax(0, 1fr);
+// }
 
-.turno-info .estado {
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-size: .75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: .6px;
-}
+// .panel {
+//   background: rgba(248, 250, 252, 0.8);
+//   border-radius: 18px;
+//   padding: 20px;
+//   display: flex;
+//   flex-direction: column;
+//   gap: 18px;
+// }
 
-.estado-pendiente { background: rgba(251, 191, 36, 0.2); color: #92400e; }
-.estado-aceptado { background: rgba(96, 216, 150, 0.25); color: #046c4e; }
-.estado-realizado { background: rgba(59, 130, 246, 0.18); color: #1d4ed8; }
-.estado-cancelado { background: rgba(248, 113, 113, 0.2); color: #b91c1c; }
-.estado-rechazado { background: rgba(244, 114, 182, 0.2); color: #9d174d; }
+// .panel-listado {
+//   background: rgba(255, 255, 255, 0.85);
+// }
 
-.turno-acciones {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
+// .buscador {
+//   width: 100%;
+// }
 
-.sin-datos {
-  text-align: center;
-  padding: 32px 16px;
-  color: rgba(15, 23, 42, 0.55);
-}
+// .paciente-grid {
+//   display: grid;
+//   gap: 14px;
+// }
 
-.detalle-placeholder {
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  gap: 12px;
-  color: rgba(15, 23, 42, 0.6);
-}
+// .paciente-card {
+//   all: unset;
+//   display: grid;
+//   grid-template-columns: auto 1fr auto;
+//   gap: 14px;
+//   align-items: center;
+//   padding: 14px 16px;
+//   border-radius: 18px;
+//   cursor: pointer;
+//   background: rgba(226, 232, 240, 0.55);
+//   border: 1px solid transparent;
+//   transition: transform 160ms ease, box-shadow 160ms ease, border 160ms ease;
+// }
 
-.detalle-placeholder mat-icon {
-  font-size: 48px;
-  width: 48px;
-  height: 48px;
-  color: rgba(59, 130, 246, 0.65);
-}
+// .paciente-card:hover,
+// .paciente-card:focus-visible {
+//   transform: translateY(-3px);
+//   border-color: rgba(59, 130, 246, 0.5);
+//   box-shadow: 0 16px 32px rgba(30, 64, 175, 0.18);
+// }
 
-@media (max-width: 1024px) {
-  .pacientes-layout {
-    grid-template-columns: 1fr;
-  }
+// .paciente-card:focus-visible {
+//   outline: 3px solid rgba(59, 130, 246, 0.6);
+//   outline-offset: 4px;
+// }
 
-  .panel-detalle {
-    min-height: 220px;
-  }
-}
+// .paciente-card.activo {
+//   border-color: rgba(59, 130, 246, 0.8);
+//   background: rgba(191, 219, 254, 0.45);
+// }
+
+// .paciente-card .avatar {
+//   width: 60px;
+//   height: 60px;
+//   border-radius: 50%;
+//   overflow: hidden;
+//   border: 3px solid rgba(59, 130, 246, 0.55);
+//   background: #fff;
+// }
+
+// .paciente-card .avatar img {
+//   width: 100%;
+//   height: 100%;
+//   object-fit: cover;
+// }
+
+// .paciente-card .texto {
+//   display: grid;
+//   gap: 4px;
+// }
+
+// .paciente-card .nombre {
+//   font-weight: 700;
+//   color: rgba(15, 23, 42, 0.92);
+// }
+
+// .paciente-card .meta {
+//   font-size: .85rem;
+//   color: rgba(15, 23, 42, 0.6);
+// }
+
+// .paciente-card mat-icon {
+//   color: rgba(15, 23, 42, 0.45);
+// }
+
+// .panel-detalle {
+//   position: relative;
+//   min-height: 260px;
+// }
+
+// .detalle-header {
+//   display: flex;
+//   justify-content: space-between;
+//   gap: 16px;
+//   align-items: flex-start;
+// }
+
+// .detalle-header h3 {
+//   margin: 0;
+//   font-size: 1.3rem;
+//   font-weight: 700;
+//   color: rgba(15, 23, 42, 0.94);
+// }
+
+// .detalle-header .meta {
+//   display: flex;
+//   align-items: center;
+//   gap: 6px;
+//   margin: 0;
+//   color: rgba(15, 23, 42, 0.6);
+//   font-size: .9rem;
+// }
+
+// .detalle-cargando {
+//   display: grid;
+//   place-items: center;
+//   gap: 12px;
+//   padding: 28px 0;
+//   color: rgba(15, 23, 42, 0.7);
+// }
+
+// .turno-lista {
+//   display: grid;
+//   gap: 16px;
+// }
+
+// .turno-item {
+//   background: rgba(255, 255, 255, 0.9);
+//   border-radius: 16px;
+//   padding: 16px 18px;
+//   display: grid;
+//   gap: 12px;
+//   border: 1px solid rgba(148, 163, 184, 0.2);
+// }
+
+// .turno-info {
+//   display: flex;
+//   flex-wrap: wrap;
+//   gap: 8px 16px;
+//   align-items: center;
+// }
+
+// .turno-info .especialidad {
+//   font-weight: 600;
+//   color: rgba(15, 23, 42, 0.9);
+// }
+
+// .turno-info .fecha {
+//   color: rgba(15, 23, 42, 0.6);
+//   font-size: .9rem;
+// }
+
+// .turno-info .estado {
+//   padding: 4px 10px;
+//   border-radius: 999px;
+//   font-size: .75rem;
+//   font-weight: 600;
+//   text-transform: uppercase;
+//   letter-spacing: .6px;
+// }
+
+// .estado-pendiente { background: rgba(251, 191, 36, 0.2); color: #92400e; }
+// .estado-aceptado { background: rgba(96, 216, 150, 0.25); color: #046c4e; }
+// .estado-realizado { background: rgba(59, 130, 246, 0.18); color: #1d4ed8; }
+// .estado-cancelado { background: rgba(248, 113, 113, 0.2); color: #b91c1c; }
+// .estado-rechazado { background: rgba(244, 114, 182, 0.2); color: #9d174d; }
+
+// .turno-acciones {
+//   display: flex;
+//   flex-wrap: wrap;
+//   gap: 10px;
+// }
+
+// .sin-datos {
+//   text-align: center;
+//   padding: 32px 16px;
+//   color: rgba(15, 23, 42, 0.55);
+// }
+
+// .detalle-placeholder {
+//   justify-content: center;
+//   align-items: center;
+//   text-align: center;
+//   gap: 12px;
+//   color: rgba(15, 23, 42, 0.6);
+// }
+
+// .detalle-placeholder mat-icon {
+//   font-size: 48px;
+//   width: 48px;
+//   height: 48px;
+//   color: rgba(59, 130, 246, 0.65);
+// }
+
+// @media (max-width: 1024px) {
+//   .pacientes-layout {
+//     grid-template-columns: 1fr;
+//   }
+
+//   .panel-detalle {
+//     min-height: 220px;
+//   }
+// }
