@@ -35,7 +35,7 @@
     <div class="card-body">
       <div class="linea">
         <span class="label">Paciente</span>
-        <span class="valor">{{ t.paciente }}</span>
+        <span class="valor">{{ t.paciente | capitalizarNombre }}</span>
       </div>
       <div class="linea">
         <span class="label">Especialidad</span>
@@ -108,7 +108,7 @@
   <h2 mat-dialog-title>Rechazar Turno</h2>
   <mat-dialog-content>
     <p>¿Estás seguro de que deseas rechazar este turno?</p>
-    <p><strong>Paciente:</strong> {{ data?.turno?.paciente }}</p>
+    <p><strong>Paciente:</strong> {{ data?.turno?.paciente | capitalizarNombre }}</p>
     <p><strong>Especialidad:</strong> {{ data?.turno?.especialidad }}</p>
     <p><strong>Fecha:</strong> {{ data?.turno?.fecha }} a las {{ data?.turno?.hora }}</p>
 
@@ -139,7 +139,7 @@
   <h2 mat-dialog-title>Cancelar Turno</h2>
   <mat-dialog-content>
     <p>¿Estás seguro de que deseas cancelar este turno?</p>
-    <p><strong>Paciente:</strong> {{ data?.turno?.paciente }}</p>
+    <p><strong>Paciente:</strong> {{ data?.turno?.paciente | capitalizarNombre }}</p>
     <p><strong>Especialidad:</strong> {{ data?.turno?.especialidad }}</p>
     <p><strong>Fecha:</strong> {{ data?.turno?.fecha }} a las {{ data?.turno?.hora }}</p>
 
@@ -172,7 +172,7 @@
       <h2>Finalizar Turno - Historia Clínica</h2>
 
       <div class="hc-dialog__meta">
-        <p><strong>Paciente:</strong> {{ data?.turno?.paciente }}</p>
+        <p><strong>Paciente:</strong> {{ data?.turno?.paciente | capitalizarNombre }}</p>
         <p><strong>Especialidad:</strong> {{ data?.turno?.especialidad }}</p>
         <p><strong>Fecha:</strong> {{ data?.turno?.fecha }} a las {{ data?.turno?.hora }}</p>
       </div>
@@ -360,6 +360,25 @@
     </footer>
   </div>
 </ng-template>
+
+<ng-template #verResenaDialog let-data>
+  <h2 mat-dialog-title>Reseña del Especialista</h2>
+  <mat-dialog-content>
+    <p><strong>Especialista:</strong> {{ data?.turno?.especialista }}</p>
+    <p><strong>Especialidad:</strong> {{ data?.turno?.especialidad }}</p>
+    <p><strong>Fecha:</strong> {{ data?.turno?.fecha | date:'shortDate' }} a las {{ data?.turno?.hora }}</p>
+
+    <div class="resena-box">
+      <p class="resena-text">{{ data?.resena }}</p>
+    </div>
+
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Cerrar</button>
+  </mat-dialog-actions>
+</ng-template>
+
+
 
 <!---- ANGULAR MATERIAL -->
 

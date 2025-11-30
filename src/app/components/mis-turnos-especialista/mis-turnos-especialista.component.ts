@@ -26,6 +26,8 @@ import { StatusBadgeDirective } from '../../../directives/status-badge.directive
 import { TurnosService } from '../../../services/turnos.service';
 
 import { MatDialogRef } from '@angular/material/dialog';
+import { CapitalizarNombrePipe } from "../../../pipes/capitalizar-nombre.pipe";
+import { TurnoVM } from '../../models/turno.model';
 
 
 @Component({
@@ -50,8 +52,9 @@ import { MatDialogRef } from '@angular/material/dialog';
     MatSlideToggleModule,
     StatusLabelPipe,
     StatusBadgeDirective,
-    FormsModule, ReactiveFormsModule
-  ]
+    FormsModule, ReactiveFormsModule,
+    CapitalizarNombrePipe
+]
 })
 export class MisTurnosEspecialistaComponent implements OnInit {
 
@@ -60,6 +63,9 @@ export class MisTurnosEspecialistaComponent implements OnInit {
   @ViewChild('resenaDialog') resenaDialog!: TemplateRef<any>;
 
   private resenaDialogRef?: MatDialogRef<any>;
+
+    @ViewChild('verResenaDialog') verResenaDialog!: TemplateRef<unknown>;
+
 
   @ViewChild('confirmDialog') confirmDialog!: TemplateRef<unknown>;
   @ViewChild('rechazarDialog') rechazarDialog!: TemplateRef<unknown>;
@@ -507,20 +513,31 @@ export class MisTurnosEspecialistaComponent implements OnInit {
     });
   }
 
-  verResena(turno: any): void {
-    this.resenaDialogRef = this.dialog.open(this.resenaDialog, {
-      data: {
-        resena: turno.resena,
-        paciente: turno.paciente,
-        especialidad: turno.especialidad,
-        fecha: turno.fecha,
-        hora: turno.hora
-      },
-      panelClass: 'resena-dialog',
-      disableClose: true,  // sólo se cierra con el botón
-      autoFocus: false
-    });
-  }
+  // verResena(turno: any): void {
+  //   this.resenaDialogRef = this.dialog.open(this.resenaDialog, {
+  //     data: {
+  //       resena: turno.resena,
+  //       paciente: turno.paciente,
+  //       especialidad: turno.especialidad,
+  //       fecha: turno.fecha,
+  //       hora: turno.hora
+  //     },
+  //     panelClass: 'resena-dialog',
+  //     disableClose: true,  // sólo se cierra con el botón
+  //     autoFocus: false
+  //   });
+  // }
+
+    verResena(t: any): void {
+      if (!t.resena || t.resena.trim().length === 0) {
+        this.snackBar.open('Este turno no tiene reseña disponible', 'Cerrar', { duration: 2500 });
+        return;
+      }
+      this.dialog.open(this.verResenaDialog, {
+        data: { turno: t, resena: t.resena },
+        width: '500px'
+      });
+    }
 
   closeResenaDialog(): void {
     this.resenaDialogRef?.close();
