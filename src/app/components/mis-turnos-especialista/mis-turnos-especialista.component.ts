@@ -27,7 +27,6 @@ import { TurnosService } from '../../../services/turnos.service';
 
 import { MatDialogRef } from '@angular/material/dialog';
 import { CapitalizarNombrePipe } from "../../../pipes/capitalizar-nombre.pipe";
-import { TurnoVM } from '../../models/turno.model';
 
 
 @Component({
@@ -54,7 +53,7 @@ import { TurnoVM } from '../../models/turno.model';
     StatusBadgeDirective,
     FormsModule, ReactiveFormsModule,
     CapitalizarNombrePipe
-]
+  ]
 })
 export class MisTurnosEspecialistaComponent implements OnInit {
 
@@ -64,7 +63,7 @@ export class MisTurnosEspecialistaComponent implements OnInit {
 
   private resenaDialogRef?: MatDialogRef<any>;
 
-    @ViewChild('verResenaDialog') verResenaDialog!: TemplateRef<unknown>;
+  @ViewChild('verResenaDialog') verResenaDialog!: TemplateRef<unknown>;
 
 
   @ViewChild('confirmDialog') confirmDialog!: TemplateRef<unknown>;
@@ -528,16 +527,36 @@ export class MisTurnosEspecialistaComponent implements OnInit {
   //   });
   // }
 
-    verResena(t: any): void {
-      if (!t.resena || t.resena.trim().length === 0) {
-        this.snackBar.open('Este turno no tiene reseña disponible', 'Cerrar', { duration: 2500 });
-        return;
-      }
-      this.dialog.open(this.verResenaDialog, {
-        data: { turno: t, resena: t.resena },
-        width: '500px'
-      });
+  //   verResena(t: TurnoVM): void {
+  //   if (!t.resena || t.resena.trim().length === 0) {
+  //     this.snackBar.open('Este turno no tiene reseña disponible', 'Cerrar', { duration: 2500 });
+  //     return;
+  //   }
+  //   this.dialog.open(this.verResenaDialog, {
+  //     data: { turno: t, resena: t.resena },
+  //     width: '500px'
+  //   });
+  // }
+
+  verResena(t: TurnoEspecialista): void {
+    if (!t.resena || t.resena.trim().length === 0) {
+      this.snackBar.open('Este turno no tiene reseña disponible', 'Cerrar', { duration: 2500 });
+      return;
     }
+    this.dialog.open(this.verResenaDialog, {
+      // data: { turno: t, resena: t.resena },
+
+      data: {
+        resena: t.resena,
+        paciente: t.paciente,
+        especialidad: t.especialidad,
+        fecha: t.fecha,
+        hora: t.hora
+      },
+
+      width: '500px'
+    });
+  }
 
   closeResenaDialog(): void {
     this.resenaDialogRef?.close();

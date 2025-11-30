@@ -78,7 +78,7 @@
       </button>
 
 
-  
+
 
     </div>
   </article>
@@ -351,10 +351,7 @@
     </section>
 
     <footer class="resena-panel__footer">
-      <button
-        type="button"
-        class="resena-panel__btn"
-        (click)="closeResenaDialog()">
+      <button type="button" class="resena-panel__btn" (click)="closeResenaDialog()">
         Cerrar
       </button>
     </footer>
@@ -364,13 +361,17 @@
 <ng-template #verResenaDialog let-data>
   <h2 mat-dialog-title>Reseña del Especialista</h2>
   <mat-dialog-content>
-    <p><strong>Especialista:</strong> {{ data?.turno?.especialista }}</p>
-    <p><strong>Especialidad:</strong> {{ data?.turno?.especialidad }}</p>
-    <p><strong>Fecha:</strong> {{ data?.turno?.fecha | date:'shortDate' }} a las {{ data?.turno?.hora }}</p>
+    <!-- <p><strong>Especialista:</strong> {{ data?.turno?.especialista }}</p>
+    <p><strong>Especialidad:</strong> {{ data?.turno?.especialidad }}</p> -->
+    <p><strong>Paciente: </strong> {{ data?.paciente | capitalizarNombre}}
+    <p><strong>Especialidad: </strong> {{ data?.especialidad | capitalizarNombre }} </p>
+    <p><strong>Fecha: </strong> {{ data?.fecha }} {{ data?.hora }} </p>
+    <p><strong>Reseña: </strong> {{ data?.resena }} </p>
 
-    <div class="resena-box">
+
+    <!-- <div class="resena-box">
       <p class="resena-text">{{ data?.resena }}</p>
-    </div>
+    </div> -->
 
   </mat-dialog-content>
   <mat-dialog-actions align="end">
