@@ -23,9 +23,8 @@ import { QuickAccessUser, QuickLoginsConfig } from '../../models/nav.models';
 
 import { TranslateModule } from '@ngx-translate/core';
 import { TranslateService } from '@ngx-translate/core';
-import { CaptchaPropioComponent } from '../captcha-propio/captcha-propio.component';
 import { CapitalizarNombrePipe } from "../../../pipes/capitalizar-nombre.pipe";
-import { FavBienvenidaComponent } from "../fav-bienvenida/fav-bienvenida.component";
+import { FabBienvenidaComponent } from '../fab-bienvenida/fab-bienvenida.component';
 
 
 @Component({
@@ -38,7 +37,7 @@ import { FavBienvenidaComponent } from "../fav-bienvenida/fav-bienvenida.compone
     AutoFocusDirective,
     TranslateModule,
     CapitalizarNombrePipe,
-    FavBienvenidaComponent
+    FabBienvenidaComponent
 ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']

@@ -27,7 +27,7 @@ import { MatIconModule } from '@angular/material/icon';
 
 import { NgxCaptchaModule } from 'ngx-captcha';
 import { MatChipsModule } from '@angular/material/chips';
-import { FavBienvenidaComponent } from "../fav-bienvenida/fav-bienvenida.component";
+import { FabBienvenidaComponent } from '../fab-bienvenida/fab-bienvenida.component';
 
 // ===== Validadores para selección múltiple =====
 function minSelected(min: number): ValidatorFn {
@@ -60,9 +60,8 @@ function maxSelected(max: number): ValidatorFn {
     MatButtonToggleModule, // <=========
     MatIconModule, // <=========
     NgxCaptchaModule,
-    MatChipsModule // <--- IMPORTANTE AGREGARLO AQUÍ
-    ,
-    FavBienvenidaComponent
+    MatChipsModule ,// <--- IMPORTANTE AGREGARLO AQUÍ
+    FabBienvenidaComponent
 ],
   templateUrl: './registro-especialista.component.html',
   styleUrls: ['./registro-especialista.component.scss']

@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatRippleModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
-import { FavBienvenidaComponent } from "../fav-bienvenida/fav-bienvenida.component";
+import { FabBienvenidaComponent } from '../fab-bienvenida/fab-bienvenida.component';
 
 @Component({
     selector: 'app-seleccionar-usuario-registro',
@@ -15,7 +15,7 @@ import { FavBienvenidaComponent } from "../fav-bienvenida/fav-bienvenida.compone
     MatCardModule,
     MatRippleModule,
     MatIconModule,
-    FavBienvenidaComponent
+    FabBienvenidaComponent
 ],
     templateUrl: './seleccionar-usuario-registro.component.html',
     styleUrl: './seleccionar-usuario-registro.component.scss'

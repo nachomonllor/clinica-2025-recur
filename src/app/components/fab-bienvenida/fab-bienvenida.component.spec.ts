@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { FavBienvenidaComponent } from './fav-bienvenida.component';
+import { FabBienvenidaComponent } from './fab-bienvenida.component';
 
-describe('FavBienvenidaComponent', () => {
-  let component: FavBienvenidaComponent;
-  let fixture: ComponentFixture<FavBienvenidaComponent>;
+describe('FabBienvenidaComponent', () => {
+  let component: FabBienvenidaComponent;
+  let fixture: ComponentFixture<FabBienvenidaComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [FavBienvenidaComponent]
+      imports: [FabBienvenidaComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(FavBienvenidaComponent);
+    fixture = TestBed.createComponent(FabBienvenidaComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

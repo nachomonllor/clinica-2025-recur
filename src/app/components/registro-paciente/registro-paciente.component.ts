@@ -21,7 +21,7 @@ import { SupabaseService } from '../../../services/supabase.service';
 import { environment } from '../../../environments/environment';
 
 import { NgxCaptchaModule } from 'ngx-captcha';
-import { FavBienvenidaComponent } from "../fav-bienvenida/fav-bienvenida.component";
+import { FabBienvenidaComponent } from '../fab-bienvenida/fab-bienvenida.component';
 
 
 @Component({
@@ -35,7 +35,8 @@ import { FavBienvenidaComponent } from "../fav-bienvenida/fav-bienvenida.compone
     MatButtonModule,
     MatCardModule,
     NgxCaptchaModule,
-    FavBienvenidaComponent
+    FabBienvenidaComponent
+    
 ],
   templateUrl: './registro-paciente.component.html',
   styleUrls: ['./registro-paciente.component.scss']
@@ -170,24 +171,6 @@ export class RegistroPacienteComponent implements OnInit {
 
     return null;
   }
-
-  // private calcEdadFromISO(iso: string): number {
-  //   const [y, m, d] = iso.split('-').map(Number);
-  //   const today = new Date();
-  //   let edad = today.getFullYear() - y;
-  //   const month = today.getMonth() + 1;
-  //   const day = today.getDate();
-  //   if (month < m || (month === m && day < d)) edad--;
-  //   return edad;
-  // }
-
-  // private toISODateLocal(date: Date): string {
-  //   const y = date.getFullYear();
-  //   const m = String(date.getMonth() + 1).padStart(2, '0');
-  //   const d = String(date.getDate()).padStart(2, '0');
-  //   return `${y}-${m}-${d}`;
-  // }
-
 
   private async validarDniYEmailUnicos(dni: string, email: string): Promise<void> {
     const supabase = this.sb.client;
