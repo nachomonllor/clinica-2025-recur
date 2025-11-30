@@ -223,12 +223,174 @@ export class HistoriaClinicaDialogComponent {
   // ========================================================================
   //  EXPORTAR A PDF (LOGO SVG + CONTENIDO)
   // ========================================================================
+//   exportarPdf(): void {
+//     const doc = new jsPDF('p', 'mm', 'a4');
+//     const pageWidth = doc.internal.pageSize.getWidth();
+//     const pageHeight = doc.internal.pageSize.getHeight();
+    
+//     // Configuración de márgenes
+//     const marginX = 15;
+//     const marginBottom = 15;
+//     const cardPadding = 5;
+//     const lineHeight = 5;
+//     const paragraphSpacing = 2;
+//     const headerBottom = 32;
+
+//     // 1. LOGO SVG
+//     const svgLogo = `
+//     <svg width="600" height="200" viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg">
+//       <defs>
+//         <linearGradient id="gradBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+//           <stop offset="0%" style="stop-color:#0099ff;stop-opacity:1" /> 
+//           <stop offset="100%" style="stop-color:#0055b3;stop-opacity:1" /> 
+//         </linearGradient>
+//       </defs>
+//       <g transform="translate(50, 50)">
+//         <path d="M 80 0 H 120 A 10 10 0 0 1 130 10 V 80 H 200 A 10 10 0 0 1 210 90 V 130 A 10 10 0 0 1 200 140 H 130 V 210 A 10 10 0 0 1 120 220 H 80 A 10 10 0 0 1 70 210 V 140 H 0 A 10 10 0 0 1 -10 130 V 90 A 10 10 0 0 1 0 80 H 70 V 10 A 10 10 0 0 1 80 0 Z" fill="url(#gradBlue)" transform="scale(0.5) translate(30,30)"/>
+//         <path d="M 60 115 L 90 145 L 150 85" stroke="white" stroke-width="14" fill="none" stroke-linecap="round" stroke-linejoin="round" transform="scale(0.5) translate(30,30)"/>
+//       </g>
+//       <g transform="translate(180, 115)">
+//         <text x="0" y="-25" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="500" font-size="28" fill="#0077cc" letter-spacing="2px">CLINICA</text>
+//         <text x="0" y="25" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="800" font-size="52" fill="#003366">MONLLOR</text>
+//       </g>
+//     </svg>`;
+
+//     const svgBase64 = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgLogo)));
+
+//     // 2. FUNCIÓN DE GENERACIÓN
+//     const generarDocumento = (pngDataUrl?: string) => {
+      
+//       const drawHeader = () => {
+//         // Fondo oscuro
+//         doc.setFillColor(17, 24, 39); 
+//         doc.rect(0, 0, pageWidth, headerBottom, 'F');
+
+//         if (pngDataUrl) {
+//           doc.setFillColor(255, 255, 255);
+//           doc.roundedRect(marginX - 2, 5, 65, 22, 2, 2, 'F');
+//           doc.addImage(pngDataUrl, 'PNG', marginX, 6, 60, 20);
+//         }
+
+//         // Títulos
+//         doc.setTextColor(255, 255, 255);
+//         doc.setFont('helvetica', 'bold');
+//         doc.setFontSize(16);
+//         doc.text('Historia Clínica', pageWidth - marginX, 18, { align: 'right' });
+
+//         doc.setFont('helvetica', 'normal');
+//         doc.setFontSize(10);
+//         doc.text(`Paciente: ${this.data.pacienteNombre}`, pageWidth - marginX, 24, { align: 'right' });
+        
+//         const hoy = new Date().toLocaleDateString('es-AR');
+//         doc.setTextColor(209, 213, 219);
+//         doc.setFontSize(8);
+//         doc.text(`Emisión: ${hoy}`, pageWidth - marginX, 28, { align: 'right' });
+
+//         // Línea dorada
+//         doc.setDrawColor(251, 191, 36);
+//         doc.setLineWidth(0.4);
+//         doc.line(marginX, headerBottom - 1, pageWidth - marginX, headerBottom - 1);
+//       };
+
+//       drawHeader();
+//       let y = headerBottom + 8;
+
+//       // SIN DATOS
+//       if (!this.data.historias.length) {
+//         doc.setTextColor(55, 65, 81);
+//         doc.setFontSize(12);
+//         doc.text('No hay historias clínicas registradas.', pageWidth / 2, pageHeight / 2, { align: 'center' });
+//         doc.save(`historia_clinica_${this.data.pacienteNombre.replace(/\s+/g, '_').toLowerCase()}.pdf`);
+//         return;
+//       }
+
+//       // ITERAR HISTORIAS
+//       const contentWidth = pageWidth - marginX * 2;
+//       this.data.historias.forEach((h: any, index: number) => {
+//         const paragraphs: { lines: string[]; bold?: boolean }[] = [];
+//         const anchoTexto = contentWidth - cardPadding * 2;
+
+//         const addParagraph = (text: string, opts?: { bold?: boolean }) => {
+//           paragraphs.push({ lines: doc.splitTextToSize(text, anchoTexto), bold: opts?.bold });
+//         };
+
+//         const fechaAt = h.fechaAtencion || 'N/A';
+//         const especialidad = h.especialidad ? `(${h.especialidad})` : '';
+//         addParagraph(`Atención #${this.data.historias.length - index} · ${fechaAt} ${especialidad}`, { bold: true });
+        
+//         addParagraph(`Especialista: ${h.especialistaNombre   || 'N/A'}`);
+        
+//         const fechaReg = h.fecha_registro ? new Date(h.fecha_registro).toLocaleString('es-AR') : 
+//                          (h.created_at ? new Date(h.created_at).toLocaleString('es-AR') : 'N/A');
+        
+//         addParagraph(`Fecha de registro: ${fechaReg}`);
+//         addParagraph(`Altura: ${h.altura ?? '-'} cm | Peso: ${h.peso ?? '-'} kg | Temp.: ${h.temperatura ?? '-'} °C | Presión: ${h.presion ?? '-'}`);
+
+//         if (h.datos_dinamicos?.length) {
+//           addParagraph('Datos dinámicos:', { bold: true });
+//           h.datos_dinamicos.forEach((d: any) => {
+//              const valor = d.valor_texto || d.valor_numerico || (d.valor_boolean ? 'Sí' : 'No') || d.valor;
+//              addParagraph(`• ${d.clave}: ${valor}`);
+//           });
+//         }
+
+//         let cardHeight = cardPadding * 2;
+//         paragraphs.forEach((p, i) => {
+//           cardHeight += p.lines.length * lineHeight;
+//           if (i > 0) cardHeight += paragraphSpacing;
+//         });
+
+//         if (y + cardHeight > pageHeight - marginBottom) {
+//           doc.addPage();
+//           drawHeader();
+//           y = headerBottom + 8;
+//         }
+
+//         // DIBUJAR CARD
+//         doc.setFillColor(255, 253, 231);
+//         doc.setDrawColor(251, 192, 45);
+//         doc.setLineWidth(0.4);
+//         doc.roundedRect(marginX, y, contentWidth, cardHeight, 3, 3, 'FD');
+//         doc.setFillColor(253, 230, 138);
+//         doc.rect(marginX, y, 2, cardHeight, 'F');
+
+//         let textY = y + cardPadding + lineHeight;
+//         doc.setTextColor(30, 41, 59);
+//         doc.setFontSize(10);
+//         paragraphs.forEach((p, i) => {
+//           doc.setFont('helvetica', p.bold ? 'bold' : 'normal');
+//           p.lines.forEach(l => { doc.text(l, marginX + cardPadding + 2, textY); textY += lineHeight; });
+//           if (i < paragraphs.length - 1) textY += paragraphSpacing;
+//         });
+
+//         y += cardHeight + 6;
+//       });
+
+//       const nombreArchivo = `historia_clinica_${this.data.pacienteNombre.replace(/\s+/g, '_').toLowerCase()}.pdf`;
+//       doc.save(nombreArchivo);
+//     };
+
+//     // 3. CONVERTIR SVG Y EJECUTAR
+//     const img = new Image();
+//     img.src = svgBase64;
+//     img.onload = () => {
+//       const canvas = document.createElement('canvas');
+//       canvas.width = 600; canvas.height = 200;
+//       const ctx = canvas.getContext('2d');
+//       if (ctx) {
+//         ctx.drawImage(img, 0, 0);
+//         generarDocumento(canvas.toDataURL('image/png'));
+//       } else generarDocumento();
+//     };
+//     img.onerror = () => generarDocumento();
+//   }
+// }
+
   exportarPdf(): void {
     const doc = new jsPDF('p', 'mm', 'a4');
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
     
-    // Configuración de márgenes
     const marginX = 15;
     const marginBottom = 15;
     const cardPadding = 5;
@@ -236,7 +398,14 @@ export class HistoriaClinicaDialogComponent {
     const paragraphSpacing = 2;
     const headerBottom = 32;
 
-    // 1. LOGO SVG
+    // --- HELPER LOCAL PARA CAPITALIZAR ---
+    const capitalizar = (str: string | undefined | null): string => {
+      if (!str) return '';
+      return str.trim().toLowerCase().split(' ')
+        .map(p => p.charAt(0).toUpperCase() + p.slice(1))
+        .join(' ');
+    };
+
     const svgLogo = `
     <svg width="600" height="200" viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -257,11 +426,9 @@ export class HistoriaClinicaDialogComponent {
 
     const svgBase64 = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgLogo)));
 
-    // 2. FUNCIÓN DE GENERACIÓN
     const generarDocumento = (pngDataUrl?: string) => {
       
       const drawHeader = () => {
-        // Fondo oscuro
         doc.setFillColor(17, 24, 39); 
         doc.rect(0, 0, pageWidth, headerBottom, 'F');
 
@@ -271,7 +438,6 @@ export class HistoriaClinicaDialogComponent {
           doc.addImage(pngDataUrl, 'PNG', marginX, 6, 60, 20);
         }
 
-        // Títulos
         doc.setTextColor(255, 255, 255);
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(16);
@@ -279,14 +445,16 @@ export class HistoriaClinicaDialogComponent {
 
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(10);
-        doc.text(`Paciente: ${this.data.pacienteNombre}`, pageWidth - marginX, 24, { align: 'right' });
+        
+        // --- 1. APLICAMOS LA CAPITALIZACIÓN AL PACIENTE ---
+        const nombrePacienteCap = capitalizar(this.data.pacienteNombre);
+        doc.text(`Paciente: ${nombrePacienteCap}`, pageWidth - marginX, 24, { align: 'right' });
         
         const hoy = new Date().toLocaleDateString('es-AR');
         doc.setTextColor(209, 213, 219);
         doc.setFontSize(8);
         doc.text(`Emisión: ${hoy}`, pageWidth - marginX, 28, { align: 'right' });
 
-        // Línea dorada
         doc.setDrawColor(251, 191, 36);
         doc.setLineWidth(0.4);
         doc.line(marginX, headerBottom - 1, pageWidth - marginX, headerBottom - 1);
@@ -295,7 +463,6 @@ export class HistoriaClinicaDialogComponent {
       drawHeader();
       let y = headerBottom + 8;
 
-      // SIN DATOS
       if (!this.data.historias.length) {
         doc.setTextColor(55, 65, 81);
         doc.setFontSize(12);
@@ -304,7 +471,6 @@ export class HistoriaClinicaDialogComponent {
         return;
       }
 
-      // ITERAR HISTORIAS
       const contentWidth = pageWidth - marginX * 2;
       this.data.historias.forEach((h: any, index: number) => {
         const paragraphs: { lines: string[]; bold?: boolean }[] = [];
@@ -318,7 +484,9 @@ export class HistoriaClinicaDialogComponent {
         const especialidad = h.especialidad ? `(${h.especialidad})` : '';
         addParagraph(`Atención #${this.data.historias.length - index} · ${fechaAt} ${especialidad}`, { bold: true });
         
-        addParagraph(`Especialista: ${h.especialistaNombre || 'N/A'}`);
+        // --- 2. APLICAMOS LA CAPITALIZACIÓN AL ESPECIALISTA ---
+        const especialistaCap = capitalizar(h.especialistaNombre || 'N/A');
+        addParagraph(`Especialista: ${especialistaCap}`);
         
         const fechaReg = h.fecha_registro ? new Date(h.fecha_registro).toLocaleString('es-AR') : 
                          (h.created_at ? new Date(h.created_at).toLocaleString('es-AR') : 'N/A');
@@ -346,7 +514,6 @@ export class HistoriaClinicaDialogComponent {
           y = headerBottom + 8;
         }
 
-        // DIBUJAR CARD
         doc.setFillColor(255, 253, 231);
         doc.setDrawColor(251, 192, 45);
         doc.setLineWidth(0.4);
@@ -370,7 +537,6 @@ export class HistoriaClinicaDialogComponent {
       doc.save(nombreArchivo);
     };
 
-    // 3. CONVERTIR SVG Y EJECUTAR
     const img = new Image();
     img.src = svgBase64;
     img.onload = () => {
@@ -384,10 +550,9 @@ export class HistoriaClinicaDialogComponent {
     };
     img.onerror = () => generarDocumento();
   }
+
+
 }
-
-
-
 
 
 //-----------------------------------------------------------------------
