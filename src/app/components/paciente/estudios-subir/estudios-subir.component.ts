@@ -11,17 +11,17 @@
 
 // }
 
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { MatButtonModule } from '@angular/material/button';
+// import { Component } from '@angular/core';
+// import { CommonModule } from '@angular/common';
+// import { MatButtonModule } from '@angular/material/button';
 
-@Component({
-  standalone: true,
-  selector: 'app-estudios-subir',
-  imports: [CommonModule, MatButtonModule],
-  templateUrl: './estudios-subir.component.html',
-  styleUrls: ['./estudios-subir.component.scss'],
-})
-export class EstudiosSubirComponent {
-  onFile(e: Event) { /* TODO: subir a storage y guardar metadata */ }
-}
+// @Component({
+//   standalone: true,
+//   selector: 'app-estudios-subir',
+//   imports: [CommonModule, MatButtonModule],
+//   templateUrl: './estudios-subir.component.html',
+//   styleUrls: ['./estudios-subir.component.scss'],
+// })
+// export class EstudiosSubirComponent {
+//   onFile(e: Event) { /* TODO: subir a storage y guardar metadata */ }
+// }

@@ -1,23 +1,23 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+// import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MisTurnosPacienteComponent } from './mis-turnos-paciente.component';
+// import { MisTurnosPacienteComponent } from './mis-turnos-paciente.component';
 
-describe('MisTurnosPacienteComponent', () => {
-  let component: MisTurnosPacienteComponent;
-  let fixture: ComponentFixture<MisTurnosPacienteComponent>;
+// describe('MisTurnosPacienteComponent', () => {
+//   let component: MisTurnosPacienteComponent;
+//   let fixture: ComponentFixture<MisTurnosPacienteComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [MisTurnosPacienteComponent]
-    })
-    .compileComponents();
+//   beforeEach(async () => {
+//     await TestBed.configureTestingModule({
+//       imports: [MisTurnosPacienteComponent]
+//     })
+//     .compileComponents();
 
-    fixture = TestBed.createComponent(MisTurnosPacienteComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+//     fixture = TestBed.createComponent(MisTurnosPacienteComponent);
+//     component = fixture.componentInstance;
+//     fixture.detectChanges();
+//   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-});
+//   it('should create', () => {
+//     expect(component).toBeTruthy();
+//   });
+// });

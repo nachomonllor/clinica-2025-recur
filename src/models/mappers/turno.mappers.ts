@@ -1,114 +1,114 @@
-import { TurnoRow, Turno, TurnoVM, EstadoTurno, UUID, LoginLog, IngresoRow } from '../../models/interfaces';
+// import { Turno } from "../../app/models/turno.model";
 
-export function rowToTurno(r: TurnoRow): Turno {
-  return {
-    id: r.id,
-    pacienteId: r.paciente_id,
-    especialistaId: r.especialista_id,
-    especialidad: r.especialidad,
-    fecha: new Date(r.fecha_iso),
-    estado: r.estado,
-    ubicacion: r.ubicacion ?? null,
-    notas: r.notas ?? null,
-    resenaEspecialista: r.resena_especialista ?? null,
-    encuesta: !!r.encuesta,
-    calificacion: Number(r.encuesta?.estrellas ?? NaN) || undefined,
-  };
-}
+// export function rowToTurno(r: TurnoRow): Turno {
+//   return {
+//     id: r.id,
+//     pacienteId: r.paciente_id,
+//     especialistaId: r.especialista_id,
+//     especialidad: r.especialidad,
+//     fecha: new Date(r.fecha_iso),
+//     estado: r.estado,
+//     ubicacion: r.ubicacion ?? null,
+//     notas: r.notas ?? null,
+//     resenaEspecialista: r.resena_especialista ?? null,
+//     encuesta: !!r.encuesta,
+//     calificacion: Number(r.encuesta?.estrellas ?? NaN) || undefined,
+//   };
+// }
 
-// helpers UI-only
-export function formatNombre(apellido?: string | null, nombre?: string | null) {
-  const ap = (apellido ?? '').trim();
-  const no = (nombre ?? '').trim();
-  return (ap || no) ? `${ap}, ${no}`.trim().replace(/^,\s*/, '') : '-';
-}
-export function horaLocal(fecha: Date) {
-  const d = new Date(fecha);
-  const hh = `${d.getHours()}`.padStart(2,'0');
-  const mm = `${d.getMinutes()}`.padStart(2,'0');
-  return `${hh}:${mm}`;
-}
+// // helpers UI-only
+// export function formatNombre(apellido?: string | null, nombre?: string | null) {
+//   const ap = (apellido ?? '').trim();
+//   const no = (nombre ?? '').trim();
+//   return (ap || no) ? `${ap}, ${no}`.trim().replace(/^,\s*/, '') : '-';
+// }
+// export function horaLocal(fecha: Date) {
+//   const d = new Date(fecha);
+//   const hh = `${d.getHours()}`.padStart(2,'0');
+//   const mm = `${d.getMinutes()}`.padStart(2,'0');
+//   return `${hh}:${mm}`;
+// }
 
-/** Dominio → VM plano (sin objetos anidados en la UI) */
-export function turnoToVM(t: Turno, opts?: {
-  pacienteNombre?: string;
-  especialistaNombre?: string;
-}): TurnoVM {
-  const fechaISO = t.fecha.toISOString();
-  return {
-    id: t.id,
-    especialidad: t.especialidad,
-    especialista: opts?.especialistaNombre ?? '-',   // string "Apellido, Nombre"
-    estado: t.estado,
-    fechaISO,
-    fecha: new Date(fechaISO),
-    hora: horaLocal(t.fecha),
-    pacienteId: t.pacienteId,
-    especialistaId: t.especialistaId,
-    pacienteNombre: opts?.pacienteNombre ?? '-',
-    ubicacion: t.ubicacion ?? null,
-    notas: t.notas ?? null,
-    resenaEspecialista: t.resenaEspecialista ?? null,
-    encuesta: !!t.encuesta,
-    calificacion: t.calificacion
-  };
-}
+// /** Dominio → VM plano (sin objetos anidados en la UI) */
+// export function turnoToVM(t: Turno, opts?: {
+//   pacienteNombre?: string;
+//   especialistaNombre?: string;
+// }): TurnoVM {
+//   const fechaISO = t.fecha.toISOString();
+//   return {
+//     id: t.id,
+//     especialidad: t.especialidad,
+//     especialista: opts?.especialistaNombre ?? '-',   // string "Apellido, Nombre"
+//     estado: t.estado,
+//     fechaISO,
+//     fecha: new Date(fechaISO),
+//     hora: horaLocal(t.fecha),
+//     pacienteId: t.pacienteId,
+//     especialistaId: t.especialistaId,
+//     pacienteNombre: opts?.pacienteNombre ?? '-',
+//     ubicacion: t.ubicacion ?? null,
+//     notas: t.notas ?? null,
+//     resenaEspecialista: t.resenaEspecialista ?? null,
+//     encuesta: !!t.encuesta,
+//     calificacion: t.calificacion
+//   };
+// }
 
-// Reglas de negocio: ¿se puede cancelar?
-export function puedeCancelar(estado: EstadoTurno): boolean {
-  // coherente con tu tipo (incluye 'confirmado' como no cancelable)
-  return !['aceptado','confirmado','realizado','rechazado','cancelado'].includes(estado);
-}
+// // Reglas de negocio: ¿se puede cancelar?
+// export function puedeCancelar(estado: EstadoTurno): boolean {
+//   // coherente con tu tipo (incluye 'confirmado' como no cancelable)
+//   return !['aceptado','confirmado','realizado','rechazado','cancelado'].includes(estado);
+// }
 
 
-// Row (BD) -> Dominio
-export function mapTurnoRowToTurno(row: TurnoRow): Turno {
-  return {
-    id: row.id,
-    pacienteId: row.paciente_id,
-    especialistaId: row.especialista_id,
-    especialidad: row.especialidad,
-    fecha: new Date(row.fecha_iso),
-    estado: row.estado,
-    ubicacion: row.ubicacion ?? null,
-    notas: row.notas ?? null,
-    resenaEspecialista: row.resena_especialista ?? null,
-    encuesta: !!row.encuesta,
-    calificacion: row.encuesta?.estrellas ?? undefined,
-  };
-}
+// // Row (BD) -> Dominio
+// export function mapTurnoRowToTurno(row: TurnoRow): Turno {
+//   return {
+//     id: row.id,
+//     pacienteId: row.paciente_id,
+//     especialistaId: row.especialista_id,
+//     especialidad: row.especialidad,
+//     fecha: new Date(row.fecha_iso),
+//     estado: row.estado,
+//     ubicacion: row.ubicacion ?? null,
+//     notas: row.notas ?? null,
+//     resenaEspecialista: row.resena_especialista ?? null,
+//     encuesta: !!row.encuesta,
+//     calificacion: row.encuesta?.estrellas ?? undefined,
+//   };
+// }
 
-// Dominio -> VM (para listas/gráficos)
-export function mapTurnoToVM(t: Turno, especialistaNombre?: string, pacienteNombre?: string): TurnoVM {
-  return {
-    id: t.id,
-    especialidad: t.especialidad,
-    estado: t.estado,
-    fechaISO: t.fecha.toISOString(),
-    especialistaId: t.especialistaId,
-    pacienteId: t.pacienteId,
-    especialistaNombre,
-    especialista: especialistaNombre, // alias legacy
-    pacienteNombre,
-    ubicacion: t.ubicacion ?? null,
-    notas: t.notas ?? null,
-    resenaEspecialista: t.resenaEspecialista ?? null,
-    tieneResena: !!t.resenaEspecialista,
-    encuesta: t.encuesta ?? false,
-    calificacion: t.calificacion,
-  };
-}
+// // Dominio -> VM (para listas/gráficos)
+// export function mapTurnoToVM(t: Turno, especialistaNombre?: string, pacienteNombre?: string): TurnoVM {
+//   return {
+//     id: t.id,
+//     especialidad: t.especialidad,
+//     estado: t.estado,
+//     fechaISO: t.fecha.toISOString(),
+//     especialistaId: t.especialistaId,
+//     pacienteId: t.pacienteId,
+//     especialistaNombre,
+//     especialista: especialistaNombre, // alias legacy
+//     pacienteNombre,
+//     ubicacion: t.ubicacion ?? null,
+//     notas: t.notas ?? null,
+//     resenaEspecialista: t.resenaEspecialista ?? null,
+//     tieneResena: !!t.resenaEspecialista,
+//     encuesta: t.encuesta ?? false,
+//     calificacion: t.calificacion,
+//   };
+// }
 
-// IngresoRow (crudo) -> LoginLog (VM)
-export function mapIngresoToLoginLog(r: IngresoRow): LoginLog {
-  return {
-    id: `${r.user_id}-${r.timestamp}`,
-    userId: r.user_id as UUID,
-    email: r.email,
-    rol: r.rol,
-    atISO: r.timestamp,
-  };
-}
+// // IngresoRow (crudo) -> LoginLog (VM)
+// export function mapIngresoToLoginLog(r: IngresoRow): LoginLog {
+//   return {
+//     id: `${r.user_id}-${r.timestamp}`,
+//     userId: r.user_id as UUID,
+//     email: r.email,
+//     rol: r.rol,
+//     atISO: r.timestamp,
+//   };
+// }
 
 
 

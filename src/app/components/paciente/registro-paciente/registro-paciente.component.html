@@ -1,4 +1,4 @@
-<mat-card class="registro-container">
+<!-- <mat-card class="registro-container">
   <mat-card-title>Registro de Paciente</mat-card-title>
   <form [formGroup]="registroPacienteForm" (ngSubmit)="onSubmit()">
 
@@ -18,7 +18,6 @@
       </mat-error>
     </mat-form-field>
 
-    <!-- Fecha de Nacimiento -->
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Fecha de nacimiento</mat-label>
       <input matInput type="date" formControlName="fechaNacimiento" [min]="minDateISO" [max]="maxDateISO"
@@ -74,7 +73,7 @@
 
 <<<<<<< HEAD:src/app/components/paciente/registro-paciente/registro-paciente.component.html
 
-      <!-- <label class="mt-2">Validación anti‑bots</label>
+       <label class="mt-2">Validación anti‑bots</label>
       <div
         appCaptcha
         [appCaptchaEnabled]="captchaEnabled"
@@ -85,10 +84,10 @@
         Responda correctamente el captcha.
       </div> -->
 
-    <button mat-raised-button color="accent" class="full-width" [disabled]="loading || registroPacienteForm.invalid"
+    <!-- <button mat-raised-button color="accent" class="full-width" [disabled]="loading || registroPacienteForm.invalid"
       type="submit">
-=======
-    <!-- Imágenes de perfil -->
+
+
     <div class="full-width file-group">
       <button mat-raised-button color="primary" type="button" (click)="fileInput1.click()">
         Seleccionar Imagen 1
@@ -115,7 +114,7 @@
       <div class="preview" *ngIf="imagenPrevia2">
         <img [src]="imagenPrevia2" alt="Previsualización 2" />
       </div>
-    </div>
+    </div> -->
 
     <!-- Captcha -->
     <!-- <app-captcha [enabled]="captchaEnabled" (captchaValid)="onCaptchaValid($event)">

@@ -1,11 +1,10 @@
-<section class="topbar">
+<!-- <section class="topbar">
   <h1 class="brand">
     <mat-icon>health_and_safety</mat-icon>
     Mi Clínica
   </h1>
 </section>
 
-<!-- Métricas -->
 <section class="stats">
   <ng-container *ngIf="counters as c; else skeleton">
     <div class="item">
@@ -34,7 +33,6 @@
   </ng-template>
 </section>
 
-<!-- Próximos turnos -->
 <section class="panel">
   <mat-card class="card">
     <div class="card__head">
@@ -78,7 +76,6 @@
   </mat-card>
 </section>
 
-<!-- Mis especialistas (favbuttons) -->
 <section class="panel">
   <mat-card class="card">
     <div class="card__head">
@@ -105,7 +102,6 @@
   </mat-card>
 </section>
 
-<!-- Accesos rápidos -->
 <section class="grid">
   <mat-card class="tile" routerLink="/solicitar-turno" tabindex="0">
     <div class="tile__icon"><mat-icon>add_circle</mat-icon></div>
@@ -153,7 +149,6 @@
   </mat-card>
 </section>
 
-<!-- FAB -->
 <div class="fab">
   <button mat-fab color="primary" (click)="toggleFab()" aria-label="Acciones rápidas">
     <mat-icon>{{ showFab ? 'close' : 'add' }}</mat-icon>
@@ -173,4 +168,4 @@
       <mat-icon>reviews</mat-icon>
     </button>
   </div>
-</div>
+</div> -->

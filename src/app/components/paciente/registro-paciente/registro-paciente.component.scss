@@ -1,178 +1,178 @@
-/* ===== Paleta / tokens (idéntico al login) ===== */
-:host {
-  --cyan: #22d3ee;         /* acento frío */
-  --cyan-700: #0ea5e9;
-  --orange: #ff7a18;       /* acento cálido */
-  --blue: #5a8dff;
-  --ink: #f8fafc;
-  --ink-2: #cbd5e1;
-  --glass-stroke: rgba(255,255,255,.08);
+// /* ===== Paleta / tokens (idéntico al login) ===== */
+// :host {
+//   --cyan: #22d3ee;         /* acento frío */
+//   --cyan-700: #0ea5e9;
+//   --orange: #ff7a18;       /* acento cálido */
+//   --blue: #5a8dff;
+//   --ink: #f8fafc;
+//   --ink-2: #cbd5e1;
+//   --glass-stroke: rgba(255,255,255,.08);
 
-  position: relative;
-  display: grid;
-  place-items: center;
-  min-height: 100svh;
-  padding: clamp(12px, 2vw, 28px);
-  color: var(--ink);
+//   position: relative;
+//   display: grid;
+//   place-items: center;
+//   min-height: 100svh;
+//   padding: clamp(12px, 2vw, 28px);
+//   color: var(--ink);
 
-  /* Fondo + overlay (igual que el login) */
-  background:
-    linear-gradient(180deg, rgba(7,26,40,.70), rgba(7,26,40,.90)),
-    url('/assets/medical.jpg') center / cover no-repeat fixed;
-  isolation: isolate;
-}
-/* Luces complementarias cian/naranja */
-:host::after{
-  content:""; position:absolute; inset:-10%;
-  background:
-    radial-gradient(60% 60% at 90% 10%, rgba(255,122,24,.20), transparent 60%),
-    radial-gradient(50% 50% at 10% 90%, rgba(34,211,238,.22), transparent 60%);
-  filter: blur(38px);
-  z-index:-1; pointer-events:none;
-}
+//   /* Fondo + overlay (igual que el login) */
+//   background:
+//     linear-gradient(180deg, rgba(7,26,40,.70), rgba(7,26,40,.90)),
+//     url('/assets/medical.jpg') center / cover no-repeat fixed;
+//   isolation: isolate;
+// }
+// /* Luces complementarias cian/naranja */
+// :host::after{
+//   content:""; position:absolute; inset:-10%;
+//   background:
+//     radial-gradient(60% 60% at 90% 10%, rgba(255,122,24,.20), transparent 60%),
+//     radial-gradient(50% 50% at 10% 90%, rgba(34,211,238,.22), transparent 60%);
+//   filter: blur(38px);
+//   z-index:-1; pointer-events:none;
+// }
 
-/* ===== Card principal (mismo “glass” que el login) ===== */
-.registro-container{
-  width: clamp(340px, 90vw, 780px);
-  padding: 16px;
-  border-radius: 18px;
-  overflow: hidden;
-  background: linear-gradient(180deg, rgba(7,26,40,.62), rgba(7,26,40,.78));
-  border: 1px solid var(--glass-stroke);
-  box-shadow: 0 24px 60px rgba(0,0,0,.55);
-  backdrop-filter: blur(9px);
-}
+// /* ===== Card principal (mismo “glass” que el login) ===== */
+// .registro-container{
+//   width: clamp(340px, 90vw, 780px);
+//   padding: 16px;
+//   border-radius: 18px;
+//   overflow: hidden;
+//   background: linear-gradient(180deg, rgba(7,26,40,.62), rgba(7,26,40,.78));
+//   border: 1px solid var(--glass-stroke);
+//   box-shadow: 0 24px 60px rgba(0,0,0,.55);
+//   backdrop-filter: blur(9px);
+// }
 
-mat-card-title, .mat-mdc-card-title{
-  display:block;
-  margin: -16px -16px 12px;
-  padding: 12px 14px;
-  font-weight: 800; letter-spacing: .3px;
-  color: #0b1221;
-  background: linear-gradient(90deg, var(--cyan-700), var(--orange));
-}
+// mat-card-title, .mat-mdc-card-title{
+//   display:block;
+//   margin: -16px -16px 12px;
+//   padding: 12px 14px;
+//   font-weight: 800; letter-spacing: .3px;
+//   color: #0b1221;
+//   background: linear-gradient(90deg, var(--cyan-700), var(--orange));
+// }
 
-/* Mensajes / utilitarios */
-.full-width{ width:100%; }
-.mat-mdc-form-field-error, .mat-mdc-form-field-hint{ color: var(--ink) !important; }
+// /* Mensajes / utilitarios */
+// .full-width{ width:100%; }
+// .mat-mdc-form-field-error, .mat-mdc-form-field-hint{ color: var(--ink) !important; }
 
-/* ===== Campos Angular Material (outline), como en el login ===== */
-.registro-container ::ng-deep .mat-mdc-text-field-wrapper{
-  background: rgba(10,20,30,.55);
-  border-radius: 12px;
-}
-.registro-container ::ng-deep .mdc-notched-outline__leading,
-.registro-container ::ng-deep .mdc-notched-outline__notch,
-.registro-container ::ng-deep .mdc-notched-outline__trailing{
-  border-color: rgba(255,255,255,.16) !important;
-}
-.registro-container ::ng-deep .mat-mdc-form-field-label{ color: var(--ink-2) !important; }
-.registro-container ::ng-deep .mat-mdc-input-element{ color: var(--ink) !important; }
+// /* ===== Campos Angular Material (outline), como en el login ===== */
+// .registro-container ::ng-deep .mat-mdc-text-field-wrapper{
+//   background: rgba(10,20,30,.55);
+//   border-radius: 12px;
+// }
+// .registro-container ::ng-deep .mdc-notched-outline__leading,
+// .registro-container ::ng-deep .mdc-notched-outline__notch,
+// .registro-container ::ng-deep .mdc-notched-outline__trailing{
+//   border-color: rgba(255,255,255,.16) !important;
+// }
+// .registro-container ::ng-deep .mat-mdc-form-field-label{ color: var(--ink-2) !important; }
+// .registro-container ::ng-deep .mat-mdc-input-element{ color: var(--ink) !important; }
 
-/* ===== Botón principal con gradiente cian→naranja (igual al login) ===== */
-button[mat-raised-button].full-width{
-  --shadow-cyan: rgba(34,211,238,.18);
-  --shadow-orange: rgba(255,122,24,.18);
-  border-radius: 12px;
-  font-weight: 800; letter-spacing: .3px;
-  background-image: linear-gradient(90deg, var(--cyan-700), var(--orange));
-  color: #0b1221 !important;
-  border: 0;
-  box-shadow:
-    0 0 0 1px rgba(255,255,255,.06) inset,
-    0 10px 18px var(--shadow-cyan),
-    0 3px 8px var(--shadow-orange);
-  transition: transform .15s ease, filter .2s ease;
-}
-button[mat-raised-button].full-width:hover{
-  filter: saturate(1.08) contrast(1.03);
-  transform: translateY(-1px);
-}
-/* Spinner dentro del botón */
-::ng-deep .mat-mdc-progress-spinner circle{ stroke:#0b1221 !important; }
+// /* ===== Botón principal con gradiente cian→naranja (igual al login) ===== */
+// button[mat-raised-button].full-width{
+//   --shadow-cyan: rgba(34,211,238,.18);
+//   --shadow-orange: rgba(255,122,24,.18);
+//   border-radius: 12px;
+//   font-weight: 800; letter-spacing: .3px;
+//   background-image: linear-gradient(90deg, var(--cyan-700), var(--orange));
+//   color: #0b1221 !important;
+//   border: 0;
+//   box-shadow:
+//     0 0 0 1px rgba(255,255,255,.06) inset,
+//     0 10px 18px var(--shadow-cyan),
+//     0 3px 8px var(--shadow-orange);
+//   transition: transform .15s ease, filter .2s ease;
+// }
+// button[mat-raised-button].full-width:hover{
+//   filter: saturate(1.08) contrast(1.03);
+//   transform: translateY(-1px);
+// }
+// /* Spinner dentro del botón */
+// ::ng-deep .mat-mdc-progress-spinner circle{ stroke:#0b1221 !important; }
 
-/* ===== Grupo de archivos (imágenes) ===== */
-.file-group{
-  display: grid;
-  gap: 8px;
-  margin: 10px 0 14px;
-  padding: 10px;
-  border-radius: 12px;
-  background: rgba(255,255,255,.06);
-  border: 1px solid var(--glass-stroke);
-  color: var(--ink-2);
-}
+// /* ===== Grupo de archivos (imágenes) ===== */
+// .file-group{
+//   display: grid;
+//   gap: 8px;
+//   margin: 10px 0 14px;
+//   padding: 10px;
+//   border-radius: 12px;
+//   background: rgba(255,255,255,.06);
+//   border: 1px solid var(--glass-stroke);
+//   color: var(--ink-2);
+// }
 
-.file-group button[mat-raised-button]{
-  border-radius: 10px;
-  font-weight: 700;
-  background: linear-gradient(90deg, var(--blue), var(--cyan));
-  color: #0b1221 !important;
-  box-shadow:
-    0 0 0 1px rgba(255,255,255,.06) inset,
-    0 10px 18px rgba(90,141,255,.18),
-    0 3px 8px rgba(34,211,238,.18);
-}
+// .file-group button[mat-raised-button]{
+//   border-radius: 10px;
+//   font-weight: 700;
+//   background: linear-gradient(90deg, var(--blue), var(--cyan));
+//   color: #0b1221 !important;
+//   box-shadow:
+//     0 0 0 1px rgba(255,255,255,.06) inset,
+//     0 10px 18px rgba(90,141,255,.18),
+//     0 3px 8px rgba(34,211,238,.18);
+// }
 
-/* Previsualización de imágenes */
-.preview{
-  margin-top: 6px;
-  border-radius: 12px;
-  overflow: hidden;
-  border: 1px solid rgba(255,255,255,.16);
-  background: linear-gradient(135deg,#0f4250,#082a34);
-  box-shadow: 0 10px 18px rgba(0,0,0,.35);
-  max-height: 220px;
-  display: grid;
-  place-items: center;
-}
-.preview img{
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
+// /* Previsualización de imágenes */
+// .preview{
+//   margin-top: 6px;
+//   border-radius: 12px;
+//   overflow: hidden;
+//   border: 1px solid rgba(255,255,255,.16);
+//   background: linear-gradient(135deg,#0f4250,#082a34);
+//   box-shadow: 0 10px 18px rgba(0,0,0,.35);
+//   max-height: 220px;
+//   display: grid;
+//   place-items: center;
+// }
+// .preview img{
+//   width: 100%;
+//   height: 100%;
+//   object-fit: cover;
+//   display: block;
+// }
 
-/* Ajuste responsivo de fondo (como en el login) */
-@media (min-width: 1024px){
-  :host{
-    background:
-      linear-gradient(180deg, rgba(7,26,40,.70), rgba(7,26,40,.90)),
-      url('/assets/medical.jpg') center / clamp(1100px, 92vw, 1500px) auto no-repeat fixed;
-  }
-}
+// /* Ajuste responsivo de fondo (como en el login) */
+// @media (min-width: 1024px){
+//   :host{
+//     background:
+//       linear-gradient(180deg, rgba(7,26,40,.70), rgba(7,26,40,.90)),
+//       url('/assets/medical.jpg') center / clamp(1100px, 92vw, 1500px) auto no-repeat fixed;
+//   }
+// }
 
 
-/*  fondo siempre oscuro y texto claro  */
+// /*  fondo siempre oscuro y texto claro  */
 
-/* Quitar la capa clara que mete Angular Material al hacer foco */
-.registro-container ::ng-deep .mat-mdc-form-field-focus-overlay {
-  background: transparent !important;
-}
+// /* Quitar la capa clara que mete Angular Material al hacer foco */
+// .registro-container ::ng-deep .mat-mdc-form-field-focus-overlay {
+//   background: transparent !important;
+// }
 
-/* Mantener fondo oscuro en hover / focus */
-.registro-container ::ng-deep .mat-mdc-form-field .mat-mdc-text-field-wrapper {
-  background: rgba(10, 20, 30, 0.55);
-}
+// /* Mantener fondo oscuro en hover / focus */
+// .registro-container ::ng-deep .mat-mdc-form-field .mat-mdc-text-field-wrapper {
+//   background: rgba(10, 20, 30, 0.55);
+// }
 
-.registro-container ::ng-deep .mat-mdc-form-field:hover .mat-mdc-text-field-wrapper,
-.registro-container ::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-text-field-wrapper {
-  background: rgba(10, 20, 30, 0.85); /* si querés que se note un pelín más en foco */
-}
+// .registro-container ::ng-deep .mat-mdc-form-field:hover .mat-mdc-text-field-wrapper,
+// .registro-container ::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-text-field-wrapper {
+//   background: rgba(10, 20, 30, 0.85); /* si querés que se note un pelín más en foco */
+// }
 
-/* Texto SIEMPRE claro (normal y con foco) */
-.registro-container ::ng-deep .mat-mdc-input-element {
-  color: var(--ink) !important;        /* blanco azulado */
-  caret-color: var(--cyan) !important; /* color del cursor */
-}
+// /* Texto SIEMPRE claro (normal y con foco) */
+// .registro-container ::ng-deep .mat-mdc-input-element {
+//   color: var(--ink) !important;        /* blanco azulado */
+//   caret-color: var(--cyan) !important; /* color del cursor */
+// }
 
-/* Placeholder clarito pero legible */
-.registro-container ::ng-deep .mat-mdc-input-element::placeholder {
-  color: var(--ink-2) !important;
-  opacity: 1;
-}
+// /* Placeholder clarito pero legible */
+// .registro-container ::ng-deep .mat-mdc-input-element::placeholder {
+//   color: var(--ink-2) !important;
+//   opacity: 1;
+// }
 
-/* Label cuando el campo está enfocado */
-.registro-container ::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-form-field-label {
-  color: var(--cyan) !important;
-}
+// /* Label cuando el campo está enfocado */
+// .registro-container ::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-form-field-label {
+//   color: var(--cyan) !important;
+// }

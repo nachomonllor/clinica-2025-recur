@@ -1,36 +1,4 @@
-<mat-card class="mis-shell mat-elevation-z6" appElevateOnHover>
-
-
-
-  <!-- <header class="hero hero--inline">
-    <div class="hero-left">
-      <h2>Mis turnos</h2>
-      <p>Revisá tus turnos, cancelá los próximos y calificá la atención.</p>
-    </div>
-
-    <div class="hero-right">
-      <mat-form-field appearance="outline" class="toolbar__filtro">
-        <mat-label>Buscar</mat-label>
-        <input
-          matInput
-          #f
-          (input)="applyFilter(f.value)"
-          placeholder="Especialidad, especialista, estado o términos de la historia clínica" />
-      </mat-form-field>
-
-      <span class="toolbar__count" *ngIf="turnos.length">
-        {{ turnos.length }} turno(s) encontrado(s)
-      </span>
-
-      <button mat-stroked-button color="primary" routerLink="/solicitar-turno" class="hero-btn">
-        <mat-icon>add_circle</mat-icon>
-        Solicitar turno
-      </button>
-    </div>
-  </header> -->
-
-
-  <!-- TOOLBAR DE BÚSQUEDA -->
+<!-- <mat-card class="mis-shell mat-elevation-z6" appElevateOnHover>
   <div class="toolbar">
     <mat-form-field appearance="outline" class="toolbar__filtro">
       <mat-label>Buscar</mat-label>
@@ -43,14 +11,9 @@
     </span>
   </div>
 
-  <!-- LISTA DE TURNOS COMO CARDS -->
   <section class="lista" *ngIf="turnos.length; else sinTurnos">
 
-      <!-- section class="lista" *ngIf="turnos.length; else sinTurnos" -->
-
-
     <article class="turno-card" *ngFor="let t of turnos">
-      <!-- Cabecera: fecha, hora, estado -->
       <div class="card-header">
         <div class="fecha-hora">
           <div class="fecha">{{ t.fecha | date:'EEEE d \'de\' MMMM' }}</div>
@@ -62,7 +25,6 @@
         </span>
       </div>
 
-      <!-- Cuerpo: especialidad, especialista, calificación -->
       <div class="card-body">
         <div class="linea">
           <span class="label">Especialidad</span>
@@ -78,28 +40,23 @@
         </div>
       </div>
 
-      <!-- Acciones -->
       <div class="card-actions">
-        <!-- Cancelar: solo si no fue realizado y es futuro -->
         <button mat-stroked-button color="warn" (click)="cancelarTurno(t)" [disabled]="!puedeCancelar(t)"
           *ngIf="t.estado !== 'realizado'">
           <mat-icon>event_busy</mat-icon>
           Cancelar
         </button>
 
-        <!-- Ver reseña: si tiene reseña -->
         <button mat-button (click)="verResena(t)" *ngIf="puedeVerResena(t)">
           <mat-icon>rate_review</mat-icon>
           Ver reseña
         </button>
 
-        <!-- Completar encuesta: realizado + tiene reseña + sin encuesta -->
         <button mat-button color="primary" (click)="completarEncuesta(t)" *ngIf="puedeCompletarEncuesta(t)">
           <mat-icon>assignment</mat-icon>
           Completar encuesta
         </button>
 
-        <!-- Calificar: solo si fue realizado -->
         <button mat-button color="accent" (click)="calificarAtencion(t)" *ngIf="puedeCalificar(t)">
           <mat-icon>star_rate</mat-icon>
           Calificar
@@ -107,10 +64,10 @@
       </div>
     </article>
   </section>
-</mat-card>
+</mat-card> -->
 
 <!-- Si no hay turnos -->
-<ng-template #sinTurnos>
+<!-- <ng-template #sinTurnos>
   <div class="empty">
     <p>No tenés turnos registrados.</p>
     <button mat-raised-button color="primary" routerLink="/solicitar-turno">
@@ -118,11 +75,11 @@
       Solicitar mi primer turno
     </button>
   </div>
-</ng-template>
+</ng-template> -->
 
 <!-- Diálogos se mantienen tal cual -->
 <!-- cancelDialog -->
-<ng-template #cancelDialog let-data>
+<!-- <ng-template #cancelDialog let-data>
   <h2 mat-dialog-title>Cancelar Turno</h2>
   <mat-dialog-content>
     <p>¿Estás seguro de que deseas cancelar este turno?</p>
@@ -150,10 +107,10 @@
       Confirmar Cancelación
     </button>
   </mat-dialog-actions>
-</ng-template>
+</ng-template> -->
 
 <!-- calificarDialog -->
-<ng-template #calificarDialog let-data>
+<!-- <ng-template #calificarDialog let-data>
   <h2 mat-dialog-title>Calificar Atención</h2>
   <mat-dialog-content>
     <p>¿Cómo fue tu experiencia con la atención recibida?</p>
@@ -191,6 +148,6 @@
       Guardar Calificación
     </button>
   </mat-dialog-actions>
-</ng-template>
+</ng-template> -->
 
 

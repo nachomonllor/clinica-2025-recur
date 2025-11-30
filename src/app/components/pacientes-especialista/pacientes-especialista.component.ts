@@ -206,10 +206,13 @@ export class PacientesEspecialistaComponent implements OnInit {
 
       const especialistaId = sessionData.session.user.id;
 
-      // CAMBIO: ordenamos por fecha_registro (no created_at)
+      // 1. Buscamos las historias
       const { data: historias, error } = await this.supa.client
         .from('historia_clinica')
-        .select('*')
+        .select(`
+            *,
+            historia_datos_dinamicos (*)
+        `)
         .eq('paciente_id', pacienteId)
         .eq('especialista_id', especialistaId)
         .order('fecha_registro', { ascending: false });
@@ -219,39 +222,55 @@ export class PacientesEspecialistaComponent implements OnInit {
         return;
       }
 
+      // 2. Mapeamos datos extra
       const historiasCompletas = await Promise.all((historias || []).map(async (h: any) => {
-        // CAMBIO: usamos fecha_hora_inicio en turnos
+
+        // Query al turno para sacar la especialidad
         const { data: turno } = await this.supa.client
           .from('turnos')
-          .select('fecha_hora_inicio')
+          .select('fecha_hora_inicio, especialidades(nombre)')
           .eq('id', h.turno_id)
           .single();
 
-        // CAMBIO: usamos usuarios en vez de perfiles para el especialista
+        // Query al especialista (por si acaso no es el usuario actual, aunque debería)
         const { data: especialista } = await this.supa.client
           .from('usuarios')
           .select('nombre, apellido')
           .eq('id', h.especialista_id)
           .single();
 
+        // --- SOLUCIÓN DEL ERROR ROJO ---
+        const dataEspec: any = turno?.especialidades;
+        const nombreEspecialidad = dataEspec?.nombre || dataEspec?.[0]?.nombre || '';
+
         return {
           ...h,
-          especialistaNombre: especialista ? `${especialista.nombre} ${especialista.apellido}` : 'N/A',
+          paciente: pacienteNombre, // El nombre que viene por parámetro (PACIENTE)
+          especialidad: nombreEspecialidad, // El nombre de la especialidad (o vacío)
+          especialistaNombre: especialista ? `${especialista.nombre} ${especialista.apellido}` : '',
           fechaAtencion: turno?.fecha_hora_inicio
             ? new Date(turno.fecha_hora_inicio).toLocaleDateString('es-AR')
-            : 'N/A'
+            : ''
         };
       }));
 
       this.dialog.open(HistoriaClinicaDialogComponent, {
         width: '800px',
         data: {
-          pacienteNombre,
+          pacienteNombre: pacienteNombre,
           historias: historiasCompletas
         }
       });
+
     } catch (err: any) {
       console.error('[PacientesEspecialista] Error al cargar historia clínica', err);
     }
   }
+
+
+
+
+
+
+
 }

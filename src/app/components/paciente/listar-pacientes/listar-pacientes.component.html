@@ -1,19 +1,10 @@
-<mat-card>
+<!-- <mat-card>
   <mat-card-title>Pacientes</mat-card-title>
   <mat-card-subtitle>Listado proveniente de Supabase (tabla <code>profiles</code>)</mat-card-subtitle>
-
-  <!-- <div class="toolbar">
-    <mat-form-field appearance="outline">
-      <mat-label>Buscar</mat-label>
-      <input matInput (keyup)="aplicarFiltro($event.target.value)"
-        placeholder="Apellido, nombre, email u obra social" />
-    </mat-form-field>
-  </div> -->
 
   <div class="toolbar">
     <mat-form-field appearance="outline">
       <mat-label>Buscar</mat-label>
-      <!-- referencia de template #f y uso de (input) -->
       <input matInput #f (input)="aplicarFiltro(f.value)" placeholder="Apellido, nombre, email u obra social" />
     </mat-form-field>
   </div>
@@ -21,7 +12,6 @@
   <div class="table-wrap" matSort>
     <table mat-table [dataSource]="dataSource" matSort>
 
-      <!-- Avatar -->
       <ng-container matColumnDef="avatar">
         <th mat-header-cell *matHeaderCellDef></th>
         <td mat-cell *matCellDef="let row">
@@ -34,25 +24,21 @@
         </td>
       </ng-container>
 
-      <!-- Nombre -->
       <ng-container matColumnDef="nombre">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Nombre</th>
         <td mat-cell *matCellDef="let row">{{ row.nombre }}</td>
       </ng-container>
 
-      <!-- Apellido -->
       <ng-container matColumnDef="apellido">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Apellido</th>
         <td mat-cell *matCellDef="let row">{{ row.apellido }}</td>
       </ng-container>
 
-      <!-- Email -->
       <ng-container matColumnDef="email">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
         <td mat-cell *matCellDef="let row">{{ row.email }}</td>
       </ng-container>
 
-      <!-- Obra social -->
       <ng-container matColumnDef="obraSocial">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Obra social</th>
         <td mat-cell *matCellDef="let row">{{ row.obraSocial || '-' }}</td>
@@ -66,7 +52,7 @@
   <mat-paginator [pageSize]="10" [pageSizeOptions]="[5,10,25]" showFirstLastButtons></mat-paginator>
 </mat-card>
 
-
+ -->
 
 
 
