@@ -919,11 +919,8 @@ export class HistoriaClinicaDialogComponent {
     generarDocumento();
   };
 }
-
-
-
-
-
+ /* ---------------------------------------------- */
+ 
 
   formatearFecha(fecha: string | undefined): string {
     if (!fecha) return 'N/A';

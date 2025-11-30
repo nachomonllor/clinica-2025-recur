@@ -23,7 +23,6 @@ import { environment } from '../../../environments/environment';
 import { NgxCaptchaModule } from 'ngx-captcha';
 
 
-
 @Component({
   selector: 'app-registro-paciente',
   standalone: true,
@@ -34,7 +33,9 @@ import { NgxCaptchaModule } from 'ngx-captcha';
     MatInputModule,
     MatButtonModule,
     MatCardModule,
-    NgxCaptchaModule
+    NgxCaptchaModule,
+
+   // CaptchaPropioComponent // <--- LO AGREGAMOS
   ],
   templateUrl: './registro-paciente.component.html',
   styleUrls: ['./registro-paciente.component.scss']
@@ -44,8 +45,12 @@ export class RegistroPacienteComponent implements OnInit {
   imagenPrevia1: string | null = null;
   imagenPrevia2: string | null = null;
   captchaEnabled = environment.captchaEnabled;
-  captchaValido = !environment.captchaEnabled; // Si está deshabilitado, siempre válido
 
+  //captchaValido = !environment.captchaEnabled; // Si está deshabilitado, siempre válido
+
+  // 2. VARIABLE DE CONTROL SIMPLE
+  // Empieza en false. El componente hijo nos avisará si se resolvió (o si está deshabilitado en BD)
+  captchaValido = false;
 
   registroPacienteForm!: FormGroup<{
     nombre: FormControl<string | null>;
@@ -57,11 +62,14 @@ export class RegistroPacienteComponent implements OnInit {
     password: FormControl<string | null>;
     imagenPerfil1: FormControl<File | null>;
     imagenPerfil2: FormControl<File | null>;
-    recaptcha: FormControl<string | null>;   // <= PARA EL CAPTCHA
+
+   //  recaptcha: FormControl<string | null>;   // <= PARA EL CAPTCHA
+
   }>;
 
 
   siteKey: string = '6LfbWxksAAAAABoUdgGEoUv5pvnjJ_TPcje3jb7P';
+
 
 
   // Para limitar el <input type="date">
@@ -95,7 +103,7 @@ export class RegistroPacienteComponent implements OnInit {
       imagenPerfil2: this.fb.control<File | null>(null, Validators.required),
 
       //PARA EL CAPTCHA
-      recaptcha: this.fb.control<string | null>(null, Validators.required),
+     // recaptcha: this.fb.control<string | null>(null, Validators.required),
     });
   }
 
@@ -124,8 +132,14 @@ export class RegistroPacienteComponent implements OnInit {
     reader.readAsDataURL(file);
   }
 
+  // onCaptchaValid(esValido: boolean): void {
+  //   console.log('[Captcha] onCaptchaValid', esValido);
+  //   this.captchaValido = esValido;
+  // }
+
+  // 3. MÉTODO PARA RECIBIR EL ESTADO DEL CAPTCHA PROPIO
   onCaptchaValid(esValido: boolean): void {
-    console.log('[Captcha] onCaptchaValid', esValido);
+    console.log('[Captcha Propio] Estado:', esValido);
     this.captchaValido = esValido;
   }
 
@@ -157,22 +171,22 @@ export class RegistroPacienteComponent implements OnInit {
     return null;
   }
 
-  private calcEdadFromISO(iso: string): number {
-    const [y, m, d] = iso.split('-').map(Number);
-    const today = new Date();
-    let edad = today.getFullYear() - y;
-    const month = today.getMonth() + 1;
-    const day = today.getDate();
-    if (month < m || (month === m && day < d)) edad--;
-    return edad;
-  }
+  // private calcEdadFromISO(iso: string): number {
+  //   const [y, m, d] = iso.split('-').map(Number);
+  //   const today = new Date();
+  //   let edad = today.getFullYear() - y;
+  //   const month = today.getMonth() + 1;
+  //   const day = today.getDate();
+  //   if (month < m || (month === m && day < d)) edad--;
+  //   return edad;
+  // }
 
-  private toISODateLocal(date: Date): string {
-    const y = date.getFullYear();
-    const m = String(date.getMonth() + 1).padStart(2, '0');
-    const d = String(date.getDate()).padStart(2, '0');
-    return `${y}-${m}-${d}`;
-  }
+  // private toISODateLocal(date: Date): string {
+  //   const y = date.getFullYear();
+  //   const m = String(date.getMonth() + 1).padStart(2, '0');
+  //   const d = String(date.getDate()).padStart(2, '0');
+  //   return `${y}-${m}-${d}`;
+  // }
 
 
   private async validarDniYEmailUnicos(dni: string, email: string): Promise<void> {
@@ -267,131 +281,6 @@ export class RegistroPacienteComponent implements OnInit {
   }
 
   // ---- SUBMIT ---
-
-  // async onSubmit(): Promise<void> {
-  //   this.loading = true;
-  //   const supabase = this.sb.client;
-  //   const fv = this.registroPacienteForm.value!;
-
-  //   if (!fv.imagenPerfil1 || !fv.imagenPerfil2) {
-  //     Swal.fire('Error', 'Por favor, seleccioná ambas imágenes de perfil.', 'error');
-  //     this.loading = false;
-  //     return;
-  //   }
-
-  //   try {
-  //     //  ============> VALIDAR DNI Y EMAIL EN LA TABLA ANTES DE CREAR EL USUARIO EN AUTH
-  //     await this.validarDniYEmailUnicos(fv.dni!, fv.email!);
-
-  //     // 1) Crear usuario en Auth con metadata básica
-  //     const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-  //       email: fv.email!,
-  //       password: fv.password!,
-  //       options: {
-  //         data: {
-  //           rol: 'PACIENTE',
-  //           nombre: fv.nombre,
-  //           apellido: fv.apellido,
-  //           dni: fv.dni,
-  //           fecha_nacimiento: fv.fechaNacimiento,
-  //           obra_social: fv.obraSocial,
-  //         }
-  //       }
-  //     });
-
-  //     if (signUpError) throw signUpError;
-
-  //     const user = signUpData.user;
-  //     if (!user) throw new Error('No se pudo crear el usuario.');
-
-  //     const userId = user.id;
-  //     const edadCalculada = this.calcEdadFromISO(fv.fechaNacimiento!);
-
-  //     // 2) Upsert en esquema_clinica.usuarios
-  //     const { error: usuarioError } = await supabase
-  //       .from('usuarios')
-  //       .upsert({
-  //         id: userId,
-  //         nombre: fv.nombre!,
-  //         apellido: fv.apellido!,
-  //         dni: fv.dni!,
-  //         email: fv.email!,
-  //         password: fv.password!, // idealmente un hash
-  //         perfil: 'PACIENTE',
-  //         edad: edadCalculada,
-  //         obra_social: fv.obraSocial ?? null,
-  //         esta_aprobado: true,
-  //         mail_verificado: !!signUpData.session
-  //       }, { onConflict: 'id' });
-
-  //     if (usuarioError) throw usuarioError;
-
-  //     // 3) Resto de tu código (verificación de mail, subida de imágenes, etc.)
-  //     if (!signUpData.session) {
-  //       await Swal.fire({
-  //         icon: 'info',
-  //         title: 'Verifica tu correo',
-  //         html: `
-  //         <p>Te enviamos un email de verificación a <strong>${fv.email}</strong>.</p>
-  //         <p>Confírmalo para iniciar sesión y completar tu registro (subir imágenes).</p>
-  //       `,
-  //         confirmButtonText: 'Entendido'
-  //       });
-  //       this.registroPacienteForm.reset();
-  //       this.imagenPrevia1 = null;
-  //       this.imagenPrevia2 = null;
-  //       this.router.navigate(['/bienvenida']);
-  //       return;
-  //     }
-
-  //     // Subida de imágenes...
-  //     const file1 = fv.imagenPerfil1!;
-  //     const file2 = fv.imagenPerfil2!;
-
-  //     const url1 = await this.sb.uploadAvatar(userId, file1, 1);
-  //     const url2 = await this.sb.uploadAvatar(userId, file2, 2);
-
-  //     const { error: avatarError } = await supabase
-  //       .from('usuarios')
-  //       .update({
-  //         imagen_perfil_1: url1,
-  //         imagen_perfil_2: url2
-  //       })
-  //       .eq('id', userId);
-
-  //     if (avatarError) throw avatarError;
-
-  //     await Swal.fire({
-  //       icon: 'success',
-  //       title: 'Paciente registrado con éxito',
-  //       showConfirmButton: false,
-  //       timer: 2000
-  //     });
-  //     this.registroPacienteForm.reset();
-  //     this.imagenPrevia1 = null;
-  //     this.imagenPrevia2 = null;
-  //     this.router.navigate(['/bienvenida']);
-
-  //   } catch (err: any) {
-  //     console.error('[Registro Paciente] Error completo:', {
-  //       error: err,
-  //       message: err?.message,
-  //       code: err?.code,
-  //       status: err?.status,
-  //       name: err?.name,
-  //       stack: err?.stack
-  //     });
-
-  //     const mensajeError = this.mapPgError(err);
-  //     Swal.fire('Error', mensajeError, 'error');
-  //   } finally {
-  //     this.loading = false;
-  //   }
-
-  // }
-
-
-
 
   async onSubmit(): Promise<void> {
     // 1) Validaciones rápidas antes de tocar Supabase
@@ -537,7 +426,23 @@ export class RegistroPacienteComponent implements OnInit {
   }
 
 
-
+  // Helpers...
+  private toISODateLocal(date: Date): string {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  }
+  
+  private calcEdadFromISO(iso: string): number {
+    const [y, m, d] = iso.split('-').map(Number);
+    const today = new Date();
+    let edad = today.getFullYear() - y;
+    const month = today.getMonth() + 1;
+    const day = today.getDate();
+    if (month < m || (month === m && day < d)) edad--;
+    return edad;
+  }
 
 
 

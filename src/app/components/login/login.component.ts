@@ -35,8 +35,7 @@ import { CaptchaPropioComponent } from '../captcha-propio/captcha-propio.compone
     MatTooltipModule, MatProgressSpinnerModule, MatSnackBarModule,
     AutoFocusDirective,
     TranslateModule,
-    CaptchaPropioComponent
-
+  
   ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
