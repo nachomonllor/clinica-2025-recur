@@ -21,14 +21,14 @@
           *ngFor="let paciente of pacientesFiltrados; trackBy: trackPaciente"
           [class.activo]="pacienteSeleccionado?.id === paciente.id"
           (click)="seleccionarPaciente(paciente)"
-          matTooltip="{{ paciente.nombre }} {{ paciente.apellido }}">
+          matTooltip="{{ paciente.nombre  }} {{ paciente.apellido  }}">
           <div class="avatar">
             <img [src]="paciente.avatar_url || 'assets/img/default-avatar.png'"
                  [alt]="(paciente.nombre || '') + ' ' + (paciente.apellido || '')"
                  loading="lazy">
           </div>
           <div class="texto">
-            <span class="nombre">{{ paciente.apellido }} {{ paciente.nombre }}</span>
+            <span class="nombre">{{ paciente.apellido | capitalizarNombre }} {{ paciente.nombre | capitalizarNombre }}</span>
             <span class="meta">{{ paciente.dni || 'DNI no cargado' }}</span>
             <span class="meta">{{ paciente.email }}</span>
           </div>
@@ -40,7 +40,7 @@
     <section class="panel panel-detalle" *ngIf="pacienteSeleccionado; else placeholderDetalle">
       <header class="detalle-header">
         <div>
-          <h3>{{ pacienteSeleccionado!.apellido }} {{ pacienteSeleccionado!.nombre }}</h3>
+          <h3>{{ pacienteSeleccionado!.apellido | capitalizarNombre}} {{ pacienteSeleccionado!.nombre  | capitalizarNombre }}</h3>
           <p class="meta">
             <mat-icon>badge</mat-icon>
             {{ pacienteSeleccionado!.dni || 'DNI no cargado' }}

@@ -9,6 +9,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
 import { SupabaseService } from '../../../services/supabase.service';
+import { CapitalizarNombrePipe } from "../../../pipes/capitalizar-nombre.pipe";
 /** Lo que necesita la tabla para mostrar pacientes */
 interface PacienteListado {
   id: string;
@@ -29,8 +30,9 @@ interface PacienteListado {
     MatPaginatorModule,
     MatSortModule,
     MatFormFieldModule,
-    MatInputModule
-  ],
+    MatInputModule,
+    CapitalizarNombrePipe
+],
   templateUrl: './listar-pacientes.component.html',
   styleUrls: ['./listar-pacientes.component.scss']
 })

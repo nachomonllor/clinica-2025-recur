@@ -48,7 +48,9 @@
         </div>
 
         <div class="title">
-          <h3>{{ u.nombre }} {{ u.apellido }}</h3>
+          <h3>{{ u.nombre | capitalizarNombre}} {{ u.apellido | capitalizarNombre }}</h3>
+
+          <!-- div class="hc-subtitle">{{ data.pacienteNombre | capitalizarNombre }}</div -->
           <div class="sub">
             <span class="role">{{ rolChip(u) }}</span>
             <span class="dot" *ngIf="u.edad !== undefined"></span>

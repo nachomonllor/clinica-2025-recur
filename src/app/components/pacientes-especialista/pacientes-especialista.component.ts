@@ -14,6 +14,7 @@ import { SupabaseService } from '../../../services/supabase.service';
 import { HistoriaClinicaDialogComponent } from '../admin/usuarios-admin/historia-clinica-dialog.component';
 
 import { PacienteAtendido, TurnoDetalle } from '../../models/pacientes-especialista.model';
+import { CapitalizarNombrePipe } from "../../../pipes/capitalizar-nombre.pipe";
 
 // ------------------------------------------------
 
@@ -30,8 +31,9 @@ import { PacienteAtendido, TurnoDetalle } from '../../models/pacientes-especiali
     MatDialogModule,
     MatTooltipModule,
     MatProgressSpinnerModule,
-    MatSnackBarModule
-  ],
+    MatSnackBarModule,
+    CapitalizarNombrePipe
+],
   templateUrl: './pacientes-especialista.component.html',
   styleUrls: ['./pacientes-especialista.component.scss']
 })

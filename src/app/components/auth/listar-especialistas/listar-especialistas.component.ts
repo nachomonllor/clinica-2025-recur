@@ -8,6 +8,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { CapitalizarNombrePipe } from "../../../../pipes/capitalizar-nombre.pipe";
 
 export interface Especialista {
   id: string;
@@ -27,7 +28,7 @@ type SortKey = 'apellido' | 'especialidades' | 'estado';
 @Component({
   selector: 'app-listar-especialistas',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, CapitalizarNombrePipe],
   templateUrl: './listar-especialistas.component.html',
   styleUrls: ['./listar-especialistas.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

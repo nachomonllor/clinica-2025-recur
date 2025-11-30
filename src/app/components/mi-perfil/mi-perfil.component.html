@@ -156,7 +156,7 @@
             <mat-label>Filtrar por profesional</mat-label>
             <mat-select [value]="especialistaSeleccionado" (selectionChange)="seleccionarEspecialista($event.value)">
               <mat-option value="todos">Todos los profesionales</mat-option>
-              <mat-option *ngFor="let e of especialistasDisponibles" [value]="e.id">{{ e.nombre }}</mat-option>
+              <mat-option *ngFor="let e of especialistasDisponibles" [value]="e.id">{{ e.nombre | capitalizarNombre }}</mat-option>
             </mat-select>
           </mat-form-field>
           <button mat-raised-button color="primary" (click)="descargarPDF()"

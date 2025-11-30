@@ -30,6 +30,7 @@ import { animate, query, stagger, style, transition, trigger } from '@angular/an
 import { SupabaseService } from '../../../services/supabase.service';
 import { HistoriaClinica } from '../../models/historia-clinica.model';
 import { DatoDinamico, formatearDatoDinamico } from '../../models/dato-dinamico.model';
+import { CapitalizarNombrePipe } from "../../../pipes/capitalizar-nombre.pipe";
 
 interface PerfilCompleto {
   id: string;
@@ -72,7 +73,9 @@ interface DiaDisponibilidad {
     MatTableModule,
     MatExpansionModule,
     MatSliderModule // <=========================== Agregado
-  ],
+    ,
+    CapitalizarNombrePipe
+],
   templateUrl: './mi-perfil.component.html',
   styleUrls: ['./mi-perfil.component.scss'],
   animations: [

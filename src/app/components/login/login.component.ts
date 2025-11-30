@@ -24,6 +24,7 @@ import { QuickAccessUser, QuickLoginsConfig } from '../../models/nav.models';
 import { TranslateModule } from '@ngx-translate/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CaptchaPropioComponent } from '../captcha-propio/captcha-propio.component';
+import { CapitalizarNombrePipe } from "../../../pipes/capitalizar-nombre.pipe";
 
 
 @Component({
@@ -35,8 +36,8 @@ import { CaptchaPropioComponent } from '../captcha-propio/captcha-propio.compone
     MatTooltipModule, MatProgressSpinnerModule, MatSnackBarModule,
     AutoFocusDirective,
     TranslateModule,
-  
-  ],
+    CapitalizarNombrePipe
+],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })

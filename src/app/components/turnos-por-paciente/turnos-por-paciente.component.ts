@@ -21,6 +21,7 @@ import { EstadisticasService } from '../../../services/estadisticas.service';
 import { SupabaseService } from '../../../services/supabase.service';
 import { TurnoPacienteCompleto } from '../../models/estadistica.model';
 import { ChartOptions } from '../../models/estadistica.model';
+import { CapitalizarNombrePipe } from "../../../pipes/capitalizar-nombre.pipe";
 
 interface PacienteBusqueda {
   id: string;
@@ -44,8 +45,9 @@ interface PacienteBusqueda {
     MatIconModule,
     MatCardModule,
     MatProgressSpinnerModule,
-    NgApexchartsModule
-  ],
+    NgApexchartsModule,
+    CapitalizarNombrePipe
+],
   templateUrl: './turnos-por-paciente.component.html',
   styleUrls: ['./turnos-por-paciente.component.scss']
 })

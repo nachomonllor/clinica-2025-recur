@@ -91,7 +91,7 @@
       <button
         class="favbtn"
         *ngFor="let p of pacientesFav"
-        matTooltip="{{ p.nombre }}"
+        matTooltip="{{ p.nombre | capitalizarNombre }}"
         [routerLink]="['/especialista/paciente', p.id]"
       >
         <img [src]="p.avatarUrl" [alt]="p.nombre" />

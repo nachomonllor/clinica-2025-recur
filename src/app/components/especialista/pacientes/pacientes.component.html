@@ -7,7 +7,7 @@
         <mat-icon *ngIf="!p.avatarUrl">person</mat-icon>
         <img *ngIf="p.avatarUrl" [src]="p.avatarUrl" [alt]="p.nombre">
       </div>
-      <div class="name">{{ p.nombre }}</div>
+      <div class="name">{{ p.nombre | capitalizarNombre }}</div>
       <button mat-stroked-button color="primary">Ver ficha</button>
     </div>
   </div>

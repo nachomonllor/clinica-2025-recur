@@ -18,6 +18,7 @@ import { SupabaseService } from '../../../services/supabase.service';
 import Swal from 'sweetalert2';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { CapitalizarNombrePipe } from "../../../pipes/capitalizar-nombre.pipe";
 
 // ---------------------------------------------------------------------
 // Tipos locales para el componente (ya no se importan de otros .ts)
@@ -61,9 +62,9 @@ interface HorarioEspecialistaRow {
     MatButtonModule,
     MatSnackBarModule,
     MatIconModule,
-
-    TranslateModule
-  ],
+    TranslateModule,
+    CapitalizarNombrePipe
+],
   templateUrl: './solicitar-turno.component.html',
   styleUrls: ['./solicitar-turno.component.scss']
 })

@@ -41,7 +41,7 @@
           [class.activo]="pacienteSeleccionado?.id === p.id"
           (click)="seleccionarPaciente(p)">
           <div class="paciente-info">
-            <span class="nombre">{{ p.apellido }}, {{ p.nombre }}</span>
+            <span class="nombre">{{ p.apellido | capitalizarNombre }}, {{ p.nombre | capitalizarNombre }}</span>
             <span class="email">{{ p.email }}</span>
           </div>
           <mat-icon>chevron_right</mat-icon>

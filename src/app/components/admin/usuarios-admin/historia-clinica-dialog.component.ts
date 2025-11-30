@@ -5,6 +5,7 @@ import jsPDF from 'jspdf';
 import { HistoriaClinicaConExtras } from '../../../models/historia-clinica.model';
 import { DatoDinamico } from '../../../models/dato-dinamico.model';
 import { DatoDinamicoPipe } from '../../../../pipes/dato-dinamico.pipe';
+import { CapitalizarNombrePipe } from "../../../../pipes/capitalizar-nombre.pipe";
 
 export interface HistoriaClinicaDialogData {
   pacienteNombre: string;
@@ -17,15 +18,16 @@ export interface HistoriaClinicaDialogData {
   imports: [
     CommonModule,
     MatDialogModule,
-    DatoDinamicoPipe
-  ],
+    DatoDinamicoPipe,
+    CapitalizarNombrePipe
+],
   template: `
     <div class="hc-dialog">
       <!-- HEADER -->
       <div class="hc-header">
         <div>
           <div class="hc-title">Historia Clínica</div>
-          <div class="hc-subtitle">{{ data.pacienteNombre }}</div>
+          <div class="hc-subtitle">{{ data.pacienteNombre  | capitalizarNombre }}</div>
         </div>
 
         <div class="hc-header-actions">
@@ -73,7 +75,7 @@ export interface HistoriaClinicaDialogData {
               
               <!-- 3. BADGE ESPECIALISTA -->
               <span class="pill pill-esp">
-                {{ historia.especialistaNombre }}
+                {{ historia.especialistaNombre | capitalizarNombre }}
               </span>
             </div>
 
@@ -94,7 +96,7 @@ export interface HistoriaClinicaDialogData {
               </div>
               <div class="historia-item">
                 <span class="label">Especialista</span>
-                <span class="value">{{ historia.especialistaNombre || 'N/A' }}</span>
+                <span class="value">{{ (historia.especialistaNombre | capitalizarNombre)   || 'N/A' }}</span>
               </div>
               <div class="historia-item">
                 <span class="label">Altura</span>

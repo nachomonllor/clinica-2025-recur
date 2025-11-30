@@ -40,6 +40,7 @@ import { AccentColor, PerfilMin, TurnoAdminResumen, TurnoAdminSupabase, UsuarioA
 import { Rol } from '../../../models/tipos.model';
 import { UsuarioCreate } from '../../../models/usuario.model';
 import { HistoriaClinicaConExtras } from '../../../models/historia-clinica.model';
+import { CapitalizarNombrePipe } from "../../../../pipes/capitalizar-nombre.pipe";
 
 
 @Component({
@@ -60,8 +61,9 @@ import { HistoriaClinicaConExtras } from '../../../models/historia-clinica.model
     MatDatepickerModule,
     MatNativeDateModule,
     MatDialogModule,
-    MatProgressSpinnerModule
-  ],
+    MatProgressSpinnerModule,
+    CapitalizarNombrePipe
+],
   templateUrl: './usuarios-admin.component.html',
   styleUrls: ['./usuarios-admin.component.scss'],
   animations: [

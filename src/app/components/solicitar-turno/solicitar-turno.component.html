@@ -102,7 +102,7 @@
             *ngFor="let esp of especialistasFiltrados"
             [value]="esp.id"
           >
-            {{ esp.apellido }}, {{ esp.nombre }}
+            {{ esp.apellido | capitalizarNombre }}, {{ esp.nombre  | capitalizarNombre }}
           </mat-option>
         </mat-select>
         <mat-error
@@ -125,7 +125,7 @@
         </mat-label>
         <mat-select formControlName="paciente">
           <mat-option *ngFor="let pac of pacientes" [value]="pac.id">
-            {{ pac.apellido }}, {{ pac.nombre }}
+            {{ pac.apellido | capitalizarNombre }}, {{ pac.nombre | capitalizarNombre }}
           </mat-option>
         </mat-select>
         <mat-error

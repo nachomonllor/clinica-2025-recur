@@ -33,7 +33,7 @@
     </mat-form-field>
 
     <mat-card class="quick-reminder" *ngIf="quickSeleccionado">
-      <strong>{{ quickSeleccionado.nombre }}</strong>
+      <strong>{{ quickSeleccionado.nombre | capitalizarNombre }}</strong>
       ({{ ('ROLES.' + quickSeleccionado.rol) | translate }})
       {{ 'LOGIN.QUICK_COMPLETED' | translate }}
     </mat-card>
