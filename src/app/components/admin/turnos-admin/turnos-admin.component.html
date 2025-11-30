@@ -3,13 +3,8 @@
 
   <mat-form-field appearance="outline" class="buscador">
     <mat-label>Ingrese especialidad, nombre del especialista, paciente o patología…</mat-label>
-    <!-- input matInput [value]="busqueda" (input)="applyFilter(($event.target as HTMLInputElement).value)"
-      placeholder="Ej: dermatología, Juan, María, dermatitis, pendiente…" / -->
-
-
     <input matInput (input)="onFilterInput($event)"
       placeholder="Ej: dermatología, Juan, María, dermatitis, pendiente…" />
-
   </mat-form-field>
 
   <div class="grid">
@@ -30,12 +25,7 @@
 
           <span class="badge" [class.ok]="estadoClass(t.estado)==='ok'" [class.warn]="estadoClass(t.estado)==='warn'"
             [class.bad]="estadoClass(t.estado)==='bad'">
-       
-           
-
-              {{ t.estado | estadoTurnoLabel }}
-
-
+            {{ t.estado | estadoTurnoLabel }}
           </span>
         </button>
 
@@ -43,7 +33,7 @@
       </div>
     </section>
 
-    <!-- PANEL DERECHO -->
+    <!-- PANEL DERECHO (DETALLE) -->
     <section class="col info" *ngIf="seleccionado as s">
       <h3>Información</h3>
 
@@ -53,9 +43,14 @@
       </div>
 
       <div class="fila-2">
+        <!-- CAMPO ESPECIALISTA CON FOTO -->
         <div class="campo">
           <label>Especialista</label>
-          <div class="pill">{{ s.especialista }}</div>
+          <div class="pill pill-con-avatar">
+            <!-- Si hay imagen, la mostramos -->
+            <img *ngIf="s['especialistaAvatar']" [src]="s['especialistaAvatar']" alt="Foto" class="avatar-mini">
+            <span>{{ s.especialista }}</span>
+          </div>
         </div>
 
         <div class="campo">
@@ -68,13 +63,19 @@
         <label>Estado</label>
         <div class="pill estado" [class.ok]="estadoClass(s.estado)==='ok'" [class.warn]="estadoClass(s.estado)==='warn'"
           [class.bad]="estadoClass(s.estado)==='bad'">
-     
-       
-
-            {{ s.estado | estadoTurnoLabel }}
-
-
+          {{ s.estado | estadoTurnoLabel }}
         </div>
+      </div>
+
+      <!-- CAMPOS EXTRA SI HAY (MOTIVO/COMENTARIO) -->
+      <div class="campo" *ngIf="s.motivo">
+        <label>Motivo</label>
+        <div class="texto-largo">{{ s.motivo }}</div>
+      </div>
+
+      <div class="campo" *ngIf="s.comentario">
+        <label>Comentario / Reseña</label>
+        <div class="texto-largo">{{ s.comentario }}</div>
       </div>
 
       <div class="acciones">
@@ -87,7 +88,7 @@
   </div>
 </mat-card>
 
-<!-- Diálogo de cancelación con comentario (se mantiene) -->
+<!-- Diálogo de cancelación -->
 <ng-template #cancelDialog let-data>
   <h2 mat-dialog-title>Cancelar Turno</h2>
   <mat-dialog-content>
@@ -119,3 +120,119 @@
 <ng-template #cargando>
   <div class="loader">Cargando turnos…</div>
 </ng-template>
+
+
+
+
+
+
+
+<!-- <mat-card class="turnos-shell mat-elevation-z6"> 
+  <h2 class="titulo">Filtrar Turnos</h2>
+
+  <mat-form-field appearance="outline" class="buscador">
+    <mat-label>Ingrese especialidad, nombre del especialista, paciente o patología…</mat-label>
+
+    <input matInput (input)="onFilterInput($event)"
+      placeholder="Ej: dermatología, Juan, María, dermatitis, pendiente…" />
+
+  </mat-form-field>
+
+  <div class="grid">
+     LISTA IZQUIERDA 
+    <section class="col list">
+      <h3>Turnos</h3>
+
+      <div class="items" *ngIf="!loading; else cargando">
+        <button class="turno-item" *ngFor="let t of filtrados" [class.selected]="t === seleccionado"
+          [class.ok]="estadoClass(t.estado)==='ok'" [class.warn]="estadoClass(t.estado)==='warn'"
+          [class.bad]="estadoClass(t.estado)==='bad'" (click)="seleccionarTurno(t)">
+          <span class="dot"></span>
+
+          <span class="texto">
+            <strong>{{ t.especialidad }}</strong>
+            <span> — {{ t.fecha | date:'d \'de\' MMMM' }}</span>
+          </span>
+
+          <span class="badge" [class.ok]="estadoClass(t.estado)==='ok'" [class.warn]="estadoClass(t.estado)==='warn'"
+            [class.bad]="estadoClass(t.estado)==='bad'">
+            {{ t.estado | estadoTurnoLabel }}
+          </span>
+        </button>
+
+        <p class="sin-datos" *ngIf="filtrados.length === 0">No hay resultados para “{{ busqueda }}”.</p>
+      </div>
+    </section>
+
+     PANEL DERECHO 
+    <section class="col info" *ngIf="seleccionado as s">
+      <h3>Información</h3>
+
+      <div class="campo">
+        <label>Fecha</label>
+        <div class="pill">{{ s.fecha | date:'dd/MM/yyyy' }} — {{ s.hora }}</div>
+      </div>
+
+      <div class="fila-2">
+        <div class="campo">
+          <label>Especialista</label>
+          <div class="pill">{{ s.especialista }}</div>
+        </div>
+
+        <div class="campo">
+          <label>Especialidad</label>
+          <div class="pill">{{ s.especialidad }}</div>
+        </div>
+      </div>
+
+      <div class="campo">
+        <label>Estado</label>
+        <div class="pill estado" [class.ok]="estadoClass(s.estado)==='ok'" [class.warn]="estadoClass(s.estado)==='warn'"
+          [class.bad]="estadoClass(s.estado)==='bad'">
+          {{ s.estado | estadoTurnoLabel }}
+
+        </div>
+      </div>
+
+      <div class="acciones">
+        <button mat-raised-button color="warn" (click)="cancelarTurno(s)" [disabled]="!puedeCancelar(s)">
+          <mat-icon>event_busy</mat-icon>
+          Cancelar turno
+        </button>
+      </div>
+    </section>
+  </div>
+</mat-card>
+
+ Diálogo de cancelación con comentario (se mantiene) 
+<ng-template #cancelDialog let-data>
+  <h2 mat-dialog-title>Cancelar Turno</h2>
+  <mat-dialog-content>
+    <p>¿Estás seguro de que deseas cancelar este turno?</p>
+    <p><strong>Paciente:</strong> {{ data?.turno?.paciente }}</p>
+    <p><strong>Especialista:</strong> {{ data?.turno?.especialista }}</p>
+    <p><strong>Especialidad:</strong> {{ data?.turno?.especialidad }}</p>
+    <p><strong>Fecha:</strong> {{ data?.turno?.fecha | date:'shortDate' }} a las {{ data?.turno?.hora }}</p>
+
+    <form [formGroup]="data?.form" style="margin-top: 16px;">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Motivo de cancelación</mat-label>
+        <textarea matInput formControlName="comentario" rows="4"
+          placeholder="Indica el motivo de la cancelación (mínimo 10 caracteres)"></textarea>
+        <mat-error *ngIf="data?.form?.get('comentario')?.hasError('required')">El motivo es obligatorio</mat-error>
+        <mat-error *ngIf="data?.form?.get('comentario')?.hasError('minlength')">Debe tener al menos 10
+          caracteres</mat-error>
+      </mat-form-field>
+    </form>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Cancelar</button>
+    <button mat-raised-button color="warn" [disabled]="!data?.form?.valid" [mat-dialog-close]="true">
+      Confirmar Cancelación
+    </button>
+  </mat-dialog-actions>
+</ng-template>
+
+<ng-template #cargando>
+  <div class="loader">Cargando turnos…</div>
+</ng-template> -->

@@ -132,6 +132,23 @@
   color: #e5f4f6;
 }
 
+.pill-con-avatar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 6px; /* Un poco menos de padding izq para la imagen */
+}
+
+.avatar-mini {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+
+
 .fila-2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
