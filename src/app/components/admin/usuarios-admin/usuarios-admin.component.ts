@@ -721,22 +721,32 @@ export class UsuariosAdminComponent implements OnInit {
   }
 
 
+ 
+
   // async verHistoriaClinica(pacienteId: string, pacienteNombre: string): Promise<void> {
   //   try {
   //     const { data: sessionData } = await this.supa.getSession();
   //     if (!sessionData?.session) return;
 
-  //     const especialistaId = sessionData.session.user.id;
+  //     const userId = sessionData.session.user.id;
 
-  //     const { data: historias, error } = await this.supa.client
+  //     // Base: todas las historias del paciente
+  //     let query = this.supa.client
   //       .from('historia_clinica')
   //       .select('*')
   //       .eq('paciente_id', pacienteId)
-  //       .eq('especialista_id', especialistaId)
   //       .order('fecha_registro', { ascending: false });
 
+  //     // Si NO es admin (ej. si reusás esta función para un especialista),
+  //     // filtrás por el especialista logueado:
+  //     if (!this.esAdmin) {
+  //       query = query.eq('especialista_id', userId);
+  //     }
+
+  //     const { data: historias, error } = await query;
+
   //     if (error) {
-  //       console.error('[PacientesEspecialista] Error al cargar historia clínica', error);
+  //       console.error('[UsuariosAdmin] Error al cargar historia clínica', error);
   //       return;
   //     }
 
@@ -769,35 +779,49 @@ export class UsuariosAdminComponent implements OnInit {
   //       })
   //     );
 
+  //     // this.dialog.open(HistoriaClinicaDialogComponent, {
+  //     //   width: '800px',
+  //     //   data: {
+  //     //     pacienteNombre,
+  //     //     historias: historiasCompletas
+  //     //   }
+  //     // });
+
+
   //     this.dialog.open(HistoriaClinicaDialogComponent, {
-  //       width: '800px',
-  //       data: {
-  //         pacienteNombre,
-  //         historias: historiasCompletas
-  //       }
+  //       data: { pacienteNombre, historias },
+  //       panelClass: 'hc-dialog-panel'
   //     });
+
+
+
+
+
   //   } catch (err: any) {
-  //     console.error('[PacientesEspecialista] Error al cargar historia clínica', err);
+  //     console.error('[UsuariosAdmin] Error al cargar historia clínica', err);
   //   }
   // }
 
 
-  async verHistoriaClinica(pacienteId: string, pacienteNombre: string): Promise<void> {
+    async verHistoriaClinica(pacienteId: string, pacienteNombre: string): Promise<void> {
     try {
       const { data: sessionData } = await this.supa.getSession();
       if (!sessionData?.session) return;
 
       const userId = sessionData.session.user.id;
 
-      // Base: todas las historias del paciente
+      // 1. OBTENER HISTORIAS + DATOS DINÁMICOS
+      // Agregamos historia_datos_dinamicos (*) para que salgan en el PDF/Dialog
       let query = this.supa.client
         .from('historia_clinica')
-        .select('*')
+        .select(`
+            *,
+            historia_datos_dinamicos (*)
+        `)
         .eq('paciente_id', pacienteId)
         .order('fecha_registro', { ascending: false });
 
-      // Si NO es admin (ej. si reusás esta función para un especialista),
-      // filtrás por el especialista logueado:
+      // Si NO es admin, filtramos por especialista (por seguridad)
       if (!this.esAdmin) {
         query = query.eq('especialista_id', userId);
       }
@@ -809,52 +833,58 @@ export class UsuariosAdminComponent implements OnInit {
         return;
       }
 
+      // 2. MAPEAR DATOS COMPLETOS (Especialidad, Especialista, Fecha)
       const historiasCompletas: HistoriaClinicaConExtras[] = await Promise.all(
         (historias || []).map(async (h: any) => {
+          
+          // Traemos Fecha y ESPECIALIDAD del turno original
           const { data: turno } = await this.supa.client
             .from('turnos')
-            .select('fecha_hora_inicio')
+            .select('fecha_hora_inicio, especialidades(nombre)')
             .eq('id', h.turno_id)
             .single();
 
+          // Traemos datos del Especialista
           const { data: especialista } = await this.supa.client
             .from('usuarios')
             .select('nombre, apellido')
             .eq('id', h.especialista_id)
             .single();
 
-          const especialistaNombre =
-            especialista ? `${especialista.nombre} ${especialista.apellido}` : 'N/A';
+          // Formatear nombre especialista
+          const especialistaNombre = especialista 
+            ? `${especialista.nombre} ${especialista.apellido}` 
+            : ''; // Dejar vacío en lugar de N/A para que se vea más limpio
 
+          // Formatear fecha atención
           const fechaAtencion = turno?.fecha_hora_inicio
             ? new Date(turno.fecha_hora_inicio).toLocaleDateString('es-AR')
-            : 'N/A';
+            : '';
+
+          // Formatear Especialidad (Solución del error de array/objeto)
+          const dataEspec: any = turno?.especialidades;
+          const nombreEspecialidad = dataEspec?.nombre || dataEspec?.[0]?.nombre || '';
 
           return {
             ...h,
+            paciente: pacienteNombre,       // Importante para el título del PDF
+            especialidad: nombreEspecialidad, // Importante para el badge
             especialistaNombre,
             fechaAtencion
           } as HistoriaClinicaConExtras;
         })
       );
 
-      // this.dialog.open(HistoriaClinicaDialogComponent, {
-      //   width: '800px',
-      //   data: {
-      //     pacienteNombre,
-      //     historias: historiasCompletas
-      //   }
-      // });
-
-
+      // 3. ABRIR EL DIÁLOGO COMPARTIDO
+      // Al pasarle 'historiasCompletas' bien cargado, el botón de PDF del diálogo funcionará perfecto.
       this.dialog.open(HistoriaClinicaDialogComponent, {
-        data: { pacienteNombre, historias },
-        panelClass: 'hc-dialog-panel'
+        width: '800px',
+        data: {
+          pacienteNombre,
+          historias: historiasCompletas
+        },
+        panelClass: 'hc-dialog-panel' // Asegúrate de tener este estilo o quítalo si no lo usas
       });
-
-
-
-
 
     } catch (err: any) {
       console.error('[UsuariosAdmin] Error al cargar historia clínica', err);
