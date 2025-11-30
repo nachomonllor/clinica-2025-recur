@@ -19,7 +19,6 @@ import { SupabaseService } from '../../../services/supabase.service';
 import { LogIngresosService } from '../../../services/log-ingresos.service';
 
 import { Rol } from '../../models/tipos.model';
-import { Usuario, UsuarioCreate } from '../../models/usuario.model';
 import { QuickAccessUser, QuickLoginsConfig } from '../../models/nav.models';
 
 import { TranslateModule } from '@ngx-translate/core';
@@ -101,9 +100,8 @@ export class LoginComponent implements OnInit {
     return this.iniciarSesion();
   }
 
-
   async iniciarSesion(): Promise<void> {
-    console.log('🚀 [LOGIN] Inicio del proceso');
+    console.log(' [LOGIN] Inicio del proceso');
 
     if (this.formularioLogin.invalid) {
       this.formularioLogin.markAllAsTouched();
@@ -120,24 +118,24 @@ export class LoginComponent implements OnInit {
       // await this.supa.client.auth.signOut();  <=== la volamos 
 
       // PASO 1: Auth
-      console.log('1️⃣ Autenticando con Supabase Auth...');
+      console.log(' Autenticando con Supabase Auth...');
 
       // Agregamos un log justo antes para asegurar que entra acá
       const { error: eLogin } = await this.supa.iniciarSesion(email, password);
 
       if (eLogin) {
-        console.error('❌ Error Supabase Auth:', eLogin);
+        console.error(' Error Supabase Auth:', eLogin);
         throw eLogin;
       }
 
-      console.log('✅ Auth OK');
+      console.log(' Auth OK');
 
       // PASO 2: Obtener User
-      console.log('2️⃣ Obteniendo usuario de sesión...');
+      console.log(' Obteniendo usuario de sesión...');
       const { data: userData, error: eUser } = await this.supa.obtenerUsuarioActual();
       if (eUser || !userData?.user) throw eUser || new Error('Error usuario Auth');
       const user = userData.user;
-      console.log('✅ Usuario Auth obtenido:', user.id);
+      console.log(' Usuario Auth obtenido:', user.id);
 
       // PASO 3: Verificar Email
       if (!user.email_confirmed_at) {
@@ -146,12 +144,12 @@ export class LoginComponent implements OnInit {
       }
 
       // PASO 4: Buscar en DB
-      console.log('3️⃣ Buscando perfil en tabla usuarios...');
+      console.log('Buscando perfil en tabla usuarios...');
       let { data: usuario, error: eUsuario } = await this.supa.obtenerUsuarioPorId(user.id);
 
       // Si no existe (usuario fantasma), intentamos crearlo
       if (!usuario) {
-        console.warn('⚠️ Usuario no encontrado en tabla. Intentando crear fallback...');
+        console.warn('Usuario no encontrado en tabla. Intentando crear fallback...');
         // ... (Tu lógica de creación de usuario fantasma que ya tenías) ...
         const md: any = user.user_metadata || {};
         const rolMeta = (md.perfil || md.rol || 'PACIENTE').toString().toUpperCase();
@@ -178,10 +176,10 @@ export class LoginComponent implements OnInit {
 
         if (eUpsert) throw eUpsert;
         usuario = nuevo;
-        console.log('✅ Usuario fallback creado');
+        console.log('Usuario fallback creado');
       }
 
-      console.log('✅ Perfil de usuario listo:', usuario?.perfil);
+      console.log('Perfil de usuario listo:', usuario?.perfil);
 
       // PASO 5: Validaciones de negocio
       if (usuario?.perfil === 'ESPECIALISTA' && !usuario.esta_aprobado) {
@@ -190,7 +188,7 @@ export class LoginComponent implements OnInit {
       }
 
       // PASO 6: Mensaje de bienvenida
-      console.log('4️⃣ Mostrando alerta de bienvenida...');
+      console.log('===> Mostrando alerta de bienvenida...');
       // Hack: No usamos await en el Swal para no bloquear si el usuario tarda en cerrar
       Swal.fire({
         icon: 'success',
@@ -202,32 +200,25 @@ export class LoginComponent implements OnInit {
       });
 
       // PASO 7: Log (Sin await para no bloquear)
-      console.log('5️⃣ Registrando log (background)...');
+      console.log('===> Registrando log (background)...');
       this.logIngresos.registrarIngreso().catch(err => console.error('Log error', err));
 
       // PASO 8: Navegación
-      console.log('6️⃣ Intentando navegar...');
+      console.log(' ===> Intentando navegar...');
       let ruta = '/bienvenida';
       if (usuario?.perfil === 'PACIENTE') ruta = '/mis-turnos-paciente';
       else if (usuario?.perfil === 'ESPECIALISTA') ruta = '/mis-turnos-especialista';
       else if (usuario?.perfil === 'ADMIN') ruta = '/turnos-admin';
 
-      console.log('🚀 Navegando a:', ruta);
-
-      // IMPORTANTE: Aquí es donde suele colgarse si el Guard falla
-      //const navResult = await this.router.navigateByUrl(ruta);
-
-      // ... (código anterior del switch de rutas) ...
-
-      console.log('🚀 Navegando a:', ruta);
+      console.log('===> Navegando a:', ruta);
 
       const navResult = await this.router.navigateByUrl(ruta);
 
-      console.log('🏁 Navegación resultado:', navResult);
+      console.log('===> Navegación resultado:', navResult);
 
       if (!navResult) {
         // Si el router devuelve false (bloqueado por Guard o error), forzamos stop loading
-        console.warn('⚠️ La navegación fue bloqueada o cancelada.');
+        console.warn(' ===> La navegación fue bloqueada o cancelada.');
         this.cargando = false;
 
         // Opcional: Intentar ir a bienvenida si falló la ruta específica
@@ -236,15 +227,15 @@ export class LoginComponent implements OnInit {
 
       // ------------------------------------------------
 
-      console.log('🏁 Navegación resultado:', navResult);
+      console.log(' ==> Navegación resultado:', navResult);
       // Si navResult es false, el Guard rechazó la navegación
 
     } catch (e: any) {
-      console.error('❌ EXCEPCIÓN:', e);
+      console.error(' EXCEPCIÓN:', e);
       this.error = this.traducirError(e);
       Swal.fire('Error', this.error, 'error');
     } finally {
-      console.log('🏁 Fin del proceso (Finally). Quitamos spinner.');
+      console.log(' Fin del proceso (Finally). Quitamos spinner.');
       this.cargando = false;
     }
   }
@@ -298,18 +289,43 @@ export class LoginComponent implements OnInit {
     return usuarios;
   }
 
-  // activarQuick(user: QuickAccessUser, ev?: Event): void {
-  //   console.log('[Login] activarQuick', user.email, ev?.type);
-  //   this.loginRapido(user.email, user.password);
+
+  // async loginRapido(email: string, password: string): Promise<void> {
+  //   this.formularioLogin.patchValue({ email, password });
+  //   this.formularioLogin.markAsDirty();
+
+  //   const seleccionado = this.accesosRapidos.find(u => u.email === email);
+  //   if (seleccionado) {
+  //     this.quickSeleccionado = { nombre: seleccionado.nombre, rol: seleccionado.rol, email };
+  //     this.snackBar.open(
+  //       `Rellenamos las credenciales de ${seleccionado.nombre}. Revisá y presioná Ingresar.`,
+  //       'Cerrar',
+  //       { duration: 3500 }
+  //     );
+  //   } else {
+  //     this.quickSeleccionado = undefined;
+  //   }
+
+  //   setTimeout(() => this.passwordInput?.nativeElement.focus({ preventScroll: false }), 20);
   // }
+
 
   async loginRapido(email: string, password: string): Promise<void> {
     this.formularioLogin.patchValue({ email, password });
     this.formularioLogin.markAsDirty();
 
+    // --- NUEVO: Aprobar captcha automáticamente al usar acceso rápido ---
+    //this.captchaResuelto = true; 
+    // -------------------------------------------------------------------
+
     const seleccionado = this.accesosRapidos.find(u => u.email === email);
+    
     if (seleccionado) {
       this.quickSeleccionado = { nombre: seleccionado.nombre, rol: seleccionado.rol, email };
+      
+      // Opcional: Cerrar snackbar anterior si hubiera
+      this.snackBar.dismiss();
+      
       this.snackBar.open(
         `Rellenamos las credenciales de ${seleccionado.nombre}. Revisá y presioná Ingresar.`,
         'Cerrar',
@@ -321,6 +337,9 @@ export class LoginComponent implements OnInit {
 
     setTimeout(() => this.passwordInput?.nativeElement.focus({ preventScroll: false }), 20);
   }
+
+
+
 
   private traducirError(e: unknown): string {
     const err: any = e;
