@@ -346,7 +346,7 @@ export class MisTurnosPacienteComponent implements OnInit {
   }
 
   // =========================================================================
-  //  EXPORTAR PDF COMPLETO (CON DATOS MÉDICOS REALES DE SUPABASE)
+  //  EXPORTAR PDF COMPLETO (CON DATOS DE SUPABASE)
   // =========================================================================
   async exportarPdf() {
     const turnosParaExportar = this.turnos;
