@@ -1,160 +1,85 @@
+<section class="pagina-informe">
 
-<section class="pagina-estadisticas">
-  <header class="barra-acciones">
-    <button mat-flat-button color="primary" routerLink="/seleccion-estadisticas">
-      <mat-icon>arrow_back</mat-icon>
-      Volver al Dashboard
-    </button>
-
-    <span class="espaciador"></span>
-
-    <button mat-flat-button color="accent" (click)="descargarExcel()" 
-            [disabled]="!pacienteSeleccionado || turnos.length === 0">
-      <mat-icon>table_view</mat-icon>
-      Descargar Excel
-    </button>
-
-    <button mat-flat-button color="primary" (click)="descargarPDF()" 
-            [disabled]="!pacienteSeleccionado || turnos.length === 0">
-      <mat-icon>picture_as_pdf</mat-icon>
-      Descargar PDF
-    </button>
-  </header>
-
-  <div class="layout-dos-columnas">
-    <mat-card class="panel panel-busqueda">
-      <h2 class="titulo">Buscar Paciente</h2>
-
-      <form [formGroup]="buscarForm" class="form-busqueda">
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Buscar paciente</mat-label>
-          <input matInput formControlName="paciente" placeholder="Nombre, apellido o email">
-          <mat-icon matSuffix>search</mat-icon>
-        </mat-form-field>
-      </form>
-
-      <div class="lista-pacientes" *ngIf="!cargandoPacientes; else cargandoPacientesTpl">
-        <button
-          type="button"
-          class="paciente-item"
-          *ngFor="let p of pacientesFiltrados"
-          [class.activo]="pacienteSeleccionado?.id === p.id"
-          (click)="seleccionarPaciente(p)">
-          <div class="paciente-info">
-            <span class="nombre">{{ p.apellido | capitalizarNombre }}, {{ p.nombre | capitalizarNombre }}</span>
-            <span class="email">{{ p.email }}</span>
-          </div>
-          <mat-icon>chevron_right</mat-icon>
+    <header class="barra-superior">
+        <button mat-flat-button color="primary" routerLink="/seleccion-estadisticas">
+            <mat-icon>arrow_back</mat-icon> Volver
         </button>
+        <h1 class="titulo">Historial Clínico por Paciente</h1>
+    </header>
 
-        <div class="sin-resultados" *ngIf="pacientesFiltrados.length === 0">
-          <p>No se encontraron pacientes</p>
-        </div>
-      </div>
+    <!-- FILTRO DE SELECCIÓN -->
+    <mat-card class="filtro-card">
+        <form [formGroup]="filtroForm" (ngSubmit)="buscarHistorial()" class="form-inline">
 
-      <ng-template #cargandoPacientesTpl>
-        <div class="loading">
-          <mat-spinner diameter="36"></mat-spinner>
-          <span>Cargando pacientes…</span>
-        </div>
-      </ng-template>
+            <mat-form-field appearance="outline" class="selector-paciente">
+                <mat-label>Seleccionar Paciente</mat-label>
+                <mat-select formControlName="pacienteId" (selectionChange)="buscarHistorial()">
+                    <mat-option *ngFor="let p of pacientes" [value]="p.id">
+                        <div class="option-row">
+                            <img [src]="p.imagen_perfil_1 || 'assets/avatars/default.png'" class="avatar-mini"
+                                alt="avatar">
+                            <span>{{ p.apellido }}, {{ p.nombre }} (DNI: {{ p.dni }})</span>
+                        </div>
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <button mat-stroked-button color="warn" type="button" (click)="limpiar()" *ngIf="pacienteSeleccionado">
+                <mat-icon>clear</mat-icon> Limpiar
+            </button>
+        </form>
     </mat-card>
 
-    <mat-card class="panel panel-resultados" *ngIf="pacienteSeleccionado">
-      <h2 class="titulo">
-        Turnos de {{ nombreCompleto(pacienteSeleccionado.nombre, pacienteSeleccionado.apellido) }}
-      </h2>
+    <!-- RESULTADOS -->
+    <div class="resultados-container" *ngIf="pacienteSeleccionado">
 
-      <div class="contadores" *ngIf="!cargando && turnos.length > 0">
-        <div class="contador-item">
-          <span class="label">Total</span>
-          <span class="valor">{{ contadores.total }}</span>
+        <!-- Perfil Resumido del Paciente -->
+        <div class="paciente-info glass">
+            <img [src]="pacienteSeleccionado.imagen_perfil_1" class="avatar-grande" alt="paciente">
+            <div class="datos">
+                <h2>{{ pacienteSeleccionado.nombre }} {{ pacienteSeleccionado.apellido }}</h2>
+                <p>DNI: {{ pacienteSeleccionado.dni }}</p>
+                <p class="total-turnos">{{ turnos.length }} turnos registrados</p>
+            </div>
         </div>
-        <div class="contador-item">
-          <span class="label">Pendiente</span>
-          <span class="valor">{{ contadores.pendiente }}</span>
+
+        <!-- Lista de Turnos -->
+        <div class="lista-turnos" *ngIf="!buscandoTurnos; else loadingTpl">
+
+            <div class="turno-item glass" *ngFor="let t of turnos">
+                <div class="turno-header">
+                    <div class="fecha-hora">
+                        <span class="fecha">{{ t.fecha | date:'dd/MM/yyyy' }}</span>
+                        <span class="hora">{{ t.hora }} hs</span>
+                    </div>
+                    <span class="estado-badge" [appStatusBadge]="t.estado">
+                        {{ t.estado | statusLabel }}
+                    </span>
+                </div>
+
+                <div class="turno-body">
+                    <p><strong>Especialidad:</strong> {{ t.especialidad }}</p>
+                    <p><strong>Profesional:</strong> {{ t.especialista }}</p>
+                    <p *ngIf="t.resena" class="resena">
+                        <em>"{{ t.resena }}"</em>
+                    </p>
+                </div>
+            </div>
+
+            <div class="empty-state" *ngIf="turnos.length === 0">
+                <mat-icon>event_busy</mat-icon>
+                <p>Este paciente no tiene historial de turnos.</p>
+            </div>
+
         </div>
-        <div class="contador-item">
-          <span class="label">Aceptado</span>
-          <span class="valor">{{ contadores.aceptado }}</span>
-        </div>
-        <div class="contador-item">
-          <span class="label">Realizado</span>
-          <span class="valor">{{ contadores.realizado }}</span>
-        </div>
-        <div class="contador-item">
-          <span class="label">Cancelado</span>
-          <span class="valor">{{ contadores.cancelado }}</span>
-        </div>
-        <div class="contador-item">
-          <span class="label">Rechazado</span>
-          <span class="valor">{{ contadores.rechazado }}</span>
-        </div>
-      </div>
 
-      <div class="grafico-wrapper" *ngIf="!cargando && turnos.length > 0">
-        <apx-chart
-          [series]="chartSeries"
-          [chart]="chartOptions.chart"
-          [xaxis]="chartOptions.xaxis"
-          [yaxis]="chartOptions.yaxis"
-          [dataLabels]="chartOptions.dataLabels"
-          [plotOptions]="chartOptions.plotOptions"
-          [tooltip]="chartOptions.tooltip"
-          [grid]="chartOptions.grid"
-          [stroke]="chartOptions.stroke"
-          [fill]="chartOptions.fill"
-          [colors]="chartOptions.colors">
-        </apx-chart>
-      </div>
+        <ng-template #loadingTpl>
+            <div class="loading">
+                <mat-spinner diameter="50"></mat-spinner>
+                <p>Cargando historial...</p>
+            </div>
+        </ng-template>
 
-      <div class="table-wrapper" *ngIf="!cargando; else cargandoTpl">
-        <table mat-table [dataSource]="dataSource" class="mat-elevation-z0">
-          <ng-container matColumnDef="fecha">
-            <th mat-header-cell *matHeaderCellDef>Fecha</th>
-            <td mat-cell *matCellDef="let t">{{ formatearFecha(t.fecha_hora_inicio) }}</td>
-          </ng-container>
+    </div>
 
-          <ng-container matColumnDef="especialidad">
-            <th mat-header-cell *matHeaderCellDef>Especialidad</th>
-            <td mat-cell *matCellDef="let t">{{ t.especialidad }}</td>
-          </ng-container>
-
-          <ng-container matColumnDef="especialista">
-            <th mat-header-cell *matHeaderCellDef>Especialista</th>
-            <td mat-cell *matCellDef="let t">{{ nombreCompleto(t.especialista_nombre, t.especialista_apellido) }}</td>
-          </ng-container>
-
-          <ng-container matColumnDef="estado">
-            <th mat-header-cell *matHeaderCellDef>Estado</th>
-            <td mat-cell *matCellDef="let t">{{ t.estado }}</td>
-          </ng-container>
-
-          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-        </table>
-
-        <div class="sin-datos" *ngIf="turnos.length === 0">
-          <p>Este paciente no tiene turnos registrados.</p>
-        </div>
-      </div>
-
-      <ng-template #cargandoTpl>
-        <div class="loading">
-          <mat-spinner diameter="44"></mat-spinner>
-          <span>Cargando turnos…</span>
-        </div>
-      </ng-template>
-
-      <div class="mensaje-error" *ngIf="error">{{ error }}</div>
-    </mat-card>
-
-    <mat-card class="panel panel-placeholder" *ngIf="!pacienteSeleccionado">
-      <div class="placeholder-content">
-        <mat-icon>person_search</mat-icon>
-        <p>Seleccioná un paciente para ver sus turnos</p>
-      </div>
-    </mat-card>
-  </div>
 </section>
-

@@ -225,12 +225,8 @@ export const routes: Routes = [
           import('./components/medicos-por-especialidad/medicos-por-especialidad.component')
             .then(m => m.MedicosPorEspecialidadComponent)
       },
-      {
-        path: 'turnos-por-paciente',
-        loadComponent: () =>
-          import('./components/turnos-por-paciente/turnos-por-paciente.component')
-            .then(m => m.TurnosPorPacienteComponent)
-      },
+    
+      
 
       {
         path: 'resultados-encuestas',
@@ -254,6 +250,14 @@ export const routes: Routes = [
           import('./components/turnos-especialidad/turnos-especialidad.component')
             .then(m => m.TurnosEspecialidadComponent)
       },
+
+      {
+        path: 'turnos-por-paciente',
+        loadComponent: () =>
+          import('./components/turnos-por-paciente/turnos-por-paciente.component')
+            .then(m => m.TurnosPorPacienteComponent)
+      },
+
 
       // --- Perfil / otros ---
       {

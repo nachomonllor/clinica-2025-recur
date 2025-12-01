@@ -12,15 +12,15 @@ import { TarjetaEstadistica } from '../../models/estadistica.model';
 
 @Component({
   selector: 'app-seleccion-estadisticas',
-  standalone:true,
+  standalone: true,
   templateUrl: './seleccion-estadisticas.component.html',
-  imports: [ CommonModule,
-     MatCardModule,
+  imports: [CommonModule,
+    MatCardModule,
     MatIconModule,
     MatButtonModule,
     MatMenuModule,
     MatRippleModule,
-    MatTooltipModule ,
+    MatTooltipModule,
     RouterLink
   ],
   styleUrls: ['./seleccion-estadisticas.component.scss'],
@@ -83,13 +83,6 @@ export class SeleccionEstadisticasComponent {
       ruta: '/medicos-por-especialidad',
       aria: 'Ir a Médicos por Especialidad'
     },
-    // {
-    //   titulo: 'Informe de Encuestas',
-    //   subtitulo: 'Respuestas completas de las encuestas de atención',
-    //   icono: 'rate_review',
-    //   ruta: '/informe-encuestas',
-    //   aria: 'Ir a Informe de Encuestas'
-    // },
     {
       titulo: 'Turnos por Paciente',
       subtitulo: 'Visualiza todos los turnos de un paciente seleccionado',
@@ -104,7 +97,7 @@ export class SeleccionEstadisticasComponent {
       ruta: '/resultados-encuestas',
       aria: 'Ir a Resultados Encuestas'
     },
-     // informes-generales
+    // informes-generales
     {
       titulo: 'Informes Generales',
       subtitulo: 'Visualiza los informes generales',
@@ -115,7 +108,7 @@ export class SeleccionEstadisticasComponent {
 
   ];
 
-  constructor(private router: Router) {}
+  constructor(private router: Router) { }
 
   abrir(tarjeta: TarjetaEstadistica) {
     this.router.navigateByUrl(tarjeta.ruta);
