@@ -65,11 +65,28 @@
   margin-top: 10px;
 }
 
-   /* =========================================================
-   ARREGLO VISUAL: CALENDARIO FONDO BLANCO (ESTILO CLÁSICO)
+/* =========================================================
+   ESTILOS VISUALES ESPECÍFICOS
    ========================================================= */
 
-/* 1. INPUTS (Se mantienen oscuros para combinar con tu barra) */
+/* TABS EN MODO OSCURO */
+::ng-deep .mat-mdc-tab-label-container {
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+::ng-deep .mat-mdc-tab .mdc-tab__text-label {
+  color: rgba(255,255,255,0.6) !important;
+  font-size: 1rem;
+}
+::ng-deep .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
+  color: var(--naranja) !important;
+  font-weight: bold;
+}
+::ng-deep .mat-mdc-tab-indicator__content--underline {
+  border-color: var(--naranja) !important;
+}
+
+
+/* INPUTS DATEPICKER (Se ven oscuros en la barra) */
 ::ng-deep .filtros .mat-mdc-input-element {
   color: var(--texto) !important;
   caret-color: var(--naranja);
@@ -83,54 +100,196 @@
 ::ng-deep .filtros .mat-datepicker-toggle {
   color: var(--texto-2) !important;
 }
-/* Bordes del input */
 ::ng-deep .filtros .mdc-notched-outline__leading,
 ::ng-deep .filtros .mdc-notched-outline__notch,
 ::ng-deep .filtros .mdc-notched-outline__trailing {
   border-color: rgba(255, 255, 255, 0.3) !important;
 }
+::ng-deep .filtros .mdc-text-field--focused .mdc-notched-outline__leading,
+::ng-deep .filtros .mdc-text-field--focused .mdc-notched-outline__notch,
 ::ng-deep .filtros .mdc-text-field--focused .mdc-notched-outline__trailing {
   border-color: var(--naranja) !important;
 }
 
 
-/* 2. EL ALMANAQUE FLOTANTE (POPUP) -> AHORA BLANCO */
+/* ALMANAQUE FLOTANTE (POPUP) -> FONDO BLANCO / LETRA NEGRA */
 ::ng-deep .mat-datepicker-content {
-  background-color: #ffffff !important; /* FONDO BLANCO */
-  color: #000000 !important;            /* TEXTO NEGRO */
-  border: 1px solid #ccc;               /* Borde sutil */
+  background-color: #ffffff !important; /* BLANCO */
+  color: #000000 !important;            /* NEGRO */
+  border: 1px solid #ccc;
 }
 
-/* Números del mes (Negros para verlos bien) */
+/* Números */
 ::ng-deep .mat-calendar-body-cell-content {
-  color: #000000 !important; 
+  color: #000000 !important;
   border-color: transparent !important;
 }
 
-/* Cabecera (Mes/Año) */
+/* Cabecera mes */
 ::ng-deep .mat-calendar-body-label {
   color: #000000 !important;
   font-weight: bold;
 }
 
-/* Días de la semana (Do, Lu, Ma...) */
+/* Días semana */
 ::ng-deep .mat-calendar-table-header th {
   color: #555555 !important;
 }
 
-/* Flechas de navegación (< >) */
+/* Flechas */
 ::ng-deep .mat-calendar-previous-button,
 ::ng-deep .mat-calendar-next-button {
   color: #000000 !important;
 }
 
-/* Día seleccionado (Círculo Naranja con letra Blanca) */
+/* Selección (Naranja con texto blanco) */
 ::ng-deep .mat-calendar-body-selected {
   background-color: var(--naranja) !important;
-  color: #ffffff !important; 
+  color: #ffffff !important;
 }
 
-/* Hover (Grisecito suave) */
+/* Hover */
 ::ng-deep .mat-calendar-body-cell:not(.mat-calendar-body-disabled):hover > .mat-calendar-body-cell-content:not(.mat-calendar-body-selected) {
   background-color: #f0f0f0 !important;
 }
+
+
+
+
+
+// :host {
+//   --azul: #1565C0;
+//   --azul-oscuro: #0B1D3A;
+//   --naranja: #FF8F00;
+//   --texto: #EAF2FF;
+//   --texto-2: rgba(255,255,255,.8);
+// }
+
+// .pagina-estadisticas {
+//   min-height: calc(100vh - 64px);
+//   padding: clamp(16px, 3vw, 32px);
+//   background:
+//     radial-gradient(900px 500px at -5% 0%, rgba(255,143,0,.18), transparent 60%),
+//     radial-gradient(1100px 600px at 110% 15%, rgba(21,101,192,.20), transparent 60%),
+//     linear-gradient(180deg, #061126, var(--azul-oscuro) 45%, #061126 100%);
+// }
+
+// .barra-acciones {
+//   display: flex;
+//   align-items: center;
+//   gap: 12px;
+//   margin-bottom: 20px;
+//   flex-wrap: wrap;
+// }
+
+// .filtros {
+//   display: flex;
+//   align-items: center;
+//   gap: 10px;
+//   flex-wrap: wrap;
+// }
+
+// .espaciador { flex: 1 1 auto; }
+
+// .panel-tabs {
+//   background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+//   border: 1px solid rgba(255,255,255,.12);
+//   border-radius: 18px;
+//   padding: 10px;
+//   min-height: 500px;
+//   box-shadow: 0 10px 30px rgba(0,0,0,.35);
+//   backdrop-filter: blur(6px);
+//   color: var(--texto);
+// }
+
+// .titulo-tab {
+//   text-align: center;
+//   margin: 20px 0;
+//   font-weight: 300;
+//   color: var(--texto);
+// }
+
+// .loading {
+//   display: flex;
+//   flex-direction: column;
+//   align-items: center;
+//   padding: 50px;
+//   gap: 15px;
+//   color: var(--texto-2);
+// }
+
+// .mensaje-error {
+//   color: #ffcdd2;
+//   text-align: center;
+//   margin-top: 10px;
+// }
+
+//    /* =========================================================
+//    ARREGLO VISUAL: CALENDARIO FONDO BLANCO (ESTILO CLÁSICO)
+//    ========================================================= */
+
+// /* 1. INPUTS (Se mantienen oscuros para combinar con tu barra) */
+// ::ng-deep .filtros .mat-mdc-input-element {
+//   color: var(--texto) !important;
+//   caret-color: var(--naranja);
+// }
+// ::ng-deep .filtros .mat-mdc-floating-label {
+//   color: rgba(255, 255, 255, 0.6) !important;
+// }
+// ::ng-deep .filtros .mdc-text-field--focused .mat-mdc-floating-label {
+//   color: var(--naranja) !important;
+// }
+// ::ng-deep .filtros .mat-datepicker-toggle {
+//   color: var(--texto-2) !important;
+// }
+// /* Bordes del input */
+// ::ng-deep .filtros .mdc-notched-outline__leading,
+// ::ng-deep .filtros .mdc-notched-outline__notch,
+// ::ng-deep .filtros .mdc-notched-outline__trailing {
+//   border-color: rgba(255, 255, 255, 0.3) !important;
+// }
+// ::ng-deep .filtros .mdc-text-field--focused .mdc-notched-outline__trailing {
+//   border-color: var(--naranja) !important;
+// }
+
+
+// /* 2. EL ALMANAQUE FLOTANTE (POPUP) -> AHORA BLANCO */
+// ::ng-deep .mat-datepicker-content {
+//   background-color: #ffffff !important; /* FONDO BLANCO */
+//   color: #000000 !important;            /* TEXTO NEGRO */
+//   border: 1px solid #ccc;               /* Borde sutil */
+// }
+
+// /* Números del mes (Negros para verlos bien) */
+// ::ng-deep .mat-calendar-body-cell-content {
+//   color: #000000 !important; 
+//   border-color: transparent !important;
+// }
+
+// /* Cabecera (Mes/Año) */
+// ::ng-deep .mat-calendar-body-label {
+//   color: #000000 !important;
+//   font-weight: bold;
+// }
+
+// /* Días de la semana (Do, Lu, Ma...) */
+// ::ng-deep .mat-calendar-table-header th {
+//   color: #555555 !important;
+// }
+
+// /* Flechas de navegación (< >) */
+// ::ng-deep .mat-calendar-previous-button,
+// ::ng-deep .mat-calendar-next-button {
+//   color: #000000 !important;
+// }
+
+// /* Día seleccionado (Círculo Naranja con letra Blanca) */
+// ::ng-deep .mat-calendar-body-selected {
+//   background-color: var(--naranja) !important;
+//   color: #ffffff !important; 
+// }
+
+// /* Hover (Grisecito suave) */
+// ::ng-deep .mat-calendar-body-cell:not(.mat-calendar-body-disabled):hover > .mat-calendar-body-cell-content:not(.mat-calendar-body-selected) {
+//   background-color: #f0f0f0 !important;
+// }
