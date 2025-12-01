@@ -29,6 +29,7 @@ import { MatInputModule } from '@angular/material/input';
 import { StatusLabelPipe } from '../../../pipes/status-label.pipe';
 import { StatusBadgeDirective } from '../../../directives/status-badge.directive';
 import { SupabaseService } from '../../../services/supabase.service';
+import { CapitalizarNombrePipe } from "../../../pipes/capitalizar-nombre.pipe";
 
 @Component({
   selector: 'app-turnos-por-paciente',
@@ -46,8 +47,9 @@ import { SupabaseService } from '../../../services/supabase.service';
     MatInputModule,
     MatProgressSpinnerModule,
     StatusLabelPipe,
-    StatusBadgeDirective
-  ],
+    StatusBadgeDirective,
+    CapitalizarNombrePipe
+],
   templateUrl: './turnos-por-paciente.component.html',
   styleUrls: ['./turnos-por-paciente.component.scss']
 })

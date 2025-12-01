@@ -18,7 +18,7 @@
                         <div class="option-row">
                             <img [src]="p.imagen_perfil_1 || 'assets/avatars/default.png'" class="avatar-mini"
                                 alt="avatar">
-                            <span>{{ p.apellido }}, {{ p.nombre }} (DNI: {{ p.dni }})</span>
+                            <span>{{ p.apellido  | capitalizarNombre }}, {{ p.nombre   | capitalizarNombre }} (DNI: {{ p.dni }})</span>
                         </div>
                     </mat-option>
                 </mat-select>
@@ -37,7 +37,7 @@
         <div class="paciente-info glass">
             <img [src]="pacienteSeleccionado.imagen_perfil_1" class="avatar-grande" alt="paciente">
             <div class="datos">
-                <h2>{{ pacienteSeleccionado.nombre }} {{ pacienteSeleccionado.apellido }}</h2>
+                <h2> {{ pacienteSeleccionado.nombre | capitalizarNombre }} {{ pacienteSeleccionado.apellido | capitalizarNombre }}</h2>
                 <p>DNI: {{ pacienteSeleccionado.dni }}</p>
                 <p class="total-turnos">{{ turnos.length }} turnos registrados</p>
             </div>
