@@ -5,7 +5,8 @@ const ESTADOS: Record<string, string> = {
   aceptado: 'Aceptado',
   realizado: 'Realizado',
   cancelado: 'Cancelado',
-  rechazado: 'Rechazado'
+  rechazado: 'Rechazado',
+  finalizado: 'Finalizado' // <========
 };
 
 @Pipe({
@@ -15,6 +16,7 @@ const ESTADOS: Record<string, string> = {
 export class StatusLabelPipe implements PipeTransform {
   transform(estado?: string | null, fallback = '—'): string {
     if (!estado) { return fallback; }
+    // Convertimos a minúsculas para que coincida con las claves del objeto
     const key = estado.toLowerCase();
     return ESTADOS[key] || fallback;
   }
