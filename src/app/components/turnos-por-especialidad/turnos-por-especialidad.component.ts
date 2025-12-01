@@ -132,11 +132,47 @@ export class TurnosPorEspecialidadComponent implements OnInit {
   }
 
   // descargarPDF() queda igual
+  // async descargarPDF(): Promise<void> {
+  //   const el = document.getElementById('captura-pdf');
+  //   if (!el) return;
+
+  //   const canvas = await html2canvas(el, { scale: 2, backgroundColor: null });
+  //   const img = canvas.toDataURL('image/png');
+
+  //   const pdf = new jsPDF('landscape', 'pt', 'a4');
+  //   const pageW = pdf.internal.pageSize.getWidth();
+  //   const pageH = pdf.internal.pageSize.getHeight();
+
+  //   const ratio = Math.min(pageW / canvas.width, pageH / canvas.height);
+  //   const imgW = canvas.width * ratio;
+  //   const imgH = canvas.height * ratio;
+
+  //   const x = (pageW - imgW) / 2;
+  //   const y = 40;
+
+  //   pdf.setFont('helvetica', 'bold');
+  //   pdf.setFontSize(16);
+  //   pdf.text('Turnos por Especialidad', 40, 28);
+
+  //   pdf.addImage(img, 'PNG', x, y, imgW, imgH);
+  //   pdf.save(`turnos_por_especialidad_${new Date().toISOString().slice(0, 10)}.pdf`);
+  // }
+
+
   async descargarPDF(): Promise<void> {
     const el = document.getElementById('captura-pdf');
     if (!el) return;
 
-    const canvas = await html2canvas(el, { scale: 2, backgroundColor: null });
+    // --- CAMBIO CLAVE AQUI ---
+    // En lugar de 'backgroundColor: null', ponemos el color oscuro de tu tema.
+    // Esto fuerza a que la imagen generada tenga fondo azul oscuro y las letras blancas se lean.
+    const canvas = await html2canvas(el, {
+      scale: 2,
+      backgroundColor: '#061126', // <--- COLOR DE FONDO FORZADO (Dark Blue)
+      logging: false,
+      useCORS: true
+    });
+
     const img = canvas.toDataURL('image/png');
 
     const pdf = new jsPDF('landscape', 'pt', 'a4');
@@ -144,19 +180,29 @@ export class TurnosPorEspecialidadComponent implements OnInit {
     const pageH = pdf.internal.pageSize.getHeight();
 
     const ratio = Math.min(pageW / canvas.width, pageH / canvas.height);
-    const imgW = canvas.width * ratio;
-    const imgH = canvas.height * ratio;
+
+    // Ajustamos un poco el tamaño para dejar márgenes
+    const imgW = canvas.width * ratio * 0.9;
+    const imgH = canvas.height * ratio * 0.9;
 
     const x = (pageW - imgW) / 2;
-    const y = 40;
+    const y = 60; // Bajamos un poco para el título
 
+    // Título del PDF
     pdf.setFont('helvetica', 'bold');
-    pdf.setFontSize(16);
-    pdf.text('Turnos por Especialidad', 40, 28);
+    pdf.setFontSize(18);
+    pdf.text('Reporte: Turnos por Especialidad', 40, 40);
+
+    // Fecha
+    pdf.setFontSize(10);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text(`Fecha de emisión: ${new Date().toLocaleDateString()}`, 40, 55);
 
     pdf.addImage(img, 'PNG', x, y, imgW, imgH);
-    pdf.save(`turnos_por_especialidad_${new Date().toISOString().slice(0, 10)}.pdf`);
+    pdf.save(`turnos_especialidad_${new Date().toISOString().slice(0, 10)}.pdf`);
   }
+
+
 }
 
 
