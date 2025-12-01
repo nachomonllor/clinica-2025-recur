@@ -83,13 +83,13 @@ export class SeleccionEstadisticasComponent {
       ruta: '/medicos-por-especialidad',
       aria: 'Ir a Médicos por Especialidad'
     },
-    {
-      titulo: 'Informe de Encuestas',
-      subtitulo: 'Respuestas completas de las encuestas de atención',
-      icono: 'rate_review',
-      ruta: '/informe-encuestas',
-      aria: 'Ir a Informe de Encuestas'
-    },
+    // {
+    //   titulo: 'Informe de Encuestas',
+    //   subtitulo: 'Respuestas completas de las encuestas de atención',
+    //   icono: 'rate_review',
+    //   ruta: '/informe-encuestas',
+    //   aria: 'Ir a Informe de Encuestas'
+    // },
     {
       titulo: 'Turnos por Paciente',
       subtitulo: 'Visualiza todos los turnos de un paciente seleccionado',

@@ -38,8 +38,8 @@ export class SupabaseService {
         // que causaba el NavigatorLockAcquireTimeoutError.
         storageKey: 'sb-clinica-online-auth-v3',
 
-      // lock: false,
-      } ,
+      lock: false,
+      }  as any,
     });
 
     // Escuchar cambios de Auth automáticamente

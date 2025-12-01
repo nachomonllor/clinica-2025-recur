@@ -226,12 +226,6 @@ export const routes: Routes = [
             .then(m => m.MedicosPorEspecialidadComponent)
       },
       {
-        path: 'informe-encuestas',
-        loadComponent: () =>
-          import('./components/informe-encuestas/informe-encuestas.component')
-            .then(m => m.InformeEncuestasComponent)
-      },
-      {
         path: 'turnos-por-paciente',
         loadComponent: () =>
           import('./components/turnos-por-paciente/turnos-por-paciente.component')
