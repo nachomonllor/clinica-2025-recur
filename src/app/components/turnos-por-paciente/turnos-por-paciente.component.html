@@ -1,3 +1,4 @@
+
 <section class="pagina-informe">
 
     <header class="barra-superior">
@@ -7,26 +8,64 @@
         <h1 class="titulo">Historial Clínico por Paciente</h1>
     </header>
 
-    <!-- FILTRO DE SELECCIÓN -->
+    <!-- FILTRO DE SELECCIÓN Y BÚSQUEDA -->
     <mat-card class="filtro-card">
         <form [formGroup]="filtroForm" (ngSubmit)="buscarHistorial()" class="form-inline">
 
+            <!-- 1. SELECTOR DE PACIENTE (Izquierda) -->
             <mat-form-field appearance="outline" class="selector-paciente">
                 <mat-label>Seleccionar Paciente</mat-label>
-                <mat-select formControlName="pacienteId" (selectionChange)="buscarHistorial()">
-                    <mat-option *ngFor="let p of pacientes" [value]="p.id">
+                
+                <!-- IMPORTANTE: El evento selectionChange dispara la búsqueda -->
+                <mat-select formControlName="pacienteId" (selectionChange)="buscarHistorial()" placeholder="Busque por nombre...">
+                    
+                    <!-- INPUT BUSCADOR INTERNO (Para filtrar la lista del dropdown) -->
+                    <mat-option>
+                        <mat-form-field appearance="fill" subscriptSizing="dynamic" style="width: 100%; padding: 0;">
+                            <mat-icon matPrefix>search</mat-icon>
+                            <input matInput 
+                                   placeholder="Escriba para filtrar..." 
+                                   (keyup)="filtrarPacientes($any($event.target).value)"
+                                   (keydown)="$event.stopPropagation()" 
+                                   (click)="handleInputClick($event)"
+                                   autocomplete="off">
+                        </mat-form-field>
+                    </mat-option>
+
+                    <!-- LISTA DE PACIENTES -->
+                    <mat-option *ngFor="let p of pacientesFiltrados" [value]="p.id">
                         <div class="option-row">
-                            <img [src]="p.imagen_perfil_1 || 'assets/avatars/default.png'" class="avatar-mini"
-                                alt="avatar">
-                            <span>{{ p.apellido  | capitalizarNombre }}, {{ p.nombre   | capitalizarNombre }} (DNI: {{ p.dni }})</span>
+                            <img [src]="p.imagen_perfil_1 || 'assets/avatars/default.png'" 
+                                 (error)="onImgError($event)"
+                                 class="avatar-mini"
+                                 alt="avatar">
+                            <span>{{ p.apellido | capitalizarNombre }}, {{ p.nombre | capitalizarNombre }} (DNI: {{ p.dni }})</span>
                         </div>
                     </mat-option>
+
+                    <!-- MENSAJE SIN RESULTADOS -->
+                    <mat-option *ngIf="pacientesFiltrados.length === 0" disabled>
+                        <em>No se encontraron pacientes</em>
+                    </mat-option>
+
                 </mat-select>
             </mat-form-field>
 
+            <!-- 2. FILTRO DE TURNOS (Derecha) - Solo visible si hay paciente seleccionado -->
+            <mat-form-field appearance="outline" class="filtro-resena" *ngIf="pacienteSeleccionado">
+                <mat-label>Buscar en historial</mat-label>
+                <mat-icon matPrefix>filter_list</mat-icon>
+                <input matInput 
+                       (keyup)="filtrarTurnos($any($event.target).value)" 
+                       placeholder="Reseña, especialidad..."
+                       autocomplete="off">
+            </mat-form-field>
+
+            <!-- BOTÓN LIMPIAR -->
             <button mat-stroked-button color="warn" type="button" (click)="limpiar()" *ngIf="pacienteSeleccionado">
                 <mat-icon>clear</mat-icon> Limpiar
             </button>
+
         </form>
     </mat-card>
 
@@ -35,7 +74,9 @@
 
         <!-- Perfil Resumido del Paciente -->
         <div class="paciente-info glass">
-            <img [src]="pacienteSeleccionado.imagen_perfil_1" class="avatar-grande" alt="paciente">
+            <img [src]="pacienteSeleccionado.imagen_perfil_1 || defaultAvatar" 
+                 (error)="onImgError($event)"
+                 class="avatar-grande" alt="paciente">
             <div class="datos">
                 <h2> {{ pacienteSeleccionado.nombre | capitalizarNombre }} {{ pacienteSeleccionado.apellido | capitalizarNombre }}</h2>
                 <p>DNI: {{ pacienteSeleccionado.dni }}</p>
@@ -68,7 +109,7 @@
 
             <div class="empty-state" *ngIf="turnos.length === 0">
                 <mat-icon>event_busy</mat-icon>
-                <p>Este paciente no tiene historial de turnos.</p>
+                <p>No se encontraron turnos con ese criterio.</p>
             </div>
 
         </div>
@@ -83,3 +124,4 @@
     </div>
 
 </section>
+
