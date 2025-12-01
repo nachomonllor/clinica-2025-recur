@@ -942,6 +942,42 @@ export class EstadisticasService {
         return data;
     }
 
+
+
+    /* ------------------------------------- */
+
+    // 1. TURNOS POR DÍA
+  
+
+    
+    // 2. LOG DE INGRESOS (VISITAS)
+    async obtenerLogIngresosPorDia(desde?: string, hasta?: string) {
+        let query = this.supa.client
+            .from('log_ingresos')
+            .select('fecha_hora');
+
+        if (desde) query = query.gte('fecha_hora', desde);
+        if (hasta) query = query.lte('fecha_hora', hasta);
+
+        const { data, error } = await query;
+        if (error) throw error;
+
+        const conteo: Record<string, number> = {};
+
+        data.forEach((log: any) => {
+            const fechaObj = new Date(log.fecha_hora);
+            const fechaStr = fechaObj.toLocaleDateString('es-AR');
+            conteo[fechaStr] = (conteo[fechaStr] || 0) + 1;
+        });
+
+        return Object.keys(conteo).map(key => ({
+            fecha: key,
+            cantidad: conteo[key]
+        }));
+    }
+
+
+    
 }
 
 

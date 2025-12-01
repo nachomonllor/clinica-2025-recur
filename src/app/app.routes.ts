@@ -245,6 +245,15 @@ export const routes: Routes = [
             .then(m => m.ResultadosEncuestaComponent)
       },
 
+      // informes-generales
+
+       {
+        path: 'informes-generales',
+        loadComponent: () =>
+          import('./components/informes-generales/informes-generales.component')
+            .then(m => m.InformesGeneralesComponent)
+      },
+
       {
         path: 'turnos-especialidad',
         loadComponent: () =>

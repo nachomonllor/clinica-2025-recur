@@ -1,0 +1,88 @@
+<section class="pagina-estadisticas">
+  <header class="barra-acciones">
+    <button mat-flat-button color="primary" routerLink="/seleccion-estadisticas">
+      <mat-icon>arrow_back</mat-icon>
+      Volver al Dashboard
+    </button>
+
+    <form class="filtros" [formGroup]="filtrosForm" (ngSubmit)="aplicarFiltros()">
+      
+      <mat-form-field appearance="outline">
+        <mat-label>Desde</mat-label>
+        <input matInput [matDatepicker]="dpDesde" formControlName="desde">
+        <mat-datepicker-toggle matSuffix [for]="dpDesde"></mat-datepicker-toggle>
+        <mat-datepicker #dpDesde></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Hasta</mat-label>
+        <input matInput [matDatepicker]="dpHasta" formControlName="hasta">
+        <mat-datepicker-toggle matSuffix [for]="dpHasta"></mat-datepicker-toggle>
+        <mat-datepicker #dpHasta></mat-datepicker>
+      </mat-form-field>
+
+      <button mat-stroked-button color="accent" type="submit">
+        <mat-icon>refresh</mat-icon> Aplicar
+      </button>
+      
+      <button mat-flat-button color="warn" type="button" (click)="limpiarFiltros()">
+        <mat-icon>clear</mat-icon>
+      </button>
+    </form>
+
+    <span class="espaciador"></span>
+
+    <button mat-flat-button color="accent" (click)="descargarPDF()">
+      <mat-icon>picture_as_pdf</mat-icon>
+      Descargar Informe Actual
+    </button>
+  </header>
+
+  <mat-card class="panel-tabs" id="captura-pdf">
+    <mat-tab-group [(selectedIndex)]="tabIndex" animationDuration="500ms" mat-stretch-tabs="false">
+      
+      <mat-tab label="Turnos por Día">
+        <div class="chart-container" *ngIf="!cargando; else loadingTpl">
+          <h2 class="titulo-tab">Cantidad de Turnos por Día</h2>
+          <apx-chart
+            [series]="chartTurnos.series!"
+            [chart]="chartTurnos.chart!"
+            [xaxis]="chartTurnos.xaxis!"
+            [yaxis]="chartTurnos.yaxis!"
+            [colors]="chartTurnos.colors!"
+            [tooltip]="chartTurnos.tooltip!"
+            [dataLabels]="chartTurnos.dataLabels!"
+            [grid]="chartTurnos.grid!">
+          </apx-chart>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Log de Ingresos (Visitas)">
+        <div class="chart-container" *ngIf="!cargando; else loadingTpl">
+          <h2 class="titulo-tab">Cantidad de Visitas al Sistema</h2>
+          <apx-chart
+            [series]="chartLog.series!"
+            [chart]="chartLog.chart!"
+            [xaxis]="chartLog.xaxis!"
+            [yaxis]="chartLog.yaxis!"
+            [stroke]="chartLog.stroke!"
+            [colors]="chartLog.colors!"
+            [tooltip]="chartLog.tooltip!"
+            [fill]="chartLog.fill!"
+            [grid]="chartLog.grid!">
+          </apx-chart>
+        </div>
+      </mat-tab>
+
+    </mat-tab-group>
+
+    <ng-template #loadingTpl>
+      <div class="loading">
+        <mat-spinner diameter="50"></mat-spinner>
+        <span>Procesando datos...</span>
+      </div>
+    </ng-template>
+
+    <div class="mensaje-error" *ngIf="error">{{ error }}</div>
+  </mat-card>
+</section>

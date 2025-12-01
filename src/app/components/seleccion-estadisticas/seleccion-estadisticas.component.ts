@@ -103,6 +103,14 @@ export class SeleccionEstadisticasComponent {
       icono: 'assignment_ind',
       ruta: '/resultados-encuestas',
       aria: 'Ir a Resultados Encuestas'
+    },
+     // informes-generales
+    {
+      titulo: 'Informes Generales',
+      subtitulo: 'Visualiza los informes generales',
+      icono: 'assignment_ind',
+      ruta: '/informes-generales',
+      aria: 'Ir a Informes Generales'
     }
 
   ];
