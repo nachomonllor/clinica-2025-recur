@@ -1,4 +1,3 @@
-
 :host {
   --azul: #1565C0;     /* primary */
   --azul-oscuro: #0B1D3A;
@@ -7,7 +6,7 @@
   --texto-2: rgba(255,255,255,.8);
 }
 
-.pagina-estadisticas{
+.pagina-estadisticas {
   min-height: calc(100vh - 64px);
   padding: clamp(16px, 3vw, 32px);
   background:
@@ -16,22 +15,23 @@
     linear-gradient(180deg, #061126, var(--azul-oscuro) 45%, #061126 100%);
 }
 
-.barra-acciones{
+.barra-acciones {
   display: flex;
   align-items: center;
   gap: 12px;
   margin-bottom: 16px;
+  flex-wrap: wrap; /* Para que se adapte en pantallas chicas */
 }
 
-.filtros{
+.filtros {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.espaciador{ flex: 1 1 auto; }
+.espaciador { flex: 1 1 auto; }
 
-.panel{
+.panel {
   border-radius: 18px;
   padding: clamp(12px, 2.2vw, 22px);
   background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
@@ -41,19 +41,20 @@
   backdrop-filter: blur(6px);
 }
 
-.titulo{
+.titulo {
   margin: 4px 0 14px;
   font-weight: 800;
   color: var(--texto);
   text-align: center;
 }
 
-.chart-wrapper{
+.chart-wrapper {
   width: 100%;
   height: 100%;
+  min-height: 400px; /* Asegura altura mínima para el gráfico */
 }
 
-.loading{
+.loading {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -62,12 +63,12 @@
   color: var(--texto-2);
 }
 
-.mensaje-error{
+.mensaje-error {
   margin-top: 10px;
   color: #ffcdd2;
 }
 
-/* Botón primario/acento en la línea con la paleta */
+/* Botones con tus variables */
 ::ng-deep .mat-mdc-unelevated-button.mat-primary {
   --mdc-filled-button-container-color: var(--azul);
 }
@@ -75,4 +76,76 @@
 ::ng-deep .mat-mdc-raised-button.mat-accent {
   --mdc-filled-button-container-color: var(--naranja);
   --mdc-protected-button-container-color: var(--naranja);
+}
+
+/* =========================================================
+   ARREGLO VISUAL PARA LOS INPUTS DE FECHA (MAT-DATEPICKER)
+   ========================================================= */
+
+/* 1. INPUTS Y LABELS (Esto sí ve las variables porque está en tu componente) */
+::ng-deep .filtros .mat-mdc-input-element {
+  color: var(--texto) !important;
+  caret-color: var(--naranja);
+}
+::ng-deep .filtros .mat-mdc-floating-label {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+::ng-deep .filtros .mdc-text-field--focused .mat-mdc-floating-label {
+  color: var(--naranja) !important;
+}
+::ng-deep .filtros .mat-datepicker-toggle {
+  color: var(--texto-2) !important;
+}
+::ng-deep .filtros .mdc-notched-outline__leading,
+::ng-deep .filtros .mdc-notched-outline__notch,
+::ng-deep .filtros .mdc-notched-outline__trailing {
+  border-color: rgba(255, 255, 255, 0.3) !important;
+}
+::ng-deep .filtros .mdc-text-field--focused .mdc-notched-outline__leading,
+::ng-deep .filtros .mdc-text-field--focused .mdc-notched-outline__notch,
+::ng-deep .filtros .mdc-text-field--focused .mdc-notched-outline__trailing {
+  border-color: var(--naranja) !important;
+}
+
+/* 2. EL ALMANAQUE FLOTANTE (POPUP) 
+   IMPORTANTE: Usamos colores FIJOS (#0B1D3A, #EAF2FF) porque este panel
+   vive fuera del componente y no lee las variables del :host 
+*/
+
+::ng-deep .mat-datepicker-content {
+  background-color: #0B1D3A !important; /* Azul Oscuro */
+  color: #EAF2FF !important;            /* Texto Claro */
+}
+
+/* Números del mes */
+::ng-deep .mat-calendar-body-cell-content {
+  color: #EAF2FF !important;            /* Números en blanco */
+  border-color: transparent !important;
+}
+
+/* Texto de cabecera (Mes/Año) */
+::ng-deep .mat-calendar-body-label {
+  color: #EAF2FF !important;
+}
+
+/* Días de la semana (Do, Lu, Ma...) */
+::ng-deep .mat-calendar-table-header th {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* Flechas de navegación (< >) */
+::ng-deep .mat-calendar-previous-button,
+::ng-deep .mat-calendar-next-button {
+  color: #EAF2FF !important;
+}
+
+/* Día seleccionado (Círculo Naranja) */
+::ng-deep .mat-calendar-body-selected {
+  background-color: #FF8F00 !important; /* Naranja */
+  color: #000000 !important;            /* Número negro para contraste */
+}
+
+/* Hover sobre los días */
+::ng-deep .mat-calendar-body-cell:not(.mat-calendar-body-disabled):hover > .mat-calendar-body-cell-content:not(.mat-calendar-body-selected) {
+  background-color: rgba(255, 255, 255, 0.1) !important;
 }
