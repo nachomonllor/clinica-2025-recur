@@ -175,6 +175,37 @@
 
 
 
+.buscador {
+  width: 100%;
+  margin-bottom: 12px;
+
+  /* tono más oscuro para el input */
+  ::ng-deep .mat-mdc-text-field-wrapper {
+    background: rgba(255,255,255,0.08) !important;
+    border-radius: 12px !important;
+  }
+  
+  ::ng-deep .mdc-notched-outline__leading,
+  ::ng-deep .mdc-notched-outline__notch,
+  ::ng-deep .mdc-notched-outline__trailing {
+    border-color: rgba(255,255,255,.18) !important;
+  }
+
+  /* --- AGREGA ESTO --- */
+  /* Color del texto que escribe el usuario y el cursor */
+  ::ng-deep .mat-mdc-input-element {
+    color: #e5f4f6 !important; /* Color claro (el mismo que usas en el resto) */
+    caret-color: #60e1d0;      /* Opcional: Color del cursor parpadeante (tu color cyan) */
+  }
+  /* ------------------- */
+
+  ::ng-deep .mat-mdc-input-element::placeholder {
+    color: rgba(255,255,255,.6);
+  }
+}
+
+
+
 
 // :host { display:block; }
 // mat-card { margin: 1rem; }

@@ -42,6 +42,7 @@ import { UsuarioCreate } from '../../../models/usuario.model';
 import { HistoriaClinicaConExtras } from '../../../models/historia-clinica.model';
 import { CapitalizarNombrePipe } from "../../../../pipes/capitalizar-nombre.pipe";
 
+import jsPDF from 'jspdf';
 
 @Component({
   selector: 'app-usuarios-admin',
@@ -63,7 +64,7 @@ import { CapitalizarNombrePipe } from "../../../../pipes/capitalizar-nombre.pipe
     MatDialogModule,
     MatProgressSpinnerModule,
     CapitalizarNombrePipe
-],
+  ],
   templateUrl: './usuarios-admin.component.html',
   styleUrls: ['./usuarios-admin.component.scss'],
   animations: [
@@ -721,89 +722,7 @@ export class UsuariosAdminComponent implements OnInit {
   }
 
 
- 
-
-  // async verHistoriaClinica(pacienteId: string, pacienteNombre: string): Promise<void> {
-  //   try {
-  //     const { data: sessionData } = await this.supa.getSession();
-  //     if (!sessionData?.session) return;
-
-  //     const userId = sessionData.session.user.id;
-
-  //     // Base: todas las historias del paciente
-  //     let query = this.supa.client
-  //       .from('historia_clinica')
-  //       .select('*')
-  //       .eq('paciente_id', pacienteId)
-  //       .order('fecha_registro', { ascending: false });
-
-  //     // Si NO es admin (ej. si reusás esta función para un especialista),
-  //     // filtrás por el especialista logueado:
-  //     if (!this.esAdmin) {
-  //       query = query.eq('especialista_id', userId);
-  //     }
-
-  //     const { data: historias, error } = await query;
-
-  //     if (error) {
-  //       console.error('[UsuariosAdmin] Error al cargar historia clínica', error);
-  //       return;
-  //     }
-
-  //     const historiasCompletas: HistoriaClinicaConExtras[] = await Promise.all(
-  //       (historias || []).map(async (h: any) => {
-  //         const { data: turno } = await this.supa.client
-  //           .from('turnos')
-  //           .select('fecha_hora_inicio')
-  //           .eq('id', h.turno_id)
-  //           .single();
-
-  //         const { data: especialista } = await this.supa.client
-  //           .from('usuarios')
-  //           .select('nombre, apellido')
-  //           .eq('id', h.especialista_id)
-  //           .single();
-
-  //         const especialistaNombre =
-  //           especialista ? `${especialista.nombre} ${especialista.apellido}` : 'N/A';
-
-  //         const fechaAtencion = turno?.fecha_hora_inicio
-  //           ? new Date(turno.fecha_hora_inicio).toLocaleDateString('es-AR')
-  //           : 'N/A';
-
-  //         return {
-  //           ...h,
-  //           especialistaNombre,
-  //           fechaAtencion
-  //         } as HistoriaClinicaConExtras;
-  //       })
-  //     );
-
-  //     // this.dialog.open(HistoriaClinicaDialogComponent, {
-  //     //   width: '800px',
-  //     //   data: {
-  //     //     pacienteNombre,
-  //     //     historias: historiasCompletas
-  //     //   }
-  //     // });
-
-
-  //     this.dialog.open(HistoriaClinicaDialogComponent, {
-  //       data: { pacienteNombre, historias },
-  //       panelClass: 'hc-dialog-panel'
-  //     });
-
-
-
-
-
-  //   } catch (err: any) {
-  //     console.error('[UsuariosAdmin] Error al cargar historia clínica', err);
-  //   }
-  // }
-
-
-    async verHistoriaClinica(pacienteId: string, pacienteNombre: string): Promise<void> {
+  async verHistoriaClinica(pacienteId: string, pacienteNombre: string): Promise<void> {
     try {
       const { data: sessionData } = await this.supa.getSession();
       if (!sessionData?.session) return;
@@ -836,7 +755,7 @@ export class UsuariosAdminComponent implements OnInit {
       // 2. MAPEAR DATOS COMPLETOS (Especialidad, Especialista, Fecha)
       const historiasCompletas: HistoriaClinicaConExtras[] = await Promise.all(
         (historias || []).map(async (h: any) => {
-          
+
           // Traemos Fecha y ESPECIALIDAD del turno original
           const { data: turno } = await this.supa.client
             .from('turnos')
@@ -852,8 +771,8 @@ export class UsuariosAdminComponent implements OnInit {
             .single();
 
           // Formatear nombre especialista
-          const especialistaNombre = especialista 
-            ? `${especialista.nombre} ${especialista.apellido}` 
+          const especialistaNombre = especialista
+            ? `${especialista.nombre} ${especialista.apellido}`
             : ''; // Dejar vacío en lugar de N/A para que se vea más limpio
 
           // Formatear fecha atención
@@ -954,6 +873,133 @@ export class UsuariosAdminComponent implements OnInit {
       Swal.fire('Error', 'No se pudo generar el archivo Excel', 'error');
     }
   }
+
+
+
+
+  // async descargarTurnosPdf(usuario: UsuarioAdmin): Promise<void> {
+  //   try {
+  //     this.snackBar.open('Generando PDF...', 'Espere', { duration: 1500 });
+
+  //     // Reutilizamos la lógica que ya tenés para buscar los turnos
+  //     const turnos = await this.obtenerTurnosUsuario(usuario);
+
+  //     if (!turnos.length) {
+  //       Swal.fire('Info', 'No hay atenciones para generar el reporte.', 'info');
+  //       return;
+  //     }
+
+  //     const doc = new jsPDF();
+  //     const pageWidth = doc.internal.pageSize.getWidth();
+  //     const pageHeight = doc.internal.pageSize.getHeight();
+  //     const margin = 15;
+  //     let y = 40; // Altura inicial debajo del encabezado
+
+  //     // --- ENCABEZADO ---
+
+  //     // Fondo azul oscuro
+  //     doc.setFillColor(15, 23, 42);
+  //     doc.rect(0, 0, pageWidth, 30, 'F');
+
+  //     // Título
+  //     doc.setTextColor(255, 255, 255);
+  //     doc.setFont('helvetica', 'bold');
+  //     doc.setFontSize(18);
+  //     doc.text('Reporte de Atenciones', margin, 18);
+
+  //     // Subtítulo (Nombre del Profesional)
+  //     doc.setFontSize(12);
+  //     doc.setFont('helvetica', 'normal');
+  //     const rolTexto = usuario.rol === 'ESPECIALISTA' ? 'Especialista' : 'Paciente';
+  //     doc.text(`${rolTexto}: ${usuario.nombre} ${usuario.apellido}`, margin, 26);
+
+  //     // Fecha
+  //     const fechaHoy = new Date().toLocaleDateString('es-AR');
+  //     doc.setFontSize(10);
+  //     doc.text(`Emisión: ${fechaHoy}`, pageWidth - margin, 26, { align: 'right' });
+
+  //     // --- TABLA ---
+
+  //     doc.setTextColor(0, 0, 0);
+  //     doc.text(`Total de registros: ${turnos.length}`, margin, y);
+  //     y += 10;
+
+  //     // Encabezados de tabla
+  //     doc.setFillColor(240, 240, 240); // Gris claro
+  //     doc.rect(margin, y - 5, pageWidth - (margin * 2), 8, 'F');
+  //     doc.setFont('helvetica', 'bold');
+  //     doc.setFontSize(9);
+
+  //     // Columnas (X positions)
+  //     const colFecha = margin + 2;
+  //     const colEspec = margin + 35;
+  //     const colPaciente = margin + 85;
+  //     const colEstado = margin + 145;
+
+  //     // Títulos columnas
+  //     doc.text('FECHA/HORA', colFecha, y);
+  //     doc.text('ESPECIALIDAD', colEspec, y);
+  //     // Si el reporte es de un especialista, mostramos el PACIENTE en la columna
+  //     const labelContraparte = usuario.rol === 'ESPECIALISTA' ? 'PACIENTE' : 'ESPECIALISTA';
+  //     doc.text(labelContraparte, colPaciente, y);
+  //     doc.text('ESTADO', colEstado, y);
+
+  //     y += 8;
+
+  //     // Filas
+  //     doc.setFont('helvetica', 'normal');
+
+  //     turnos.forEach((t, index) => {
+  //       // Salto de página
+  //       if (y > pageHeight - 20) {
+  //         doc.addPage();
+  //         y = 20;
+  //       }
+
+  //       // Fila cebra
+  //       if (index % 2 === 0) {
+  //         doc.setFillColor(252, 252, 252);
+  //         doc.rect(margin, y - 5, pageWidth - (margin * 2), 8, 'F');
+  //       }
+
+  //       // Datos
+  //       const fechaTxt = t.fecha_hora_inicio
+  //         ? new Date(t.fecha_hora_inicio).toLocaleDateString('es-AR') + ' ' + new Date(t.fecha_hora_inicio).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })
+  //         : '-';
+
+  //       const especTxt = t.especialidad?.nombre || 'Varios';
+
+  //       // Determinar nombre de la contraparte
+  //       const userObj = usuario.rol === 'ESPECIALISTA' ? t.paciente : t.especialista;
+  //       const nombreContraparte = userObj ? `${userObj.apellido}, ${userObj.nombre}` : 'Sin datos';
+
+  //       const estadoTxt = (t.estado?.codigo || 'PENDIENTE').toUpperCase();
+
+  //       // Escribir fila
+  //       doc.text(fechaTxt, colFecha, y);
+  //       doc.text(especTxt.substring(0, 20), colEspec, y); // Cortar si es largo
+  //       doc.text(nombreContraparte.substring(0, 30), colPaciente, y);
+
+  //       doc.setFont('helvetica', 'bold');
+  //       doc.text(estadoTxt, colEstado, y);
+  //       doc.setFont('helvetica', 'normal');
+
+  //       y += 8;
+  //     });
+
+  //     // Guardar PDF
+  //     const nombreArchivo = `Atenciones_${usuario.apellido}_${new Date().getTime()}.pdf`;
+  //     doc.save(nombreArchivo);
+
+  //   } catch (error) {
+  //     console.error('Error PDF Admin:', error);
+  //     Swal.fire('Error', 'No se pudo generar el PDF.', 'error');
+  //   }
+  // }
+
+
+
+
 }
 
 

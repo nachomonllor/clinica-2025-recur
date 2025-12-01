@@ -103,6 +103,14 @@
             </svg>
             Descargar turnos
           </button>
+
+          <!-- <button mat-raised-button color="warn" (click)="descargarTurnosPdf(seleccionado)">
+          <mat-icon>picture_as_pdf</mat-icon>
+          Atenciones PDF
+        </button> -->
+
+
+
         </div>
 
         <ng-template #accionesEspecialista>
@@ -126,7 +134,41 @@
 
 
 
-<!-- 
+<!-- <div class="detalle-acciones">
+  
+  <button mat-stroked-button color="primary" (click)="descargarTurnosUsuario(seleccionado)">
+          <mat-icon>download</mat-icon>
+          Turnos en Excel
+        </button>
+
+        <button mat-raised-button color="warn" (click)="descargarTurnosPdf(seleccionado)">
+          <mat-icon>picture_as_pdf</mat-icon>
+          Atenciones PDF
+        </button>
+    
+
+        <button
+          mat-stroked-button
+          color="accent"
+          *ngIf="seleccionado.rol === 'paciente'"
+          (click)="verHistoriaClinica(seleccionado.id, seleccionado.nombre + ' ' + seleccionado.apellido)">
+          <mat-icon>medical_services</mat-icon>
+          Historia clínica
+        </button>
+        
+        <button
+          mat-flat-button
+          color="warn"
+          *ngIf="seleccionado.rol === 'especialista' && esAdmin"
+          (click)="toggleAprobacion(seleccionado)">
+          <mat-icon>{{ seleccionado.aprobado ? 'block' : 'check_circle' }}</mat-icon>
+          {{ seleccionado.aprobado ? 'Inhabilitar' : 'Habilitar' }}
+        </button>
+      </div>  -->
+
+
+
+<!-- --------------------------------------------------------------------------------------------------- ->
 
 <mat-card class="usuarios-container" appElevateOnHover>
   <mat-card-header>
