@@ -96,7 +96,15 @@ export class SeleccionEstadisticasComponent {
       icono: 'assignment_ind',
       ruta: '/turnos-por-paciente',
       aria: 'Ir a Turnos por Paciente'
+    },
+    {
+      titulo: 'Resultados Encuestas',
+      subtitulo: 'Visualiza los resultados de las encuestas con informes',
+      icono: 'assignment_ind',
+      ruta: '/resultados-encuestas',
+      aria: 'Ir a Resultados Encuestas'
     }
+
   ];
 
   constructor(private router: Router) {}

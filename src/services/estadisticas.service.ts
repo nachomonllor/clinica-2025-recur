@@ -904,6 +904,44 @@ export class EstadisticasService {
         }));
     }
 
+    // En estadisticas.service.ts
+
+    async obtenerResultadosEncuesta(especialistaId?: string) {
+        let query = this.supa.client
+            .from('encuestas_atencion')
+            .select(`
+        estrellas,
+        
+        comentario,
+        respuesta_radio,
+        valor_rango,
+        fecha_respuesta,
+        especialista:usuarios!fk_encuesta_especialista (nombre, apellido)
+      `);
+
+        if (especialistaId) {
+            query = query.eq('especialista_id', especialistaId);
+        }
+
+        // Ordenar por fecha descendente (lo más nuevo primero)
+        query = query.order('fecha_respuesta', { ascending: false });
+
+        const { data, error } = await query;
+        if (error) throw error;
+        return data;
+    }
+
+    // Método auxiliar para cargar la lista de especialistas (para el filtro)
+    async obtenerListaEspecialistas() {
+        const { data, error } = await this.supa.client
+            .from('usuarios')
+            .select('id, nombre, apellido')
+            .eq('perfil', 'ESPECIALISTA');
+
+        if (error) throw error;
+        return data;
+    }
+
 }
 
 

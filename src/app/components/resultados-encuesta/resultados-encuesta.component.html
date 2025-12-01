@@ -1,0 +1,92 @@
+<p>resultados-encuesta works!</p>
+
+<section class="pagina-informes">
+  
+  <header class="header-actions">
+    <button mat-flat-button color="primary" routerLink="/seleccion-estadisticas">
+      <mat-icon>arrow_back</mat-icon> Volver
+    </button>
+
+    <h1 class="titulo-pag">Resultados de Encuestas</h1>
+
+    <mat-form-field appearance="outline" class="filtro-especialista">
+      <mat-label>Filtrar por Especialista</mat-label>
+      <mat-select [(value)]="filtroEspecialista" (selectionChange)="cargarDatos()">
+        <mat-option [value]="null">Todos</mat-option>
+        <mat-option *ngFor="let esp of especialistas" [value]="esp.id">
+          {{ esp.apellido }}, {{ esp.nombre }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </header>
+
+  <div *ngIf="cargando" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+
+  <div class="dashboard-grid" *ngIf="!cargando">
+    
+    <div class="kpi-row">
+      <mat-card class="kpi-card">
+        <div class="kpi-icon">⭐</div>
+        <div class="kpi-value">{{ promedioEstrellas }} / 5</div>
+        <div class="kpi-label">Calificación Promedio</div>
+      </mat-card>
+
+      <mat-card class="kpi-card">
+        <div class="kpi-icon">👍</div>
+        <div class="kpi-value">{{ porcentajeRecomendacion }}%</div>
+        <div class="kpi-label">Recomiendan al Especialista</div>
+      </mat-card>
+
+      <mat-card class="kpi-card">
+        <div class="kpi-icon">⏰</div>
+        <div class="kpi-value">{{ promedioPuntualidad }}%</div>
+        <div class="kpi-label">Puntualidad Percibida</div>
+      </mat-card>
+    </div>
+
+    <div class="content-row">
+      
+      <mat-card class="chart-panel">
+        <h3>Distribución de Calificaciones</h3>
+        <apx-chart
+          [series]="chartSeries"
+          [chart]="chartOptions.chart"
+          [xaxis]="chartOptions.xaxis"
+          [yaxis]="chartOptions.yaxis"
+          [colors]="chartOptions.colors"
+          [plotOptions]="chartOptions.plotOptions"
+          [tooltip]="chartOptions.tooltip"
+          [dataLabels]="chartOptions.dataLabels"
+          [grid]="chartOptions.grid">
+        </apx-chart>
+      </mat-card>
+
+      <mat-card class="comments-panel">
+        <h3>Comentarios Recientes ({{ comentarios.length }})</h3>
+        
+        <div class="comments-list" *ngIf="comentarios.length > 0; else noComments">
+          <div class="comment-item" *ngFor="let c of comentarios">
+            <div class="comment-header">
+              <span class="stars">
+                <ng-container *ngFor="let _ of [].constructor(c.estrellas)">★</ng-container>
+              </span>
+              <span class="date">{{ c.fecha_respuesta | date:'shortDate' }}</span>
+            </div>
+            <p class="comment-text">"{{ c.comentario }}"</p>
+            <div class="comment-meta">
+              <span *ngIf="c.especialista">Dr/a. {{ c.especialista.apellido }}</span>
+              <span class="badge" *ngIf="c.respuesta_radio === 'si'">Recomendado</span>
+            </div>
+          </div>
+        </div>
+
+        <ng-template #noComments>
+          <p class="muted">No hay comentarios registrados con estos filtros.</p>
+        </ng-template>
+      </mat-card>
+
+    </div>
+  </div>
+</section>

@@ -20,7 +20,7 @@ export const routes: Routes = [
   },
 
   {
-     path: 'mis-horarios-especialista' , component: MisHorariosEspecialistaComponent
+    path: 'mis-horarios-especialista', component: MisHorariosEspecialistaComponent
 
   },
 
@@ -237,6 +237,14 @@ export const routes: Routes = [
           import('./components/turnos-por-paciente/turnos-por-paciente.component')
             .then(m => m.TurnosPorPacienteComponent)
       },
+
+      {
+        path: 'resultados-encuestas',
+        loadComponent: () =>
+          import('./components/resultados-encuesta/resultados-encuesta.component')
+            .then(m => m.ResultadosEncuestaComponent)
+      },
+
       {
         path: 'turnos-especialidad',
         loadComponent: () =>
