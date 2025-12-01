@@ -210,3 +210,33 @@
         color: rgba(255, 255, 255, 0.7) !important;
     }
 }
+
+.filtro-card {
+    /* ... lo que ya tenías ... */
+
+    .form-inline {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+        flex-wrap: wrap; /* Importante para pantallas chicas */
+    }
+
+    .selector-paciente {
+        flex: 2; /* Le damos más peso al selector de nombres */
+        min-width: 250px;
+    }
+
+    /* Estilo para el nuevo filtro */
+    .filtro-resena {
+        flex: 1; /* Ocupa el espacio restante proporcionalmente */
+        min-width: 200px;
+        
+        /* Aseguramos que el texto sea blanco como el resto */
+        ::ng-deep .mat-mdc-form-field-input-control {
+             color: var(--texto) !important;
+        }
+        ::ng-deep .mat-mdc-form-field-icon-prefix {
+             color: rgba(255, 255, 255, 0.6);
+        }
+    }
+}
