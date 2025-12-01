@@ -24,6 +24,9 @@ import { ElevateOnHoverDirective } from '../../../directives/elevate-on-hover.di
 
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatSliderModule } from '@angular/material/slider';
 
 @Component({
   selector: 'app-mis-turnos-paciente',
@@ -46,7 +49,11 @@ import jsPDF from 'jspdf';
     MatSelectModule,
     StatusLabelPipe,
     StatusBadgeDirective,
-    ElevateOnHoverDirective
+    ElevateOnHoverDirective,
+
+    MatSliderModule,
+    MatRadioModule,
+    MatCheckboxModule
   ]
 })
 export class MisTurnosPacienteComponent implements OnInit {
@@ -65,6 +72,8 @@ export class MisTurnosPacienteComponent implements OnInit {
   // Variable para almacenar el nombre real del paciente
   pacienteNombre: string = 'Paciente';
 
+  pacienteId: string | null = null;
+
   @ViewChild('cancelDialog') cancelDialog!: TemplateRef<unknown>;
   @ViewChild('calificarDialog') calificarDialog!: TemplateRef<unknown>;
   @ViewChild('verResenaDialog') verResenaDialog!: TemplateRef<unknown>;
@@ -78,13 +87,26 @@ export class MisTurnosPacienteComponent implements OnInit {
     public supa: SupabaseService // Public para usarlo si es necesario
   ) { }
 
+
+  // 2. CAPTURAR EL ID DEL USUARIO LOGUEADO
+    // this.supa.usuario$.subscribe(usuario => {
+    //   if (usuario) {
+    //     this.pacienteId = usuario.id; // <--- Aquí guardamos el ID para usarlo luego en el insert
+    //     // this.pacienteNombre = ...
+    //   }
+    // });
+
+
   ngOnInit(): void {
     // 1. OBTENER USUARIO ACTUAL (Para el título del PDF)
     this.supa.usuario$.subscribe(usuario => {
       if (usuario) {
         this.pacienteNombre = `${usuario.nombre} ${usuario.apellido}`;
+
+        this.pacienteId = usuario.id;
       }
     });
+
 
     // 2. CARGAR TURNOS
     this.turnoService.getTurnosPacienteVM$().subscribe({
@@ -205,49 +227,121 @@ export class MisTurnosPacienteComponent implements OnInit {
     this.router.navigate(['/encuesta-atencion', t.id]);
   }
 
-  calificarAtencion(t: TurnoVM): void {
+  // calificarAtencion(t: TurnoVM): void {
+  //   const calificacionForm = this.fb.group({
+  //     comentario: ['', [Validators.required, Validators.minLength(10)]],
+  //     estrellas: [5, [Validators.required, Validators.min(1), Validators.max(5)]]
+  //   });
+
+  //   const ref = this.dialog.open(this.calificarDialog, {
+  //     data: { turno: t, form: calificacionForm },
+  //     width: '500px'
+  //   });
+
+  //   ref.afterClosed().subscribe(result => {
+  //     if (result && calificacionForm.valid) {
+  //       const fv = calificacionForm.value;
+  //       const encuestaData = {
+  //         estrellas: fv.estrellas,
+  //         comentario: fv.comentario,
+  //         fecha: new Date().toISOString()
+  //       };
+
+  //       this.supa.client
+  //         .from('turnos')
+  //         .update({ encuesta: encuestaData as any })
+  //         .eq('id', t.id)
+  //         .then(({ error }) => {
+  //           if (error) {
+  //             this.snackBar.open(
+  //               `Error al calificar: ${error.message}`,
+  //               'Cerrar',
+  //               { duration: 2500 }
+  //             );
+  //           } else {
+  //             t.encuesta = true;
+  //             t.calificacion = fv.estrellas ?? undefined;
+  //             this.dataSource.data = [...this.dataSource.data];
+  //             this.snackBar.open('Calificación guardada', 'Cerrar', {
+  //               duration: 2000
+  //             });
+  //           }
+  //         });
+  //     }
+  //   });
+  // }
+
+
+calificarAtencion(t: TurnoVM): void {
     const calificacionForm = this.fb.group({
       comentario: ['', [Validators.required, Validators.minLength(10)]],
-      estrellas: [5, [Validators.required, Validators.min(1), Validators.max(5)]]
+      estrellas: [5, [Validators.required]],
+      recomendaria: ['si', Validators.required], // Radio
+      // Checkboxes (puedes usar un FormGroup anidado o controles sueltos)
+      puntualidad: [false],
+      amabilidad: [false],
+      limpieza: [false],
+      
+      rango: [8, [Validators.required, Validators.min(1), Validators.max(10)]] // Rango
     });
 
     const ref = this.dialog.open(this.calificarDialog, {
       data: { turno: t, form: calificacionForm },
-      width: '500px'
+      width: '600px' // Un poco más ancho para que entre todo
     });
 
-    ref.afterClosed().subscribe(result => {
+    ref.afterClosed().subscribe(async result => {
       if (result && calificacionForm.valid) {
         const fv = calificacionForm.value;
-        const encuestaData = {
-          estrellas: fv.estrellas,
-          comentario: fv.comentario,
-          fecha: new Date().toISOString()
-        };
 
-        this.supa.client
-          .from('turnos')
-          .update({ encuesta: encuestaData as any })
-          .eq('id', t.id)
-          .then(({ error }) => {
-            if (error) {
-              this.snackBar.open(
-                `Error al calificar: ${error.message}`,
-                'Cerrar',
-                { duration: 2500 }
-              );
-            } else {
-              t.encuesta = true;
-              t.calificacion = fv.estrellas ?? undefined;
-              this.dataSource.data = [...this.dataSource.data];
-              this.snackBar.open('Calificación guardada', 'Cerrar', {
-                duration: 2000
-              });
-            }
-          });
+        // 1. Preparar el string de checkboxes
+        const checks = [];
+        if (fv.puntualidad) checks.push('Puntualidad');
+        if (fv.amabilidad) checks.push('Amabilidad');
+        if (fv.limpieza) checks.push('Limpieza');
+        const respuestaCheckbox = checks.join(', ');
+
+        try {
+          // 2. Insertar en la tabla ESPECÍFICA de encuestas
+          const { error } = await this.supa.client
+            .from('encuestas_atencion')
+            .insert({
+              turno_id: t.id,
+              paciente_id: this.pacienteId, // Asegúrate de tener este dato (o sacar de sesión)
+              especialista_id: t.especialistaId, // Necesitas el ID del especialista en tu VM
+              comentario: fv.comentario,
+              estrellas: fv.estrellas,
+              respuesta_radio: fv.recomendaria, // 'si' o 'no'
+              respuesta_checkbox: respuestaCheckbox,
+              valor_rango: fv.rango
+            });
+
+          if (error) throw error;
+
+          // 3. Actualizar estado local
+          // (Opcional: Marcar en tabla turnos que ya tiene encuesta para no dejar cargar otra)
+          await this.supa.client
+            .from('turnos')
+            .update({ 
+               calificacion: fv.estrellas, // Guardamos estrellas en turnos para mostrar rápido en lista
+               // encuesta: true // Si tuvieras un flag
+            }) 
+            .eq('id', t.id);
+
+          t.calificacion = fv.estrellas;
+          // t.tieneEncuesta = true; // Si usas esa propiedad en el VM
+          
+          this.snackBar.open('¡Gracias por tu opinión!', 'Cerrar', { duration: 3000 });
+
+        } catch (err: any) {
+          console.error(err);
+          this.snackBar.open('Error al guardar encuesta', 'Cerrar');
+        }
       }
     });
   }
+
+// --------------------
 
   get turnos(): TurnoVM[] {
     const ds = this.dataSource as MatTableDataSource<TurnoVM>;

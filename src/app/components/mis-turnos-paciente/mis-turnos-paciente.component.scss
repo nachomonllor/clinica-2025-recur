@@ -193,3 +193,94 @@
   font-family: 'Roboto', sans-serif;
   line-height: 1.5;
 }
+
+
+//                  ------------------------   ESTILOS PARA EL DIALOGO DE ENCUESTA    --- 
+::ng-deep .mat-mdc-dialog-container {
+    // Aseguramos que el fondo del diálogo sea oscuro
+    --mdc-dialog-container-color: #1e293b; // Usa el color de tu fondo
+
+    // Título del diálogo
+    .mat-mdc-dialog-title {
+        color: #38bdf8 !important; // Azul claro para el título
+    }
+
+    // Contenido del diálogo
+    .mat-mdc-dialog-content {
+        color: #e2e8f0 !important; // Blanco/Gris claro para el texto general
+
+        // Labels y textos de ayuda
+        label, p {
+            color: #e2e8f0 !important;
+        }
+        
+        // Inputs y Textareas
+        .mat-mdc-form-field {
+            // Color del texto inputado
+            .mat-mdc-input-element {
+                color: #ffffff !important;
+            }
+            // Color del label flotante
+            .mat-mdc-floating-label {
+                color: #94a3b8 !important; 
+            }
+            // Color del label cuando está arriba (enfocado)
+            &.mat-focused .mat-mdc-floating-label {
+                color: #38bdf8 !important;
+            }
+            // Color del borde/outline
+            .mat-mdc-notched-outline__leading,
+            .mat-mdc-notched-outline__notch,
+            .mat-mdc-notched-outline__trailing {
+                border-color: #475569 !important;
+            }
+        }
+
+        // Select (Estrellas)
+        .mat-mdc-select {
+             // Color del texto seleccionado
+            .mat-mdc-select-value {
+                color: #ffffff !important;
+            }
+             // Color de la flecha
+            .mat-mdc-select-arrow {
+                color: #94a3b8 !important;
+            }
+        }
+
+        // Radio Buttons
+        .mat-mdc-radio-button {
+            .mdc-label {
+                color: #e2e8f0 !important;
+            }
+        }
+
+        // Checkboxes
+        .mat-mdc-checkbox {
+            .mdc-label {
+                color: #e2e8f0 !important;
+            }
+        }
+
+        // Slider (Rango)
+        .mat-mdc-slider {
+            // Color de las marcas y texto
+            --mdc-slider-label-text-color: #ffffff;
+            --mdc-slider-with-tick-marks-active-container-color: #38bdf8;
+            --mdc-slider-with-tick-marks-inactive-container-color: #475569;
+        }
+    }
+    
+    // Acciones (Botones Cancelar/Enviar)
+    .mat-mdc-dialog-actions {
+        button.mat-mdc-button-base {
+            color: #e2e8f0 !important; // Color del texto de botones
+            
+            &.mat-primary {
+                 // Botón Enviar (Raised)
+                 background-color: #38bdf8 !important;
+                 color: #0f172a !important; // Texto oscuro sobre fondo azul
+            }
+        }
+    }
+}

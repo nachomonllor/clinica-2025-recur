@@ -11,14 +11,14 @@
       {{ turnos.length }} turno(s)
     </span>
 
-    <button mat-stroked-button color="primary" (click)="exportarHistoriaClinicaExcel()" 
-            [disabled]="!turnos.length" style="margin-left: auto;">
+    <button mat-stroked-button color="primary" (click)="exportarHistoriaClinicaExcel()" [disabled]="!turnos.length"
+      style="margin-left: auto;">
       <mat-icon>grid_on</mat-icon>
       Excel
     </button>
 
-    <button mat-raised-button color="warn" (click)="exportarPdf()" 
-            [disabled]="!turnos.length" style="margin-left: 8px;">
+    <button mat-raised-button color="warn" (click)="exportarPdf()" [disabled]="!turnos.length"
+      style="margin-left: 8px;">
       <mat-icon>picture_as_pdf</mat-icon>
       Historia Clínica PDF
     </button>
@@ -56,7 +56,7 @@
 
       <div class="card-actions">
         <button mat-stroked-button color="warn" (click)="cancelarTurno(t)" [disabled]="!puedeCancelar(t)"
-          *ngIf="t.estado !== 'realizado' && t.estado !== 'cancelado'">
+          *ngIf="t.estado !== 'realizado' && t.estado !== 'cancelado' && t.estado !== 'rechazado'">
           <mat-icon>event_busy</mat-icon>
           Cancelar
         </button>
@@ -71,10 +71,245 @@
           Completar encuesta
         </button>
 
-        <button mat-button color="accent" (click)="calificarAtencion(t)" *ngIf="puedeCalificar(t)">
+        <!-- <button mat-button color="primary" (click)="calificarAtencion(t)"
+          *ngIf="t.estado === 'realizado' && !t.encuesta && puedeVerResena(t)">
           <mat-icon>star_rate</mat-icon>
-          Calificar
+          Calificar Atención
+        </button> -->
+
+        <button mat-button color="primary" (click)="calificarAtencion(t)" > 
+          <mat-icon>star_rate</mat-icon>
+          Calificar Atención
         </button>
+
+        <button mat-button disabled *ngIf="t.encuesta">
+          <mat-icon>check</mat-icon> Calificado
+        </button>
+      </div>
+    </article>
+  </section>
+</mat-card>
+
+<ng-template #sinTurnos>
+  <div class="empty">
+    <p>No tenés turnos registrados.</p>
+    <button mat-raised-button color="primary" routerLink="/solicitar-turno">
+      <mat-icon>add_circle</mat-icon>
+      Solicitar mi primer turno
+    </button>
+  </div>
+</ng-template>
+
+<ng-template #cancelDialog let-data>
+  <h2 mat-dialog-title>Cancelar Turno</h2>
+  <mat-dialog-content>
+    <p>¿Estás seguro de que deseas cancelar este turno?</p>
+    <p><strong>Especialidad:</strong> {{ data?.turno?.especialidad }}</p>
+    <p><strong>Especialista:</strong> {{ data?.turno?.especialista }}</p>
+    <p><strong>Fecha:</strong> {{ data?.turno?.fecha | date:'shortDate' }} a las {{ data?.turno?.hora }}</p>
+
+    <form [formGroup]="data?.form" style="margin-top: 16px;">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Motivo de cancelación</mat-label>
+        <textarea matInput formControlName="comentario" rows="4"
+          placeholder="Indica el motivo de la cancelación (mínimo 10 caracteres)"></textarea>
+        <mat-error *ngIf="data?.form?.get('comentario')?.hasError('required')">
+          El motivo es obligatorio
+        </mat-error>
+        <mat-error *ngIf="data?.form?.get('comentario')?.hasError('minlength')">
+          Debe tener al menos 10 caracteres
+        </mat-error>
+      </mat-form-field>
+    </form>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Cancelar</button>
+    <button mat-raised-button color="warn" [disabled]="!data?.form?.valid" [mat-dialog-close]="true">
+      Confirmar Cancelación
+    </button>
+  </mat-dialog-actions>
+</ng-template>
+
+<ng-template #calificarDialog let-data>
+  <h2 mat-dialog-title style="color: #38bdf8;">Encuesta de Satisfacción</h2>
+  <mat-dialog-content>
+    <p style="color: #cbd5e1; margin-bottom: 1rem;">
+      Ayúdanos a mejorar completando esta encuesta sobre tu atención con <strong>{{ data?.turno?.especialista
+        }}</strong>.
+    </p>
+
+    <form [formGroup]="data?.form" style="display: flex; flex-direction: column; gap: 1.2rem;">
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Calificación General</mat-label>
+        <mat-select formControlName="estrellas">
+          <mat-option [value]="5">⭐⭐⭐⭐⭐ (5) Excelente</mat-option>
+          <mat-option [value]="4">⭐⭐⭐⭐ (4) Muy bueno</mat-option>
+          <mat-option [value]="3">⭐⭐⭐ (3) Bueno</mat-option>
+          <mat-option [value]="2">⭐⭐ (2) Regular</mat-option>
+          <mat-option [value]="1">⭐ (1) Malo</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <div>
+        <div
+          style="display: flex; justify-content: space-between; color: #e2e8f0; font-size: 0.9rem; margin-bottom: 4px;">
+          <label>Nivel de satisfacción (1 al 10)</label>
+          <strong>{{ data?.form?.get('rango')?.value }}</strong>
+        </div>
+        <mat-slider min="1" max="10" step="1" showTickMarks discrete style="width: 100%;">
+          <input matSliderThumb formControlName="rango">
+        </mat-slider>
+      </div>
+
+      <div>
+        <label style="display:block; margin-bottom: 8px; color: #cbd5e1; font-size: 0.9rem;">¿Recomendarías este
+          especialista?</label>
+        <mat-radio-group formControlName="recomendaria" style="display: flex; gap: 20px; color: #e2e8f0;">
+          <mat-radio-button value="si">Sí, seguro</mat-radio-button>
+          <mat-radio-button value="no">No creo</mat-radio-button>
+        </mat-radio-group>
+      </div>
+
+      <div>
+        <label style="display:block; margin-bottom: 8px; color: #cbd5e1; font-size: 0.9rem;">Aspectos a
+          destacar:</label>
+        <div style="display: flex; flex-wrap: wrap; gap: 10px; color: #e2e8f0;">
+          <mat-checkbox formControlName="puntualidad">Puntualidad</mat-checkbox>
+          <mat-checkbox formControlName="amabilidad">Amabilidad</mat-checkbox>
+          <mat-checkbox formControlName="limpieza">Limpieza</mat-checkbox>
+        </div>
+      </div>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Comentario adicional</mat-label>
+        <textarea matInput formControlName="comentario" rows="3"
+          placeholder="Describe tu experiencia (mínimo 10 caracteres)"></textarea>
+        <mat-error *ngIf="data?.form?.get('comentario')?.hasError('required')">Requerido</mat-error>
+        <mat-error *ngIf="data?.form?.get('comentario')?.hasError('minlength')">Mínimo 10 caracteres</mat-error>
+      </mat-form-field>
+
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Cancelar</button>
+    <button mat-raised-button color="primary" [disabled]="!data?.form?.valid" [mat-dialog-close]="true">
+      Enviar Encuesta
+    </button>
+  </mat-dialog-actions>
+</ng-template>
+
+<ng-template #verResenaDialog let-data>
+  <h2 mat-dialog-title>Reseña del Especialista</h2>
+  <mat-dialog-content>
+    <p><strong>Especialista:</strong> {{ data?.turno?.especialista }}</p>
+    <p><strong>Especialidad:</strong> {{ data?.turno?.especialidad }}</p>
+    <p><strong>Fecha:</strong> {{ data?.turno?.fecha | date:'shortDate' }} a las {{ data?.turno?.hora }}</p>
+
+    <div class="resena-box">
+      <p class="resena-text">{{ data?.resena }}</p>
+    </div>
+
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Cerrar</button>
+  </mat-dialog-actions>
+</ng-template>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- <mat-card class="mis-shell mat-elevation-z6" appElevateOnHover>
+
+  <div class="toolbar">
+    <mat-form-field appearance="outline" class="toolbar__filtro">
+      <mat-label>Buscar</mat-label>
+      <input matInput #f (input)="applyFilter(f.value)"
+        placeholder="Especialidad, especialista, estado o términos..." />
+    </mat-form-field>
+
+    <span class="toolbar__count" *ngIf="turnos.length">
+      {{ turnos.length }} turno(s)
+    </span>
+
+    <button mat-stroked-button color="primary" (click)="exportarHistoriaClinicaExcel()" [disabled]="!turnos.length"
+      style="margin-left: auto;">
+      <mat-icon>grid_on</mat-icon>
+      Excel
+    </button>
+
+    <button mat-raised-button color="warn" (click)="exportarPdf()" [disabled]="!turnos.length"
+      style="margin-left: 8px;">
+      <mat-icon>picture_as_pdf</mat-icon>
+      Historia Clínica PDF
+    </button>
+
+  </div>
+
+  <section class="lista" *ngIf="turnos.length; else sinTurnos">
+
+    <article class="turno-card" *ngFor="let t of turnos">
+      <div class="card-header">
+        <div class="fecha-hora">
+          <div class="fecha">{{ t.fecha | date:'EEEE d \'de\' MMMM' }}</div>
+          <div class="hora">{{ t.hora }}</div>
+        </div>
+
+        <span class="estado-chip" [appStatusBadge]="t.estado">
+          {{ t.estado | statusLabel }}
+        </span>
+      </div>
+
+      <div class="card-body">
+        <div class="linea">
+          <span class="label">Especialidad</span>
+          <span class="valor">{{ t.especialidad }}</span>
+        </div>
+        <div class="linea">
+          <span class="label">Profesional</span>
+          <span class="valor">{{ t.especialista }}</span>
+        </div>
+        <div class="linea" *ngIf="t.calificacion">
+          <span class="label">Calificación</span>
+          <span class="valor estrellas">★ {{ t.calificacion }} / 5</span>
+        </div>
+      </div>
+
+      <div class="card-actions">
+        <button mat-stroked-button color="warn" (click)="cancelarTurno(t)" [disabled]="!puedeCancelar(t)"
+          *ngIf="t.estado !== 'realizado' && t.estado !== 'cancelado' && t.estado !== 'rechazado'">
+          <mat-icon>event_busy</mat-icon>
+          Cancelar
+        </button>
+
+        <button mat-button (click)="verResena(t)" *ngIf="puedeVerResena(t)">
+          <mat-icon>rate_review</mat-icon>
+          Ver reseña
+        </button>
+
+        <button mat-button color="primary" (click)="calificarAtencion(t)"
+          *ngIf="t.estado === 'realizado' && !t.encuesta && puedeVerResena(t)">
+          <mat-icon>star_rate</mat-icon>
+          Calificar Atención
+        </button>
+
+        <button mat-button disabled *ngIf="t.encuesta">
+          <mat-icon>check</mat-icon> Calificado
+        </button>
+
       </div>
     </article>
   </section>
@@ -175,9 +410,4 @@
   <mat-dialog-actions align="end">
     <button mat-button mat-dialog-close>Cerrar</button>
   </mat-dialog-actions>
-</ng-template>
-
-
-
-
-
+</ng-template> -->

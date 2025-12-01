@@ -9,13 +9,13 @@ import { mapEstadoCodigoToUI, Turno, TurnoCreate, TurnoUpdate, TurnoVM } from '.
 import { from, map, Observable } from 'rxjs';
 import { TurnoEspecialista } from '../app/models/turno-especialista.model';
 
-import {  switchMap } from 'rxjs';
+import { switchMap } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class TurnosService {
 
 
-  
+
   private idEstadoCancelado?: string;
   // Cache simple en memoria para no golpear estados_turno todo el tiempo
   private estadosPorCodigo = new Map<EstadoTurnoCodigo, EstadoTurno>();
@@ -536,18 +536,44 @@ export class TurnosService {
 
       const estrellas = encuestasMap.get(t.id) ?? null;
 
+
+
+      // return data.map((t: any) => ({
+      //   id: t.id,
+      //   fecha: new Date(t.fecha_hora_inicio),
+      //   hora: t.fecha_hora_inicio.split('T')[1].slice(0, 5),
+      //   especialidad: t.especialidad.nombre,
+      //   especialista: t.especialista.apellido + ', ' + t.especialista.nombre,
+
+      //   // --- MAPEAMOS LOS NUEVOS CAMPOS ---
+      //   especialistaId: t.especialista_id, // El ID crudo
+      //   calificacion: t.calificacion,      // Las estrellas (puede ser null)
+
+      //   estado: (t.estado_turno?.codigo || '').toUpperCase(),
+      //   resena: t.comentario,
+      //   // ...
+      // }));
+
+
       return {
         id: t.id,
         fecha,
         hora,
         especialidad: especialidadNombre,
         especialista: especialistaNombre,
-        estado: estadoUI,
+
+        //  estado: estadoUI,
         historiaBusqueda: t.motivo ?? null,
         // La reseña solo existe si hay un comentario no vacío (del especialista al finalizar)
         resena: (t.comentario && String(t.comentario).trim().length > 0) ? String(t.comentario).trim() : null,
         encuesta: estrellas != null,
-        calificacion: estrellas ?? undefined
+        // calificacion: estrellas ?? undefined,
+
+        especialistaId: t.especialista_id, // El ID crudo
+        calificacion: t.calificacion,      // Las estrellas (puede ser null)
+
+        estado: (t.estado_turno?.codigo || '').toUpperCase(),
+        //resena: t.comentario,
       };
     });
   }
@@ -616,7 +642,7 @@ export class TurnosService {
       })
     );
   }
-  
+
 }
 
 

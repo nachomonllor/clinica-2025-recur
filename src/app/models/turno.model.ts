@@ -85,6 +85,36 @@ export interface TurnoUI {
 }
 
 
+// /** ViewModel que usa el paciente en "Mis turnos" */
+// export interface TurnoVM {
+//   id: string;
+
+//   /** Fecha real para comparar en puedeCancelar */
+//   fecha: Date;
+
+//   /** 'HH:mm' para mostrar / parsear la hora */
+//   hora: string;
+
+//   especialidad: string;
+//   especialista: string;
+
+//   /** estado en minúsculas (pendiente, aceptado, cancelado, realizado, etc.) */
+//   estado: EstadoTurnoUI | string;
+
+//   /** Texto indexable para búsqueda (motivo, síntomas, etc.) */
+//   historiaBusqueda?: string | null;
+
+//   /** Reseña del especialista (comentario final en el turno) */
+//   resena?: string | null;
+
+//   /** ¿Tiene encuesta de atención asociada? */
+//   encuesta?: boolean;
+
+//   /** Estrellas de la encuesta (1..5) si existe */
+//   calificacion?: number;
+// }
+
+
 /** ViewModel que usa el paciente en "Mis turnos" */
 export interface TurnoVM {
   id: string;
@@ -96,9 +126,14 @@ export interface TurnoVM {
   hora: string;
 
   especialidad: string;
+  
+  /** Nombre completo del especialista para mostrar */
   especialista: string;
 
-  /** estado en minúsculas (pendiente, aceptado, cancelado, realizado, etc.) */
+  /** ID del especialista (NECESARIO PARA GUARDAR LA ENCUESTA) */
+  especialistaId: string; 
+
+  /** Estado en MAYÚSCULAS (PENDIENTE, ACEPTADO, etc.) */
   estado: EstadoTurnoUI | string;
 
   /** Texto indexable para búsqueda (motivo, síntomas, etc.) */
@@ -107,9 +142,11 @@ export interface TurnoVM {
   /** Reseña del especialista (comentario final en el turno) */
   resena?: string | null;
 
-  /** ¿Tiene encuesta de atención asociada? */
-  encuesta?: boolean;
+  /** ¿Tiene encuesta de atención asociada? (true/false o objeto) */
+  encuesta?: boolean | any; 
 
   /** Estrellas de la encuesta (1..5) si existe */
-  calificacion?: number;
+  calificacion?: number | null;
+
+
 }
