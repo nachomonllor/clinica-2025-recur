@@ -128,27 +128,99 @@ export class MisTurnosPacienteComponent implements OnInit {
 
   // ---------- Reglas de negocio ----------
   puedeCancelar(t: TurnoVM): boolean {
-    // Validación de seguridad por si el estado viene nulo
-    const estado = t.estado ? t.estado.toLowerCase() : '';
-    if (estado === 'realizado' || estado === 'cancelado') return false;
+    // 1. REGLA DE ORO: Si ya tiene reseña, el turno se considera atendido/tocado.
+    // No se puede cancelar, sin importar la fecha o el estado.
+    if (t.resena && t.resena.trim().length > 0) {
+      return false;
+    }
+
+    // 2. VALIDACIÓN DE ESTADO
+    // Convertimos a mayúsculas para coincidir con los tipos de la BD (EstadoTurnoCodigo)
+    // Usamos (t.estado || '') para evitar error si viene null/undefined.
+    const estado = (t.estado || '').toUpperCase();
+
+    // Estados donde DEFINITIVAMENTE no se puede cancelar
+    // Agrego 'REALIZADO' por si en alguna parte del front lo llamas así en lugar de 'FINALIZADO'
+    const estadosBloqueantes = ['FINALIZADO', 'CANCELADO', 'RECHAZADO', 'REALIZADO'];
+
+    if (estadosBloqueantes.includes(estado)) {
+      return false;
+    }
+
+    // 3. VALIDACIÓN DE FECHA (El turno debe ser futuro)
+    if (!t.fecha || !t.hora) return false; // Seguridad por si faltan datos
 
     const ahora = new Date();
+    
+    // Parseo de hora "HH:mm"
     const [hhStr, mmStr] = t.hora.split(':');
     const hh = Number(hhStr) || 0;
     const mm = Number(mmStr) || 0;
 
-    const fechaHoraTurno = new Date(
-      t.fecha.getFullYear(),
-      t.fecha.getMonth(),
-      t.fecha.getDate(),
-      hh,
-      mm
-    );
+    // Creamos una nueva instancia Date basada en t.fecha
+    // (Asumimos que t.fecha ya es un objeto Date válido proveniente de Angular Material / Firestore / Supabase)
+    const fechaHoraTurno = new Date(t.fecha);
+    fechaHoraTurno.setHours(hh, mm, 0, 0);
 
+    // Retorna true solo si la fecha del turno es mayor (futura) a la actual
     return fechaHoraTurno.getTime() > ahora.getTime();
   }
+  
+
+  // cancelarTurno(t: TurnoVM): void {
+  //   if (!this.puedeCancelar(t)) {
+  //     this.snackBar.open('Este turno ya no puede cancelarse.', 'Cerrar', {
+  //       duration: 2500
+  //     });
+  //     return;
+  //   }
+
+  //   const comentarioForm = this.fb.group({
+  //     comentario: ['', [Validators.required, Validators.minLength(10)]]
+  //   });
+
+  //   const ref = this.dialog.open(this.cancelDialog, {
+  //     data: { turno: t, form: comentarioForm },
+  //     width: '500px'
+  //   });
+
+  //   // dentro de ref.afterClosed()
+  //   ref.afterClosed().subscribe(result => {
+  //     if (!result) return;
+
+  //     if (comentarioForm.invalid) {
+  //       this.snackBar.open(
+  //         'Debes ingresar un motivo de al menos 10 caracteres.',
+  //         'Cerrar',
+  //         { duration: 2500 }
+  //       );
+  //       return;
+  //     }
+
+  //     const comentario = comentarioForm.value.comentario ?? '';
+
+  //     this.turnoService.cancelarTurno(t.id, comentario).subscribe({
+  //       next: () => {
+  //         t.estado = 'cancelado';
+  //         this.dataSource.data = [...this.dataSource.data];
+  //         this.snackBar.open('Turno cancelado', 'Cerrar', { duration: 2000 });
+  //       },
+  //       error: (e: any) => {
+  //         console.error(e);
+  //         this.snackBar.open(
+  //           `Error al cancelar: ${e?.message || e}`,
+  //           'Cerrar',
+  //           { duration: 2500 }
+  //         );
+  //       }
+  //     });
+  //   });
+
+  // }
+
 
   cancelarTurno(t: TurnoVM): void {
+    // 1. Validar antes de abrir nada
     if (!this.puedeCancelar(t)) {
       this.snackBar.open('Este turno ya no puede cancelarse.', 'Cerrar', {
         duration: 2500
@@ -156,19 +228,23 @@ export class MisTurnosPacienteComponent implements OnInit {
       return;
     }
 
+    // 2. Preparar formulario
     const comentarioForm = this.fb.group({
       comentario: ['', [Validators.required, Validators.minLength(10)]]
     });
 
+    // 3. Abrir diálogo
     const ref = this.dialog.open(this.cancelDialog, {
       data: { turno: t, form: comentarioForm },
       width: '500px'
     });
 
-    // dentro de ref.afterClosed()
+    // 4. Procesar resultado al cerrar
     ref.afterClosed().subscribe(result => {
+      // Si el usuario cerró sin confirmar (result es false/undefined)
       if (!result) return;
 
+      // Validación de seguridad adicional
       if (comentarioForm.invalid) {
         this.snackBar.open(
           'Debes ingresar un motivo de al menos 10 caracteres.',
@@ -180,23 +256,28 @@ export class MisTurnosPacienteComponent implements OnInit {
 
       const comentario = comentarioForm.value.comentario ?? '';
 
+      // 5. Llamar al servicio
       this.turnoService.cancelarTurno(t.id, comentario).subscribe({
         next: () => {
-          t.estado = 'cancelado';
+          // IMPORTANTE: Actualizar el estado local en MAYÚSCULAS
+          // para que coincida con tus tipos y la BD.
+          t.estado = 'CANCELADO'; 
+
+          // Refrescar la tabla para que Angular detecte el cambio en las filas
           this.dataSource.data = [...this.dataSource.data];
-          this.snackBar.open('Turno cancelado', 'Cerrar', { duration: 2000 });
+          
+          this.snackBar.open('Turno cancelado exitosamente.', 'Cerrar', { duration: 3000 });
         },
         error: (e: any) => {
           console.error(e);
           this.snackBar.open(
-            `Error al cancelar: ${e?.message || e}`,
+            `Error al cancelar: ${e?.message || 'Ocurrió un error inesperado'}`,
             'Cerrar',
-            { duration: 2500 }
+            { duration: 3000 }
           );
         }
       });
     });
-
   }
 
   puedeVerResena(t: TurnoVM): boolean {

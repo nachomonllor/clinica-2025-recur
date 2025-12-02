@@ -340,7 +340,82 @@ export class LoginComponent implements OnInit {
     return msg || 'Ocurrió un error al procesar la solicitud.';
   }
 
-  get accesosRapidos(): QuickAccessUser[] {
+//   get accesosRapidos(): QuickAccessUser[] {
+//   const usuarios: QuickAccessUser[] = [];
+
+//   const pacientes = Array.isArray(this.quickLogins.paciente)
+//     ? this.quickLogins.paciente
+//     : [this.quickLogins.paciente];
+
+//   pacientes.forEach(user => {
+//     usuarios.push({
+//       email: user.email,
+//       password: user.password,
+//       nombre: user.nombre ?? user.email,
+//       avatar: user.avatar ?? 'assets/avatars/james.jpg',
+//       rol: 'PACIENTE',
+//     });
+//   });
+
+//   const especialistas = Array.isArray(this.quickLogins.especialista)
+//     ? this.quickLogins.especialista
+//     : [this.quickLogins.especialista];
+
+//   especialistas.forEach(user => {
+//     usuarios.push({
+//       email: user.email,
+//       password: user.password,
+//       nombre: user.nombre ?? user.email,
+//       avatar: user.avatar ?? 'assets/avatars/mendel.jpg',
+//       rol: 'ESPECIALISTA',
+//     });
+//   });
+
+//   const admins = Array.isArray(this.quickLogins.admin)
+//     ? this.quickLogins.admin
+//     : [this.quickLogins.admin];
+
+//   admins.forEach(user => {
+//     usuarios.push({
+//       email: user.email,
+//       password: user.password,
+//       nombre: user.nombre ?? user.email,
+//       avatar: user.avatar ?? 'assets/avatars/jagger.jpg',
+//       rol: 'ADMIN',
+//     });
+//   });
+
+//   return usuarios;
+// }
+
+
+// async loginRapido(email: string, password: string): Promise<void> {
+//   this.formularioLogin.patchValue({ email, password });
+//   this.formularioLogin.markAsDirty();
+
+//   // Si querés que al usar acceso rápido se “apruebe” el captcha:
+//   this.captchaResuelto = true;
+
+//   const seleccionado = this.accesosRapidos.find(u => u.email === email);
+//   if (seleccionado) {
+//     this.quickSeleccionado = { nombre: seleccionado.nombre, rol: seleccionado.rol, email };
+//     this.snackBar.dismiss();
+//     this.snackBar.open(
+//       `Rellenamos las credenciales de ${seleccionado.nombre}. Revisá y presioná Ingresar.`,
+//       'Cerrar',
+//       { duration: 3500 }
+//     );
+//   } else {
+//     this.quickSeleccionado = undefined;
+//   }
+
+//   setTimeout(() => this.passwordInput?.nativeElement.focus({ preventScroll: false }), 20);
+// }
+
+
+// ---- QUICK ACCESS ----
+
+get accesosRapidos(): QuickAccessUser[] {
   const usuarios: QuickAccessUser[] = [];
 
   const pacientes = Array.isArray(this.quickLogins.paciente)
@@ -388,29 +463,34 @@ export class LoginComponent implements OnInit {
   return usuarios;
 }
 
+// PARA TDOSS OLOS ACCESOS RAPIDOS
+loginRapidoUser(user: QuickAccessUser): void {
+  console.log('loginRapidoUser ->', user.email, user.password);
 
-async loginRapido(email: string, password: string): Promise<void> {
-  this.formularioLogin.patchValue({ email, password });
+  this.formularioLogin.setValue({
+    email: user.email,
+    password: user.password,
+  });
+
   this.formularioLogin.markAsDirty();
-
-  // Si querés que al usar acceso rápido se “apruebe” el captcha:
   this.captchaResuelto = true;
 
-  const seleccionado = this.accesosRapidos.find(u => u.email === email);
-  if (seleccionado) {
-    this.quickSeleccionado = { nombre: seleccionado.nombre, rol: seleccionado.rol, email };
-    this.snackBar.dismiss();
-    this.snackBar.open(
-      `Rellenamos las credenciales de ${seleccionado.nombre}. Revisá y presioná Ingresar.`,
-      'Cerrar',
-      { duration: 3500 }
-    );
-  } else {
-    this.quickSeleccionado = undefined;
-  }
+  this.quickSeleccionado = {
+    nombre: user.nombre,
+    rol: user.rol,
+    email: user.email
+  };
+
+  this.snackBar.dismiss();
+  this.snackBar.open(
+    `Rellenamos las credenciales de ${user.nombre}. Revisá y presioná Ingresar.`,
+    'Cerrar',
+    { duration: 3500 }
+  );
 
   setTimeout(() => this.passwordInput?.nativeElement.focus({ preventScroll: false }), 20);
 }
+
 
 
 
