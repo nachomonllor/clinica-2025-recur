@@ -391,7 +391,7 @@ input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
   /* En lugar de fondo, usamos una sombra interna del color de tu tarjeta */
   /* Ajusta el código Hex #0b1e3b al color exacto de tu fondo oscuro */
-  -webkit-box-shadow: 0 0 0 30px  rgba(15, 23, 42, 0.98) inset !important;
+  -webkit-box-shadow: 0 0 0 30px  rgba(15, 23, 42, 1) inset !important;
   
   /* Forzamos el color del texto a blanco */
   -webkit-text-fill-color: white !important;
