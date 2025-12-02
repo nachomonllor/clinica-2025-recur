@@ -8,6 +8,9 @@ import {
   FormArray,
   FormControl,
   FormsModule // <======= NECESARIO PARA LOS SLIDERS
+
+
+
 } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -31,6 +34,7 @@ import { SupabaseService } from '../../../services/supabase.service';
 import { HistoriaClinica } from '../../models/historia-clinica.model';
 import { DatoDinamico, formatearDatoDinamico } from '../../models/dato-dinamico.model';
 import { CapitalizarNombrePipe } from "../../../pipes/capitalizar-nombre.pipe";
+import { LoadingService } from '../../../services/loading.service';
 
 interface PerfilCompleto {
   id: string;
@@ -132,10 +136,14 @@ export class MiPerfilComponent implements OnInit {
   constructor(
     private supa: SupabaseService,
     private fb: FormBuilder,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar ,
+
   ) { }
 
+  
   // ---------------- GETTERS ----------------
+
+ 
 
   get nombreCompleto(): string {
     return this.perfil ? `${this.perfil.nombre} ${this.perfil.apellido}` : '';
@@ -179,6 +187,8 @@ export class MiPerfilComponent implements OnInit {
   // ---------------- PERFIL ----------------
 
   async cargarPerfil(): Promise<void> {
+
+
     const { data: sessionData } = await this.supa.getSession();
     if (!sessionData?.session) {
       this.snackBar.open('No hay sesión activa', 'Cerrar', { duration: 2500 });

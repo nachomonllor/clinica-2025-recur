@@ -1,1 +1,7 @@
 
+<div class="overlay-container" *ngIf="loadingService.isLoading$ | async">
+  <div class="spinner-box">
+    <mat-spinner diameter="60" color="primary"></mat-spinner>
+    <p>Cargando...</p>
+  </div>
+</div>
