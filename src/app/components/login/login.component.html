@@ -94,4 +94,25 @@
 </div> -->
 
 
+<!-- FABs flotantes de acceso rápido -->
+<!-- <div class="quick-fab-container" *ngIf="accesosRapidos.length">
+  <button
+    mat-mini-fab
+    type="button"
+    class="quick-fab"
+    *ngFor="let user of accesosRapidos"
+    (click)="loginRapido(user.email, user.password)"
+    [ngClass]="{
+      'fab-paciente': user.rol === 'PACIENTE',
+      'fab-especialista': user.rol === 'ESPECIALISTA',
+      'fab-admin': user.rol === 'ADMIN'
+    }"
+    [matTooltip]="user.nombre + ' (' + (('ROLES.' + user.rol) | translate) + ')'"
+    matTooltipPosition="left"
+  >
+    <img [src]="user.avatar" [alt]="user.nombre" />
+  </button>
+</div> -->
+
+
 <app-fab-bienvenida></app-fab-bienvenida>

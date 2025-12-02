@@ -296,19 +296,49 @@ export class LoginComponent implements OnInit {
     }
   }
 
+  // private traducirError(e: unknown): string {
+  //   const err: any = e;
+  //   const msg = String(err?.message ?? err?.error_description ?? err?.statusText ?? '');
+  //   const m = msg.toLowerCase();
+
+  //   if (m.includes('failed to fetch') || m.includes('networkerror')) {
+  //     return 'No se pudo conectar con el servidor.';
+  //   }
+  //   if (m.includes('invalid login credentials')) return 'Correo o contraseña incorrectos.';
+  //   if (m.includes('email not confirmed')) return 'Debes verificar tu correo.';
+  //   return msg || 'Ocurrió un error al procesar la solicitud.';
+  // }
+
   private traducirError(e: unknown): string {
     const err: any = e;
-    const msg = String(err?.message ?? err?.error_description ?? err?.statusText ?? '');
+    // Agregamos 'err.details' porque Supabase/Postgres suele poner el detalle de la llave duplicada ahí
+    const msg = String(err?.message ?? err?.details ?? err?.error_description ?? err?.statusText ?? '');
     const m = msg.toLowerCase();
 
-    if (m.includes('failed to fetch') || m.includes('networkerror')) {
-      return 'No se pudo conectar con el servidor.';
+    // --- Lógica existente ---
+    if (m.includes('failed to fetch') || m.includes('networkerror') || m.includes('load failed')) {
+      return 'No se pudo conectar con el servidor. Verificá tu conexión a internet, la URL y la API key de Supabase.';
     }
     if (m.includes('invalid login credentials')) return 'Correo o contraseña incorrectos.';
-    if (m.includes('email not confirmed')) return 'Debes verificar tu correo.';
+    if (m.includes('email not confirmed') || m.includes('email_not_confirmed')) {
+      return 'Debes verificar tu correo antes de ingresar.';
+    }
+    if (m.includes('rate') && m.includes('limit')) return 'Demasiados intentos. Esperá unos minutos e intentá nuevamente.';
+    if (m.includes('exists') && m.includes('resource')) return 'El archivo ya existe. Probá con otro nombre o ruta.';
+
+    // --- NUEVA LÓGICA PARA DNI DUPLICADO ---
+    // El error de postgres suele ser: "duplicate key value violates unique constraint"
+    if (m.includes('duplicate key') && (m.includes('dni') || m.includes('users_dni_key'))) {
+        return 'El DNI ingresado ya pertenece a otro usuario registrado en el sistema.';
+    }
+
+    // Si es duplicate key pero no dice DNI (por si acaso choca otro campo único)
+    if (m.includes('duplicate key')) {
+        return 'Uno de los datos ingresados ya existe en el sistema (posiblemente DNI o Email).';
+    }
+
     return msg || 'Ocurrió un error al procesar la solicitud.';
   }
-
 
   get accesosRapidos(): QuickAccessUser[] {
   const usuarios: QuickAccessUser[] = [];
@@ -358,6 +388,29 @@ export class LoginComponent implements OnInit {
   return usuarios;
 }
 
+
+async loginRapido(email: string, password: string): Promise<void> {
+  this.formularioLogin.patchValue({ email, password });
+  this.formularioLogin.markAsDirty();
+
+  // Si querés que al usar acceso rápido se “apruebe” el captcha:
+  this.captchaResuelto = true;
+
+  const seleccionado = this.accesosRapidos.find(u => u.email === email);
+  if (seleccionado) {
+    this.quickSeleccionado = { nombre: seleccionado.nombre, rol: seleccionado.rol, email };
+    this.snackBar.dismiss();
+    this.snackBar.open(
+      `Rellenamos las credenciales de ${seleccionado.nombre}. Revisá y presioná Ingresar.`,
+      'Cerrar',
+      { duration: 3500 }
+    );
+  } else {
+    this.quickSeleccionado = undefined;
+  }
+
+  setTimeout(() => this.passwordInput?.nativeElement.focus({ preventScroll: false }), 20);
+}
 
 
 
