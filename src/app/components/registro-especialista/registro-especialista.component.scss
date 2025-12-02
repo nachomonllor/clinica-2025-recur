@@ -452,4 +452,27 @@ button[type='submit'][mat-raised-button] {
   }
 }
 
+/* -----------------------------------------INPUTS DEL FORM ----------------- */ 
+/*  Estilo base para tus inputs  */
+input {
+  background-color: transparent !important;
+  color: white !important; /* Texto blanco */
+  caret-color: white;      /* La barrita que titila blanca */
+}
 
+/* 2. EL TRUCO PARA EL AUTOCOMPLETADO (Chrome/Edge/Safari) */
+/* Esto detecta cuando el navegador llenó el campo automáticamente */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active {
+  /* En lugar de fondo, usamos una sombra interna del color de la tarjeta */
+  /* Ajusta el código Hex #0b1e3b al color exacto del fondo oscuro */
+  -webkit-box-shadow: 0 0 0 30px  rgba(15, 23, 42, 1) inset !important;
+  
+  /* Forzamos el color del texto a blanco */
+  -webkit-text-fill-color: white !important;
+  
+  /* Mantenemos la transición suave */
+  transition: background-color 5000s ease-in-out 0s;
+}
