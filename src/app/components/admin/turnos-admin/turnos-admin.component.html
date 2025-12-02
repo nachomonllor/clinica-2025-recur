@@ -49,7 +49,7 @@
           <div class="pill pill-con-avatar">
             <!-- Si hay imagen, la mostramos -->
             <img *ngIf="s['especialistaAvatar']" [src]="s['especialistaAvatar']" alt="Foto" class="avatar-mini">
-            <span>{{ s.especialista }}</span>
+            <span>{{ s.especialista | doctor }}</span>
           </div>
         </div>
 

@@ -14,6 +14,7 @@ import { TurnosService } from '../../../../services/turnos.service';
 import { EstadoTurnoUI, TurnoUI } from '../../../models/turno.model';
 import { EstadoTurnoCodigo } from '../../../models/tipos.model';
 import { EstadoTurnoLabelPipe } from "../../../../pipes/estado-turno-label.pipe";
+import { DoctorPipe } from "../../../../pipes/doctor.pipe";
 
 @Component({
   selector: 'app-turnos-admin',
@@ -29,8 +30,9 @@ import { EstadoTurnoLabelPipe } from "../../../../pipes/estado-turno-label.pipe"
     MatCardModule,
     MatDialogModule,
     MatSnackBarModule,
-    EstadoTurnoLabelPipe
-  ],
+    EstadoTurnoLabelPipe,
+    DoctorPipe
+],
   templateUrl: './turnos-admin.component.html',
   styleUrls: ['./turnos-admin.component.scss']
 })

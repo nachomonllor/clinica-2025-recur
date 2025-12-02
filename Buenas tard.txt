@@ -1,5 +1,3 @@
-Buenas tardes. 
-Tengo otro problema ahora, que antes estaba funcionando.
 Me logue como paciente (ana@hotmail.com)  , saco un turno con el especialista (darwin@hotmail.com) , cierro la sesión y me logue como  especialista (darwin@hotmail.com) 
 apruebo el turno de (ana@hotmail.com) y guardo la historia clinica junto con el mensaje de ver reseña.
 Cierro la sesión y vuelvo a loguearme  como paciente (ana@hotmail.com) , y no se ve la reseña del doctor.
