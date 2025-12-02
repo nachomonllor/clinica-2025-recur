@@ -44,6 +44,7 @@ import { Rol } from '../../../models/tipos.model';
 import { UsuarioCreate } from '../../../models/usuario.model';
 import { HistoriaClinicaConExtras } from '../../../models/historia-clinica.model';
 import { CapitalizarNombrePipe } from "../../../../pipes/capitalizar-nombre.pipe";
+import { LoadingService } from '../../../../services/loading.service';
 
 
 @Component({
@@ -139,7 +140,9 @@ export class UsuariosAdminComponent implements OnInit {
     private supa: SupabaseService,
     private fb: FormBuilder,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+
+     private loading: LoadingService 
   ) { }
 
   async ngOnInit(): Promise<void> {
@@ -289,6 +292,8 @@ export class UsuariosAdminComponent implements OnInit {
 
   // ... (cargarUsuarios, cargarTurnosUsuario, obtenerTurnosUsuario, helpers fecha)
   private async cargarUsuarios(): Promise<void> {
+
+    this.loading.show();
     try {
       const { data, error } = await this.supa.client.from('usuarios').select('id, perfil, esta_aprobado, nombre, apellido, email, dni, obra_social, imagen_perfil_1, edad, fecha_registro, activo').order('apellido', { ascending: true });
       if (error) throw error;
@@ -298,9 +303,14 @@ export class UsuariosAdminComponent implements OnInit {
       }));
       this.aplicarFiltro(this.filtroTexto, this.usuarioSeleccionado?.id);
     } catch (e) { console.error(e); }
+    finally {
+       this.loading.hide();
+    }
   }
 
   private async cargarTurnosUsuario(usuario: UsuarioAdmin): Promise<void> {
+
+        this.loading.show();
     this.cargandoTurnos = true;
     try {
       const turnos = await this.obtenerTurnosUsuario(usuario);
@@ -311,10 +321,16 @@ export class UsuariosAdminComponent implements OnInit {
         especialidad: t.especialidad?.nombre || 'Sin especialidad',
         contraparte: usuario.rol === 'PACIENTE' ? `Especialista: ${this.nombreCompleto(t.especialista)}` : `Paciente: ${this.nombreCompleto(t.paciente)}`
       }));
-    } catch (e) { this.turnosUsuario = []; } finally { this.cargandoTurnos = false; }
+    } catch (e) { this.turnosUsuario = []; } 
+    finally { this.cargandoTurnos = false;
+       this.loading.hide();
+     }
   }
 
   private async obtenerTurnosUsuario(usuario: UsuarioAdmin): Promise<TurnoAdminSupabase[]> {
+
+  
+
     let query = this.supa.client.from('turnos').select(`id, fecha_hora_inicio, motivo, comentario, estado:estados_turno!fk_turno_estado(codigo), especialidad:especialidades!fk_turno_especialidad(nombre), paciente:usuarios!fk_turno_paciente(nombre, apellido), especialista:usuarios!fk_turno_especialista(nombre, apellido)`);
     if (usuario.rol === 'PACIENTE') query = query.eq('paciente_id', usuario.id);
     else if (usuario.rol === 'ESPECIALISTA') query = query.eq('especialista_id', usuario.id);
@@ -328,6 +344,10 @@ export class UsuariosAdminComponent implements OnInit {
   fechaLarga(iso?: string | null): string { return iso ? new Date(iso).toLocaleDateString('es-AR', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Sin registrar'; }
 
   async descargarTurnosUsuario(usuario: UsuarioAdmin): Promise<void> {
+
+
+    this.loading.show();
+
     try {
       const turnos = await this.obtenerTurnosUsuario(usuario);
       if (!turnos.length) { Swal.fire('Sin turnos', 'No encontramos turnos asociados.', 'info'); return; }
@@ -337,7 +357,11 @@ export class UsuariosAdminComponent implements OnInit {
       XLSX.utils.book_append_sheet(wb, ws, 'Turnos');
       XLSX.writeFile(wb, `turnos_${usuario.apellido}_${Date.now()}.xlsx`);
       Swal.fire({ icon: 'success', title: 'Descarga completa', timer: 1500, showConfirmButton: false });
-    } catch (e) { Swal.fire('Error', 'No se pudo generar Excel', 'error'); }
+    } catch (e) { Swal.fire('Error', 'No se pudo generar Excel', 'error'); 
+    }
+    finally {
+        this.loading.hide();
+    }
   }
 
   // =========================================================================================
@@ -649,6 +673,9 @@ export class UsuariosAdminComponent implements OnInit {
 
   
   async verHistoriaClinica(pacienteId: string, pacienteNombre: string): Promise<void> {
+
+        this.loading.show();
+
     try {
       const { data: sessionData } = await this.supa.getSession();
       if (!sessionData?.session) return;
@@ -734,6 +761,10 @@ export class UsuariosAdminComponent implements OnInit {
     } catch (err: any) {
       console.error('[UsuariosAdmin] Error al cargar historia clínica', err);
     }
+    finally {
+      this.loading.hide();
+    }
+
   }
 
 
