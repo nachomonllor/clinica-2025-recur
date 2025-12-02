@@ -1,0 +1,86 @@
+// Colores definidos (puedes ajustarlos a tu paleta exacta)
+$color-paciente: #0d6efd;     // Azul
+$color-especialista: #198754; // Verde
+$color-admin: #dc3545;        // Rojo
+
+.fab-container {
+  position: fixed; // Flota sobre todo
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+  
+  // Fondo semitransparente opcional para resaltar
+  background: rgba(0, 0, 0, 0.4); 
+  padding: 15px;
+  border-radius: 20px;
+  backdrop-filter: blur(5px); // Efecto vidrio
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.fab-label {
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: bold;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-align: right;
+  width: 100%;
+}
+
+.fab-grid {
+  display: grid;
+  // Ajusta esto: 3 columnas para que queden 6 usuarios en 2 filas (o cambia a flex)
+  grid-template-columns: repeat(3, 1fr); 
+  gap: 12px;
+}
+
+.fab-btn {
+  width: 55px;
+  height: 55px;
+  border-radius: 50%; // Totalmente redondo
+  border: 3px solid transparent; // Espacio para el borde de color
+  padding: 0;
+  cursor: pointer;
+  overflow: hidden; // Para que la imagen no se salga del círculo
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  background-color: #333; // Fondo por si la imagen falla
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  // Animación al pasar el mouse
+  &:hover {
+    transform: scale(1.15); // Crece un poco
+    z-index: 10;
+  }
+
+  // Colores por Rol
+  &.paciente {
+    border-color: $color-paciente;
+    box-shadow: 0 4px 10px rgba($color-paciente, 0.4);
+    &:hover { box-shadow: 0 0 15px $color-paciente; }
+  }
+
+  &.especialista {
+    border-color: $color-especialista;
+    box-shadow: 0 4px 10px rgba($color-especialista, 0.4);
+    &:hover { box-shadow: 0 0 15px $color-especialista; }
+  }
+
+  &.admin {
+    border-color: $color-admin;
+    box-shadow: 0 4px 10px rgba($color-admin, 0.4);
+    &:hover { box-shadow: 0 0 15px $color-admin; }
+  }
+}
+
+.fab-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; // La imagen llena el círculo sin deformarse
+}

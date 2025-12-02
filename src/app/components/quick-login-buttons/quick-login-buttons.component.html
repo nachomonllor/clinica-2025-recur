@@ -1,0 +1,23 @@
+<div class="fab-container">
+  
+  <div class="fab-label">Accesos Rápidos</div>
+
+  <div class="fab-grid">
+    <ng-container *ngFor="let role of roles">
+      
+      <ng-container *ngFor="let user of quickLogins[role.key]">
+        
+        <button 
+          class="fab-btn" 
+          [ngClass]="role.key"
+          (click)="onFabClick(user, $event)"
+          [title]="user.nombre + ' (' + role.label + ')'"
+        >
+          <img [src]="user.avatar" [alt]="user.nombre" class="fab-img">
+        </button>
+
+      </ng-container>
+
+    </ng-container>
+  </div>
+</div>

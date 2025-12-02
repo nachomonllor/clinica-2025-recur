@@ -47,27 +47,10 @@
       </ng-template>
     </button>
 
+
+
+
     <!-- <div class="quick-access-inline" *ngIf="accesosRapidos.length">
-      <h4>{{ 'LOGIN.QUICK_ACCESS' | translate }}</h4>
-      <div class="quick-inline-grid">
-        <button type="button" class="inline-fav" *ngFor="let user of accesosRapidos"
-          [class.rol-paciente]="user.rol === 'PACIENTE'" [class.rol-especialista]="user.rol === 'ESPECIALISTA'"
-          [class.rol-admin]="user.rol === 'ADMIN'" (click)="activarQuick(user, $event)"
-          [attr.title]="user.nombre + ' (' + (('ROLES.' + user.rol) | translate) + ')'">
-          <div class="inline-avatar">
-            <img [src]="user.avatar" [alt]="user.nombre" />
-          </div>
-          <span class="inline-name">{{ user.nombre }}</span>
-          <span class="inline-role">
-            {{ ('ROLES.' + user.rol) | translate }}
-          </span>
-        </button>
-      </div>
-    </div> -->
-
-
-
-    <div class="quick-access-inline" *ngIf="accesosRapidos.length">
       <h4>{{ 'LOGIN.QUICK_ACCESS' | translate }}</h4>
       <div class="quick-inline-grid">
         <button type="button" class="inline-fav" *ngFor="let user of accesosRapidos"
@@ -83,11 +66,7 @@
           </span>
         </button>
       </div>
-    </div>
-
-
-
-
+    </div> -->
 
   </form>
 
@@ -98,27 +77,10 @@
 
 
 
-<!-- FABs de acceso r apido -->
-<!-- FAB flotantes de acceso rápido -->
-<!-- <div class="quick-fab-container" *ngIf="accesosRapidos.length">
-  <button
-    mat-mini-fab
-    type="button"
-    class="quick-fab"
-    *ngFor="let user of accesosRapidos"
-    (click)="loginRapidoUser(user)"
-    [ngClass]="{
-      'fab-paciente': user.rol === 'PACIENTE',
-      'fab-especialista': user.rol === 'ESPECIALISTA',
-      'fab-admin': user.rol === 'ADMIN'
-    }"
-    [matTooltip]="user.nombre + ' (' + (('ROLES.' + user.rol) | translate) + ')'"
-    matTooltipPosition="left"
-  >
-    <img [src]="user.avatar" [alt]="user.nombre" />
-  </button>
-</div> -->
-
+<app-quick-login-buttons 
+    [quickLogins]="quickLoginsData" 
+    (loginAttempt)="activarQuick($event)"> 
+</app-quick-login-buttons>
 
 
 <app-fab-bienvenida></app-fab-bienvenida>
