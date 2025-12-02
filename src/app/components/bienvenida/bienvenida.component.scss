@@ -1,5 +1,3 @@
-
-
 // 🎨 Paleta compartida con el login
 $login-primary: #3b82f6;
 $login-success: #22c55e;
@@ -21,13 +19,42 @@ $bg-card: rgba(15, 23, 42, 0.9);
 }
 
 /* CONTENEDOR PRINCIPAL */
+// .hero {
+//   max-width: 1120px;
+//   margin: 0 auto;
+//   min-height: calc(100vh - 3rem);
+//   display: flex;
+//   flex-direction: column;
+// }
+
 .hero {
-  max-width: 1120px;
-  margin: 0 auto;
-  min-height: calc(100vh - 3rem);
+  /* Asegura tamaño completo */
+  min-height: 100vh;
+  width: 100%;
   display: flex;
   flex-direction: column;
+  color: white;
+  /* Texto blanco */
+
+  /* Usamos un degradado que va de un azul muy oscuro a otro un poco más transparente */
+  /* Los valores RGBA (red, green, blue, alpha) imitan tu fondo original */
+  background:
+    linear-gradient(135deg, rgba(2, 16, 36, 0.8) 0%, rgba(10, 35, 66, 0.85) 100%),
+    url('/assets/cardio.jpg');
+
+  /* CAMBIO AQUÍ: */
+  /* Prueba valores como 50%, 70%, 80% hasta que te guste el tamaño */
+  background-size: 60% auto;
+
+  /* Asegura que la imagen pequeña quede en el medio */
+  background-position: center center;
+
+  /* IMPORTANTE: Evita que la imagen pequeña se repita como un mosaico */
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
+
+
 
 /* ────────────────────────────── TOPBAR ────────────────────────────── */
 
@@ -40,11 +67,9 @@ $bg-card: rgba(15, 23, 42, 0.9);
   margin-bottom: 2.25rem;
 
   border-radius: 999px;
-  background: linear-gradient(
-    120deg,
-    rgba(15, 23, 42, 0.95),
-    rgba(15, 23, 42, 0.82)
-  );
+  background: linear-gradient(120deg,
+      rgba(15, 23, 42, 0.95),
+      rgba(15, 23, 42, 0.82));
   border: 1px solid rgba(148, 163, 184, 0.6);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -235,7 +260,7 @@ $bg-card: rgba(15, 23, 42, 0.9);
   font-size: 0.86rem;
   color: #9ca3af;
 
-  li + li {
+  li+li {
     margin-top: 0.15rem;
   }
 }
@@ -718,7 +743,7 @@ a[mat-raised-button].btn-cta {
 // //   font-weight: 800;
 // //   letter-spacing: 0.2px;
 // //   font-size: 1.15rem;
-  
+
 // //   mat-icon {
 // //     color: $accent;
 // //   }
@@ -767,7 +792,7 @@ a[mat-raised-button].btn-cta {
 // //   max-width: 1200px;
 // //   margin: 0 auto;
 // //   width: 100%;
-  
+
 // //   @media (max-width: 980px) {
 // //     grid-template-columns: 1fr;
 // //     .photo-card { order: -1; margin-inline: auto; }
@@ -784,7 +809,7 @@ a[mat-raised-button].btn-cta {
 // //     font-weight: 800;
 // //     letter-spacing: 0.2px;
 // //   }
-  
+
 // //   .lead {
 // //     color: $text-2;
 // //     font-size: 0.95rem;
@@ -806,7 +831,7 @@ a[mat-raised-button].btn-cta {
 // //     0 0 0 1px rgba(255, 255, 255, 0.05) inset;
 // //   text-align: center;
 // //   transition: transform .25s ease, box-shadow .25s ease;
-  
+
 // //   &:hover {
 // //     transform: translateY(-6px);
 // //     box-shadow:
@@ -827,7 +852,7 @@ a[mat-raised-button].btn-cta {
 
 // //   .chip {
 // //     padding: 14px;
-    
+
 // //     h3 {
 // //       margin: 0 0 6px;
 // //       display: flex;
@@ -837,12 +862,12 @@ a[mat-raised-button].btn-cta {
 // //       font-weight: 700;
 // //       color: lighten($accent, 20%);
 // //       text-shadow: 0 1px 0 rgba(0,0,0,.35);
-      
+
 // //       mat-icon {
 // //         color: $accent;
 // //       }
 // //     }
-    
+
 // //     ul {
 // //       margin: 0;
 // //       padding-left: 18px;
@@ -858,7 +883,7 @@ a[mat-raised-button].btn-cta {
 // //   flex-wrap: wrap;
 // //   gap: 12px;
 // //   margin-top: 14px;
-  
+
 // //   a mat-icon {
 // //     margin-right: 6px;
 // //   }
@@ -879,16 +904,16 @@ a[mat-raised-button].btn-cta {
 // //     0 12px 26px rgba($accent, .35),
 // //     0 0 0 2px rgba(10, 58, 59, .28) inset;
 // //   transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
-  
+
 // //   &:hover {
 // //     transform: translateY(-1px);
 // //     box-shadow: 0 16px 30px rgba($accent, .48);
 // //   }
-  
+
 // //   &:active {
 // //     transform: translateY(0);
 // //   }
-  
+
 // //   &:focus-visible {
 // //     outline: 3px solid rgba($accent, .9);
 // //     outline-offset: 2px;
