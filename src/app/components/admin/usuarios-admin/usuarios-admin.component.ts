@@ -70,7 +70,7 @@ import { DoctorPipe } from "../../../../pipes/doctor.pipe";
     MatSnackBarModule,
     CapitalizarNombrePipe,
     DoctorPipe
-],
+  ],
   templateUrl: './usuarios-admin.component.html',
   styleUrls: ['./usuarios-admin.component.scss'],
   animations: [
@@ -144,7 +144,7 @@ export class UsuariosAdminComponent implements OnInit {
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
 
-     private loading: LoadingService 
+    private loading: LoadingService
   ) { }
 
   async ngOnInit(): Promise<void> {
@@ -306,13 +306,13 @@ export class UsuariosAdminComponent implements OnInit {
       this.aplicarFiltro(this.filtroTexto, this.usuarioSeleccionado?.id);
     } catch (e) { console.error(e); }
     finally {
-       this.loading.hide();
+      this.loading.hide();
     }
   }
 
   private async cargarTurnosUsuario(usuario: UsuarioAdmin): Promise<void> {
 
-        this.loading.show();
+    this.loading.show();
     this.cargandoTurnos = true;
     try {
       const turnos = await this.obtenerTurnosUsuario(usuario);
@@ -323,15 +323,16 @@ export class UsuariosAdminComponent implements OnInit {
         especialidad: t.especialidad?.nombre || 'Sin especialidad',
         contraparte: usuario.rol === 'PACIENTE' ? `Especialista: ${this.nombreCompleto(t.especialista)}` : `Paciente: ${this.nombreCompleto(t.paciente)}`
       }));
-    } catch (e) { this.turnosUsuario = []; } 
-    finally { this.cargandoTurnos = false;
-       this.loading.hide();
-     }
+    } catch (e) { this.turnosUsuario = []; }
+    finally {
+      this.cargandoTurnos = false;
+      this.loading.hide();
+    }
   }
 
   private async obtenerTurnosUsuario(usuario: UsuarioAdmin): Promise<TurnoAdminSupabase[]> {
 
-  
+
 
     let query = this.supa.client.from('turnos').select(`id, fecha_hora_inicio, motivo, comentario, estado:estados_turno!fk_turno_estado(codigo), especialidad:especialidades!fk_turno_especialidad(nombre), paciente:usuarios!fk_turno_paciente(nombre, apellido), especialista:usuarios!fk_turno_especialista(nombre, apellido)`);
     if (usuario.rol === 'PACIENTE') query = query.eq('paciente_id', usuario.id);
@@ -359,10 +360,11 @@ export class UsuariosAdminComponent implements OnInit {
       XLSX.utils.book_append_sheet(wb, ws, 'Turnos');
       XLSX.writeFile(wb, `turnos_${usuario.apellido}_${Date.now()}.xlsx`);
       Swal.fire({ icon: 'success', title: 'Descarga completa', timer: 1500, showConfirmButton: false });
-    } catch (e) { Swal.fire('Error', 'No se pudo generar Excel', 'error'); 
+    } catch (e) {
+      Swal.fire('Error', 'No se pudo generar Excel', 'error');
     }
     finally {
-        this.loading.hide();
+      this.loading.hide();
     }
   }
 
@@ -444,7 +446,7 @@ export class UsuariosAdminComponent implements OnInit {
 
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(10);
-        
+
         // Título dinámico: Si estoy viendo a un Especialista, dice "Especialista: ...". Si no, "Paciente: ..."
         const rolTexto = usuario.rol === 'ESPECIALISTA' ? 'Especialista' : 'Paciente';
         doc.text(`${rolTexto}: ${usuario.nombre} ${usuario.apellido}`, pageWidth - marginX, 24, { align: 'right' });
@@ -473,18 +475,18 @@ export class UsuariosAdminComponent implements OnInit {
 
         // 1. Cabecera (Fecha y Estado)
         const fechaStr = t.fecha_hora_inicio ? new Date(t.fecha_hora_inicio).toLocaleDateString('es-AR') : 'Sin fecha';
-        const horaStr = t.fecha_hora_inicio ? new Date(t.fecha_hora_inicio).toLocaleTimeString('es-AR', {hour:'2-digit', minute:'2-digit'}) : '';
+        const horaStr = t.fecha_hora_inicio ? new Date(t.fecha_hora_inicio).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' }) : '';
         const estadoPrint = (t.estado?.codigo || 'SIN ESTADO').toUpperCase();
         addParagraph(`Turno #${index + 1} · ${fechaStr} ${horaStr} · (${estadoPrint})`, { bold: true });
 
         // 2. Datos del turno (Especialidad y Contraparte)
         const nombreEspecialidad = t.especialidad?.nombre || 'Varios';
-        
+
         // Si el usuario del reporte es Especialista, la contraparte es el Paciente. Y viceversa.
         const userObj = usuario.rol === 'ESPECIALISTA' ? t.paciente : t.especialista;
         const nombreContraparte = userObj ? `${userObj.apellido}, ${userObj.nombre}` : 'Sin datos';
         const labelContraparte = usuario.rol === 'ESPECIALISTA' ? 'Paciente' : 'Especialista';
-        
+
         addParagraph(`Especialidad: ${nombreEspecialidad} | ${labelContraparte}: ${nombreContraparte}`);
 
         // 3. DATOS CLÍNICOS (si hay)
@@ -533,7 +535,7 @@ export class UsuariosAdminComponent implements OnInit {
         doc.setDrawColor(59, 130, 246);  // Azul borde
         doc.setLineWidth(0.4);
         doc.roundedRect(marginX, y, contentWidth, cardHeight, 3, 3, 'FD');
-        
+
         // Borde decorativo izq
         doc.setFillColor(59, 130, 246);
         doc.rect(marginX, y, 2, cardHeight, 'F');
@@ -589,7 +591,7 @@ export class UsuariosAdminComponent implements OnInit {
 
 
 
-  
+
   async guardarUsuario(): Promise<void> {
     if (this.formularioUsuario.invalid) {
       this.formularioUsuario.markAllAsTouched();
@@ -673,10 +675,10 @@ export class UsuariosAdminComponent implements OnInit {
   }
 
 
-  
+
   async verHistoriaClinica(pacienteId: string, pacienteNombre: string): Promise<void> {
 
-        this.loading.show();
+    this.loading.show();
 
     try {
       const { data: sessionData } = await this.supa.getSession();
@@ -767,6 +769,57 @@ export class UsuariosAdminComponent implements OnInit {
       this.loading.hide();
     }
 
+  }
+
+
+
+  // ... imports y código existente ...
+
+  async hacerAdmin(u: UsuarioAdminCard): Promise<void> {
+    if (!this.esAdmin) return;
+
+    // 1. Confirmación con SweetAlert
+    const confirmacion = await Swal.fire({
+      title: '¿Estás seguro?',
+      text: `Estás a punto de convertir a ${u.nombre} ${u.apellido} en ADMINISTRADOR. Tendrá acceso total al sistema.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, hacer Admin',
+      cancelButtonText: 'Cancelar'
+    });
+
+    if (!confirmacion.isConfirmed) return;
+
+    this.loading.show();
+
+    try {
+      // 2. Actualizar en Base de Datos (campo 'perfil' a 'ADMIN')
+      const { error } = await this.supa.client
+        .from('usuarios')
+        .update({ perfil: 'ADMIN' })
+        .eq('id', u.id);
+
+      if (error) throw error;
+
+      Swal.fire({
+        title: '¡Actualizado!',
+        text: `El usuario ahora es Administrador.`,
+        icon: 'success',
+        timer: 2000,
+        showConfirmButton: false
+      });
+
+      // 3. Recargar la lista para reflejar el cambio (la tarjeta desaparecerá o cambiará de color según tus filtros)
+      await this.cargarUsuarios();
+
+    } catch (e: any) {
+      console.error(e);
+      Swal.fire('Error', 'No se pudo actualizar el rol del usuario.', 'error');
+    } finally {
+      this.loading.hide();
+    }
   }
 
 

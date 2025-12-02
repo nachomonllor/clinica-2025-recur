@@ -294,6 +294,26 @@
   &.primary { background: linear-gradient(135deg, #2563eb66, #7c3aed66); border-color: #ffffff33; }
   &.ghost   { background: transparent; }
   &.danger  { background: linear-gradient(135deg, #ef444466, #f59e0b33); border-color: #ffffff33; }
+
+
+  /* ---------------------------------- PARA HACER ADMIN ------------------------------------ */
+
+  &.admin-btn {
+    background-color: #f59e0b; // Color Ámbar/Dorado
+    color: white;
+    
+    &:hover {
+      background-color: #d97706;
+    }
+
+    mat-icon {
+      margin-right: 6px;
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+
 }
 
 /* Ripple mínimo */
