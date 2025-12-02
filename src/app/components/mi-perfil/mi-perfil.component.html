@@ -104,6 +104,24 @@
                       {{ dia.nombre }}
                     </mat-checkbox>
 
+                    <!-- <div class="slider-wrapper" *ngIf="dia.activo"
+                      style="flex: 1; display: flex; align-items: center; gap: 15px;">
+
+                      <span class="hora-label" style="font-weight: bold; color: #fbbf24; min-width: 45px;">
+                        {{ formatLabel(dia.inicio) }}
+                      </span>
+
+                      <mat-slider min="8" max="19" step="0.5" discrete [displayWith]="formatLabel"
+                        style="flex: 1; min-width: 150px;">
+                        <input matSliderStartThumb [(ngModel)]="dia.inicio" [ngModelOptions]="{standalone: true}">
+                        <input matSliderEndThumb [(ngModel)]="dia.fin" [ngModelOptions]="{standalone: true}">
+                      </mat-slider>
+
+                      <span class="hora-label" style="font-weight: bold; color: #fbbf24; min-width: 45px;">
+                        {{ formatLabel(dia.fin) }}
+                      </span>
+                    </div> -->
+
                     <div class="slider-wrapper" *ngIf="dia.activo"
                       style="flex: 1; display: flex; align-items: center; gap: 15px;">
 
@@ -111,13 +129,9 @@
                         {{ formatLabel(dia.inicio) }}
                       </span>
 
-                      <!-- <mat-slider min="8" max="19" step="0.5" discrete [displayWith]="formatLabel" style="flex: 1; min-width: 150px;">
-                        <input matSliderStartThumb [(ngModel)]="dia.inicio" [ngModelOptions]="{standalone: true}">
-                        <input matSliderEndThumb [(ngModel)]="dia.fin" [ngModelOptions]="{standalone: true}">
-                      </mat-slider> -->
+                      <mat-slider min="8" [max]="dia.nombre === 'Sábado' ? 14 : 19" step="0.5" discrete
+                        [displayWith]="formatLabel" style="flex: 1; min-width: 150px;">
 
-                      <mat-slider min="8" max="19" step="0.5" discrete [displayWith]="formatLabel"
-                        style="flex: 1; min-width: 150px;">
                         <input matSliderStartThumb [(ngModel)]="dia.inicio" [ngModelOptions]="{standalone: true}">
                         <input matSliderEndThumb [(ngModel)]="dia.fin" [ngModelOptions]="{standalone: true}">
                       </mat-slider>
@@ -156,7 +170,8 @@
             <mat-label>Filtrar por profesional</mat-label>
             <mat-select [value]="especialistaSeleccionado" (selectionChange)="seleccionarEspecialista($event.value)">
               <mat-option value="todos">Todos los profesionales</mat-option>
-              <mat-option *ngFor="let e of especialistasDisponibles" [value]="e.id">{{ e.nombre | capitalizarNombre }}</mat-option>
+              <mat-option *ngFor="let e of especialistasDisponibles" [value]="e.id">{{ e.nombre | capitalizarNombre
+                }}</mat-option>
             </mat-select>
           </mat-form-field>
           <button mat-raised-button color="primary" (click)="descargarPDF()"

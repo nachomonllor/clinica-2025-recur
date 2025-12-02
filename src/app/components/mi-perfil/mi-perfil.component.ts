@@ -79,7 +79,7 @@ interface DiaDisponibilidad {
     MatSliderModule // <=========================== Agregado
     ,
     CapitalizarNombrePipe
-],
+  ],
   templateUrl: './mi-perfil.component.html',
   styleUrls: ['./mi-perfil.component.scss'],
   animations: [
@@ -136,14 +136,14 @@ export class MiPerfilComponent implements OnInit {
   constructor(
     private supa: SupabaseService,
     private fb: FormBuilder,
-    private snackBar: MatSnackBar ,
+    private snackBar: MatSnackBar,
 
   ) { }
 
-  
+
   // ---------------- GETTERS ----------------
 
- 
+
 
   get nombreCompleto(): string {
     return this.perfil ? `${this.perfil.nombre} ${this.perfil.apellido}` : '';
@@ -260,30 +260,62 @@ export class MiPerfilComponent implements OnInit {
 
   // ---------------- LoGICA DE HORARIOS   -------------------  ----------------
 
+  // inicializarFormularioHorarios(): void {
+  //   // Inicializamos el FormArray solo para mantener la estructura visual (títulos de tarjetas)
+  //   this.formularioHorarios = this.fb.group({
+  //     horarios: this.fb.array<FormGroup>([])
+  //   });
+
+  //   // Reiniciamos la matriz de disponibilidad
+  //   this.disponibilidad = [];
+
+  //   this.especialidades.forEach((esp) => {
+  //     // 1. Agregamos el grupo al FormArray (para que el HTML pueda iterar los títulos)
+  //     const grupoHorario = this.fb.group({
+  //       especialidad: [esp, Validators.required]
+  //     });
+  //     this.horariosArray.push(grupoHorario);
+
+  //     // 2. Creamos la configuracion de días para esta especialidad
+  //     // Por defecto: De 08:00 a 17:00, inactivos.
+  //     const diasParaEstaEspecialidad: DiaDisponibilidad[] = this.diasSemana.map(dia => ({
+  //       nombre: dia,
+  //       activo: false,
+  //       inicio: 8,
+  //       fin: 17
+  //     }));
+
+  //     this.disponibilidad.push(diasParaEstaEspecialidad);
+  //   });
+  // }
+
   inicializarFormularioHorarios(): void {
-    // Inicializamos el FormArray solo para mantener la estructura visual (títulos de tarjetas)
     this.formularioHorarios = this.fb.group({
       horarios: this.fb.array<FormGroup>([])
     });
 
-    // Reiniciamos la matriz de disponibilidad
     this.disponibilidad = [];
 
     this.especialidades.forEach((esp) => {
-      // 1. Agregamos el grupo al FormArray (para que el HTML pueda iterar los títulos)
       const grupoHorario = this.fb.group({
         especialidad: [esp, Validators.required]
       });
       this.horariosArray.push(grupoHorario);
 
-      // 2. Creamos la configuración de días para esta especialidad
-      // Por defecto: De 08:00 a 17:00, inactivos.
-      const diasParaEstaEspecialidad: DiaDisponibilidad[] = this.diasSemana.map(dia => ({
-        nombre: dia,
-        activo: false,
-        inicio: 8,
-        fin: 17
-      }));
+      // 2. Modificamos la creación de la configuración
+      const diasParaEstaEspecialidad: DiaDisponibilidad[] = this.diasSemana.map(dia => {
+
+        // Lógica para determinar la hora fin por defecto
+        const esSabado = dia === 'Sábado';
+        const finPorDefecto = esSabado ? 14 : 17; // Sábado termina a las 14, resto 17 (por defecto visual)
+
+        return {
+          nombre: dia,
+          activo: false,
+          inicio: 8,
+          fin: finPorDefecto
+        };
+      });
 
       this.disponibilidad.push(diasParaEstaEspecialidad);
     });
@@ -306,7 +338,7 @@ export class MiPerfilComponent implements OnInit {
   formatLabel(value: number): string {
     const hora = Math.floor(value);
     const minutos = (value % 1) === 0.5 ? '30' : '00';
-    
+
     // padStart asegura que sea "09" en vez de "9"
     return `${hora.toString().padStart(2, '0')}:${minutos}`;
   }
@@ -427,7 +459,7 @@ export class MiPerfilComponent implements OnInit {
     });
 
     // ... (El resto de la función guardarHorarios sigue igual: validaciones y llamada a Supabase) ...
-    
+
     if (!algunDiaSeleccionado) {
       this.snackBar.open('Debes activar al menos un día laboral.', 'Cerrar', { duration: 3000 });
       this.loading = false;
