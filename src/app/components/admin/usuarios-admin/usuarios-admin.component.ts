@@ -45,6 +45,7 @@ import { UsuarioCreate } from '../../../models/usuario.model';
 import { HistoriaClinicaConExtras } from '../../../models/historia-clinica.model';
 import { CapitalizarNombrePipe } from "../../../../pipes/capitalizar-nombre.pipe";
 import { LoadingService } from '../../../../services/loading.service';
+import { DoctorPipe } from "../../../../pipes/doctor.pipe";
 
 
 @Component({
@@ -66,9 +67,10 @@ import { LoadingService } from '../../../../services/loading.service';
     MatNativeDateModule,
     MatDialogModule,
     MatProgressSpinnerModule,
-    MatSnackBarModule, 
-    CapitalizarNombrePipe
-  ],
+    MatSnackBarModule,
+    CapitalizarNombrePipe,
+    DoctorPipe
+],
   templateUrl: './usuarios-admin.component.html',
   styleUrls: ['./usuarios-admin.component.scss'],
   animations: [

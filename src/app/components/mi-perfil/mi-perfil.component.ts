@@ -35,6 +35,7 @@ import { HistoriaClinica } from '../../models/historia-clinica.model';
 import { DatoDinamico, formatearDatoDinamico } from '../../models/dato-dinamico.model';
 import { CapitalizarNombrePipe } from "../../../pipes/capitalizar-nombre.pipe";
 import { LoadingService } from '../../../services/loading.service';
+import { DoctorPipe } from "../../../pipes/doctor.pipe";
 
 interface PerfilCompleto {
   id: string;
@@ -78,8 +79,9 @@ interface DiaDisponibilidad {
     MatExpansionModule,
     MatSliderModule // <=========================== Agregado
     ,
-    CapitalizarNombrePipe
-  ],
+    CapitalizarNombrePipe,
+    DoctorPipe
+],
   templateUrl: './mi-perfil.component.html',
   styleUrls: ['./mi-perfil.component.scss'],
   animations: [

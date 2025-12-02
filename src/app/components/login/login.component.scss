@@ -1,4 +1,69 @@
-// 🎨 Paleta base (ajustá a tu tema Material si querés)
+
+
+// Contenedor fijo en esquina inferior derecha
+.quick-fab-container {
+  position: fixed;
+  right: 1.5rem;
+  bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  z-index: 1300; // por encima del card y de casi todo
+}
+
+// Estilo base de los FAB de usuario
+.quick-fab {
+  overflow: hidden; // que el avatar sea perfectamente circular
+  box-shadow:
+    0 10px 25px rgba(15, 23, 42, 0.9),
+    0 0 0 1px rgba(15, 23, 42, 0.8);
+
+  img {
+    width: 100%;
+    height: 100%;
+    border-radius: 999px;
+    object-fit: cover;
+    display: block;
+  }
+}
+
+// Colores por rol (similar a tus inline-fav)
+.quick-fab.fab-paciente {
+  background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.25), #0b1120);
+  box-shadow:
+    0 0 0 2px rgba(56, 189, 248, 0.75),
+    0 10px 25px rgba(15, 23, 42, 0.95);
+}
+
+.quick-fab.fab-especialista {
+  background: radial-gradient(circle at top left, rgba(52, 211, 153, 0.25), #0b1120);
+  box-shadow:
+    0 0 0 2px rgba(52, 211, 153, 0.8),
+    0 10px 25px rgba(15, 23, 42, 0.95);
+}
+
+.quick-fab.fab-admin {
+  background: radial-gradient(circle at top left, rgba(251, 191, 36, 0.3), #0b1120);
+  box-shadow:
+    0 0 0 2px rgba(251, 191, 36, 0.9),
+    0 10px 25px rgba(15, 23, 42, 0.95);
+}
+
+@media (max-width: 600px) {
+  .quick-fab-container {
+    right: 1rem;
+    bottom: 1rem;
+  }
+}
+
+
+
+
+/* ---------------------------------- ESTILOS ANTES   ----------------------------------- */
+
+
+
+// Paleta base (ajustá a tu tema Material si querés)
 $login-primary: #3b82f6;
 $login-success: #22c55e;
 $bg-body: #020617;
@@ -399,3 +464,4 @@ input:-webkit-autofill:active {
   /* Mantenemos la transición suave */
   transition: background-color 5000s ease-in-out 0s;
 }
+

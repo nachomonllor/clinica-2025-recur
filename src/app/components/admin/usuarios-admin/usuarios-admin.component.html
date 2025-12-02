@@ -12,17 +12,19 @@
     <div class="filters">
       <div class="search glass">
         <svg class="icon" viewBox="0 0 20 20" aria-hidden="true">
-          <path d="M12.9 14.32a7 7 0 1 1 1.41-1.41l3.9 3.9a1 1 0 1 1-1.41 1.41l-3.9-3.9zM14 8a6 6 0 1 0-12 0 6 6 0 0 0 12 0z"/>
+          <path
+            d="M12.9 14.32a7 7 0 1 1 1.41-1.41l3.9 3.9a1 1 0 1 1-1.41 1.41l-3.9-3.9zM14 8a6 6 0 1 0-12 0 6 6 0 0 0 12 0z" />
         </svg>
-        <input type="search"
-               placeholder="Buscar por nombre, email, obra social o especialidad..."
-               [(ngModel)]="search" />
+        <input type="search" placeholder="Buscar por nombre, email, obra social o especialidad..."
+          [(ngModel)]="search" />
       </div>
 
       <div class="chips">
         <button class="chip" [class.active]="filtroRol === 'todos'" (click)="filtroRol = 'todos'">Todos</button>
-        <button class="chip" [class.active]="filtroRol === 'ESPECIALISTA'" (click)="filtroRol = 'ESPECIALISTA'">Especialistas</button>
-        <button class="chip" [class.active]="filtroRol === 'PACIENTE'" (click)="filtroRol = 'PACIENTE'">Pacientes</button>
+        <button class="chip" [class.active]="filtroRol === 'ESPECIALISTA'"
+          (click)="filtroRol = 'ESPECIALISTA'">Especialistas</button>
+        <button class="chip" [class.active]="filtroRol === 'PACIENTE'"
+          (click)="filtroRol = 'PACIENTE'">Pacientes</button>
       </div>
 
       <label class="only-enabled">
@@ -34,10 +36,8 @@
 
   <!-- Grilla de tarjetas -->
   <section class="grid" [@listStagger]>
-    <article class="user-card"
-             [@cardInOut]
-             *ngFor="let u of filtered; trackBy: trackById"
-             [ngClass]="[u.color, u.rol === 'PACIENTE' ? 'card-lg' : 'card-sm']">
+    <article class="user-card" [@cardInOut] *ngFor="let u of filtered; trackBy: trackById"
+      [ngClass]="[u.color, u.rol === 'PACIENTE' ? 'card-lg' : 'card-sm']">
       <div class="accent"></div>
 
       <!-- Cabecera -->
@@ -47,8 +47,21 @@
           <span *ngIf="!u.avatarUrl">{{ initials(u) }}</span>
         </div>
 
-        <div class="title">
+        <!-- <div class="title">
           <h3>{{ u.nombre | capitalizarNombre}} {{ u.apellido | capitalizarNombre }}</h3>
+
+          <div class="sub">
+            <span class="role">{{ rolChip(u) }}</span>
+            <span class="dot" *ngIf="u.edad !== undefined"></span>
+            <span *ngIf="u.edad !== undefined">{{ u.edad }} años</span>
+          </div>
+        </div> -->
+
+        <div class="title">
+          <h3>
+            {{ u.rol === 'ESPECIALISTA' ? (u.nombre | capitalizarNombre | doctor) : (u.nombre | capitalizarNombre) }}
+            {{ u.apellido | capitalizarNombre }}
+          </h3>
 
           <div class="sub">
             <span class="role">{{ rolChip(u) }}</span>
@@ -92,13 +105,13 @@
         <div class="actions" *ngIf="u.rol === 'PACIENTE'; else accionesEspecialista">
           <button class="btn primary ripple" (click)="verHistoria(u)">
             <svg class="icon" viewBox="0 0 24 24">
-              <path d="M4 6a2 2 0 012-2h8l6 6v10a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 4v4h4"/>
+              <path d="M4 6a2 2 0 012-2h8l6 6v10a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 4v4h4" />
             </svg>
             Ver historia clínica
           </button>
           <button class="btn ghost ripple" (click)="descargarTurnos(u)">
             <svg class="icon" viewBox="0 0 24 24">
-              <path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
             Descargar turnos
           </button>
@@ -106,20 +119,21 @@
 
         <ng-template #accionesEspecialista>
           <div class="actions">
-            
+
             <!-- Botón Habilitar/Deshabilitar -->
-            <button class="btn danger ripple" *ngIf="esAdmin" (click)="toggleHabilitado(u)" [attr.aria-pressed]="!u.habilitado">
+            <button class="btn danger ripple" *ngIf="esAdmin" (click)="toggleHabilitado(u)"
+              [attr.aria-pressed]="!u.habilitado">
               <svg class="icon" viewBox="0 0 24 24">
-                <path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" />
               </svg>
               {{ u.habilitado ? 'Deshabilitar' : 'Habilitar' }}
             </button>
 
-      
+
             <!-- UPARA AGREGADOS USA EL HELPRE DE PDF -->
             <button class="btn pdf-btn ripple" (click)="descargarPdf(u)" title="Descargar Atenciones en PDF">
-                <mat-icon>picture_as_pdf</mat-icon>
-                Descargar en PDF
+              <mat-icon>picture_as_pdf</mat-icon>
+              Descargar en PDF
             </button>
 
           </div>

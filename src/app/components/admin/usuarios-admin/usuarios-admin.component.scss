@@ -335,3 +335,94 @@
 //   padding: clamp(16px, 3vw, 24px);
 //   color: var(--text);
 // }
+
+/* Badge de Admin (Dorado) */
+.role-admin {
+  background-color: #fef3c7 !important; /* Amarillo claro */
+  color: #d97706 !important; /* Amarillo oscuro */
+  border: 1px solid #fcd34d;
+}
+
+.admin-icon {
+  color: #f59e0b;
+  margin-left: 5px;
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  vertical-align: middle;
+}
+
+/* Botón Flotante (FAB) */
+.fab-add {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #2563eb; /* Azul primario */
+  color: white;
+  border: none;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 100;
+  transition: all 0.2s;
+
+  &:hover {
+    transform: scale(1.1);
+    background: #1d4ed8;
+  }
+}
+
+/* Modal Overlay para el formulario */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.form-card {
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 20px;
+  
+  .form-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+  }
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+
+    .full-width {
+        grid-column: 1 / -1;
+    }
+}
+
+.img-preview img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-left: 10px;
+    border: 2px solid #ddd;
+}

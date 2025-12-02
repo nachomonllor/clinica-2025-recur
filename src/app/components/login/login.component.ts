@@ -97,95 +97,106 @@ export class LoginComponent implements OnInit {
   // =========================================================================
   //  1. CORRECCIÓN PRINCIPAL: Mapeo explícito para que no falte el email
   // =========================================================================
-  get accesosRapidos(): QuickAccessUser[] {
-    const usuarios: QuickAccessUser[] = [];
+  // get accesosRapidos(): QuickAccessUser[] {
+  //   const usuarios: QuickAccessUser[] = [];
 
-    // --- PACIENTES ---
-    const pacientes = Array.isArray(this.quickLogins.paciente) 
-      ? this.quickLogins.paciente 
-      : [this.quickLogins.paciente];
+  //   // --- PACIENTES ---
+  //   const pacientes = Array.isArray(this.quickLogins.paciente) 
+  //     ? this.quickLogins.paciente 
+  //     : [this.quickLogins.paciente];
       
-    pacientes.forEach(u => usuarios.push({
-      nombre: u.nombre ?? 'Paciente', 
-      avatar: u.avatar ?? 'assets/avatars/james.jpg',
-      rol: 'PACIENTE',
-      email: u.email,       // <--- ESTO ES LO QUE FALTABA CARGAR BIEN
-      password: u.password
-    }));
+  //   pacientes.forEach(u => usuarios.push({
+  //     nombre: u.nombre ?? 'Paciente', 
+  //     avatar: u.avatar ?? 'assets/avatars/james.jpg',
+  //     rol: 'PACIENTE',
+  //     email: u.email,       // <--- ESTO ES LO QUE FALTABA CARGAR BIEN
+  //     password: u.password
+  //   }));
 
-    // --- ESPECIALISTAS ---
-    const especialistas = Array.isArray(this.quickLogins.especialista) 
-      ? this.quickLogins.especialista 
-      : [this.quickLogins.especialista];
+  //   // --- ESPECIALISTAS ---
+  //   const especialistas = Array.isArray(this.quickLogins.especialista) 
+  //     ? this.quickLogins.especialista 
+  //     : [this.quickLogins.especialista];
 
-    especialistas.forEach(u => usuarios.push({
-      nombre: u.nombre ?? 'Especialista',
-      avatar: u.avatar ?? 'assets/avatars/mendel.jpg',
-      rol: 'ESPECIALISTA',
-      email: u.email,       // <--- Aseguramos el mail
-      password: u.password
-    }));
+  //   especialistas.forEach(u => usuarios.push({
+  //     nombre: u.nombre ?? 'Especialista',
+  //     avatar: u.avatar ?? 'assets/avatars/mendel.jpg',
+  //     rol: 'ESPECIALISTA',
+  //     email: u.email,       // <--- Aseguramos el mail
+  //     password: u.password
+  //   }));
 
-    // --- ADMINS ---
-    const admins = Array.isArray(this.quickLogins.admin) 
-      ? this.quickLogins.admin 
-      : [this.quickLogins.admin];
+  //   // --- ADMINS ---
+  //   const admins = Array.isArray(this.quickLogins.admin) 
+  //     ? this.quickLogins.admin 
+  //     : [this.quickLogins.admin];
 
-    admins.forEach(u => usuarios.push({
-      nombre: u.nombre ?? 'Admin',
-      avatar: u.avatar ?? 'assets/avatars/jagger.jpg',
-      rol: 'ADMIN',
-      email: u.email,       // <--- Aseguramos el mail
-      password: u.password
-    }));
+  //   admins.forEach(u => usuarios.push({
+  //     nombre: u.nombre ?? 'Admin',
+  //     avatar: u.avatar ?? 'assets/avatars/jagger.jpg',
+  //     rol: 'ADMIN',
+  //     email: u.email,       // <--- Aseguramos el mail
+  //     password: u.password
+  //   }));
 
-    return usuarios;
-  }
+  //   return usuarios;
+  // }
 
   // =========================================================================
   //  2. Lógica del click (Tu versión completa)
   // =========================================================================
+  // activarQuick(user: any, event?: Event) {
+  //   // 1. Evitar propagación del click (útil en elementos flotantes)
+  //   if (event) {
+  //     event.preventDefault();
+  //     event.stopPropagation();
+  //   }
+
+  //   console.log('Cargando usuario rápido:', user.email);
+
+  //   // 2. Rellenar el formulario
+  //   this.formularioLogin.patchValue({
+  //     email: user.email,
+  //     password: user.password
+  //   });
+    
+  //   // 3. Marcar los controles como "dirty" para que Angular sepa que cambiaron
+  //   this.formularioLogin.markAsDirty();
+  //   this.formularioLogin.markAllAsTouched();
+
+  //   // 4. Bypass del Captcha (UX: si elige acceso rápido, confiamos)
+  //   this.captchaResuelto = true;
+
+  //   // 5. Actualizar la tarjeta visual "Usuario seleccionado" dentro del login
+  //   this.quickSeleccionado = { 
+  //     nombre: user.nombre, 
+  //     rol: user.rol, 
+  //     email: user.email 
+  //   };
+
+  //   // 6. Feedback visual (SnackBar)
+  //   this.snackBar.dismiss(); // Cierra el anterior si existe
+  //   this.snackBar.open(
+  //     `Credenciales de ${user.nombre} cargadas.`,
+  //     'OK',
+  //     { duration: 3000, verticalPosition: 'top' }
+  //   );
+
+  //   // 7. Mover el foco al input de password
+  //   setTimeout(() => {
+  //       this.passwordInput?.nativeElement.focus();
+  //   }, 100);
+  // }
+
   activarQuick(user: any, event?: Event) {
-    // 1. Evitar propagación del click (útil en elementos flotantes)
-    if (event) {
-      event.preventDefault();
-      event.stopPropagation();
-    }
+    event?.preventDefault();
 
-    console.log('Cargando usuario rápido:', user.email);
-
-    // 2. Rellenar el formulario
     this.formularioLogin.patchValue({
       email: user.email,
       password: user.password
     });
-    
-    // 3. Marcar los controles como "dirty" para que Angular sepa que cambiaron
-    this.formularioLogin.markAsDirty();
-    this.formularioLogin.markAllAsTouched();
 
-    // 4. Bypass del Captcha (UX: si elige acceso rápido, confiamos)
     this.captchaResuelto = true;
-
-    // 5. Actualizar la tarjeta visual "Usuario seleccionado" dentro del login
-    this.quickSeleccionado = { 
-      nombre: user.nombre, 
-      rol: user.rol, 
-      email: user.email 
-    };
-
-    // 6. Feedback visual (SnackBar)
-    this.snackBar.dismiss(); // Cierra el anterior si existe
-    this.snackBar.open(
-      `Credenciales de ${user.nombre} cargadas.`,
-      'OK',
-      { duration: 3000, verticalPosition: 'top' }
-    );
-
-    // 7. Mover el foco al input de password
-    setTimeout(() => {
-        this.passwordInput?.nativeElement.focus();
-    }, 100);
   }
 
   async iniciarSesion(): Promise<void> {
@@ -297,6 +308,59 @@ export class LoginComponent implements OnInit {
     if (m.includes('email not confirmed')) return 'Debes verificar tu correo.';
     return msg || 'Ocurrió un error al procesar la solicitud.';
   }
+
+
+  get accesosRapidos(): QuickAccessUser[] {
+  const usuarios: QuickAccessUser[] = [];
+
+  const pacientes = Array.isArray(this.quickLogins.paciente)
+    ? this.quickLogins.paciente
+    : [this.quickLogins.paciente];
+
+  pacientes.forEach(user => {
+    usuarios.push({
+      email: user.email,
+      password: user.password,
+      nombre: user.nombre ?? user.email,
+      avatar: user.avatar ?? 'assets/avatars/james.jpg',
+      rol: 'PACIENTE',
+    });
+  });
+
+  const especialistas = Array.isArray(this.quickLogins.especialista)
+    ? this.quickLogins.especialista
+    : [this.quickLogins.especialista];
+
+  especialistas.forEach(user => {
+    usuarios.push({
+      email: user.email,
+      password: user.password,
+      nombre: user.nombre ?? user.email,
+      avatar: user.avatar ?? 'assets/avatars/mendel.jpg',
+      rol: 'ESPECIALISTA',
+    });
+  });
+
+  const admins = Array.isArray(this.quickLogins.admin)
+    ? this.quickLogins.admin
+    : [this.quickLogins.admin];
+
+  admins.forEach(user => {
+    usuarios.push({
+      email: user.email,
+      password: user.password,
+      nombre: user.nombre ?? user.email,
+      avatar: user.avatar ?? 'assets/avatars/jagger.jpg',
+      rol: 'ADMIN',
+    });
+  });
+
+  return usuarios;
+}
+
+
+
+
 }
 
 
