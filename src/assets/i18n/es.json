@@ -19,7 +19,8 @@
     "PASSWORD_MIN": "Mínimo 6 caracteres.",
     "QUICK_COMPLETED": "completado. Revisá los campos y tocá Ingresar.",
     "QUICK_ACCESS": "Accesos rápidos",
-    "QUICK_NOTE": "Usá estos accesos para rellenar el login automáticamente con perfiles demo.",
+   
+    "QUICK_NOTE": "",
     "AS_PATIENT": "Ingresar como paciente",
     "AS_DOCTOR": "Ingresar como especialista"
   },
