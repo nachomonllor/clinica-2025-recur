@@ -1,0 +1,11 @@
+* Captcha en el registro especialista
+* Validación datos de la historia clinica , que salga validacion
+* Grafico de trta y otros
+* Encuesta del lado del paciente 
+* la pantalla seleccionar usaruio tienen que ser circulos (lo que pide el cliente)  
+* favbuttons ? ? 
+* Logo de la clinica en todos los graficos
+* hacer un switch si/no en requiere seguimiento de la historia clinca [class="switch"]
+* Directiva propia
+* Verificar que guarda mas de una especialidad el registro del especialista
+
