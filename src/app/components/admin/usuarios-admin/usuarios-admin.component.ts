@@ -828,7 +828,6 @@ export class UsuariosAdminComponent implements OnInit {
   // ====================================================================
   async descargarExcel(): Promise<void> {
 
-    // 1. Validar que haya datos
     if (!this.usuarios || this.usuarios.length === 0) {
       Swal.fire('Atención', 'No hay usuarios para exportar.', 'warning');
       return;
@@ -837,40 +836,44 @@ export class UsuariosAdminComponent implements OnInit {
     this.loading.show();
 
     try {
-      // 2. Mapear los datos para que el Excel quede prolijo
-      // Creamos un array nuevo solo con las columnas que queremos mostrar
-      const dataParaExcel = this.usuarios.map(u => ({
+      // 1. CLONAR Y ORDENAR POR ROL
+      // Usamos [...this.usuarios] para crear una copia y no desordenar la vista actual.
+      // localeCompare ordena alfabéticamente: ADMIN -> ESPECIALISTA -> PACIENTE
+
+      // const usuariosOrdenados = [...this.usuarios].sort((a, b) => {
+      //   return a.rol.localeCompare(b.rol);
+      // });
+
+      const usuariosOrdenados = [...this.usuarios].sort((a, b) => {
+        return a.email.localeCompare(b.email);
+      });
+
+      // 2. Mapear los datos YA ORDENADOS
+      const dataParaExcel = usuariosOrdenados.map(u => ({
         Rol: u.rol,
         Apellido: u.apellido,
         Nombre: u.nombre,
         DNI: u.dni,
         Edad: u.edad,
         Email: u.email,
-        'Obra Social': u.obra_social || 'N/A', // Solo aplica a pacientes
+        'Obra Social': u.obra_social || 'N/A',
         'Estado': u.rol === 'ESPECIALISTA' ? (u.aprobado ? 'Habilitado' : 'Pendiente') : 'Activo',
         'Fecha Registro': u.fecha_registro ? new Date(u.fecha_registro).toLocaleDateString('es-AR') : ''
       }));
 
-      // 3. Crear la hoja de trabajo (WorkSheet)
+      // 3. Crear hoja y libro (Igual que antes)
       const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(dataParaExcel);
-
-      // 4. Crear el libro de trabajo (WorkBook) y agregar la hoja
       const wb: XLSX.WorkBook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, 'Usuarios del Sistema');
+      XLSX.utils.book_append_sheet(wb, ws, 'Usuarios');
 
-      // 5. Generar nombre de archivo con fecha
-      const fecha = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
-      const nombreArchivo = `Usuarios_Clinica_${fecha}.xlsx`;
+      // 4. Guardar
+      const fecha = new Date().toISOString().slice(0, 10);
+      XLSX.writeFile(wb, `Usuarios_Clinica_${fecha}.xlsx`);
 
-      // 6. Guardar archivo
-      XLSX.writeFile(wb, nombreArchivo);
-
-      // Feedback visual
       Swal.fire({
         icon: 'success',
         title: 'Exportación completada',
-        text: `Se descargó el archivo ${nombreArchivo}`,
-        timer: 2000,
+        timer: 1500,
         showConfirmButton: false
       });
 
@@ -880,8 +883,264 @@ export class UsuariosAdminComponent implements OnInit {
     } finally {
       this.loading.hide();
     }
+
   }
 
 
+  // ====================================================================
+  //  DESCARGA PDF DE TODOS LOS USUARIOS (ESTILO TABLA)
+  // ====================================================================
+  async descargarUsuariosPdf(): Promise<void> {
+    if (!this.usuarios || this.usuarios.length === 0) {
+      this.snackBar.open('No hay usuarios para exportar.', 'Cerrar', { duration: 3000 });
+      return;
+    }
+
+    this.loading.show();
+    this.snackBar.open('Generando PDF de usuarios...', 'Espere', { duration: 2000 });
+
+    // 1. ORDENAR POR ROL (Igual que en Excel)
+    const usuariosOrdenados = [...this.usuarios].sort((a, b) => a.rol.localeCompare(b.rol));
+
+    // 2. PREPARAR DOCUMENTO Y LOGO (Reutilizamos tu lógica SVG)
+    const doc = new jsPDF('p', 'mm', 'a4');
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const marginX = 10; // Margen un poco más chico para que entre la tabla
+    const headerBottom = 32;
+
+    // Tu Logo SVG
+    const svgLogo = `
+      <svg width="600" height="200" viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="gradBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#0099ff;stop-opacity:1" /> 
+            <stop offset="100%" style="stop-color:#0055b3;stop-opacity:1" /> 
+          </linearGradient>
+        </defs>
+        <g transform="translate(50, 50)">
+          <path d="M 80 0 H 120 A 10 10 0 0 1 130 10 V 80 H 200 A 10 10 0 0 1 210 90 V 130 A 10 10 0 0 1 200 140 H 130 V 210 A 10 10 0 0 1 120 220 H 80 A 10 10 0 0 1 70 210 V 140 H 0 A 10 10 0 0 1 -10 130 V 90 A 10 10 0 0 1 0 80 H 70 V 10 A 10 10 0 0 1 80 0 Z" fill="url(#gradBlue)" transform="scale(0.5) translate(30,30)"/>
+          <path d="M 60 115 L 90 145 L 150 85" stroke="white" stroke-width="14" fill="none" stroke-linecap="round" stroke-linejoin="round" transform="scale(0.5) translate(30,30)"/>
+        </g>
+        <g transform="translate(180, 115)">
+          <text x="0" y="-25" font-family="Arial" font-weight="bold" font-size="28" fill="#0077cc">CLINICA</text>
+          <text x="0" y="25" font-family="Arial" font-weight="bold" font-size="52" fill="#003366">MONLLOR</text>
+        </g>
+      </svg>`;
+    const svgBase64 = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgLogo)));
+
+    // FUNCIÓN PRINCIPAL DE GENERACIÓN
+    const generarDocumento = (pngDataUrl?: string) => {
+
+      // -- Función auxiliar para dibujar Cabecera de Página --
+      const drawPageHeader = () => {
+        // Fondo Oscuro Header
+        doc.setFillColor(17, 24, 39);
+        doc.rect(0, 0, pageWidth, headerBottom, 'F');
+
+        // Logo
+        if (pngDataUrl) {
+          doc.setFillColor(255, 255, 255);
+          doc.roundedRect(marginX - 2, 5, 65, 22, 2, 2, 'F');
+          doc.addImage(pngDataUrl, 'PNG', marginX, 6, 60, 20);
+        }
+
+        // Títulos
+        doc.setTextColor(255, 255, 255);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(16);
+        doc.text('Listado de Usuarios', pageWidth - marginX, 18, { align: 'right' });
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10);
+        doc.setTextColor(209, 213, 219);
+        const hoy = new Date().toLocaleDateString('es-AR');
+        doc.text(`Fecha de emisión: ${hoy}`, pageWidth - marginX, 26, { align: 'right' });
+        doc.text(`Total usuarios: ${usuariosOrdenados.length}`, pageWidth - marginX, 30, { align: 'right' });
+      };
+
+      // -- Definición de Columnas --
+      // Ajustamos los anchos (Total disponible ~190mm)
+      const cols = [
+        { header: 'ROL', x: 10, w: 30 },
+        { header: 'APELLIDO Y NOMBRE', x: 40, w: 60 },
+        { header: 'DNI', x: 100, w: 25 },
+        { header: 'EDAD', x: 125, w: 15 },
+        { header: 'EMAIL', x: 140, w: 50 },
+        { header: 'ESTADO', x: 190, w: 10 } // Alineado a derecha o ícono
+      ];
+
+      let y = headerBottom + 10;
+
+      // -- Función para dibujar la cabecera de la tabla --
+      const drawTableHead = () => {
+        doc.setFillColor(59, 130, 246); // Azul primario
+        doc.rect(marginX, y, pageWidth - (marginX * 2), 8, 'F');
+
+        doc.setTextColor(255, 255, 255);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(8);
+
+        cols.forEach(col => {
+          doc.text(col.header, col.x, y + 5);
+        });
+        y += 8;
+      };
+
+      // 1. Dibujar primera cabecera
+      drawPageHeader();
+      drawTableHead();
+
+      // 2. Iterar Usuarios
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8);
+
+      usuariosOrdenados.forEach((u, index) => {
+        // Verificar espacio en página
+        if (y > pageHeight - 15) {
+          doc.addPage();
+          drawPageHeader();
+          y = headerBottom + 10;
+          drawTableHead();
+          doc.setFont('helvetica', 'normal'); // Reset fuente al volver del header
+          doc.setFontSize(8);
+        }
+
+        // Alternar color de fondo (Cebra)
+        if (index % 2 === 1) {
+          doc.setFillColor(243, 244, 246); // Gris muy claro
+          doc.rect(marginX, y, pageWidth - (marginX * 2), 8, 'F');
+        }
+
+        doc.setTextColor(51, 65, 85); // Texto gris oscuro
+
+        // ROL
+        doc.setFont('helvetica', 'bold');
+        // Cortamos el rol para que no ocupe tanto (ej: ESPECIALISTA -> ESPEC.) si quisieras, 
+        // pero mejor letra chica:
+        doc.text(u.rol.substring(0, 12), cols[0].x, y + 5);
+
+        // NOMBRE COMPLETO
+        doc.setFont('helvetica', 'normal');
+        const nombreCompleto = `${u.apellido}, ${u.nombre}`;
+        // Cortar si es muy largo
+        const nombreFit = nombreCompleto.length > 28 ? nombreCompleto.substring(0, 28) + '...' : nombreCompleto;
+        doc.text(nombreFit, cols[1].x, y + 5);
+
+        // DNI
+        doc.text(u.dni || '-', cols[2].x, y + 5);
+
+        // EDAD
+        doc.text(u.edad ? u.edad.toString() : '-', cols[3].x, y + 5);
+
+        // EMAIL (Cortar si es largo)
+        const email = u.email || '';
+        const emailFit = email.length > 25 ? email.substring(0, 25) + '...' : email;
+        doc.text(emailFit, cols[4].x, y + 5);
+
+        // ESTADO (Texto simple: Hab / Pen)
+        let estado = 'OK';
+        if (u.rol === 'ESPECIALISTA') estado = u.aprobado ? 'Hab.' : 'Pend.';
+
+        // Colorcito para el estado
+        if (estado === 'Pend.') doc.setTextColor(220, 38, 38); // Rojo
+        else if (estado === 'Hab.' || estado === 'OK') doc.setTextColor(22, 163, 74); // Verde
+
+        doc.text(estado, cols[5].x, y + 5);
+
+        // Línea separadora sutil
+        doc.setDrawColor(229, 231, 235);
+        doc.line(marginX, y + 8, pageWidth - marginX, y + 8);
+
+        y += 8;
+      });
+
+      // Guardar PDF
+      const nombreArchivo = `Usuarios_Sistema_${new Date().getTime()}.pdf`;
+      doc.save(nombreArchivo);
+      this.loading.hide();
+    };
+
+    // 3. CARGAR IMAGEN Y EJECUTAR
+    const img = new Image();
+    img.src = svgBase64;
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 600;
+      canvas.height = 200;
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.drawImage(img, 0, 0);
+        generarDocumento(canvas.toDataURL('image/png'));
+      } else {
+        generarDocumento();
+      }
+    };
+    img.onerror = () => generarDocumento();
+  }
+
+
+
+
 }
+
+
+  // async descargarExcel(): Promise<void> {
+
+  //   // 1. Validar que haya datos
+  //   if (!this.usuarios || this.usuarios.length === 0) {
+  //     Swal.fire('Atención', 'No hay usuarios para exportar.', 'warning');
+  //     return;
+  //   }
+
+  //   this.loading.show();
+
+  //   try {
+  //     // 2. Mapear los datos para que el Excel quede prolijo
+  //     // Creamos un array nuevo solo con las columnas que queremos mostrar
+  //     const dataParaExcel = this.usuarios.map(u => ({
+  //       Rol: u.rol,
+  //       Apellido: u.apellido,
+  //       Nombre: u.nombre,
+  //       DNI: u.dni,
+  //       Edad: u.edad,
+  //       Email: u.email,
+  //       'Obra Social': u.obra_social || 'N/A', // Solo aplica a pacientes
+  //       'Estado': u.rol === 'ESPECIALISTA' ? (u.aprobado ? 'Habilitado' : 'Pendiente') : 'Activo',
+  //       'Fecha Registro': u.fecha_registro ? new Date(u.fecha_registro).toLocaleDateString('es-AR') : ''
+  //     }));
+
+  //     // 3. Crear la hoja de trabajo (WorkSheet)
+  //     const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(dataParaExcel);
+
+  //     // 4. Crear el libro de trabajo (WorkBook) y agregar la hoja
+  //     const wb: XLSX.WorkBook = XLSX.utils.book_new();
+  //     XLSX.utils.book_append_sheet(wb, ws, 'Usuarios del Sistema');
+
+  //     // 5. Generar nombre de archivo con fecha
+  //     const fecha = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+  //     const nombreArchivo = `Usuarios_Clinica_${fecha}.xlsx`;
+
+  //     // 6. Guardar archivo
+  //     XLSX.writeFile(wb, nombreArchivo);
+
+  //     // Feedback visual
+  //     Swal.fire({
+  //       icon: 'success',
+  //       title: 'Exportación completada',
+  //       text: `Se descargó el archivo ${nombreArchivo}`,
+  //       timer: 2000,
+  //       showConfirmButton: false
+  //     });
+
+  //   } catch (error) {
+  //     console.error('Error al exportar Excel:', error);
+  //     Swal.fire('Error', 'Hubo un problema al generar el archivo Excel.', 'error');
+  //   } finally {
+  //     this.loading.hide();
+  //   }
+  // }
+
+
+
 
