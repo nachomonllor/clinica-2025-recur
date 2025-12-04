@@ -10,6 +10,6 @@
 * Verificar que guarda mas de una especialidad el registro del especialista
 * Animaciones de transicion que no sean la ruedita
 * Traer todos los usuarios del lado del admin
-
+* Boton para desactivar el Captcha
 
 

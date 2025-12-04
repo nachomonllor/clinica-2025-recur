@@ -46,7 +46,6 @@
   </mat-card>
 </section>
 
-<!-- Floating Action Button (acciones rápidas) -->
 <div class="fab">
   <button mat-fab color="primary" (click)="toggleFab()" aria-label="Acciones rápidas">
     <mat-icon>{{ showFab ? 'close' : 'add' }}</mat-icon>
@@ -66,21 +65,3 @@
 </div>
 
 
-<!-- En el template del contenedor (ej: UsuariosAdminComponent) -->
-<!-- <app-listar-especialistas
-  [especialistas]="especialistas$ | async"
-  [loading]="cargando"
-  [isAdmin]="true"
-  (verDetalle)="onVerDetalle($event)"
-  (toggleHabilitado)="onToggleHabilitado($event)"
-  (reenviarVerificacion)="onReenviarVerificacion($event)"
-></app-listar-especialistas> -->
-
-
-
-<!-- ejemplo en el template de la página de Admin -->
-<!-- <app-estadisticas
-  [turnos]="turnosDeLaClinica"                TurnoRow[] o Turno[] 
-  [especialistas]="listaEspecialistas"         Especialista[] 
-  [loginLogs]="logsDeIngresos"                 LoginLog[] 
-></app-estadisticas> -->
