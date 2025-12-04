@@ -823,5 +823,65 @@ export class UsuariosAdminComponent implements OnInit {
   }
 
 
+  // ====================================================================
+  //  DESCARGA EXCEL DE TODOS LOS USUARIOS (REQUERIMIENTO ADMIN)
+  // ====================================================================
+  async descargarExcel(): Promise<void> {
+
+    // 1. Validar que haya datos
+    if (!this.usuarios || this.usuarios.length === 0) {
+      Swal.fire('Atención', 'No hay usuarios para exportar.', 'warning');
+      return;
+    }
+
+    this.loading.show();
+
+    try {
+      // 2. Mapear los datos para que el Excel quede prolijo
+      // Creamos un array nuevo solo con las columnas que queremos mostrar
+      const dataParaExcel = this.usuarios.map(u => ({
+        Rol: u.rol,
+        Apellido: u.apellido,
+        Nombre: u.nombre,
+        DNI: u.dni,
+        Edad: u.edad,
+        Email: u.email,
+        'Obra Social': u.obra_social || 'N/A', // Solo aplica a pacientes
+        'Estado': u.rol === 'ESPECIALISTA' ? (u.aprobado ? 'Habilitado' : 'Pendiente') : 'Activo',
+        'Fecha Registro': u.fecha_registro ? new Date(u.fecha_registro).toLocaleDateString('es-AR') : ''
+      }));
+
+      // 3. Crear la hoja de trabajo (WorkSheet)
+      const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(dataParaExcel);
+
+      // 4. Crear el libro de trabajo (WorkBook) y agregar la hoja
+      const wb: XLSX.WorkBook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Usuarios del Sistema');
+
+      // 5. Generar nombre de archivo con fecha
+      const fecha = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+      const nombreArchivo = `Usuarios_Clinica_${fecha}.xlsx`;
+
+      // 6. Guardar archivo
+      XLSX.writeFile(wb, nombreArchivo);
+
+      // Feedback visual
+      Swal.fire({
+        icon: 'success',
+        title: 'Exportación completada',
+        text: `Se descargó el archivo ${nombreArchivo}`,
+        timer: 2000,
+        showConfirmButton: false
+      });
+
+    } catch (error) {
+      console.error('Error al exportar Excel:', error);
+      Swal.fire('Error', 'Hubo un problema al generar el archivo Excel.', 'error');
+    } finally {
+      this.loading.hide();
+    }
+  }
+
+
 }
 

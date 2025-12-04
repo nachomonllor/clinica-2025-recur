@@ -1,4 +1,6 @@
 <div class="page">
+
+
   <!-- Header / Filtros -->
   <header class="header glass">
     <div class="brand">
@@ -7,6 +9,13 @@
         <strong>Clínica Monllor</strong>
         <small>Usuarios</small>
       </div>
+    </div>
+
+    <div class="action-buttons">
+      <button mat-stroked-button color="accent" (click)="descargarExcel()">
+        <mat-icon>table_view</mat-icon>
+        Descargar Excel general
+      </button>
     </div>
 
     <div class="filters">
@@ -148,7 +157,7 @@
             </svg>
             Ver historia clínica
           </button>
-          
+
           <button class="btn ghost ripple" (click)="descargarTurnos(u)">
             <svg class="icon" viewBox="0 0 24 24">
               <path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14" stroke-linecap="round" stroke-linejoin="round" />
@@ -156,7 +165,8 @@
             Descargar turnos
           </button>
 
-          <button class="btn admin-btn ripple" *ngIf="esAdmin" (click)="hacerAdmin(u)" title="Convertir en Administrador">
+          <button class="btn admin-btn ripple" *ngIf="esAdmin" (click)="hacerAdmin(u)"
+            title="Convertir en Administrador">
             <mat-icon>admin_panel_settings</mat-icon>
             Hacer Admin
           </button>
@@ -178,9 +188,10 @@
               Descargar en PDF
             </button>
 
-            <button class="btn admin-btn ripple" *ngIf="esAdmin && u.rol !== 'ADMIN'" (click)="hacerAdmin(u)" title="Convertir en Administrador">
-                <mat-icon>admin_panel_settings</mat-icon>
-                Hacer Admin
+            <button class="btn admin-btn ripple" *ngIf="esAdmin && u.rol !== 'ADMIN'" (click)="hacerAdmin(u)"
+              title="Convertir en Administrador">
+              <mat-icon>admin_panel_settings</mat-icon>
+              Hacer Admin
             </button>
 
           </div>
