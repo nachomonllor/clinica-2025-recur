@@ -1,14 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import {
-  ApexAxisChartSeries, ApexChart, ApexDataLabels, ApexFill, ApexGrid,
-  ApexPlotOptions, ApexStroke, ApexTitleSubtitle, ApexTooltip, ApexXAxis, ApexYAxis,
-  NgApexchartsModule
+  ApexChart, ApexDataLabels, ApexFill, ApexLegend,
+  ApexNonAxisChartSeries, ApexPlotOptions, ApexResponsive, ApexStroke,
+  ApexTitleSubtitle, ApexTooltip, ChartComponent, NgApexchartsModule
 } from 'ng-apexcharts';
 
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
+
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatRippleModule, MatNativeDateModule } from '@angular/material/core';
@@ -21,82 +22,124 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { ChartOptions, EstadisticaTurnosPorEspecialidad } from '../../models/estadistica.model';
-import { EstadisticasService } from '../../../services/estadisticas.service';
 
-// ... ChartOptions igual que antes
+import { EstadisticasService } from '../../../services/estadisticas.service';
+import { EstadisticaTurnosPorEspecialidad } from '../../models/estadistica.model';
+
+// Definición estricta de tipos para el gráfico
+export type ChartOptions = {
+  series: ApexNonAxisChartSeries;
+  chart: ApexChart;
+  responsive: ApexResponsive[];
+  labels: any;
+  fill: ApexFill;
+  legend: ApexLegend;
+  dataLabels: ApexDataLabels;
+  colors: string[];
+  tooltip: ApexTooltip;
+  title: ApexTitleSubtitle;
+  stroke: ApexStroke;
+};
 
 @Component({
   selector: 'app-turnos-por-especialidad',
   standalone: true,
   imports: [
-    CommonModule, FormsModule,
-    RouterLink,
+    CommonModule, FormsModule, ReactiveFormsModule, RouterLink,
     MatCardModule, MatIconModule, MatButtonModule, MatMenuModule, MatRippleModule,
     MatTooltipModule, MatFormFieldModule, MatInputModule,
     MatDatepickerModule, MatNativeDateModule, MatProgressSpinnerModule,
-    ReactiveFormsModule,
     NgApexchartsModule
   ],
   templateUrl: './turnos-por-especialidad.component.html',
   styleUrls: ['./turnos-por-especialidad.component.scss']
 })
 export class TurnosPorEspecialidadComponent implements OnInit {
+  @ViewChild('chart') chart!: ChartComponent;
 
   cargando = false;
   error?: string;
   filtrosForm!: FormGroup;
+  logoClinicaBase64: string = '';
 
-  chartSeries: ApexAxisChartSeries = [{ name: 'Turnos', data: [] }];
-  chartOptions: Partial<ChartOptions> = {
-    // ... igual que lo tenías
+  // Configuración de datos de la serie
+  chartSeries: ApexNonAxisChartSeries = [];
+
+  // CORRECCIÓN: Inicializamos TODAS las propiedades obligatorias
+  // Ya no usamos Partial<ChartOptions>, sino ChartOptions completo.
+  chartOptions: ChartOptions = {
+    series: [],
     chart: {
-      type: 'bar',
-      height: 420,
-      toolbar: { show: false },
-      foreColor: '#EAF2FF'
+      type: 'pie',
+      height: 380,
+      foreColor: '#EAF2FF',
+      background: 'transparent',
+      toolbar: { show: true }
     },
-    plotOptions: { /* ... */ },
-    dataLabels: { /* ... */ },
-    xaxis: {
-      categories: [],
-      title: { text: 'Especialidades' },
-      labels: { rotate: -10, trim: true }
+    labels: [],
+    colors: ['#1E88E5', '#43A047', '#E53935', '#FB8C00', '#8E24AA', '#00ACC1', '#FFD600', '#546E7A'],
+    legend: {
+      position: 'bottom',
+      labels: { colors: '#EAF2FF' }
     },
-    yaxis: {
-      title: { text: 'Cantidad de Turnos' },
-      min: 0,
-      forceNiceScale: true
+    dataLabels: {
+      enabled: true,
+      formatter: function (val: any) {
+        return val.toFixed(1) + "%";
+      },
+      dropShadow: { enabled: false }
     },
-    colors: ['#1565C0'],
-    fill: { /* ... */ },
-    stroke: { show: false },
-    grid: { borderColor: 'rgba(255,255,255,.12)' },
-    tooltip: { theme: 'dark' },
-    title: { text: '' }
+    tooltip: {
+      theme: 'dark',
+      y: {
+        formatter: function (val) {
+          return val + " turnos";
+        }
+      }
+    },
+    stroke: {
+      show: true,
+      colors: ['#061126']
+    },
+    title: { text: '' },
+    // Propiedades extra que pide el HTML (aunque estén vacías, deben existir)
+    fill: {
+      opacity: 1
+    },
+    responsive: [
+      {
+        breakpoint: 480,
+        options: {
+          chart: { width: 300 },
+          legend: { position: 'bottom' }
+        }
+      }
+    ]
   };
 
   constructor(
     private fb: FormBuilder,
     private api: EstadisticasService
-  ) { }
+  ) {
+    // Logo SVG en Base64
+    const svg = `<svg width="600" height="200" viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#0099ff;stop-opacity:1"/><stop offset="100%" style="stop-color:#0055b3;stop-opacity:1"/></linearGradient></defs><g transform="translate(50,50)"><path d="M80 0H120A10 10 0 0 1 130 10V80H200A10 10 0 0 1 210 90V130A10 10 0 0 1 200 140H130V210A10 10 0 0 1 120 220H80A10 10 0 0 1 70 210V140H0A10 10 0 0 1-10 130V90A10 10 0 0 1 0 80H70V10A10 10 0 0 1 80 0Z" fill="url(#g)" transform="scale(0.5) translate(30,30)"/><path d="M60 115L90 145L150 85" stroke="white" stroke-width="14" fill="none" stroke-linecap="round" stroke-linejoin="round" transform="scale(0.5) translate(30,30)"/></g><g transform="translate(180,115)"><text x="0" y="-25" font-family="Arial" font-weight="bold" font-size="28" fill="#0077cc">CLINICA</text><text x="0" y="25" font-family="Arial" font-weight="bold" font-size="52" fill="#003366">MONLLOR</text></g></svg>`;
+    this.logoClinicaBase64 = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
+  }
 
   async ngOnInit(): Promise<void> {
     this.filtrosForm = this.fb.group({
-      desde: [null as Date | null],
-      hasta: [null as Date | null],
+      desde: [null],
+      hasta: [null],
     });
     await this.cargarDatos();
   }
 
   aplicarFiltros(): void {
-    this.cargarDatos();  // no hace falta await acá
+    this.cargarDatos();
   }
 
   private toIso(d?: Date | null): string | undefined {
-    return d
-      ? new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())).toISOString()
-      : undefined;
+    return d ? new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())).toISOString() : undefined;
   }
 
   private async cargarDatos(): Promise<void> {
@@ -104,106 +147,82 @@ export class TurnosPorEspecialidadComponent implements OnInit {
     this.error = undefined;
 
     const { desde, hasta } = this.filtrosForm.value;
-    const isoDesde = this.toIso(desde ?? undefined);
-    const isoHasta = this.toIso(hasta ?? undefined);
+    const isoDesde = this.toIso(desde);
+    const isoHasta = this.toIso(hasta);
 
     try {
-      // USAMOS PROMISE NO OBSERVABLE
       const items: EstadisticaTurnosPorEspecialidad[] =
         await this.api.obtenerTurnosPorEspecialidad({ desde: isoDesde, hasta: isoHasta });
 
       const categorias = items.map(i => i.nombre_especialidad ?? 'Sin nombre');
-      const valores = items.map(i => i.cantidad);
+      const valores = items.map(i => Number(i.cantidad));
 
-      this.chartSeries = [{ name: 'Turnos', data: valores }];
+      // Actualizar datos
+      this.chartSeries = valores;
+      
+      // Actualizar etiquetas (OJO: Al no ser Partial, debemos asignar con spread operator con cuidado o actualizar la propiedad específica)
       this.chartOptions = {
         ...this.chartOptions,
-        xaxis: {
-          ...(this.chartOptions.xaxis ?? {}),
-          categories: categorias
-        }
+        labels: categorias
       };
+
     } catch (err) {
-      console.error('[TurnosPorEspecialidad] Error al cargar datos', err);
+      console.error(err);
       this.error = 'No pudimos cargar los datos.';
     } finally {
       this.cargando = false;
     }
   }
 
-  // descargarPDF() queda igual
-  // async descargarPDF(): Promise<void> {
-  //   const el = document.getElementById('captura-pdf');
-  //   if (!el) return;
-
-  //   const canvas = await html2canvas(el, { scale: 2, backgroundColor: null });
-  //   const img = canvas.toDataURL('image/png');
-
-  //   const pdf = new jsPDF('landscape', 'pt', 'a4');
-  //   const pageW = pdf.internal.pageSize.getWidth();
-  //   const pageH = pdf.internal.pageSize.getHeight();
-
-  //   const ratio = Math.min(pageW / canvas.width, pageH / canvas.height);
-  //   const imgW = canvas.width * ratio;
-  //   const imgH = canvas.height * ratio;
-
-  //   const x = (pageW - imgW) / 2;
-  //   const y = 40;
-
-  //   pdf.setFont('helvetica', 'bold');
-  //   pdf.setFontSize(16);
-  //   pdf.text('Turnos por Especialidad', 40, 28);
-
-  //   pdf.addImage(img, 'PNG', x, y, imgW, imgH);
-  //   pdf.save(`turnos_por_especialidad_${new Date().toISOString().slice(0, 10)}.pdf`);
-  // }
-
-
+  // --- DESCARGA PDF ---
   async descargarPDF(): Promise<void> {
     const el = document.getElementById('captura-pdf');
     if (!el) return;
 
-    // --- CAMBIO CLAVE AQUI ---
-    // En lugar de 'backgroundColor: null', ponemos el color oscuro de tu tema.
-    // Esto fuerza a que la imagen generada tenga fondo azul oscuro y las letras blancas se lean.
     const canvas = await html2canvas(el, {
       scale: 2,
-      backgroundColor: '#061126', // <--- COLOR DE FONDO FORZADO (Dark Blue)
+      backgroundColor: '#061126',
       logging: false,
       useCORS: true
     });
 
-    const img = canvas.toDataURL('image/png');
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF('landscape', 'mm', 'a4');
 
-    const pdf = new jsPDF('landscape', 'pt', 'a4');
-    const pageW = pdf.internal.pageSize.getWidth();
-    const pageH = pdf.internal.pageSize.getHeight();
+    const pdfW = pdf.internal.pageSize.getWidth();
+    const pdfH = pdf.internal.pageSize.getHeight();
+    const ratio = canvas.width / canvas.height;
 
-    const ratio = Math.min(pageW / canvas.width, pageH / canvas.height);
+    let w = pdfW - 20;
+    let h = w / ratio;
 
-    // Ajustamos un poco el tamaño para dejar márgenes
-    const imgW = canvas.width * ratio * 0.9;
-    const imgH = canvas.height * ratio * 0.9;
+    if (h > pdfH - 20) {
+      h = pdfH - 20;
+      w = h * ratio;
+    }
 
-    const x = (pageW - imgW) / 2;
-    const y = 60; // Bajamos un poco para el título
+    const x = (pdfW - w) / 2;
+    const y = (pdfH - h) / 2;
 
-    // Título del PDF
-    pdf.setFont('helvetica', 'bold');
-    pdf.setFontSize(18);
-    pdf.text('Reporte: Turnos por Especialidad', 40, 40);
-
-    // Fecha
-    pdf.setFontSize(10);
-    pdf.setFont('helvetica', 'normal');
-    pdf.text(`Fecha de emisión: ${new Date().toLocaleDateString()}`, 40, 55);
-
-    pdf.addImage(img, 'PNG', x, y, imgW, imgH);
-    pdf.save(`turnos_especialidad_${new Date().toISOString().slice(0, 10)}.pdf`);
+    pdf.addImage(imgData, 'PNG', x, y, w, h);
+    pdf.save(`estadistica_tortas_${new Date().getTime()}.pdf`);
   }
 
+  // --- DESCARGA IMAGEN ---
+  async descargarImagen(): Promise<void> {
+    const el = document.getElementById('captura-pdf');
+    if (!el) return;
 
+    const canvas = await html2canvas(el, {
+      scale: 2,
+      backgroundColor: '#061126',
+      logging: false,
+      useCORS: true
+    });
+
+    const link = document.createElement('a');
+    link.href = canvas.toDataURL('image/jpeg', 0.9);
+    link.download = `estadistica_grafico_${new Date().getTime()}.jpg`;
+    link.click();
+  }
 }
-
-
-

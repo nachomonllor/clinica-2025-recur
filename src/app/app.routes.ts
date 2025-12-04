@@ -193,12 +193,12 @@ export const routes: Routes = [
         loadComponent: () => import('./components/informes-generales/informes-generales.component').then(m => m.InformesGeneralesComponent),
         data: { roles: ['ADMIN'] }
       },
-      {
-        path: 'turnos-especialidad',
-        canActivate: [RoleGuard],
-        loadComponent: () => import('./components/turnos-especialidad/turnos-especialidad.component').then(m => m.TurnosEspecialidadComponent),
-        data: { roles: ['ADMIN'] }
-      },
+      // {
+      //   path: 'turnos-especialidad',
+      //   canActivate: [RoleGuard],
+      //   loadComponent: () => import('./components/turnos-especialidad/turnos-especialidad.component').then(m => m.TurnosEspecialidadComponent),
+      //   data: { roles: ['ADMIN'] }
+      // },
       {
         path: 'turnos-por-paciente',
         canActivate: [RoleGuard],
