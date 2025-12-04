@@ -28,7 +28,7 @@ type SortKey = 'apellido' | 'especialidades' | 'estado';
 @Component({
   selector: 'app-listar-especialistas',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, CapitalizarNombrePipe],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './listar-especialistas.component.html',
   styleUrls: ['./listar-especialistas.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
