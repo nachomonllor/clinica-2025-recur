@@ -12,6 +12,8 @@
 * Traer todos los usuarios del lado del admin
 * Boton para desactivar el Captcha
 * Turnos por especialista
+* Readme con imagenes
+
 
 
 
