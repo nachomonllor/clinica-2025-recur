@@ -6,6 +6,32 @@
   --texto-2: rgba(255,255,255,.8);
 }
 
+.chart-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+// CLASE CLAVE
+.logo-container {
+  display: none; // <--- Oculto en la vista web
+  margin-bottom: 10px;
+  width: 100%;
+  
+  // Estilos para cuando aparezca en el PDF
+  justify-content: center; 
+  align-items: center;
+
+  .logo-img {
+    height: 80px; // Ajusta el tamaño del logo para el PDF
+    width: auto;
+  }
+}
+
+
+
 .pagina-estadisticas {
   min-height: calc(100vh - 64px);
   padding: clamp(16px, 3vw, 32px);
