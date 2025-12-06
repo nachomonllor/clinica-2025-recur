@@ -26,14 +26,14 @@ export const routes: Routes = [
     path: 'registro-especialista',
     loadComponent: () => import('./components/registro-especialista/registro-especialista.component').then(m => m.RegistroEspecialistaComponent)
   },
-  {
-    path: 'seleccionar-usuario',
-    loadComponent: () => import('./components/seleccionar-usuario/seleccionar-usuario.component').then(m => m.SeleccionarUsuarioComponent)
-  },
-  {
-    path: 'seleccionar-usuario-login',
-    loadComponent: () => import('./components/seleccionar-usuario-login/seleccionar-usuario-login.component').then(m => m.SeleccionarUsuarioLoginComponent)
-  },
+  // {
+  //   path: 'seleccionar-usuario',
+  //   loadComponent: () => import('./components/seleccionar-usuario/seleccionar-usuario.component').then(m => m.SeleccionarUsuarioComponent)
+  // },
+  // {
+  //   path: 'seleccionar-usuario-login',
+  //   loadComponent: () => import('./components/seleccionar-usuario-login/seleccionar-usuario-login.component').then(m => m.SeleccionarUsuarioLoginComponent)
+  // },
   {
     path: 'seleccionar-usuario-registro',
     loadComponent: () => import('./components/seleccionar-usuario-registro/seleccionar-usuario-registro.component').then(m => m.SeleccionarUsuarioRegistroComponent)
