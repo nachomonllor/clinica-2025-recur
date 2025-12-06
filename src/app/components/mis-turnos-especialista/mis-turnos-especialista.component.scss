@@ -546,3 +546,18 @@
   display: flex;
   justify-content: flex-end;
 }
+
+/* Estilo para el switch dentro del diálogo */
+.switch {
+  color: white !important; /* Fuerza el color del texto a blanco */
+  
+  /* Asegura que penetre los estilos internos de Material */
+  ::ng-deep .mdc-label {
+    color: white !important;
+  }
+  
+  /* Soporte para versiones anteriores de Angular Material */
+  ::ng-deep .mat-slide-toggle-content {
+    color: white !important;
+  }
+}

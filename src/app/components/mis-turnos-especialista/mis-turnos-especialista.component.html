@@ -55,20 +55,24 @@
 
     <div class="card-actions">
       <!-- Aceptar -->
-      
-      <button mat-icon-button color="primary" *ngIf="puedeAceptar(t)" (click)="aceptarTurno(t)" matTooltip="Aceptar turno">
+
+      <button mat-icon-button color="primary" *ngIf="puedeAceptar(t)" (click)="aceptarTurno(t)"
+        matTooltip="Aceptar turno">
         <mat-icon>check_circle</mat-icon>
       </button>
 
-      <button mat-icon-button color="warn" *ngIf="puedeRechazar(t)" (click)="rechazarTurno(t)" matTooltip="Rechazar turno">
+      <button mat-icon-button color="warn" *ngIf="puedeRechazar(t)" (click)="rechazarTurno(t)"
+        matTooltip="Rechazar turno">
         <mat-icon>block</mat-icon>
       </button>
 
-      <button mat-icon-button color="warn" *ngIf="puedeCancelar(t)" (click)="cancelarTurno(t)" matTooltip="Cancelar turno">
+      <button mat-icon-button color="warn" *ngIf="puedeCancelar(t)" (click)="cancelarTurno(t)"
+        matTooltip="Cancelar turno">
         <mat-icon>cancel</mat-icon>
       </button>
 
-      <button mat-icon-button color="accent" *ngIf="puedeFinalizar(t)" (click)="finalizarTurno(t)" matTooltip="Finalizar turno (Historia clínica)">
+      <button mat-icon-button color="accent" *ngIf="puedeFinalizar(t)" (click)="finalizarTurno(t)"
+        matTooltip="Finalizar turno (Historia clínica)">
         <mat-icon>event_available</mat-icon>
       </button>
 
@@ -76,7 +80,8 @@
         <mat-icon>visibility</mat-icon>
       </button>
 
-      <button mat-icon-button style="color: #fbbf24;" *ngIf="puedeVerEncuesta(t)" (click)="verEncuesta(t)" matTooltip="Ver Encuesta Paciente">
+      <button mat-icon-button style="color: #fbbf24;" *ngIf="puedeVerEncuesta(t)" (click)="verEncuesta(t)"
+        matTooltip="Ver Encuesta Paciente">
         <mat-icon>star</mat-icon>
       </button>
 
@@ -88,7 +93,7 @@
 <ng-template #verEncuestaDialog let-data>
   <h2 mat-dialog-title style="color: #fbbf24;">Encuesta del Paciente</h2>
   <mat-dialog-content class="encuesta-view">
-    
+
     <div style="margin-bottom: 1.5rem; color: #94a3b8; font-size: 0.9rem;">
       <p><strong>Paciente:</strong> {{ data?.turno?.paciente | capitalizarNombre }}</p>
       <p><strong>Fecha Atención:</strong> {{ data?.turno?.fecha }}</p>
@@ -98,9 +103,9 @@
       <label>Calificación General</label>
       <div class="stars" style="font-size: 1.5rem; color: #fbbf24;">
         <span *ngFor="let s of [1,2,3,4,5]">
-          {{ s <= data?.encuesta?.estrellas ? '★' : '☆' }}
-        </span>
-        <span style="font-size: 0.9rem; color: #cbd5e1; margin-left: 8px;">({{ data?.encuesta?.estrellas }}/5)</span>
+          {{ s <= data?.encuesta?.estrellas ? '★' : '☆' }} </span>
+            <span style="font-size: 0.9rem; color: #cbd5e1; margin-left: 8px;">({{ data?.encuesta?.estrellas
+              }}/5)</span>
       </div>
     </div>
 
@@ -117,7 +122,7 @@
     <div class="encuesta-item" style="margin-top: 1rem;">
       <label>¿Lo recomendaría?</label>
       <p style="font-weight: 500; color: #e2e8f0;">
-        <mat-icon style="vertical-align: middle; margin-right: 5px;" 
+        <mat-icon style="vertical-align: middle; margin-right: 5px;"
           [style.color]="data?.encuesta?.respuesta_radio === 'si' ? '#4ade80' : '#f87171'">
           {{ data?.encuesta?.respuesta_radio === 'si' ? 'thumb_up' : 'thumb_down' }}
         </mat-icon>
@@ -134,8 +139,10 @@
       </div>
     </div>
 
-    <div class="encuesta-item" style="margin-top: 1.5rem; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
-      <label style="display: block; margin-bottom: 5px; font-size: 0.8rem; color: #94a3b8;">Comentario del paciente:</label>
+    <div class="encuesta-item"
+      style="margin-top: 1.5rem; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
+      <label style="display: block; margin-bottom: 5px; font-size: 0.8rem; color: #94a3b8;">Comentario del
+        paciente:</label>
       <p style="font-style: italic; color: #fff;">"{{ data?.encuesta?.comentario }}"</p>
     </div>
 
@@ -301,11 +308,23 @@
           </div>
 
           <!-- Requiere seguimiento -->
-          <div class="hc-field hc-field--inline">
+          <!-- <div class="hc-field hc-field--inline">
             <label class="hc-toggle">
               <input type="checkbox" formControlName="requiereSeguimiento" />
               <span>Requiere seguimiento</span>
             </label>
+          </div> -->
+
+          <!-- <div class="hc-field hc-field--inline">
+            <mat-slide-toggle formControlName="requiereSeguimiento" color="primary" class="switch">
+              Requiere seguimiento
+            </mat-slide-toggle>
+          </div> -->
+
+          <div class="hc-field hc-field--inline">
+            <mat-slide-toggle formControlName="requiereSeguimiento" color="primary" class="switch">
+              Requiere seguimiento
+            </mat-slide-toggle>
           </div>
 
           <!-- DATOS DINÁMICOS -->
@@ -379,5 +398,3 @@
     <button mat-button mat-dialog-close>Cerrar</button>
   </mat-dialog-actions>
 </ng-template>
-
-
