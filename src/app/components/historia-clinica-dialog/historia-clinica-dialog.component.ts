@@ -19,7 +19,9 @@ export interface HistoriaClinicaDialogData {
     CommonModule,
     MatDialogModule,
     DatoDinamicoPipe,
-    CapitalizarNombrePipe],
+    CapitalizarNombrePipe,
+    DatoDinamicoPipe
+  ],
   templateUrl: './historia-clinica-dialog.component.html',
   styleUrl: './historia-clinica-dialog.component.scss'
 })

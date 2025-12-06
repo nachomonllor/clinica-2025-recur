@@ -16,6 +16,7 @@ import { SupabaseService } from '../../../services/supabase.service';
 import { PacienteAtendido, TurnoDetalle } from '../../models/pacientes-especialista.model';
 import { CapitalizarNombrePipe } from "../../../pipes/capitalizar-nombre.pipe";
 import { HistoriaClinicaDialogComponent } from '../historia-clinica-dialog/historia-clinica-dialog.component';
+import { DatoDinamico, TipoDatoDinamico } from '../../models/dato-dinamico.model';
 
 @Component({
   selector: 'app-pacientes-especialista',
@@ -199,14 +200,14 @@ export class PacientesEspecialistaComponent implements OnInit {
       this.snackBar.open('Este turno no tiene reseña disponible', 'Cerrar', { duration: 2500 });
       return;
     }
-    
+
     this.dialog.open(this.verResenaDialog, {
-      data: { 
-        turno: t, 
-        resena: t.resena, 
-        fecha: t.fechaTexto, 
+      data: {
+        turno: t,
+        resena: t.resena,
+        fecha: t.fechaTexto,
         especialidad: t.especialidad,
-        paciente: this.nombreCompletoSeleccionado 
+        paciente: this.nombreCompletoSeleccionado
       },
       width: '500px'
     });
@@ -223,7 +224,7 @@ export class PacientesEspecialistaComponent implements OnInit {
 
   //     const especialistaId = sessionData.session.user.id;
 
-  //     // Buscamos historias + datos dinámicos
+  //     // 1. Buscamos historias + datos dinámicos (Esto estaba bien)
   //     const { data: historias, error } = await this.supa.client
   //       .from('historia_clinica')
   //       .select(`
@@ -239,9 +240,10 @@ export class PacientesEspecialistaComponent implements OnInit {
   //       return;
   //     }
 
-  //     // Mapeamos datos extra
+  //     //  Mapeamos datos extra Y PROCESAMOS LOS DINÁMICOS
   //     const historiasCompletas = await Promise.all((historias || []).map(async (h: any) => {
-  //       // CAMBIO: Agregamos 'comentario' al select para obtener la reseña
+
+  //       // --- LOGICA TURNOS-ESPECIALISTA ---
   //       const { data: turno } = await this.supa.client
   //         .from('turnos')
   //         .select('fecha_hora_inicio, comentario, especialidades(nombre)')
@@ -257,6 +259,30 @@ export class PacientesEspecialistaComponent implements OnInit {
   //       const dataEspec: any = turno?.especialidades;
   //       const nombreEspecialidad = dataEspec?.nombre || dataEspec?.[0]?.nombre || '';
 
+  //       // --- CORRECCIÓN CLAVE: PROCESAR DATOS DINÁMICOS ---
+  //       // Convertimos las columnas separadas de la BD en un solo 'valor' legible
+  //       const datosDinamicosProcesados = (h.historia_datos_dinamicos || []).map((d: any) => {
+  //         let valorFormateado = '';
+
+  //         if (d.valor_texto) {
+  //           valorFormateado = d.valor_texto;
+  //         } else if (d.valor_numerico !== null && d.valor_numerico !== undefined) {
+  //           // Si es rango o número, lo convertimos a string. 
+  //           // AGREGAR la unidad si SE QUIERE (ej: "50 %")
+  //           valorFormateado = d.valor_numerico.toString();
+  //           // Opcional: PARA SER MAS ESPECIFICO CON LOS RANGOS:
+  //           if (d.tipo_control === 'RANGO_0_100') valorFormateado += ' %';
+  //         } else if (d.valor_boolean !== null && d.valor_boolean !== undefined) {
+  //           // Si es booleano (Switch), mostramos SI/NO
+  //           valorFormateado = d.valor_boolean ? 'Sí' : 'No';
+  //         }
+
+  //         return {
+  //           clave: d.clave,
+  //           valor: valorFormateado // <================== para el PDF Y DIALOG
+  //         };
+  //       });
+
   //       return {
   //         ...h,
   //         paciente: pacienteNombre,
@@ -265,11 +291,14 @@ export class PacientesEspecialistaComponent implements OnInit {
   //         fechaAtencion: turno?.fecha_hora_inicio
   //           ? new Date(turno.fecha_hora_inicio).toLocaleDateString('es-AR')
   //           : '',
-  //         //  Mapeamos el comentario del turno a la propiedad 'resena'
-  //         resena: turno?.comentario || ''
+  //         resena: turno?.comentario || '',
+
+  //         // Sobrescribimos la propiedad con la version procesada
+  //         datos_dinamicos: datosDinamicosProcesados 
   //       };
   //     }));
 
+  //     // Abrimos el diálogo con los datos ya "limpios"
   //     this.dialog.open(HistoriaClinicaDialogComponent, {
   //       width: '800px',
   //       data: {
@@ -287,18 +316,15 @@ export class PacientesEspecialistaComponent implements OnInit {
 
   async verHistoriaClinica(pacienteId: string, pacienteNombre: string): Promise<void> {
     try {
+      // 1. Verificaciones de sesión
       const { data: sessionData } = await this.supa.getSession();
       if (!sessionData?.session) return;
-
       const especialistaId = sessionData.session.user.id;
 
-      // 1. Buscamos historias + datos dinámicos (Esto estaba bien)
+      // 2. Buscamos historias de este paciente con este especialista
       const { data: historias, error } = await this.supa.client
         .from('historia_clinica')
-        .select(`
-            *,
-            historia_datos_dinamicos (*)
-        `)
+        .select(`*, historia_datos_dinamicos (*)`)
         .eq('paciente_id', pacienteId)
         .eq('especialista_id', especialistaId)
         .order('fecha_registro', { ascending: false });
@@ -308,65 +334,74 @@ export class PacientesEspecialistaComponent implements OnInit {
         return;
       }
 
-      //  Mapeamos datos extra Y PROCESAMOS LOS DINÁMICOS
+      // 3. Mapeamos cada historia con sus datos extra (Turno + Especialista + Dinámicos)
       const historiasCompletas = await Promise.all((historias || []).map(async (h: any) => {
-        
-        // --- LOGICA TURNOS-ESPECIALISTA ---
+
+        // A) Buscar datos del turno (Fecha, Reseña/Comentario, Especialidad)
         const { data: turno } = await this.supa.client
           .from('turnos')
           .select('fecha_hora_inicio, comentario, especialidades(nombre)')
           .eq('id', h.turno_id)
           .single();
 
-        const { data: especialista } = await this.supa.client
+        // B) Buscar datos del especialista (Nombre/Apellido)
+        const { data: espUser } = await this.supa.client
           .from('usuarios')
           .select('nombre, apellido')
           .eq('id', h.especialista_id)
           .single();
 
-        const dataEspec: any = turno?.especialidades;
-        const nombreEspecialidad = dataEspec?.nombre || dataEspec?.[0]?.nombre || '';
+        // C) Manejo seguro del nombre de la especialidad (Array vs Objeto)
+        const rawEspec: any = turno?.especialidades;
+        const nombreEspecialidad = rawEspec?.nombre || rawEspec?.[0]?.nombre || '';
 
-        // --- CORRECCIÓN CLAVE: PROCESAR DATOS DINÁMICOS ---
-        // Convertimos las columnas separadas de la BD en un solo 'valor' legible
-        const datosDinamicosProcesados = (h.historia_datos_dinamicos || []).map((d: any) => {
-          let valorFormateado = '';
+        // D) Procesar Datos Dinámicos (Unificar columnas en interfaz DatoDinamico)
+        const datosDinamicosProcesados: DatoDinamico[] = (h.historia_datos_dinamicos || []).map((d: any) => {
+          let valor: any = '';
+          let tipo: TipoDatoDinamico = 'texto';
+          let unidad: string | null = null;
 
-          if (d.valor_texto) {
-            valorFormateado = d.valor_texto;
-          } else if (d.valor_numerico !== null && d.valor_numerico !== undefined) {
-            // Si es rango o número, lo convertimos a string. 
-            // Podés agregarle la unidad si quisieras (ej: "50 %")
-            valorFormateado = d.valor_numerico.toString();
-            // Opcional: Si querés ser más específico con rangos:
-            if (d.tipo_control === 'RANGO_0_100') valorFormateado += ' %';
-          } else if (d.valor_boolean !== null && d.valor_boolean !== undefined) {
-            // Si es booleano (Switch), mostramos Sí/No
-            valorFormateado = d.valor_boolean ? 'Sí' : 'No';
+          if (d.valor_texto !== null) {
+            valor = d.valor_texto;
+            tipo = 'texto';
+          } else if (d.valor_numerico !== null) {
+            valor = d.valor_numerico;
+            // Inferimos si es rango o número simple según 'tipo_control'
+            if (d.tipo_control === 'RANGO_0_100') {
+              tipo = 'rango';
+              unidad = '%';
+            } else {
+              tipo = 'numero';
+              if (d.clave && d.clave.toLowerCase().includes('glucosa')) unidad = 'mg/dL';
+            }
+          } else if (d.valor_boolean !== null) {
+            valor = d.valor_boolean;
+            tipo = 'booleano';
           }
 
           return {
             clave: d.clave,
-            valor: valorFormateado // <================== para el PDF Y DIALOG
+            valor: valor,
+            tipo: tipo,
+            unidad: unidad
           };
         });
 
+        // E) Retornar objeto completo enriquecido
         return {
           ...h,
           paciente: pacienteNombre,
           especialidad: nombreEspecialidad,
-          especialistaNombre: especialista ? `${especialista.nombre} ${especialista.apellido}` : '',
+          especialistaNombre: espUser ? `${espUser.nombre} ${espUser.apellido}` : '',
           fechaAtencion: turno?.fecha_hora_inicio
             ? new Date(turno.fecha_hora_inicio).toLocaleDateString('es-AR')
             : '',
-          resena: turno?.comentario || '',
-          
-          // Sobrescribimos la propiedad con la version procesada
-          datos_dinamicos: datosDinamicosProcesados 
+          resena: turno?.comentario || '', // Aquí va la reseña
+          datos_dinamicos: datosDinamicosProcesados
         };
       }));
 
-      // Abrimos el diálogo con los datos ya "limpios"
+      // 4. Abrir el diálogo con la data procesada
       this.dialog.open(HistoriaClinicaDialogComponent, {
         width: '800px',
         data: {
@@ -379,8 +414,6 @@ export class PacientesEspecialistaComponent implements OnInit {
       console.error('[PacientesEspecialista] Error al cargar historia clínica', err);
     }
   }
-
-
 
 
 
