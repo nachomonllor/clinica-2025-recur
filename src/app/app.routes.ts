@@ -82,7 +82,6 @@ export const routes: Routes = [
         loadComponent: () => import('./components/encuesta-atencion/encuesta-atencion.component').then(m => m.EncuestaAtencionComponent),
         data: { roles: ['PACIENTE'] }
       },
-
       // --- SECCIÓN ESPECIALISTAS ---
       {
         path: 'mis-turnos-especialista',

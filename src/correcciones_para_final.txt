@@ -17,6 +17,8 @@
 * En mi-perfil del especialista, tiene que verse a la derecha los horarios que le quedaron al especialista ,
   es decir, si en otra sesion dejo sus horarios cargados, tiene que quedar fijo en mi-perfil, que pueda verse , pero tambien poder editarlos
 
+* poder buscar por reseña desde los distintos perfiles
+
 
 
 

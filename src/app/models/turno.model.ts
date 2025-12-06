@@ -84,37 +84,6 @@ export interface TurnoUI {
   }
 }
 
-
-// /** ViewModel que usa el paciente en "Mis turnos" */
-// export interface TurnoVM {
-//   id: string;
-
-//   /** Fecha real para comparar en puedeCancelar */
-//   fecha: Date;
-
-//   /** 'HH:mm' para mostrar / parsear la hora */
-//   hora: string;
-
-//   especialidad: string;
-//   especialista: string;
-
-//   /** estado en minúsculas (pendiente, aceptado, cancelado, realizado, etc.) */
-//   estado: EstadoTurnoUI | string;
-
-//   /** Texto indexable para búsqueda (motivo, síntomas, etc.) */
-//   historiaBusqueda?: string | null;
-
-//   /** Reseña del especialista (comentario final en el turno) */
-//   resena?: string | null;
-
-//   /** ¿Tiene encuesta de atención asociada? */
-//   encuesta?: boolean;
-
-//   /** Estrellas de la encuesta (1..5) si existe */
-//   calificacion?: number;
-// }
-
-
 /** ViewModel que usa el paciente en "Mis turnos" */
 export interface TurnoVM {
   id: string;
@@ -148,5 +117,5 @@ export interface TurnoVM {
   /** Estrellas de la encuesta (1..5) si existe */
   calificacion?: number | null;
 
-
 }
+

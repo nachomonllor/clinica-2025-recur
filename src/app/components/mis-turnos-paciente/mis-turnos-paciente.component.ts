@@ -1,3 +1,4 @@
+
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
@@ -10,22 +11,22 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatCardModule } from '@angular/material/card';
 import { MatSelectModule } from '@angular/material/select';
-import { Router, RouterLink } from '@angular/router';
-
-import { SupabaseService } from '../../../services/supabase.service';
-import { TurnosService } from '../../../services/turnos.service';
-import { TurnoVM } from '../../models/turno.model';
-
-import { StatusLabelPipe } from '../../../pipes/status-label.pipe';
-import { StatusBadgeDirective } from '../../../directives/status-badge.directive';
-import { ElevateOnHoverDirective } from '../../../directives/elevate-on-hover.directive';
-
-import * as XLSX from 'xlsx';
-import jsPDF from 'jspdf';
+import { RouterLink } from '@angular/router';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSliderModule } from '@angular/material/slider';
+
+import { SupabaseService } from '../../../services/supabase.service';
+import { TurnosService } from '../../../services/turnos.service';
+import { TurnoVM } from '../../models/turno.model'; // Tu modelo
+
+// Pipes y Directivas
+import { StatusLabelPipe } from '../../../pipes/status-label.pipe';
+import { StatusBadgeDirective } from '../../../directives/status-badge.directive';
+import { ElevateOnHoverDirective } from '../../../directives/elevate-on-hover.directive';
 import { CapitalizarNombrePipe } from "../../../pipes/capitalizar-nombre.pipe";
+import * as XLSX from 'xlsx';
+import jsPDF from 'jspdf';
 
 @Component({
   selector: 'app-mis-turnos-paciente',
@@ -46,79 +47,54 @@ import { CapitalizarNombrePipe } from "../../../pipes/capitalizar-nombre.pipe";
     MatDialogModule,
     MatSnackBarModule,
     MatSelectModule,
-    StatusLabelPipe,
-    StatusBadgeDirective,
-    ElevateOnHoverDirective,
     MatSliderModule,
     MatRadioModule,
     MatCheckboxModule,
+    StatusLabelPipe,
+    StatusBadgeDirective,
+    ElevateOnHoverDirective,
     CapitalizarNombrePipe
   ]
 })
 export class MisTurnosPacienteComponent implements OnInit {
 
-  displayedColumns: string[] = [
-    'fecha',
-    'hora',
-    'especialidad',
-    'especialista',
-    'estado',
-    'acciones'
-  ];
-
+  // ... (Tus variables de tabla, columnas, etc. quedan igual) ...
   dataSource = new MatTableDataSource<TurnoVM>([]);
-  
-  // Variable para almacenar el nombre real del paciente
   pacienteNombre: string = 'Paciente';
-
   pacienteId: string | null = null;
 
   @ViewChild('cancelDialog') cancelDialog!: TemplateRef<unknown>;
-  @ViewChild('calificarDialog') calificarDialog!: TemplateRef<unknown>;
+  @ViewChild('calificarDialog') calificarDialog!: TemplateRef<unknown>; // Usaremos este para la encuesta
   @ViewChild('verResenaDialog') verResenaDialog!: TemplateRef<unknown>;
 
   constructor(
     private turnoService: TurnosService,
-    private router: Router,
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
     private fb: FormBuilder,
-    public supa: SupabaseService // Public para usarlo si es necesario
+    public supa: SupabaseService
   ) { }
 
-
   ngOnInit(): void {
-    // 1. OBTENER USUARIO ACTUAL (Para el título del PDF)
+    // 1. Obtener Usuario
     this.supa.usuario$.subscribe(usuario => {
       if (usuario) {
         this.pacienteNombre = `${usuario.nombre} ${usuario.apellido}`;
-
         this.pacienteId = usuario.id;
       }
     });
 
-
-    // 2. CARGAR TURNOS
+    // 2. Cargar Turnos
     this.turnoService.getTurnosPacienteVM$().subscribe({
       next: (ts: TurnoVM[]) => {
-        // --- DEBUG: VERIFICAR DATOS ---
-        console.log('📌 TURNOS RECIBIDOS (Paciente):', ts);
-        if (ts.length > 0) {
-            console.log('🔍 Primer turno estado:', ts[0].estado);
-        }
-        // ------------------------------
-
         this.dataSource.data = ts;
-
-        // CONFIGURACIÓN DEL FILTRO
+        // Filtro
         this.dataSource.filterPredicate = (t, f) => {
-          // Aseguramos que las propiedades existan antes de concatenar
           const haystack = `${t.especialidad || ''} ${t.especialista || ''} ${t.estado || ''} ${t.historiaBusqueda || ''} ${t.resena || ''}`.toLowerCase();
           return haystack.includes(f);
         };
       },
-      error: (e: any) =>
-        console.error('[MisTurnosPaciente] Error al cargar turnos', e)
+      error: (e) => console.error(e)
     });
   }
 
@@ -126,99 +102,126 @@ export class MisTurnosPacienteComponent implements OnInit {
     this.dataSource.filter = (value || '').trim().toLowerCase();
   }
 
-  // ---------- Reglas de negocio ----------
-  puedeCancelar(t: TurnoVM): boolean {
-    // 1. REGLA DE ORO: Si ya tiene reseña, el turno se considera atendido/tocado.
-    // No se puede cancelar, sin importar la fecha o el estado.
-    if (t.resena && t.resena.trim().length > 0) {
-      return false;
-    }
-
-    // 2. VALIDACIÓN DE ESTADO
-    // Convertimos a mayúsculas para coincidir con los tipos de la BD (EstadoTurnoCodigo)
-    // Usamos (t.estado || '') para evitar error si viene null/undefined.
-    const estado = (t.estado || '').toUpperCase();
-
-    // Estados donde DEFINITIVAMENTE no se puede cancelar
-    // Agrego 'REALIZADO' por si en alguna parte del front lo llamas así en lugar de 'FINALIZADO'
-    const estadosBloqueantes = ['FINALIZADO', 'CANCELADO', 'RECHAZADO', 'REALIZADO'];
-
-    if (estadosBloqueantes.includes(estado)) {
-      return false;
-    }
-
-    // 3. VALIDACIÓN DE FECHA (El turno debe ser futuro)
-    if (!t.fecha || !t.hora) return false; // Seguridad por si faltan datos
-
-    const ahora = new Date();
-    
-    // Parseo de hora "HH:mm"
-    const [hhStr, mmStr] = t.hora.split(':');
-    const hh = Number(hhStr) || 0;
-    const mm = Number(mmStr) || 0;
-
-    // Creamos una nueva instancia Date basada en t.fecha
-    // (Asumimos que t.fecha ya es un objeto Date válido proveniente de Angular Material / Firestore / Supabase)
-    const fechaHoraTurno = new Date(t.fecha);
-    fechaHoraTurno.setHours(hh, mm, 0, 0);
-
-    // Retorna true solo si la fecha del turno es mayor (futura) a la actual
-    return fechaHoraTurno.getTime() > ahora.getTime();
+  get turnos(): TurnoVM[] {
+    const ds = this.dataSource as MatTableDataSource<TurnoVM>;
+    return (ds.filteredData && ds.filteredData.length ? ds.filteredData : ds.data) || [];
   }
+
+  // ==========================================================
+  // LÓGICA DE VALIDACIÓN (Reglas de Negocio)
+  // ==========================================================
+
+  puedeCancelar(t: TurnoVM): boolean {
+    if (t.resena && t.resena.trim().length > 0) return false;
+    const estado = (t.estado || '').toUpperCase();
+    const estadosBloqueantes = ['FINALIZADO', 'CANCELADO', 'RECHAZADO', 'REALIZADO'];
+    if (estadosBloqueantes.includes(estado)) return false;
+    // ... tu lógica de fecha aquí si quieres ...
+    return true; 
+  }
+
+  puedeVerResena(t: TurnoVM): boolean {
+    return !!(t.resena && t.resena.trim().length > 0);
+  }
+
+  /**
+   * REGLA DEL BOTÓN ENCUESTA:
+   * 1. Turno FINALIZADO
+   * 2. Tiene Reseña del especialista
+   * 3. NO tiene encuesta completada todavía
+   */
+  puedeCompletarEncuesta(t: TurnoVM): boolean {
+    const estado = (t.estado || '').toUpperCase();
+    const esFinalizado = estado === 'FINALIZADO'; // Según tu enum EstadoTurnoCodigo
+    
+    // Validamos que tenga reseña
+    const tieneResena = this.puedeVerResena(t);
+    
+    // Validamos que NO tenga encuesta (TurnoVM tiene la prop encuesta?: boolean | any)
+    const noTieneEncuesta = !t.encuesta;
+
+    return esFinalizado && tieneResena && noTieneEncuesta;
+  }
+
+  /**
+   * FUNCIÓN PRINCIPAL: COMPLETAR ENCUESTA (Sprint 6)
+   * Cumple con: Texto, Estrellas, Radio, Checkbox, Rango [cite: 264-269]
+   */
+  completarEncuesta(t: TurnoVM): void {
+    // Definimos el formulario con los 5 controles requeridos
+    const encuestaForm = this.fb.group({
+      comentario: ['', [Validators.required, Validators.minLength(6)]], // 1. Cuadro de texto
+      estrellas: [5, [Validators.required]],                            // 2. Estrellas
+      recomendaria: ['si', Validators.required],                         // 3. Radio Button
+      puntualidad: [false],                                              // 4. Checkbox (grupo)
+      amabilidad: [false],
+      limpieza: [false],
+      rango: [8, [Validators.required]]                                  // 5. Rango (Slider)
+    });
+
+    // Reutilizamos 'calificarDialog' que tiene el diseño completo
+    const ref = this.dialog.open(this.calificarDialog, {
+      data: { turno: t, form: encuestaForm },
+      width: '600px'
+    });
+
+    ref.afterClosed().subscribe(async result => {
+      if (result && encuestaForm.valid) {
+        const fv = encuestaForm.value;
+        
+        // Procesamos los checkboxes a un string legible
+        const checks = [];
+        if (fv.puntualidad) checks.push('Puntualidad');
+        if (fv.amabilidad) checks.push('Amabilidad');
+        if (fv.limpieza) checks.push('Limpieza');
+        const respuestaCheckbox = checks.join(', ');
+
+        try {
+          // 1. Guardar en tabla 'encuestas_atencion'
+          const { error } = await this.supa.client
+            .from('encuestas_atencion')
+            .insert({
+              turno_id: t.id,
+              paciente_id: this.pacienteId,
+              especialista_id: t.especialistaId, // Asegúrate de tener este ID en el VM
+              comentario: fv.comentario,
+              estrellas: fv.estrellas,
+              respuesta_radio: fv.recomendaria,
+              respuesta_checkbox: respuestaCheckbox,
+              valor_rango: fv.rango
+            });
+
+          if (error) throw error;
+
+          // 2. Actualizar UI inmediatamente
+          t.encuesta = true; 
+          t.calificacion = fv.estrellas;
+
+          // 3. Actualizar flag en tabla turnos (Opcional pero recomendado para consistencia)
+          await this.supa.client.from('turnos')
+             .update({ calificacion: fv.estrellas }) 
+             .eq('id', t.id);
+
+          this.snackBar.open('¡Encuesta enviada correctamente!', 'Cerrar', { duration: 3000 });
+
+        } catch (err: any) {
+          console.error('Error encuesta:', err);
+          this.snackBar.open('Error al enviar encuesta', 'Cerrar');
+        }
+      }
+    });
+  }
+
+  // Alias para mantener compatibilidad si el HTML llama a 'calificarAtencion'
+  calificarAtencion(t: TurnoVM): void {
+    this.completarEncuesta(t);
+  }
+
+  // ==========================================================
+  // ACCIONES
+  // ==========================================================
+
   
-
-  // cancelarTurno(t: TurnoVM): void {
-  //   if (!this.puedeCancelar(t)) {
-  //     this.snackBar.open('Este turno ya no puede cancelarse.', 'Cerrar', {
-  //       duration: 2500
-  //     });
-  //     return;
-  //   }
-
-  //   const comentarioForm = this.fb.group({
-  //     comentario: ['', [Validators.required, Validators.minLength(10)]]
-  //   });
-
-  //   const ref = this.dialog.open(this.cancelDialog, {
-  //     data: { turno: t, form: comentarioForm },
-  //     width: '500px'
-  //   });
-
-  //   // dentro de ref.afterClosed()
-  //   ref.afterClosed().subscribe(result => {
-  //     if (!result) return;
-
-  //     if (comentarioForm.invalid) {
-  //       this.snackBar.open(
-  //         'Debes ingresar un motivo de al menos 10 caracteres.',
-  //         'Cerrar',
-  //         { duration: 2500 }
-  //       );
-  //       return;
-  //     }
-
-  //     const comentario = comentarioForm.value.comentario ?? '';
-
-  //     this.turnoService.cancelarTurno(t.id, comentario).subscribe({
-  //       next: () => {
-  //         t.estado = 'cancelado';
-  //         this.dataSource.data = [...this.dataSource.data];
-  //         this.snackBar.open('Turno cancelado', 'Cerrar', { duration: 2000 });
-  //       },
-  //       error: (e: any) => {
-  //         console.error(e);
-  //         this.snackBar.open(
-  //           `Error al cancelar: ${e?.message || e}`,
-  //           'Cerrar',
-  //           { duration: 2500 }
-  //         );
-  //       }
-  //     });
-  //   });
-
-  // }
-
-
   cancelarTurno(t: TurnoVM): void {
     // 1. Validar antes de abrir nada
     if (!this.puedeCancelar(t)) {
@@ -280,60 +283,90 @@ export class MisTurnosPacienteComponent implements OnInit {
     });
   }
 
-  puedeVerResena(t: TurnoVM): boolean {
-    const tieneTexto = t.resena && typeof t.resena === 'string' && t.resena.trim().length > 0;
-    return !!tieneTexto;
-  }
 
-  puedeCompletarEncuesta(t: TurnoVM): boolean {
-    // Agregamos validación de null
-    const estado = t.estado || '';
-    return estado === 'realizado' && this.puedeVerResena(t) && !t.encuesta;
-  }
+  /* --------------------------------- */
 
+  // ==========================================================
+  // LÓGICA DE VALIDACIÓN (Reglas de Negocio PDF)
+  // ==========================================================
+
+  // puedeCancelar(t: TurnoVM): boolean {
+  //   if (t.resena && t.resena.trim().length > 0) return false;
+  //   const estado = (t.estado || '').toUpperCase();
+  //   const estadosBloqueantes = ['FINALIZADO', 'CANCELADO', 'RECHAZADO', 'REALIZADO'];
+  //   if (estadosBloqueantes.includes(estado)) return false;
+    
+  //   // Validación de fecha (solo futuros)
+  //   if (!t.fecha || !t.hora) return false;
+  //   const ahora = new Date();
+  //   const [hhStr, mmStr] = t.hora.split(':');
+  //   const fechaTurno = new Date(t.fecha);
+  //   fechaTurno.setHours(Number(hhStr), Number(mmStr), 0, 0);
+    
+  //   return fechaTurno.getTime() > ahora.getTime();
+  // }
+
+  // puedeVerResena(t: TurnoVM): boolean {
+  //   return !!(t.resena && t.resena.trim().length > 0);
+  // }
+
+  /**
+   * REGLA SPRINT 2 + SPRINT 6:
+   * Visible si el especialista marcó el turno como realizado y dejó reseña.
+   */
+  // puedeCompletarEncuesta(t: TurnoVM): boolean {
+  //   const estado = (t.estado || '').toUpperCase();
+  //   const esFinalizado = estado === 'FINALIZADO' || estado === 'REALIZADO';
+  //   const tieneResena = this.puedeVerResena(t);
+  //   const noTieneEncuesta = !t.encuesta; // Importante: que no la haya hecho ya
+
+  //   return esFinalizado && tieneResena && noTieneEncuesta;
+  // }
+
+  // Si necesitas la función "calificarAtencion" por compatibilidad con algún botón viejo,
+  // la podemos mapear a la encuesta, ya que la encuesta INCLUYE la calificación.
   puedeCalificar(t: TurnoVM): boolean {
-    const estado = t.estado || '';
-    return estado === 'realizado';
+    return this.puedeCompletarEncuesta(t);
   }
+
+  
+
+  // verResena(t: TurnoVM): void {
+  //   if (!this.puedeVerResena(t)) return;
+  //   this.dialog.open(this.verResenaDialog, {
+  //     data: { turno: t, resena: t.resena },
+  //     width: '500px'
+  //   });
+  // }
 
   verResena(t: TurnoVM): void {
-    if (!t.resena || t.resena.trim().length === 0) {
-      this.snackBar.open('Este turno no tiene reseña disponible', 'Cerrar', { duration: 2500 });
-      return;
-    }
+    if (!this.puedeVerResena(t)) return;
     this.dialog.open(this.verResenaDialog, {
       data: { turno: t, resena: t.resena },
       width: '500px'
     });
   }
 
-  completarEncuesta(t: TurnoVM): void {
-    this.router.navigate(['/encuesta-atencion', t.id]);
-  }
-
-  calificarAtencion(t: TurnoVM): void {
-    const calificacionForm = this.fb.group({
-      comentario: ['', [Validators.required, Validators.minLength(10)]],
+  // ESTA ES LA FUNCIÓN CLAVE
+  abrirEncuesta(t: TurnoVM): void {
+    const encuestaForm = this.fb.group({
+      comentario: ['', [Validators.required, Validators.minLength(6)]], // Bajé un poco el minLength para pruebas
       estrellas: [5, [Validators.required]],
-      recomendaria: ['si', Validators.required], // Radio
-      // Checkboxes (puedes usar un FormGroup anidado o controles sueltos)
+      recomendaria: ['si', Validators.required],
       puntualidad: [false],
       amabilidad: [false],
       limpieza: [false],
-      
-      rango: [8, [Validators.required, Validators.min(1), Validators.max(10)]] // Rango
+      rango: [8, [Validators.required]]
     });
 
     const ref = this.dialog.open(this.calificarDialog, {
-      data: { turno: t, form: calificacionForm },
-      width: '600px' // Un poco más ancho para que entre todo
+      data: { turno: t, form: encuestaForm },
+      width: '600px'
     });
 
     ref.afterClosed().subscribe(async result => {
-      if (result && calificacionForm.valid) {
-        const fv = calificacionForm.value;
-
-        // 1. Preparar el string de checkboxes
+      if (result && encuestaForm.valid) {
+        const fv = encuestaForm.value;
         const checks = [];
         if (fv.puntualidad) checks.push('Puntualidad');
         if (fv.amabilidad) checks.push('Amabilidad');
@@ -341,52 +374,42 @@ export class MisTurnosPacienteComponent implements OnInit {
         const respuestaCheckbox = checks.join(', ');
 
         try {
-          // 2. Insertar en la tabla ESPECÍFICA de encuestas
+          // 1. Insertar en tabla encuestas
           const { error } = await this.supa.client
             .from('encuestas_atencion')
             .insert({
               turno_id: t.id,
-              paciente_id: this.pacienteId, // Asegúrate de tener este dato (o sacar de sesión)
-              especialista_id: t.especialistaId, // Necesitas el ID del especialista en tu VM
+              paciente_id: this.pacienteId,
+              especialista_id: t.especialistaId, // <--- Usamos el ID del VM
               comentario: fv.comentario,
               estrellas: fv.estrellas,
-              respuesta_radio: fv.recomendaria, // 'si' o 'no'
+              respuesta_radio: fv.recomendaria,
               respuesta_checkbox: respuestaCheckbox,
               valor_rango: fv.rango
             });
 
           if (error) throw error;
 
-          // 3. Actualizar estado local
-          // (Opcional: Marcar en tabla turnos que ya tiene encuesta para no dejar cargar otra)
-          await this.supa.client
-            .from('turnos')
-            .update({ 
-               calificacion: fv.estrellas, // Guardamos estrellas en turnos para mostrar rápido en lista
-               // encuesta: true // Si tuvieras un flag
-            }) 
-            .eq('id', t.id);
+          // 2. ACTUALIZACIÓN VISUAL INMEDIATA
+          // Marcamos que ya tiene encuesta para que el *ngIf oculte el botón
+          t.encuesta = true; 
+          t.calificacion = fv.estrellas; // Para mostrar las estrellitas en la tarjeta
 
-          t.calificacion = fv.estrellas;
-          // t.tieneEncuesta = true; // Si usas esa propiedad en el VM
-          
-          this.snackBar.open('¡Gracias por tu opinión!', 'Cerrar', { duration: 3000 });
+          // 3. (Opcional) Guardar flag redundante en turnos si lo usas
+          await this.supa.client.from('turnos')
+             .update({ calificacion: fv.estrellas }) 
+             .eq('id', t.id);
+
+          this.snackBar.open('¡Encuesta enviada correctamente!', 'Cerrar', { duration: 3000 });
 
         } catch (err: any) {
           console.error(err);
-          this.snackBar.open('Error al guardar encuesta', 'Cerrar');
+          this.snackBar.open('Error al enviar encuesta', 'Cerrar');
         }
       }
     });
   }
 
-// --------------------
-
-  get turnos(): TurnoVM[] {
-    const ds = this.dataSource as MatTableDataSource<TurnoVM>;
-    const filtered = ds.filteredData;
-    return (filtered && filtered.length ? filtered : ds.data) || [];
-  }
 
   exportarHistoriaClinicaExcel(): void {
     const turnos = this.turnos;  // respeta el filtro actual
@@ -641,21 +664,12 @@ export class MisTurnosPacienteComponent implements OnInit {
     img.onerror = () => generarDocumento();
   }
 
+
+
 }
 
 
 
-
-
-
-
-
-
-
-
-
-
-// // src/app/components/mis-turnos-paciente/mis-turnos-paciente.component.ts
 // import { CommonModule } from '@angular/common';
 // import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 // import { FormsModule, ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
@@ -711,7 +725,7 @@ export class MisTurnosPacienteComponent implements OnInit {
 //     MatRadioModule,
 //     MatCheckboxModule,
 //     CapitalizarNombrePipe
-// ]
+//   ]
 // })
 // export class MisTurnosPacienteComponent implements OnInit {
 
@@ -745,15 +759,6 @@ export class MisTurnosPacienteComponent implements OnInit {
 //   ) { }
 
 
-//   // 2. CAPTURAR EL ID DEL USUARIO LOGUEADO
-//     // this.supa.usuario$.subscribe(usuario => {
-//     //   if (usuario) {
-//     //     this.pacienteId = usuario.id; // < ============= guardamos el ID para usarlo luego en el insert
-//     //     // this.pacienteNombre = ...
-//     //   }
-//     // });
-
-
 //   ngOnInit(): void {
 //     // 1. OBTENER USUARIO ACTUAL (Para el título del PDF)
 //     this.supa.usuario$.subscribe(usuario => {
@@ -768,11 +773,19 @@ export class MisTurnosPacienteComponent implements OnInit {
 //     // 2. CARGAR TURNOS
 //     this.turnoService.getTurnosPacienteVM$().subscribe({
 //       next: (ts: TurnoVM[]) => {
+//         // --- DEBUG: VERIFICAR DATOS ---
+//         console.log('📌 TURNOS RECIBIDOS (Paciente):', ts);
+//         if (ts.length > 0) {
+//             console.log('🔍 Primer turno estado:', ts[0].estado);
+//         }
+//         // ------------------------------
+
 //         this.dataSource.data = ts;
 
 //         // CONFIGURACIÓN DEL FILTRO
 //         this.dataSource.filterPredicate = (t, f) => {
-//           const haystack = `${t.especialidad} ${t.especialista} ${t.estado} ${t.historiaBusqueda || ''} ${t.resena || ''}`.toLowerCase();
+//           // Aseguramos que las propiedades existan antes de concatenar
+//           const haystack = `${t.especialidad || ''} ${t.especialista || ''} ${t.estado || ''} ${t.historiaBusqueda || ''} ${t.resena || ''}`.toLowerCase();
 //           return haystack.includes(f);
 //         };
 //       },
@@ -787,25 +800,46 @@ export class MisTurnosPacienteComponent implements OnInit {
 
 //   // ---------- Reglas de negocio ----------
 //   puedeCancelar(t: TurnoVM): boolean {
-//     if (t.estado === 'realizado' || t.estado === 'cancelado') return false;
+//     // 1. REGLA DE ORO: Si ya tiene reseña, el turno se considera atendido/tocado.
+//     // No se puede cancelar, sin importar la fecha o el estado.
+//     if (t.resena && t.resena.trim().length > 0) {
+//       return false;
+//     }
+
+//     // 2. VALIDACIÓN DE ESTADO
+//     // Convertimos a mayúsculas para coincidir con los tipos de la BD (EstadoTurnoCodigo)
+//     // Usamos (t.estado || '') para evitar error si viene null/undefined.
+//     const estado = (t.estado || '').toUpperCase();
+
+//     // Estados donde DEFINITIVAMENTE no se puede cancelar
+//     // Agrego 'REALIZADO' por si en alguna parte del front lo llamas así en lugar de 'FINALIZADO'
+//     const estadosBloqueantes = ['FINALIZADO', 'CANCELADO', 'RECHAZADO', 'REALIZADO'];
+
+//     if (estadosBloqueantes.includes(estado)) {
+//       return false;
+//     }
+
+//     // 3. VALIDACIÓN DE FECHA (El turno debe ser futuro)
+//     if (!t.fecha || !t.hora) return false; // Seguridad por si faltan datos
 
 //     const ahora = new Date();
+    
+//     // Parseo de hora "HH:mm"
 //     const [hhStr, mmStr] = t.hora.split(':');
 //     const hh = Number(hhStr) || 0;
 //     const mm = Number(mmStr) || 0;
 
-//     const fechaHoraTurno = new Date(
-//       t.fecha.getFullYear(),
-//       t.fecha.getMonth(),
-//       t.fecha.getDate(),
-//       hh,
-//       mm
-//     );
+//     // Creamos una nueva instancia Date basada en t.fecha
+//     // (Asumimos que t.fecha ya es un objeto Date válido proveniente de Angular Material / Firestore / Supabase)
+//     const fechaHoraTurno = new Date(t.fecha);
+//     fechaHoraTurno.setHours(hh, mm, 0, 0);
 
+//     // Retorna true solo si la fecha del turno es mayor (futura) a la actual
 //     return fechaHoraTurno.getTime() > ahora.getTime();
 //   }
-
+  
 //   cancelarTurno(t: TurnoVM): void {
+//     // 1. Validar antes de abrir nada
 //     if (!this.puedeCancelar(t)) {
 //       this.snackBar.open('Este turno ya no puede cancelarse.', 'Cerrar', {
 //         duration: 2500
@@ -813,19 +847,23 @@ export class MisTurnosPacienteComponent implements OnInit {
 //       return;
 //     }
 
+//     // 2. Preparar formulario
 //     const comentarioForm = this.fb.group({
 //       comentario: ['', [Validators.required, Validators.minLength(10)]]
 //     });
 
+//     // 3. Abrir diálogo
 //     const ref = this.dialog.open(this.cancelDialog, {
 //       data: { turno: t, form: comentarioForm },
 //       width: '500px'
 //     });
 
-//     // dentro de ref.afterClosed()
+//     // 4. Procesar resultado al cerrar
 //     ref.afterClosed().subscribe(result => {
+//       // Si el usuario cerró sin confirmar (result es false/undefined)
 //       if (!result) return;
 
+//       // Validación de seguridad adicional
 //       if (comentarioForm.invalid) {
 //         this.snackBar.open(
 //           'Debes ingresar un motivo de al menos 10 caracteres.',
@@ -837,23 +875,28 @@ export class MisTurnosPacienteComponent implements OnInit {
 
 //       const comentario = comentarioForm.value.comentario ?? '';
 
+//       // 5. Llamar al servicio
 //       this.turnoService.cancelarTurno(t.id, comentario).subscribe({
 //         next: () => {
-//           t.estado = 'cancelado';
+//           // IMPORTANTE: Actualizar el estado local en MAYÚSCULAS
+//           // para que coincida con tus tipos y la BD.
+//           t.estado = 'CANCELADO'; 
+
+//           // Refrescar la tabla para que Angular detecte el cambio en las filas
 //           this.dataSource.data = [...this.dataSource.data];
-//           this.snackBar.open('Turno cancelado', 'Cerrar', { duration: 2000 });
+          
+//           this.snackBar.open('Turno cancelado exitosamente.', 'Cerrar', { duration: 3000 });
 //         },
 //         error: (e: any) => {
 //           console.error(e);
 //           this.snackBar.open(
-//             `Error al cancelar: ${e?.message || e}`,
+//             `Error al cancelar: ${e?.message || 'Ocurrió un error inesperado'}`,
 //             'Cerrar',
-//             { duration: 2500 }
+//             { duration: 3000 }
 //           );
 //         }
 //       });
 //     });
-
 //   }
 
 //   puedeVerResena(t: TurnoVM): boolean {
@@ -862,11 +905,14 @@ export class MisTurnosPacienteComponent implements OnInit {
 //   }
 
 //   puedeCompletarEncuesta(t: TurnoVM): boolean {
-//     return t.estado === 'realizado' && this.puedeVerResena(t) && !t.encuesta;
+//     // Agregamos validación de null
+//     const estado = t.estado || '';
+//     return estado === 'realizado' && this.puedeVerResena(t) && !t.encuesta;
 //   }
 
 //   puedeCalificar(t: TurnoVM): boolean {
-//     return t.estado === 'realizado';
+//     const estado = t.estado || '';
+//     return estado === 'realizado';
 //   }
 
 //   verResena(t: TurnoVM): void {
@@ -884,52 +930,7 @@ export class MisTurnosPacienteComponent implements OnInit {
 //     this.router.navigate(['/encuesta-atencion', t.id]);
 //   }
 
-//   // calificarAtencion(t: TurnoVM): void {
-//   //   const calificacionForm = this.fb.group({
-//   //     comentario: ['', [Validators.required, Validators.minLength(10)]],
-//   //     estrellas: [5, [Validators.required, Validators.min(1), Validators.max(5)]]
-//   //   });
-
-//   //   const ref = this.dialog.open(this.calificarDialog, {
-//   //     data: { turno: t, form: calificacionForm },
-//   //     width: '500px'
-//   //   });
-
-//   //   ref.afterClosed().subscribe(result => {
-//   //     if (result && calificacionForm.valid) {
-//   //       const fv = calificacionForm.value;
-//   //       const encuestaData = {
-//   //         estrellas: fv.estrellas,
-//   //         comentario: fv.comentario,
-//   //         fecha: new Date().toISOString()
-//   //       };
-
-//   //       this.supa.client
-//   //         .from('turnos')
-//   //         .update({ encuesta: encuestaData as any })
-//   //         .eq('id', t.id)
-//   //         .then(({ error }) => {
-//   //           if (error) {
-//   //             this.snackBar.open(
-//   //               `Error al calificar: ${error.message}`,
-//   //               'Cerrar',
-//   //               { duration: 2500 }
-//   //             );
-//   //           } else {
-//   //             t.encuesta = true;
-//   //             t.calificacion = fv.estrellas ?? undefined;
-//   //             this.dataSource.data = [...this.dataSource.data];
-//   //             this.snackBar.open('Calificación guardada', 'Cerrar', {
-//   //               duration: 2000
-//   //             });
-//   //           }
-//   //         });
-//   //     }
-//   //   });
-//   // }
-
-
-// calificarAtencion(t: TurnoVM): void {
+//   calificarAtencion(t: TurnoVM): void {
 //     const calificacionForm = this.fb.group({
 //       comentario: ['', [Validators.required, Validators.minLength(10)]],
 //       estrellas: [5, [Validators.required]],
@@ -1045,7 +1046,7 @@ export class MisTurnosPacienteComponent implements OnInit {
 //   }
 
 //   // =========================================================================
-//   //  EXPORTAR PDF COMPLETO (CON DATOS MÉDICOS REALES DE SUPABASE)
+//   //  EXPORTAR PDF COMPLETO (CON DATOS DE SUPABASE)
 //   // =========================================================================
 //   async exportarPdf() {
 //     const turnosParaExportar = this.turnos;
@@ -1155,7 +1156,9 @@ export class MisTurnosPacienteComponent implements OnInit {
 
 //         // 1. Cabecera (Fecha y Estado)
 //         const fechaStr = t.fecha ? t.fecha.toLocaleDateString('es-AR') : 'Sin fecha';
-//         addParagraph(`Turno #${index + 1} · ${fechaStr} · ${t.hora} hs · (${t.estado?.toUpperCase()})`, { bold: true });
+//         // Validación de seguridad para estado
+//         const estadoPrint = t.estado ? t.estado.toUpperCase() : 'SIN ESTADO';
+//         addParagraph(`Turno #${index + 1} · ${fechaStr} · ${t.hora} hs · (${estadoPrint})`, { bold: true });
 
 //         // 2. Profesional
 //         addParagraph(`Especialidad: ${t.especialidad} | Especialista: ${t.especialista}`);
@@ -1258,6 +1261,10 @@ export class MisTurnosPacienteComponent implements OnInit {
 //   }
 
 // }
+
+
+
+
 
 
 
