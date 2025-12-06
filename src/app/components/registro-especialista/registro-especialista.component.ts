@@ -324,6 +324,157 @@ export class RegistroEspecialistaComponent implements OnInit {
   // ======================================================
   // SUBMIT
   // ======================================================
+  // async onSubmit(): Promise<void> {
+  //   if (this.registroForm.invalid || !this.captchaValido) {
+  //     this.registroForm.markAllAsTouched();
+  //     return;
+  //   }
+
+  //   const fv = this.registroForm.value;
+  //   this.loading = true;
+
+  //   try {
+  //     // 1) Normalizar especialidades
+  //     // Tomamos el array del form y filtramos "Otro" y vacíos.
+  //     // Las especialidades nuevas YA ESTÁN en este array gracias a agregarEspecialidadCustom()
+  //     const seleccion = (fv.especialidades ?? []).filter(Boolean);
+  //     const especialidades = seleccion
+  //       .filter(e => e !== 'Otro')
+  //       .map(e => e.trim());
+
+  //     const primeraEspecialidad = especialidades[0] || 'Sin especialidad';
+
+  //     // 2) Alta en Auth (Supabase Auth)
+  //     const { data, error }: any = await this.supa.client.auth.signUp({
+  //       email: fv.email!,
+  //       password: fv.password!,
+  //       options: {
+  //         data: {
+  //           rol: 'ESPECIALISTA',
+  //           nombre: fv.nombre,
+  //           apellido: fv.apellido,
+  //           dni: fv.dni,
+  //           fecha_nacimiento: fv.fechaNacimiento,
+  //           especialidad_principal: primeraEspecialidad,
+  //           especialidades: especialidades // Array limpio
+  //         }
+  //       }
+  //     });
+      
+  //     if (error) throw error;
+
+  //     const userId = data.user?.id as string;
+  //     if (!userId) throw new Error('No se pudo crear el usuario.');
+
+  //     // 3) Insert/Upsert en usuarios
+  //     const edadCalculada = this.calcEdadFromISO(fv.fechaNacimiento!);
+
+  //     const { error: usuarioError } = await this.supa.client
+  //       .from('usuarios')
+  //       .upsert({
+  //         id: userId,
+  //         nombre: fv.nombre!,
+  //         apellido: fv.apellido!,
+  //         dni: fv.dni!,
+  //         email: fv.email!,
+  //         password: fv.password!,
+  //         perfil: 'ESPECIALISTA',
+  //         edad: edadCalculada,
+  //         esta_aprobado: false,
+  //         mail_verificado: !!data.session
+  //       }, { onConflict: 'id' });
+
+  //     if (usuarioError) throw usuarioError;
+
+  //     // 4) Alta de especialidades + relación usuario_especialidad
+  //     const especialidadIds: string[] = [];
+      
+  //     for (const nombre of especialidades) {
+  //       // Lógica de buscar o crear la especialidad
+  //       const normalizado = nombre;
+        
+  //       const { data: espExisting, error: espExistingError } = await this.supa.client
+  //         .from('especialidades')
+  //         .select('id')
+  //         .eq('nombre', normalizado)
+  //         .maybeSingle();
+
+  //       if (espExistingError) throw espExistingError;
+
+  //       let especialidadId = espExisting?.id as string | undefined;
+
+  //       if (!especialidadId) {
+  //         const { data: espInsert, error: espInsertError } = await this.supa.client
+  //           .from('especialidades')
+  //           .insert({ nombre: normalizado })
+  //           .select('id')
+  //           .single();
+
+  //         if (espInsertError) throw espInsertError;
+  //         especialidadId = espInsert.id as string;
+  //       }
+
+  //       especialidadIds.push(especialidadId);
+  //     }
+
+  //     if (especialidadIds.length) {
+  //       const rows = especialidadIds.map(id => ({
+  //         usuario_id: userId,
+  //         especialidad_id: id
+  //       }));
+
+  //       const { error: ueError } = await this.supa.client
+  //         .from('usuario_especialidad')
+  //         .upsert(rows, { onConflict: 'usuario_id,especialidad_id' });
+
+  //       if (ueError) throw ueError;
+  //     }
+
+  //     // 5) Manejo de post-registro (email verificar / subir imagen)
+  //     if (!data.session) {
+  //       await Swal.fire({
+  //         icon: 'info',
+  //         title: 'Verifica tu correo',
+  //         text: 'Te enviamos un email. Confírmalo para poder subir tu foto.',
+  //       });
+  //       this.registroForm.reset();
+  //       this.imagenPrevia = null;
+  //       await this.supa.client.auth.signOut();
+  //       this.router.navigate(['/bienvenida']);
+  //       return;
+  //     }
+
+  //     // Subir imagen si hay sesión
+  //     if (fv.imagenPerfil) {
+  //       const avatarUrl = await this.supa.uploadAvatar(userId, fv.imagenPerfil, 1);
+  //       await this.supa.client.from('usuarios').update({ imagen_perfil_1: avatarUrl }).eq('id', userId);
+  //     }
+
+  //     await Swal.fire({
+  //       icon: 'success',
+  //       title: 'Registro enviado',
+  //       text: 'Tu cuenta espera aprobación del administrador.',
+  //       timer: 3500,
+  //       showConfirmButton: false
+  //     });
+
+  //     this.registroForm.reset();
+  //     this.imagenPrevia = null;
+  //     await this.supa.client.auth.signOut();
+  //     this.router.navigate(['/bienvenida']);
+
+  //   } catch (e: any) {
+  //     console.error(e);
+  //     Swal.fire('Error', this.mapPgError(e), 'error');
+  //   } finally {
+  //     this.loading = false;
+  //   }
+  // }
+
+
+  // ======================================================
+  // SUBMIT CORREGIDO (Imagen se guarda siempre)
+  // ======================================================
   async onSubmit(): Promise<void> {
     if (this.registroForm.invalid || !this.captchaValido) {
       this.registroForm.markAllAsTouched();
@@ -335,8 +486,6 @@ export class RegistroEspecialistaComponent implements OnInit {
 
     try {
       // 1) Normalizar especialidades
-      // Tomamos el array del form y filtramos "Otro" y vacíos.
-      // Las especialidades nuevas YA ESTÁN en este array gracias a agregarEspecialidadCustom()
       const seleccion = (fv.especialidades ?? []).filter(Boolean);
       const especialidades = seleccion
         .filter(e => e !== 'Otro')
@@ -356,7 +505,7 @@ export class RegistroEspecialistaComponent implements OnInit {
             dni: fv.dni,
             fecha_nacimiento: fv.fechaNacimiento,
             especialidad_principal: primeraEspecialidad,
-            especialidades: especialidades // Array limpio
+            especialidades: especialidades
           }
         }
       });
@@ -366,7 +515,16 @@ export class RegistroEspecialistaComponent implements OnInit {
       const userId = data.user?.id as string;
       if (!userId) throw new Error('No se pudo crear el usuario.');
 
-      // 3) Insert/Upsert en usuarios
+      // =========================================================================
+      // CAMBIO CLAVE: Subimos la imagen AQUÍ, antes de guardar en la base de datos
+      // =========================================================================
+      let fotoUrl = '';
+      if (fv.imagenPerfil) {
+        // Subimos la foto usando el ID del usuario recién creado
+        fotoUrl = await this.supa.uploadAvatar(userId, fv.imagenPerfil, 1);
+      }
+
+      // 3) Insert/Upsert en usuarios CON LA FOTO INCLUIDA
       const edadCalculada = this.calcEdadFromISO(fv.fechaNacimiento!);
 
       const { error: usuarioError } = await this.supa.client
@@ -381,18 +539,16 @@ export class RegistroEspecialistaComponent implements OnInit {
           perfil: 'ESPECIALISTA',
           edad: edadCalculada,
           esta_aprobado: false,
-          mail_verificado: !!data.session
+          mail_verificado: !!data.session,
+          imagen_perfil_1: fotoUrl // <--- ¡AQUÍ GUARDAMOS LA FOTO!
         }, { onConflict: 'id' });
 
       if (usuarioError) throw usuarioError;
 
-      // 4) Alta de especialidades + relación usuario_especialidad
+      // 4) Alta de especialidades (esto sigue igual)
       const especialidadIds: string[] = [];
-      
       for (const nombre of especialidades) {
-        // Lógica de buscar o crear la especialidad
         const normalizado = nombre;
-        
         const { data: espExisting, error: espExistingError } = await this.supa.client
           .from('especialidades')
           .select('id')
@@ -413,7 +569,6 @@ export class RegistroEspecialistaComponent implements OnInit {
           if (espInsertError) throw espInsertError;
           especialidadId = espInsert.id as string;
         }
-
         especialidadIds.push(especialidadId);
       }
 
@@ -422,7 +577,6 @@ export class RegistroEspecialistaComponent implements OnInit {
           usuario_id: userId,
           especialidad_id: id
         }));
-
         const { error: ueError } = await this.supa.client
           .from('usuario_especialidad')
           .upsert(rows, { onConflict: 'usuario_id,especialidad_id' });
@@ -430,12 +584,13 @@ export class RegistroEspecialistaComponent implements OnInit {
         if (ueError) throw ueError;
       }
 
-      // 5) Manejo de post-registro (email verificar / subir imagen)
+      // 5) Manejo de post-registro
+      // Ahora si cortamos la ejecución, la foto YA ESTÁ GUARDADA en el paso 3.
       if (!data.session) {
         await Swal.fire({
           icon: 'info',
           title: 'Verifica tu correo',
-          text: 'Te enviamos un email. Confírmalo para poder subir tu foto.',
+          text: 'Te enviamos un email. Confírmalo para activar tu cuenta.',
         });
         this.registroForm.reset();
         this.imagenPrevia = null;
@@ -444,12 +599,7 @@ export class RegistroEspecialistaComponent implements OnInit {
         return;
       }
 
-      // Subir imagen si hay sesión
-      if (fv.imagenPerfil) {
-        const avatarUrl = await this.supa.uploadAvatar(userId, fv.imagenPerfil, 1);
-        await this.supa.client.from('usuarios').update({ imagen_perfil_1: avatarUrl }).eq('id', userId);
-      }
-
+      // Si hay sesión (Auto confirm off), avisamos éxito
       await Swal.fire({
         icon: 'success',
         title: 'Registro enviado',
@@ -470,6 +620,8 @@ export class RegistroEspecialistaComponent implements OnInit {
       this.loading = false;
     }
   }
+
+
 }
 
 
