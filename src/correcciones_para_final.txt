@@ -1,4 +1,5 @@
 * Captcha en el registro especialista
+* Boton deshabilitar Captcha
 * Validación datos de la historia clinica , que salga validacion
 * Grafico de trta y otros
 * Encuesta del lado del paciente 
@@ -13,6 +14,8 @@
 * Boton para desactivar el Captcha
 * Turnos por especialista
 * Readme con imagenes
+
+
 
 
 
