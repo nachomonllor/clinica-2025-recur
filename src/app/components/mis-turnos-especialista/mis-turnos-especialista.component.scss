@@ -16,6 +16,29 @@
 }
 .mts-shell>*{ margin:0 !important; }
 
+
+/* Agrega esto en mis-turnos-especialista.component.scss */
+.encuesta-item {
+  label {
+    display: block;
+    color: #94a3b8;
+    font-size: 0.85rem;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+}
+
+.encuesta-tag {
+  background-color: #3b82f6; /* Azul */
+  color: white;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+
 /* HERO compacto con buscador inline */
 // .hero{ padding:8px 12px; background:linear-gradient(135deg,#040914,#0a1326);
 //   border-bottom:1px solid rgba(148,163,184,.28);

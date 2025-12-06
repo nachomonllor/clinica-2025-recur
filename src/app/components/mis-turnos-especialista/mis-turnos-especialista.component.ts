@@ -65,6 +65,11 @@ export class MisTurnosEspecialistaComponent implements OnInit {
 
   @ViewChild('verResenaDialog') verResenaDialog!: TemplateRef<unknown>;
 
+  // Almacena los IDs de los turnos que tienen encuesta contestada
+  encuestasIds = new Set<string>();
+
+  @ViewChild('verEncuestaDialog') verEncuestaDialog!: TemplateRef<unknown>;
+
 
   @ViewChild('confirmDialog') confirmDialog!: TemplateRef<unknown>;
   @ViewChild('rechazarDialog') rechazarDialog!: TemplateRef<unknown>;
@@ -87,42 +92,25 @@ export class MisTurnosEspecialistaComponent implements OnInit {
 
   ) { }
 
-  // ngOnInit(): void {
-  //   this.turnoService.getTurnosEspecialista$().subscribe({
-  //     next: (ts: TurnoEspecialista[]) => {
-  //       this.dataSource.data = ts;
 
-  //       // filtro por especialidad, paciente, estado, historia
-  //       this.dataSource.filterPredicate = (t, f) => {
-  //         const haystack = `${t.especialidad} ${t.paciente} ${t.estado} ${t.historiaBusqueda || ''}`.toLowerCase();
-  //         return haystack.includes(f);
-  //       };
-  //     },
-  //     error: (e) => console.error('[MisTurnosEspecialista] Error', e)
-  //   });
-  // }
-
-
-  // // modifico el codigo para que los pacientes con turnos PENDIENTE aparezcan arriba en lista
   // ngOnInit(): void {
   //   this.turnoService.getTurnosEspecialista$().subscribe({
   //     next: (ts: TurnoEspecialista[]) => {
 
-  //       // --- LÓGICA DE ORDENAMIENTO ---
+  //       // 1. LÓGICA DE ORDENAMIENTO (PENDIENTE PRIMERO)
   //       const turnosOrdenados = ts.sort((a, b) => {
   //         const estadoA = String(a.estado || '').toUpperCase();
   //         const estadoB = String(b.estado || '').toUpperCase();
 
-  //         // 1. Prioridad absoluta: PENDIENTE va primero (-1 sube, 1 baja)
+  //         // Prioridad absoluta: PENDIENTE va primero (-1 sube, 1 baja)
   //         if (estadoA === 'PENDIENTE' && estadoB !== 'PENDIENTE') return -1;
   //         if (estadoA !== 'PENDIENTE' && estadoB === 'PENDIENTE') return 1;
 
-  //         // 2. Orden secundario: Por fecha (los más viejos o próximos primero)
-  //         // Esto ayuda a que dentro de los "Pendientes" o "Aceptados" haya orden cronológico
+  //         // Orden secundario: Por fecha (los más viejos o próximos primero)
   //         if (a.fecha < b.fecha) return -1;
   //         if (a.fecha > b.fecha) return 1;
 
-  //         // 3. Orden terciario: Por hora
+  //         // Orden terciario: Por hora
   //         if (a.hora < b.hora) return -1;
   //         if (a.hora > b.hora) return 1;
 
@@ -132,9 +120,12 @@ export class MisTurnosEspecialistaComponent implements OnInit {
   //       // Asignamos la lista ya ordenada
   //       this.dataSource.data = turnosOrdenados;
 
-  //       // Configuración del filtro (esto lo tenías igual)
+  //       // 2. CONFIGURACIÓN DEL FILTRO (INCLUYENDO RESEÑA)
   //       this.dataSource.filterPredicate = (t, f) => {
-  //         const haystack = `${t.especialidad} ${t.paciente} ${t.estado} ${t.historiaBusqueda || ''}`.toLowerCase();
+  //         // Concatenamos especialidad, paciente, estado, historia clínica...
+  //         // Y AHORA AGREGAMOS: ${t.resena || ''}
+  //         const haystack = `${t.especialidad} ${t.paciente} ${t.estado} ${t.historiaBusqueda || ''} ${t.resena || ''}`.toLowerCase();
+
   //         return haystack.includes(f);
   //       };
   //     },
@@ -142,43 +133,82 @@ export class MisTurnosEspecialistaComponent implements OnInit {
   //   });
   // }
 
+
   ngOnInit(): void {
     this.turnoService.getTurnosEspecialista$().subscribe({
       next: (ts: TurnoEspecialista[]) => {
-
-        // 1. LÓGICA DE ORDENAMIENTO (PENDIENTE PRIMERO)
+        // 1. ORDENAMIENTO (Tu lógica existente)
         const turnosOrdenados = ts.sort((a, b) => {
-          const estadoA = String(a.estado || '').toUpperCase();
-          const estadoB = String(b.estado || '').toUpperCase();
-
-          // Prioridad absoluta: PENDIENTE va primero (-1 sube, 1 baja)
-          if (estadoA === 'PENDIENTE' && estadoB !== 'PENDIENTE') return -1;
-          if (estadoA !== 'PENDIENTE' && estadoB === 'PENDIENTE') return 1;
-
-          // Orden secundario: Por fecha (los más viejos o próximos primero)
-          if (a.fecha < b.fecha) return -1;
-          if (a.fecha > b.fecha) return 1;
-
-          // Orden terciario: Por hora
-          if (a.hora < b.hora) return -1;
-          if (a.hora > b.hora) return 1;
-
-          return 0;
+           // ... (tu lógica de sort se mantiene igual) ...
+           const estadoA = String(a.estado || '').toUpperCase();
+           const estadoB = String(b.estado || '').toUpperCase();
+           if (estadoA === 'PENDIENTE' && estadoB !== 'PENDIENTE') return -1;
+           if (estadoA !== 'PENDIENTE' && estadoB === 'PENDIENTE') return 1;
+           if (a.fecha < b.fecha) return -1;
+           if (a.fecha > b.fecha) return 1;
+           return 0;
         });
 
-        // Asignamos la lista ya ordenada
         this.dataSource.data = turnosOrdenados;
 
-        // 2. CONFIGURACIÓN DEL FILTRO (INCLUYENDO RESEÑA)
+        // 2. FILTRO (Tu lógica existente)
         this.dataSource.filterPredicate = (t, f) => {
-          // Concatenamos especialidad, paciente, estado, historia clínica...
-          // Y AHORA AGREGAMOS: ${t.resena || ''}
           const haystack = `${t.especialidad} ${t.paciente} ${t.estado} ${t.historiaBusqueda || ''} ${t.resena || ''}`.toLowerCase();
-
           return haystack.includes(f);
         };
+
+        // 3. NUEVO: Verificar qué turnos tienen encuesta
+        this.verificarEncuestas(ts); 
       },
       error: (e) => console.error('[MisTurnosEspecialista] Error', e)
+    });
+  }
+
+  /**
+   * Consulta en lote cuáles de los turnos cargados tienen una entrada en 'encuestas_atencion'
+   */
+  async verificarEncuestas(turnos: TurnoEspecialista[]): Promise<void> {
+    if (turnos.length === 0) return;
+
+    const ids = turnos.map(t => t.id);
+
+    // Traemos solo los IDs de las encuestas existentes para estos turnos
+    const { data, error } = await this.supa.client
+      .from('encuestas_atencion')
+      .select('turno_id')
+      .in('turno_id', ids);
+
+    if (data && !error) {
+      // Guardamos en un Set para acceso rápido (O(1)) en el HTML
+      this.encuestasIds = new Set(data.map((d: any) => d.turno_id));
+    }
+  }
+
+  puedeVerEncuesta(t: TurnoEspecialista): boolean {
+    // Solo si el ID está en el set de encuestas encontradas
+    return this.encuestasIds.has(t.id);
+  }
+
+  async verEncuesta(t: TurnoEspecialista): Promise<void> {
+    // Buscamos el detalle completo de la encuesta al hacer click
+    const { data, error } = await this.supa.client
+      .from('encuestas_atencion')
+      .select('*')
+      .eq('turno_id', t.id)
+      .single();
+
+    if (error || !data) {
+      this.snackBar.open('Error al cargar la encuesta.', 'Cerrar', { duration: 3000 });
+      return;
+    }
+
+    // Abrimos el diálogo con los datos traídos
+    this.dialog.open(this.verEncuestaDialog, {
+      data: {
+        turno: t,
+        encuesta: data // Aquí vienen estrellas, comentario, rango, etc.
+      },
+      width: '500px'
     });
   }
 

@@ -55,36 +55,95 @@
 
     <div class="card-actions">
       <!-- Aceptar -->
-      <button mat-icon-button color="primary" *ngIf="puedeAceptar(t)" (click)="aceptarTurno(t)"
-        matTooltip="Aceptar turno">
+      
+      <button mat-icon-button color="primary" *ngIf="puedeAceptar(t)" (click)="aceptarTurno(t)" matTooltip="Aceptar turno">
         <mat-icon>check_circle</mat-icon>
       </button>
 
-      <!-- Rechazar -->
-      <button mat-icon-button color="warn" *ngIf="puedeRechazar(t)" (click)="rechazarTurno(t)"
-        matTooltip="Rechazar turno">
+      <button mat-icon-button color="warn" *ngIf="puedeRechazar(t)" (click)="rechazarTurno(t)" matTooltip="Rechazar turno">
         <mat-icon>block</mat-icon>
       </button>
 
-      <!-- Cancelar -->
-      <button mat-icon-button color="warn" *ngIf="puedeCancelar(t)" (click)="cancelarTurno(t)"
-        matTooltip="Cancelar turno">
+      <button mat-icon-button color="warn" *ngIf="puedeCancelar(t)" (click)="cancelarTurno(t)" matTooltip="Cancelar turno">
         <mat-icon>cancel</mat-icon>
       </button>
 
-      <!-- Finalizar (Historia Clínica) -->
-      <button mat-icon-button color="accent" *ngIf="puedeFinalizar(t)" (click)="finalizarTurno(t)"
-        matTooltip="Finalizar turno (Historia clínica)">
+      <button mat-icon-button color="accent" *ngIf="puedeFinalizar(t)" (click)="finalizarTurno(t)" matTooltip="Finalizar turno (Historia clínica)">
         <mat-icon>event_available</mat-icon>
       </button>
 
-      <!-- Ver reseña -->
       <button mat-icon-button color="primary" *ngIf="puedeVerResena(t)" (click)="verResena(t)" matTooltip="Ver reseña">
         <mat-icon>visibility</mat-icon>
       </button>
+
+      <button mat-icon-button style="color: #fbbf24;" *ngIf="puedeVerEncuesta(t)" (click)="verEncuesta(t)" matTooltip="Ver Encuesta Paciente">
+        <mat-icon>star</mat-icon>
+      </button>
+
     </div>
   </article>
+
 </section>
+
+<ng-template #verEncuestaDialog let-data>
+  <h2 mat-dialog-title style="color: #fbbf24;">Encuesta del Paciente</h2>
+  <mat-dialog-content class="encuesta-view">
+    
+    <div style="margin-bottom: 1.5rem; color: #94a3b8; font-size: 0.9rem;">
+      <p><strong>Paciente:</strong> {{ data?.turno?.paciente | capitalizarNombre }}</p>
+      <p><strong>Fecha Atención:</strong> {{ data?.turno?.fecha }}</p>
+    </div>
+
+    <div class="encuesta-item">
+      <label>Calificación General</label>
+      <div class="stars" style="font-size: 1.5rem; color: #fbbf24;">
+        <span *ngFor="let s of [1,2,3,4,5]">
+          {{ s <= data?.encuesta?.estrellas ? '★' : '☆' }}
+        </span>
+        <span style="font-size: 0.9rem; color: #cbd5e1; margin-left: 8px;">({{ data?.encuesta?.estrellas }}/5)</span>
+      </div>
+    </div>
+
+    <div class="encuesta-item" style="margin-top: 1rem;">
+      <label>Nivel de satisfacción (Rango 1-10)</label>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <mat-slider min="1" max="10" step="1" discrete disabled style="flex: 1;">
+          <input matSliderThumb [value]="data?.encuesta?.valor_rango">
+        </mat-slider>
+        <span style="font-weight: bold; color: #fbbf24;">{{ data?.encuesta?.valor_rango }}</span>
+      </div>
+    </div>
+
+    <div class="encuesta-item" style="margin-top: 1rem;">
+      <label>¿Lo recomendaría?</label>
+      <p style="font-weight: 500; color: #e2e8f0;">
+        <mat-icon style="vertical-align: middle; margin-right: 5px;" 
+          [style.color]="data?.encuesta?.respuesta_radio === 'si' ? '#4ade80' : '#f87171'">
+          {{ data?.encuesta?.respuesta_radio === 'si' ? 'thumb_up' : 'thumb_down' }}
+        </mat-icon>
+        {{ data?.encuesta?.respuesta_radio === 'si' ? 'Sí, seguro' : 'No creo' }}
+      </p>
+    </div>
+
+    <div class="encuesta-item" style="margin-top: 1rem;" *ngIf="data?.encuesta?.respuesta_checkbox">
+      <label>Aspectos destacados</label>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 5px;">
+        <span class="encuesta-tag" *ngFor="let tag of data?.encuesta?.respuesta_checkbox.split(',')">
+          {{ tag.trim() }}
+        </span>
+      </div>
+    </div>
+
+    <div class="encuesta-item" style="margin-top: 1.5rem; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
+      <label style="display: block; margin-bottom: 5px; font-size: 0.8rem; color: #94a3b8;">Comentario del paciente:</label>
+      <p style="font-style: italic; color: #fff;">"{{ data?.encuesta?.comentario }}"</p>
+    </div>
+
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Cerrar</button>
+  </mat-dialog-actions>
+</ng-template>
 
 <ng-template #sinTurnos>
   <div class="empty">
@@ -322,354 +381,3 @@
 </ng-template>
 
 
-
-
-
-<!-- 
-<div class="hero-left">
-  <h2>Mis turnos (Especialista)</h2>
-  <p>Gestioná solicitudes, confirmá, rechazá o finalizá con historia clínica.</p>
-</div>
-
-<div class="hero-right">
-  <mat-form-field appearance="outline" class="toolbar__filtro">
-    <mat-label>Buscar</mat-label>
-    <input matInput #f (input)="applyFilter(f.value)"
-      placeholder="Paciente, especialidad, estado o términos de la historia clínica" />
-  </mat-form-field>
-
-  <span class="toolbar__count" *ngIf="turnos.length">{{ turnos.length }} turno(s)</span>
-</div>
-
-
-<section class="lista" *ngIf="turnos.length; else sinTurnos">
-  <article class="turno-card" *ngFor="let t of turnos" [class.aceptado]="t.estado==='aceptado'"
-    [class.realizado]="t.estado==='realizado'" [class.pendiente]="t.estado==='pendiente'"
-    [class.rechazado]="t.estado==='rechazado'" [class.cancelado]="t.estado==='cancelado'">
-
-    <div class="card-header">
-      <div class="fecha-hora">
-
-        <div class="fecha">{{ t.fecha }}</div>
-        <div class="hora">{{ t.hora }}</div>
-      </div>
-
-      <span class="estado-chip" [appStatusBadge]="t.estado">
-        {{ t.estado | statusLabel }}
-      </span>
-    </div>
-
-    <div class="card-body">
-      <div class="linea">
-        <span class="label">Paciente</span>
-        <span class="valor">{{ t.paciente | capitalizarNombre }}</span>
-      </div>
-      <div class="linea">
-        <span class="label">Especialidad</span>
-        <span class="valor">{{ t.especialidad }}</span>
-      </div>
-      <div class="linea" *ngIf="t.resena">
-        <span class="label">Reseña</span>
-        <span class="valor">{{ t.resena }}</span>
-      </div>
-    </div>
-
-    <div class="card-actions">
-
-      <button mat-icon-button color="primary" *ngIf="puedeAceptar(t)" (click)="aceptarTurno(t)"
-        matTooltip="Aceptar turno">
-        <mat-icon>check_circle</mat-icon>
-      </button>
-
-      <button mat-icon-button color="warn" *ngIf="puedeRechazar(t)" (click)="rechazarTurno(t)"
-        matTooltip="Rechazar turno">
-        <mat-icon>block</mat-icon>
-      </button>
-
-      <button mat-icon-button color="warn" *ngIf="puedeCancelar(t)" (click)="cancelarTurno(t)"
-        matTooltip="Cancelar turno">
-        <mat-icon>cancel</mat-icon>
-      </button>
-
-      <button mat-icon-button color="accent" *ngIf="puedeFinalizar(t)" (click)="finalizarTurno(t)"
-        matTooltip="Finalizar turno (Historia clínica)">
-        <mat-icon>event_available</mat-icon>
-      </button>
-
-      <button mat-icon-button color="primary" *ngIf="puedeVerResena(t)" (click)="verResena(t)" matTooltip="Ver reseña">
-        <mat-icon>visibility</mat-icon>
-      </button>
-
-    </div>
-  </article>
-</section>
-
-<ng-template #sinTurnos>
-  <div class="empty">
-    <p>No se encontraron turnos.</p>
-  </div>
-</ng-template>
-
-<ng-template #confirmDialog let-data>
-  <h2 mat-dialog-title>Confirmar Aceptación</h2>
-  <mat-dialog-content>
-    <p>{{ data?.message || '¿Estás seguro de que deseas aceptar este turno?' }}</p>
-  </mat-dialog-content>
-  <mat-dialog-actions align="end">
-    <button mat-button mat-dialog-close>Cancelar</button>
-    <button mat-raised-button color="primary" [mat-dialog-close]="true">Aceptar</button>
-  </mat-dialog-actions>
-</ng-template>
-
-<ng-template #rechazarDialog let-data>
-  <h2 mat-dialog-title>Rechazar Turno</h2>
-  <mat-dialog-content>
-    <p>¿Estás seguro de que deseas rechazar este turno?</p>
-    <p><strong>Paciente:</strong> {{ data?.turno?.paciente | capitalizarNombre }}</p>
-    <p><strong>Especialidad:</strong> {{ data?.turno?.especialidad }}</p>
-    <p><strong>Fecha:</strong> {{ data?.turno?.fecha }} a las {{ data?.turno?.hora }}</p>
-
-    <form [formGroup]="data?.form" style="margin-top: 16px;">
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Motivo de rechazo</mat-label>
-        <textarea matInput formControlName="comentario" rows="4"
-          placeholder="Indica el motivo del rechazo (mínimo 10 caracteres)"></textarea>
-        <mat-error *ngIf="data?.form?.get('comentario')?.hasError('required')">
-          El motivo es obligatorio
-        </mat-error>
-        <mat-error *ngIf="data?.form?.get('comentario')?.hasError('minlength')">
-          Debe tener al menos 10 caracteres
-        </mat-error>
-      </mat-form-field>
-    </form>
-  </mat-dialog-content>
-  <mat-dialog-actions align="end">
-    <button mat-button mat-dialog-close>Cancelar</button>
-    <button mat-raised-button color="warn" [disabled]="!data?.form?.valid" [mat-dialog-close]="true">
-      Confirmar Rechazo
-    </button>
-  </mat-dialog-actions>
-</ng-template>
-
-<ng-template #cancelarDialog let-data>
-  <h2 mat-dialog-title>Cancelar Turno</h2>
-  <mat-dialog-content>
-    <p>¿Estás seguro de que deseas cancelar este turno?</p>
-    <p><strong>Paciente:</strong> {{ data?.turno?.paciente | capitalizarNombre }}</p>
-    <p><strong>Especialidad:</strong> {{ data?.turno?.especialidad }}</p>
-    <p><strong>Fecha:</strong> {{ data?.turno?.fecha }} a las {{ data?.turno?.hora }}</p>
-
-    <form [formGroup]="data?.form" style="margin-top: 16px;">
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Motivo de cancelación</mat-label>
-        <textarea matInput formControlName="comentario" rows="4"
-          placeholder="Indica el motivo de la cancelación (mínimo 10 caracteres)"></textarea>
-        <mat-error *ngIf="data?.form?.get('comentario')?.hasError('required')">
-          El motivo es obligatorio
-        </mat-error>
-        <mat-error *ngIf="data?.form?.get('comentario')?.hasError('minlength')">
-          Debe tener al menos 10 caracteres
-        </mat-error>
-      </mat-form-field>
-    </form>
-  </mat-dialog-content>
-  <mat-dialog-actions align="end">
-    <button mat-button mat-dialog-close>Cancelar</button>
-    <button mat-raised-button color="warn" [disabled]="!data?.form?.valid" [mat-dialog-close]="true">
-      Confirmar Cancelación
-    </button>
-  </mat-dialog-actions>
-</ng-template>
-
-<ng-template #historiaClinicaDialog let-data>
-  <div class="hc-dialog">
-    <header class="hc-dialog__header">
-      <h2>Finalizar Turno - Historia Clínica</h2>
-
-      <div class="hc-dialog__meta">
-        <p><strong>Paciente:</strong> {{ data?.turno?.paciente | capitalizarNombre }}</p>
-        <p><strong>Especialidad:</strong> {{ data?.turno?.especialidad }}</p>
-        <p><strong>Fecha:</strong> {{ data?.turno?.fecha }} a las {{ data?.turno?.hora }}</p>
-      </div>
-    </header>
-
-    <section class="hc-dialog__body">
-      <form [formGroup]="data?.form" class="hc-form" (submit)="$event.preventDefault()">
-        <div class="hc-grid">
-
-          <div class="hc-field">
-            <label for="altura">Altura (cm)*</label>
-            <input id="altura" type="number" min="0" step="0.1" formControlName="altura" />
-            <div class="hc-error" *ngIf="data?.form?.get('altura')?.touched">
-              <span *ngIf="data?.form?.get('altura')?.hasError('required')">
-                La altura es obligatoria
-              </span>
-              <span *ngIf="data?.form?.get('altura')?.hasError('min')">
-                La altura debe ser mayor a 0
-              </span>
-            </div>
-          </div>
-
-          <div class="hc-field">
-            <label for="peso">Peso (kg)*</label>
-            <input id="peso" type="number" min="0" step="0.1" formControlName="peso" />
-            <div class="hc-error" *ngIf="data?.form?.get('peso')?.touched">
-              <span *ngIf="data?.form?.get('peso')?.hasError('required')">
-                El peso es obligatorio
-              </span>
-              <span *ngIf="data?.form?.get('peso')?.hasError('min')">
-                El peso debe ser mayor a 0
-              </span>
-            </div>
-          </div>
-
-          <div class="hc-field">
-            <label for="temperatura">Temperatura (°C)*</label>
-            <input id="temperatura" type="number" min="0" step="0.1" formControlName="temperatura" />
-            <div class="hc-error" *ngIf="data?.form?.get('temperatura')?.touched">
-              <span *ngIf="data?.form?.get('temperatura')?.hasError('required')">
-                La temperatura es obligatoria
-              </span>
-              <span *ngIf="data?.form?.get('temperatura')?.hasError('min')">
-                La temperatura debe ser mayor a 0
-              </span>
-            </div>
-          </div>
-
-          <div class="hc-field">
-            <label for="presion">Presión*</label>
-            <input id="presion" type="text" placeholder="Ej: 120/80" formControlName="presion" />
-            <div class="hc-error" *ngIf="data?.form?.get('presion')?.touched">
-              <span *ngIf="data?.form?.get('presion')?.hasError('required')">
-                La presión es obligatoria
-              </span>
-            </div>
-          </div>
-
-          <div class="hc-field hc-field--full">
-            <label for="riesgo">Índice de riesgo (%)</label>
-            <div class="hc-range-row">
-              <input id="riesgo" type="range" min="0" max="100" step="1" formControlName="riesgo" />
-              <span class="hc-range-value">
-                {{ data?.form?.get('riesgo')?.value }}%
-              </span>
-            </div>
-          </div>
-
-          <div class="hc-field">
-            <label for="glucosa">Nivel de glucosa (mg/dL)*</label>
-            <input id="glucosa" type="number" min="0" step="0.1" formControlName="nivelGlucosa" />
-            <div class="hc-error" *ngIf="data?.form?.get('nivelGlucosa')?.touched">
-              <span *ngIf="data?.form?.get('nivelGlucosa')?.hasError('required')">
-                El nivel de glucosa es obligatorio
-              </span>
-              <span *ngIf="data?.form?.get('nivelGlucosa')?.hasError('min')">
-                El nivel de glucosa debe ser mayor a 0
-              </span>
-            </div>
-          </div>
-
-          <div class="hc-field hc-field--inline">
-            <label class="hc-toggle">
-              <input type="checkbox" formControlName="requiereSeguimiento" />
-              <span>Requiere seguimiento</span>
-            </label>
-          </div>
-
-          <div class="hc-field hc-field--full" formArrayName="datosDinamicos">
-            <div class="hc-datos-header">
-              <h3>Datos dinámicos (máx. 3)</h3>
-              <button type="button" class="hc-btn hc-btn--small" (click)="agregarDatoDinamico(data.form)"
-                [disabled]="getDatosDinamicos(data.form).length >= 3">
-                + Agregar
-              </button>
-            </div>
-
-            <div class="hc-dato-row" *ngFor="let g of getDatosDinamicos(data.form).controls; let i = index"
-              [formGroupName]="i">
-              <div class="hc-field">
-                <label>Clave</label>
-                <input type="text" formControlName="clave" placeholder="Ej: Caries" />
-              </div>
-
-              <div class="hc-field">
-                <label>Valor</label>
-                <input type="text" formControlName="valor" placeholder="Ej: 3" />
-              </div>
-
-              <button type="button" class="hc-btn hc-btn--icon" (click)="eliminarDatoDinamico(data.form, i)">
-                ✕
-              </button>
-            </div>
-          </div>
-
-          <div class="hc-field hc-field--full">
-            <label for="comentario">Comentario / Reseña del turno*</label>
-            <textarea id="comentario" rows="4" formControlName="comentario"
-              placeholder="Deja un comentario sobre la consulta (mínimo 10 caracteres)"></textarea>
-            <div class="hc-error" *ngIf="data?.form?.get('comentario')?.touched">
-              <span *ngIf="data?.form?.get('comentario')?.hasError('required')">
-                El comentario es obligatorio
-              </span>
-              <span *ngIf="data?.form?.get('comentario')?.hasError('minlength')">
-                Debe tener al menos 10 caracteres
-              </span>
-            </div>
-          </div>
-
-        </div>
-      </form>
-    </section>
-
-    <footer class="hc-dialog__footer">
-      <button type="button" class="hc-btn hc-btn--ghost" (click)="closeHistoriaDialog(false)">
-        Cancelar
-      </button>
-
-      <button type="button" class="hc-btn hc-btn--primary" [class.hc-btn--disabled]="!data?.form?.valid"
-        [disabled]="!data?.form?.valid" (click)="closeHistoriaDialog(true)">
-        Guardar Historia Clínica
-      </button>
-    </footer>
-  </div>
-</ng-template>
-
-
-<ng-template #resenaDialog let-data>
-  <div class="resena-panel">
-    <header class="resena-panel__header">
-      <h2 class="resena-panel__title">Reseña del turno</h2>
-
-      <p class="resena-panel__meta">
-        {{ data?.paciente }} • {{ data?.especialidad }} •
-        {{ data?.fecha }} {{ data?.hora }}
-      </p>
-    </header>
-
-    <section class="resena-panel__body">
-      <p class="resena-panel__texto">
-        {{ data?.resena }}
-      </p>
-    </section>
-
-    <footer class="resena-panel__footer">
-      <button type="button" class="resena-panel__btn" (click)="closeResenaDialog()">
-        Cerrar
-      </button>
-    </footer>
-  </div>
-</ng-template>
-
-<ng-template #verResenaDialog let-data>
-  <h2 mat-dialog-title>Reseña del Especialista</h2>
-  <mat-dialog-content>
-
-    <p><strong>Paciente: </strong> {{ data?.paciente | capitalizarNombre}}
-    <p><strong>Especialidad: </strong> {{ data?.especialidad | capitalizarNombre }} </p>
-    <p><strong>Fecha: </strong> {{ data?.fecha }} {{ data?.hora }} </p>
-    <p><strong>Reseña: </strong> {{ data?.resena }} </p>
-  </mat-dialog-content>
-  <mat-dialog-actions align="end">
-    <button mat-button mat-dialog-close>Cerrar</button>
-  </mat-dialog-actions>
-</ng-template> -->
