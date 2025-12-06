@@ -1,4 +1,3 @@
-
 <mat-card class="registro-container" *ngIf="registroForm as f">
   <mat-card-header>
     <mat-card-title>Registro de Especialista</mat-card-title>
@@ -59,15 +58,12 @@
         </div>
 
         <mat-chip-listbox formControlName="especialidades" multiple aria-label="Selección de especialidades">
-
           <mat-chip-option *ngFor="let esp of especialidadesBase" [value]="esp" color="accent"
-            [selected]="especialidadesSeleccionadas.includes(esp)" [disabled]="loading || (!especialidadesSeleccionadas.includes(esp) && especialidadesSeleccionadas.length >= maxEspecialidades)">
-
+            [selected]="especialidadesSeleccionadas.includes(esp)" 
+            [disabled]="loading || (!especialidadesSeleccionadas.includes(esp) && especialidadesSeleccionadas.length >= maxEspecialidades)">
             <mat-icon matChipAvatar *ngIf="especialidadesSeleccionadas.includes(esp)">check</mat-icon>
             {{ esp }}
-
           </mat-chip-option>
-
         </mat-chip-listbox>
 
         <div class="custom-specialty-wrapper" *ngIf="especialidadesSeleccionadas.includes('Otro')"
@@ -101,6 +97,7 @@
           </span>
         </div>
       </div>
+
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Correo Electrónico</mat-label>
         <input matInput type="email" formControlName="email" placeholder="nombre@ejemplo.com" />
@@ -119,10 +116,7 @@
           <mat-icon>image</mat-icon>
           Subir Foto de Perfil
         </button>
-
-        <!-- (change)="onFileChange($any($event))" -->
-
-        <!-- input #fileInput type="file" hidden (change)="onFileChange($event)" accept="image/*" / -->
+        
         <input #fileInput type="file" hidden (change)="onFileChange($any($event))" accept="image/*" />
 
         <mat-error *ngIf="f.get('imagenPerfil')?.hasError('required') && f.get('imagenPerfil')?.touched" style="font-size: 0.75rem; margin-top: 5px;">
@@ -134,17 +128,32 @@
         </div>
       </div>
 
-      <div class="captcha-wrapper" *ngIf="captchaEnabled">
+      <div style="margin: 20px 0 10px 0; display: flex; justify-content: flex-end;">
+        <mat-slide-toggle 
+            color="warn" 
+            [checked]="!captchaEnabled" 
+            (change)="toggleCaptcha()">
+            Desactivar Captcha (Modo Pruebas)
+        </mat-slide-toggle>
+      </div>
+
+      <div class="captcha-wrapper" style="margin: 1rem 0;" *ngIf="captchaEnabled">
         <ngx-recaptcha2 
           formControlName="recaptcha" 
           [siteKey]="siteKey" 
           (success)="onCaptchaValid(true)"
-          (expire)="onCaptchaValid(false)" 
+          (expire)="registroForm.get('recaptcha')?.reset(); onCaptchaValid(false)" 
           (error)="onCaptchaValid(false)">
         </ngx-recaptcha2>
+
         <mat-error *ngIf="f.get('recaptcha')?.invalid && f.get('recaptcha')?.touched">
-          Completa el captcha.
+          Debes completar el captcha.
         </mat-error>
+        
+        <div *ngIf="registroForm.get('recaptcha')?.touched && !captchaValido" 
+             style="color: #f44336; font-size: 0.8rem; margin-top: 5px;">
+             El captcha expiró o es inválido.
+        </div>
       </div>
 
       <div class="actions">
@@ -160,155 +169,3 @@
 </mat-card>
 
 <app-fab-bienvenida></app-fab-bienvenida>
-
-
-
-
-<!-- <mat-card class="registro-container" *ngIf="registroForm as f">
-  <mat-card-title>Registro de Especialista</mat-card-title>
-
-  <form [formGroup]="registroForm" (ngSubmit)="onSubmit()" autocomplete="off">
-
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Nombre</mat-label>
-      <input matInput formControlName="nombre" placeholder="Ingresa tu nombre" />
-      <mat-error *ngIf="f.get('nombre')?.hasError('required')">
-        El nombre es obligatorio.
-      </mat-error>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Apellido</mat-label>
-      <input matInput formControlName="apellido" placeholder="Ingresa tu apellido" />
-      <mat-error *ngIf="f.get('apellido')?.hasError('required')">
-        El apellido es obligatorio.
-      </mat-error>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>DNI</mat-label>
-      <input matInput formControlName="dni" placeholder="Ingresa tu DNI" />
-      <mat-error *ngIf="f.get('dni')?.hasError('required')">
-        El DNI es obligatorio.
-      </mat-error>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Fecha de nacimiento</mat-label>
-      <input matInput type="date" formControlName="fechaNacimiento" [min]="minDateISO" [max]="maxDateISO"
-        placeholder="YYYY-MM-DD" />
-      <mat-error *ngIf="f.get('fechaNacimiento')?.hasError('required')">
-        La fecha de nacimiento es obligatoria.
-      </mat-error>
-      <mat-error *ngIf="f.get('fechaNacimiento')?.hasError('formato')">
-        Formato inválido (usa AAAA-MM-DD).
-      </mat-error>
-      <mat-error *ngIf="f.get('fechaNacimiento')?.hasError('futuro')">
-        La fecha no puede ser futura.
-      </mat-error>
-      <mat-error *ngIf="f.get('fechaNacimiento')?.hasError('rango')">
-        Verifica la fecha (edad fuera de rango).
-      </mat-error>
-    </mat-form-field>
-
-    <div class="especialidades-section" 
-         [class.has-error]="f.get('especialidades')?.invalid && f.get('especialidades')?.touched">
-      
-      <div class="especialidades-header">
-        <span class="label">Seleccioná tus especialidades</span>
-        <span class="counter">
-          {{ especialidadesSeleccionadas.length }}/{{ maxEspecialidades }}
-        </span>
-      </div>
-
-      <mat-chip-listbox 
-        formControlName="especialidades" 
-        multiple 
-        aria-label="Selección de especialidades">
-        
-        <mat-chip-option 
-          *ngFor="let esp of especialidadesBase" 
-          [value]="esp"
-          color="accent" 
-          [selected]="especialidadesSeleccionadas.includes(esp)"
-          [disabled]="loading || (!especialidadesSeleccionadas.includes(esp) && especialidadesSeleccionadas.length >= maxEspecialidades)">
-          
-          <mat-icon matChipAvatar *ngIf="especialidadesSeleccionadas.includes(esp)">check</mat-icon>
-          {{ esp }}
-          
-        </mat-chip-option>
-      
-      </mat-chip-listbox>
-
-      <div class="especialidades-hint">
-        Elegí entre 1 y {{ maxEspecialidades }} especialidades.
-      </div>
-
-      <div class="especialidades-error" *ngIf="f.get('especialidades')?.touched">
-        <span *ngIf="f.get('especialidades')?.hasError('required') || f.get('especialidades')?.hasError('minSelected')">
-          Seleccioná al menos una.
-        </span>
-        <span *ngIf="f.get('especialidades')?.hasError('maxSelected')">
-          Máximo {{ maxEspecialidades }} especialidades.
-        </span>
-      </div>
-    </div>
-  
-    <mat-form-field *ngIf="especialidadesSeleccionadas.includes('Otro')" appearance="outline" class="full-width">
-      <mat-label>Agregar especialidad</mat-label>
-      <input matInput formControlName="otraEspecialidad" placeholder="Ej: Traumatología" />
-      <mat-error *ngIf="f.get('otraEspecialidad')?.hasError('required')">
-        Indicá la especialidad.
-      </mat-error>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Correo Electrónico</mat-label>
-      <input matInput type="email" formControlName="email" placeholder="Ingresa tu correo" />
-      <mat-error *ngIf="f.get('email')?.hasError('required')">El correo es obligatorio.</mat-error>
-      <mat-error *ngIf="f.get('email')?.hasError('email')">Formato inválido.</mat-error>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Contraseña</mat-label>
-      <input matInput type="password" formControlName="password" placeholder="Ingresa tu contraseña" />
-      <mat-error *ngIf="f.get('password')?.hasError('required')">La contraseña es obligatoria.</mat-error>
-    </mat-form-field>
-
-    <div class="full-width file-group">
-      <button mat-raised-button type="button" color="primary" (click)="fileInput.click()">
-        Seleccionar Imagen de Perfil
-      </button>
-      <input #fileInput type="file" hidden (change)="onFileChange($event)" accept="image/*" />
-      <mat-error *ngIf="f.get('imagenPerfil')?.hasError('required') && f.get('imagenPerfil')?.touched">
-        La imagen de perfil es obligatoria.
-      </mat-error>
-      <div class="preview" *ngIf="imagenPrevia">
-        <img [src]="imagenPrevia" alt="Previsualización perfil" />
-      </div>
-    </div>
-
-    <div class="captcha-wrapper" style="margin: 1rem 0;" *ngIf="captchaEnabled">
-      <ngx-recaptcha2 formControlName="recaptcha" [siteKey]="siteKey" (success)="
-      registroForm.get('recaptcha')?.setValue($event);
-      onCaptchaValid(true);
-    " (expire)="
-      registroForm.get('recaptcha')?.reset();
-      onCaptchaValid(false);
-    " (error)="onCaptchaValid(false)">
-      </ngx-recaptcha2>
-
-      <mat-error *ngIf="f.get('recaptcha')?.invalid && f.get('recaptcha')?.touched">
-        Debes completar el captcha.
-      </mat-error>
-    </div>
-
-    <button mat-raised-button color="accent" class="full-width" type="submit"
-      [disabled]="f.invalid || (captchaEnabled && !captchaValido) || loading">
-      {{ loading ? 'Registrando...' : 'Registrarse' }}
-    </button>
-
-  </form>
-</mat-card>
-
-<app-fab-bienvenida></app-fab-bienvenida> -->

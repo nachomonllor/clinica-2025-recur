@@ -14,6 +14,9 @@
 * Boton para desactivar el Captcha
 * Turnos por especialista
 * Readme con imagenes
+* En mi-perfil del especialista, tiene que verse a la derecha los horarios que le quedaron al especialista ,
+  es decir, si en otra sesion dejo sus horarios, tiene que quedar fijo en mi perfil, que pueda verse , pero tambien poder editarlos
+   
 
 
 
