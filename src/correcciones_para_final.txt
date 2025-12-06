@@ -18,6 +18,7 @@
   es decir, si en otra sesion dejo sus horarios cargados, tiene que quedar fijo en mi-perfil, que pueda verse , pero tambien poder editarlos
 
 * poder buscar por reseña desde los distintos perfiles
+* Datos dinamicos, tiene que verse en la historia clinica en pantalla (ya se ve en el PDF) queda en la pantalla.
 
 
 
