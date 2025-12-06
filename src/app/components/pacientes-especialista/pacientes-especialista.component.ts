@@ -12,11 +12,10 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { SupabaseService } from '../../../services/supabase.service';
-import { HistoriaClinicaDialogComponent } from '../admin/usuarios-admin/historia-clinica-dialog.component';
 
 import { PacienteAtendido, TurnoDetalle } from '../../models/pacientes-especialista.model';
 import { CapitalizarNombrePipe } from "../../../pipes/capitalizar-nombre.pipe";
-import { TurnoVM } from '../../models/turno.model';
+import { HistoriaClinicaDialogComponent } from '../historia-clinica-dialog/historia-clinica-dialog.component';
 
 @Component({
   selector: 'app-pacientes-especialista',

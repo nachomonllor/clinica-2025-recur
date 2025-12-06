@@ -38,7 +38,6 @@ import Swal from 'sweetalert2';
 import * as XLSX from 'xlsx';
 
 import { SupabaseService } from '../../../../services/supabase.service';
-import { HistoriaClinicaDialogComponent } from './historia-clinica-dialog.component';
 import { AccentColor, PerfilMin, TurnoAdminResumen, TurnoAdminSupabase, UsuarioAdmin, UsuarioAdminCard } from '../../../models/admin.model';
 import { Rol } from '../../../models/tipos.model';
 import { UsuarioCreate } from '../../../models/usuario.model';
@@ -46,6 +45,7 @@ import { HistoriaClinicaConExtras } from '../../../models/historia-clinica.model
 import { CapitalizarNombrePipe } from "../../../../pipes/capitalizar-nombre.pipe";
 import { LoadingService } from '../../../../services/loading.service';
 import { DoctorPipe } from "../../../../pipes/doctor.pipe";
+import { HistoriaClinicaDialogComponent } from '../../historia-clinica-dialog/historia-clinica-dialog.component';
 
 
 @Component({

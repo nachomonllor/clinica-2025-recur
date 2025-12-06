@@ -3,9 +3,9 @@ import { CommonModule } from '@angular/common';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import jsPDF from 'jspdf';
 import * as XLSX from 'xlsx'; // Asegúrate de tener: npm install xlsx
-import { HistoriaClinicaConExtras } from '../../../models/historia-clinica.model';
-import { DatoDinamicoPipe } from '../../../../pipes/dato-dinamico.pipe';
-import { CapitalizarNombrePipe } from '../../../../pipes/capitalizar-nombre.pipe';
+import { HistoriaClinicaConExtras } from '../../models/historia-clinica.model';
+import { DatoDinamicoPipe } from '../../../pipes/dato-dinamico.pipe';
+import { CapitalizarNombrePipe } from '../../../pipes/capitalizar-nombre.pipe';
 
 export interface HistoriaClinicaDialogData {
   pacienteNombre: string;
@@ -15,181 +15,18 @@ export interface HistoriaClinicaDialogData {
 @Component({
   selector: 'app-historia-clinica-dialog',
   standalone: true,
-  imports: [
+  imports: [    
     CommonModule,
     MatDialogModule,
     DatoDinamicoPipe,
-    CapitalizarNombrePipe
-  ],
-  template: `
-    <div class="hc-dialog">
-      <!-- HEADER -->
-      <div class="hc-header">
-        <div>
-          <div class="hc-title">Historia Clínica</div>
-          <!-- Título con Pipe -->
-          <div class="hc-subtitle">{{ data.pacienteNombre | capitalizarNombre }}</div>
-        </div>
-
-        <div class="hc-header-actions">
-          <!-- Botón EXCEL -->
-          <button type="button" class="icon-button excel" title="Descargar Excel" (click)="exportarExcel()">
-            📊
-          </button>
-          
-          <!-- Botón PDF -->
-          <button type="button" class="icon-button" title="Descargar PDF" (click)="exportarPdf()">
-            ⬇
-          </button>
-          
-          <!-- Botón Cerrar -->
-          <button type="button" class="icon-button" title="Cerrar" (click)="cerrar()">
-            ✕
-          </button>
-        </div>
-      </div>
-
-      <!-- BODY -->
-      <div class="hc-body" *ngIf="data.historias.length; else sinHistorias">
-        <div class="historia-card" *ngFor="let historia of data.historias; let i = index" [class.open]="panelAbiertoIndex === i">
-
-          <!-- CABECERA CARD -->
-          <button type="button" class="historia-header" (click)="toggleCard(i)">
-            <div class="historia-header-left">
-              <!-- Badge Especialidad (Protegido con $any) -->
-              <span class="pill pill-esp" *ngIf="$any(historia).especialidad">
-                {{ $any(historia).especialidad | uppercase }}
-              </span>
-              
-              <!-- Badge Fecha -->
-              <span class="pill pill-fecha">
-                {{ formatearFecha(historia.fecha_registro || historia.created_at) }}
-              </span>
-              
-              <!-- Badge Especialista -->
-              <span class="pill pill-esp">
-                {{ historia.especialistaNombre | capitalizarNombre }}
-              </span>
-            </div>
-
-            <div class="historia-header-right">
-              <span class="pill pill-id">Atención #{{ data.historias.length - i }}</span>
-              <span class="chevron" [class.open]="panelAbiertoIndex === i">⌄</span>
-            </div>
-          </button>
-
-          <!-- DETALLE EXPANDIDO -->
-          <div class="historia-body" *ngIf="panelAbiertoIndex === i">
-            <div class="historia-grid">
-              <div class="historia-item">
-                <span class="label">Fecha de atención</span>
-                <span class="value">{{ historia.fechaAtencion || 'N/A' }}</span>
-              </div>
-              <div class="historia-item">
-                <span class="label">Especialista</span>
-                <span class="value">{{ historia.especialistaNombre | capitalizarNombre }}</span>
-              </div>
-              <div class="historia-item">
-                <span class="label">Altura</span>
-                <span class="value">{{ historia.altura ?? '-' }} cm</span>
-              </div>
-              <div class="historia-item">
-                <span class="label">Peso</span>
-                <span class="value">{{ historia.peso ?? '-' }} kg</span>
-              </div>
-              <div class="historia-item">
-                <span class="label">Temperatura</span>
-                <span class="value">{{ historia.temperatura ?? '-' }} °C</span>
-              </div>
-              <div class="historia-item">
-                <span class="label">Presión</span>
-                <span class="value">{{ historia.presion ?? '-' }}</span>
-              </div>
-              
-              <!-- MOSTRAR RESEÑA EN PANTALLA -->
-              <div class="historia-item full-width" *ngIf="$any(historia).resena">
-                <span class="label">Reseña / Comentario</span>
-                <span class="value text-wrap">{{ $any(historia).resena }}</span>
-              </div>
-            </div>
-
-            <!-- MOSTRAR DATOS DINÁMICOS EN PANTALLA -->
-            <div *ngIf="historia.datos_dinamicos && historia.datos_dinamicos.length" class="datos-dinamicos">
-              <div class="datos-title">Datos dinámicos</div>
-              <div class="datos-chips">
-                <span class="dato-chip" *ngFor="let dato of historia.datos_dinamicos">
-                  {{ dato | datoDinamico }}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <ng-template #sinHistorias>
-        <div class="hc-empty">No hay historias clínicas registradas.</div>
-      </ng-template>
-    </div>
-  `,
-  styles: [`
-    :host { display: block; }
-    .hc-dialog {
-      min-width: 340px; max-width: 800px; max-height: 80vh;
-      padding: 24px 24px 18px; box-sizing: border-box;
-      background: radial-gradient(circle at top left, rgba(255, 214, 102, 0.16), transparent 55%),
-                  radial-gradient(circle at bottom right, rgba(255, 193, 7, 0.12), transparent 55%), #050816;
-      border-radius: 24px; border: 1px solid rgba(255, 193, 7, 0.55);
-      box-shadow: 0 26px 60px rgba(0, 0, 0, 0.9);
-      color: #f9fafb; font-family: system-ui, sans-serif;
-    }
-    .hc-header { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 18px; }
-    .hc-title { font-size: 1.1rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: #ffecb3; }
-    .hc-subtitle { margin-top: 4px; font-size: .95rem; opacity: .85; }
-    .hc-header-actions { margin-left: auto; display: flex; gap: 8px; }
-    .icon-button {
-      width: 32px; height: 32px; border-radius: 999px; border: 1px solid rgba(255, 193, 7, 0.7);
-      background: radial-gradient(circle at top, rgba(255, 255, 255, 0.12), rgba(0, 0, 0, 0.8));
-      display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
-      padding: 0; font-size: .85rem; color: #ffecb3; transition: all .12s ease;
-    }
-    .icon-button.excel { border-color: #22c55e; color: #4ade80; }
-    .icon-button:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(0, 0, 0, .7); border-color: #ffe082; }
-    .hc-body { max-height: calc(80vh - 88px); padding-right: 4px; overflow: auto; }
-    .historia-card {
-      position: relative; margin-bottom: 14px; padding: 10px 12px 12px; border-radius: 20px;
-      background: linear-gradient(135deg, rgba(255, 213, 79, .14), rgba(4, 10, 24, .9));
-      border: 1px solid rgba(255, 213, 79, 0.55); box-shadow: 0 14px 36px rgba(0, 0, 0, .85);
-    }
-    .historia-card.open { box-shadow: 0 18px 40px rgba(0, 0, 0, .95); }
-    .historia-header {
-      width: 100%; background: transparent; border: none; display: flex; align-items: center;
-      justify-content: space-between; gap: 12px; padding: 4px 0; color: inherit; cursor: pointer;
-    }
-    .historia-header-left, .historia-header-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-    .pill {
-      padding: 4px 10px; border-radius: 999px; font-size: .72rem; letter-spacing: .06em;
-      text-transform: uppercase; border: 1px solid transparent; white-space: nowrap;
-    }
-    .pill-fecha { background: rgba(0, 0, 0, .6); border-color: rgba(255, 213, 79, .7); color: #ffecb3; }
-    .pill-esp { background: rgba(11, 15, 40, .85); border-color: rgba(129, 212, 250, .6); color: #e3f2fd; }
-    .pill-id { background: rgba(0, 0, 0, .4); border-color: rgba(255, 213, 79, .5); color: #ffe082; }
-    .chevron { font-size: .9rem; opacity: .7; transition: transform .15s ease; }
-    .chevron.open { transform: rotate(180deg); opacity: 1; }
-    .historia-body { margin-top: 10px; border-top: 1px solid rgba(255, 255, 255, .06); padding-top: 10px; }
-    .historia-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-    .historia-item { padding: 8px 10px; border-radius: 12px; background: rgba(0, 0, 0, .4); border: 1px solid rgba(255, 255, 255, .04); }
-    .historia-item.full-width { grid-column: 1 / -1; }
-    .text-wrap { white-space: pre-wrap; }
-    .label { display: block; font-size: .7rem; text-transform: uppercase; letter-spacing: .09em; opacity: .7; margin-bottom: 3px; }
-    .value { font-size: .85rem; }
-    .datos-dinamicos { margin-top: 14px; }
-    .datos-title { font-size: .75rem; text-transform: uppercase; letter-spacing: .09em; color: #ffecb3; opacity: .9; margin-bottom: 6px; }
-    .datos-chips { display: flex; flex-wrap: wrap; gap: 6px; }
-    .dato-chip { padding: 4px 8px; border-radius: 999px; font-size: .78rem; background: rgba(0, 0, 0, .5); border: 1px solid rgba(255, 213, 79, .45); }
-    .hc-empty { padding: 40px 0 16px; text-align: center; font-size: .9rem; opacity: .8; }
-    @media (max-width: 600px) { .historia-grid { grid-template-columns: 1fr; } }
-  `]
+    CapitalizarNombrePipe],
+  templateUrl: './historia-clinica-dialog.component.html',
+  styleUrl: './historia-clinica-dialog.component.scss'
 })
+// export class HistoriaClinicaDialogComponent {
+
+// }
+
 export class HistoriaClinicaDialogComponent {
   panelAbiertoIndex: number | null = 0;
 

@@ -1,0 +1,110 @@
+<p>historia-clinica-dialog works!</p>
+
+<div class="hc-dialog">
+      <!-- HEADER -->
+      <div class="hc-header">
+        <div>
+          <div class="hc-title">Historia Clínica</div>
+          <!-- Título con Pipe -->
+          <div class="hc-subtitle">{{ data.pacienteNombre | capitalizarNombre }}</div>
+        </div>
+
+        <div class="hc-header-actions">
+          <!-- Botón EXCEL -->
+          <button type="button" class="icon-button excel" title="Descargar Excel" (click)="exportarExcel()">
+            📊
+          </button>
+          
+          <!-- Botón PDF -->
+          <button type="button" class="icon-button" title="Descargar PDF" (click)="exportarPdf()">
+            ⬇
+          </button>
+          
+          <!-- Botón Cerrar -->
+          <button type="button" class="icon-button" title="Cerrar" (click)="cerrar()">
+            ✕
+          </button>
+        </div>
+      </div>
+
+      <!-- BODY -->
+      <div class="hc-body" *ngIf="data.historias.length; else sinHistorias">
+        <div class="historia-card" *ngFor="let historia of data.historias; let i = index" [class.open]="panelAbiertoIndex === i">
+
+          <!-- CABECERA CARD -->
+          <button type="button" class="historia-header" (click)="toggleCard(i)">
+            <div class="historia-header-left">
+              <!-- Badge Especialidad (Protegido con $any) -->
+              <span class="pill pill-esp" *ngIf="$any(historia).especialidad">
+                {{ $any(historia).especialidad | uppercase }}
+              </span>
+              
+              <!-- Badge Fecha -->
+              <span class="pill pill-fecha">
+                {{ formatearFecha(historia.fecha_registro || historia.created_at) }}
+              </span>
+              
+              <!-- Badge Especialista -->
+              <span class="pill pill-esp">
+                {{ historia.especialistaNombre | capitalizarNombre }}
+              </span>
+            </div>
+
+            <div class="historia-header-right">
+              <span class="pill pill-id">Atención #{{ data.historias.length - i }}</span>
+              <span class="chevron" [class.open]="panelAbiertoIndex === i">⌄</span>
+            </div>
+          </button>
+
+          <!-- DETALLE EXPANDIDO -->
+          <div class="historia-body" *ngIf="panelAbiertoIndex === i">
+            <div class="historia-grid">
+              <div class="historia-item">
+                <span class="label">Fecha de atención</span>
+                <span class="value">{{ historia.fechaAtencion || 'N/A' }}</span>
+              </div>
+              <div class="historia-item">
+                <span class="label">Especialista</span>
+                <span class="value">{{ historia.especialistaNombre | capitalizarNombre }}</span>
+              </div>
+              <div class="historia-item">
+                <span class="label">Altura</span>
+                <span class="value">{{ historia.altura ?? '-' }} cm</span>
+              </div>
+              <div class="historia-item">
+                <span class="label">Peso</span>
+                <span class="value">{{ historia.peso ?? '-' }} kg</span>
+              </div>
+              <div class="historia-item">
+                <span class="label">Temperatura</span>
+                <span class="value">{{ historia.temperatura ?? '-' }} °C</span>
+              </div>
+              <div class="historia-item">
+                <span class="label">Presión</span>
+                <span class="value">{{ historia.presion ?? '-' }}</span>
+              </div>
+              
+              <!-- MOSTRAR RESEÑA EN PANTALLA -->
+              <div class="historia-item full-width" *ngIf="$any(historia).resena">
+                <span class="label">Reseña / Comentario</span>
+                <span class="value text-wrap">{{ $any(historia).resena }}</span>
+              </div>
+            </div>
+
+            <!-- MOSTRAR DATOS DINÁMICOS EN PANTALLA -->
+            <div *ngIf="historia.datos_dinamicos && historia.datos_dinamicos.length" class="datos-dinamicos">
+              <div class="datos-title">Datos dinámicos</div>
+              <div class="datos-chips">
+                <span class="dato-chip" *ngFor="let dato of historia.datos_dinamicos">
+                  {{ dato | datoDinamico }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <ng-template #sinHistorias>
+        <div class="hc-empty">No hay historias clínicas registradas.</div>
+      </ng-template>
+    </div>
