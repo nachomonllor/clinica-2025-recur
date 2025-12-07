@@ -1,37 +1,81 @@
-
 :host {
-  --azul: #1565C0;     /* primary */
+  --azul: #1565C0;        /* primary */
   --azul-oscuro: #0B1D3A;
-  --naranja: #FF8F00;  /* accent */
+  --naranja: #FF8F00;     /* accent */
   --texto: #EAF2FF;
   --texto-2: rgba(255,255,255,.8);
 }
 
-.pagina-estadisticas{
+.pagina-estadisticas {
   min-height: calc(100vh - 64px);
   padding: clamp(16px, 3vw, 32px);
   background:
     radial-gradient(900px 500px at -5% 0%, rgba(255,143,0,.18), transparent 60%),
     radial-gradient(1100px 600px at 110% 15%, rgba(21,101,192,.20), transparent 60%),
     linear-gradient(180deg, #061126, var(--azul-oscuro) 45%, #061126 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-.barra-acciones{
+/* --- BARRA DE ACCIONES (Botones + Filtros) --- */
+.barra-acciones {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap; /* Permite que bajen en pantallas chicas */
+  margin-bottom: 16px;
+
+  .espaciador {
+    flex: 1 1 auto; /* Empuja los botones de descarga a la derecha */
+  }
+}
+
+/* --- FILTROS DE FECHA --- */
+/* --- FILTROS --- */
+.filtros {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 16px;
+  flex-wrap: wrap; /* Permitir que bajen en pantallas chicas */
+
+  /* Estilos específicos para el Datepicker dentro de la barra */
+  mat-form-field {
+    width: 150px;
+    font-size: 0.9rem;
+
+    /* Forzamos el color del texto y placeholder para que se vea */
+    ::ng-deep .mat-mdc-text-field-wrapper {
+      background-color: rgba(255, 255, 255, 0.05); /* Fondo sutil */
+      border-radius: 4px;
+    }
+
+    ::ng-deep .mat-mdc-input-element {
+      color: #fff !important; /* Texto Blanco */
+    }
+
+    ::ng-deep .mat-mdc-floating-label {
+      color: #bbb !important; /* Label Gris Claro */
+    }
+
+    ::ng-deep .mat-datepicker-toggle {
+      color: var(--naranja) !important; /* Icono Naranja */
+    }
+
+    /* Bordes del outline */
+    ::ng-deep .mdc-notched-outline__leading,
+    ::ng-deep .mdc-notched-outline__notch,
+    ::ng-deep .mdc-notched-outline__trailing {
+      border-color: rgba(255, 255, 255, 0.3) !important;
+    }
+  }
 }
 
-.filtros{
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
 
-.espaciador{ flex: 1 1 auto; }
-
-.panel{
+/* --- TARJETA DEL GRÁFICO --- */
+.panel {
   border-radius: 18px;
   padding: clamp(12px, 2.2vw, 22px);
   background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
@@ -39,35 +83,88 @@
   color: var(--texto);
   box-shadow: 0 10px 30px rgba(0,0,0,.35);
   backdrop-filter: blur(6px);
+  overflow: hidden; /* Contiene el borde */
 }
 
-.titulo{
+/* Título visible en pantalla (simple) */
+.titulo {
   margin: 4px 0 14px;
   font-weight: 800;
   color: var(--texto);
   text-align: center;
 }
 
-.chart-wrapper{
+.chart-wrapper {
   width: 100%;
   height: 100%;
+  min-height: 400px;
 }
 
-.loading{
+.loading {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
   gap: 10px;
   padding: 40px 0;
   color: var(--texto-2);
 }
 
-.mensaje-error{
+.mensaje-error {
   margin-top: 10px;
   color: #ffcdd2;
+  text-align: center;
 }
 
-/* Botón primario/acento en la línea con la paleta */
+/* -----------------------------------------------------------
+   ESTILOS PARA EL HEADER DE EXPORTACION (Logo + Título)
+   Oculto en pantalla (display: none), visible solo en PDF/Img
+----------------------------------------------------------- */
+.chart-header {
+  display: none; /* <--- Oculto para el usuario normal */
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: #061126; /* Fondo sólido por si acaso */
+
+  .logo-container {
+    width: 140px;
+    
+    .logo-img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+    }
+  }
+
+  .titulos {
+    text-align: left;
+
+    .titulo {
+      margin: 0;
+      font-size: 1.8rem;
+      font-weight: 500;
+      color: #fff;
+      letter-spacing: 0.5px;
+    }
+
+    .subtitulo {
+      margin: 4px 0 0;
+      color: #cbd5e1;
+      font-size: 0.95rem;
+    }
+  }
+}
+
+/* -----------------------------------------------------------
+   OVERRIDES DE MATERIAL UI (Tema Oscuro + Botones)
+----------------------------------------------------------- */
+
+/* Botones con colores del tema */
 ::ng-deep .mat-mdc-unelevated-button.mat-primary {
   --mdc-filled-button-container-color: var(--azul);
 }
@@ -77,36 +174,47 @@
   --mdc-protected-button-container-color: var(--naranja);
 }
 
-
-/* CORRECCIÓN VISUAL PARA INPUTS DE FECHA */
+/* =========================================================
+   CORRECCIÓN VISUAL CRÍTICA PARA INPUTS DE FECHA
+   Esto fuerza los colores para que se vean en fondo oscuro
+   ========================================================= */
 ::ng-deep .pagina-estadisticas {
   
-  /* Color del texto del input (la fecha escrita) */
+  /* 1. Color del texto que escribe el usuario (blanco) */
   .mat-mdc-input-element {
-    color: #e2e8f0 !important; /* Blanco/Gris claro */
+    color: #e2e8f0 !important;
+    caret-color: var(--naranja); /* Cursor naranja */
   }
 
-  /* Color del placeholder/label flotante (Desde / Hasta) */
-  .mdc-text-field:not(.mdc-text-field--disabled) .mdc-floating-label {
+  /* 2. Color del Label flotante "Desde" / "Hasta" (gris claro) */
+  .mdc-text-field .mdc-floating-label {
     color: #cbd5e1 !important; 
   }
-
-  /* Color del icono del calendario */
-  .mat-datepicker-toggle {
-    color: var(--naranja) !important; /* Usamos tu variable naranja */
+  
+  /* 3. Label cuando tiene foco o valor (Naranja) */
+  .mdc-text-field--focused .mdc-floating-label,
+  .mdc-text-field--filled .mdc-floating-label {
+    color: var(--naranja) !important;
   }
 
-  /* Bordes del input */
+  /* 4. Icono del calendario (Naranja) */
+  .mat-datepicker-toggle {
+    color: var(--naranja) !important;
+    opacity: 0.9;
+  }
+
+  /* 5. BORDE del input (Gris claro translúcido) */
   .mdc-notched-outline__leading,
   .mdc-notched-outline__notch,
   .mdc-notched-outline__trailing {
-    border-color: rgba(255, 255, 255, 0.3) !important;
+    border-color: rgba(255, 255, 255, 0.4) !important;
   }
 
-  /* Borde al hacer foco */
+  /* 6. BORDE cuando haces foco (Naranja) */
   .mdc-text-field--focused .mdc-notched-outline__leading,
   .mdc-text-field--focused .mdc-notched-outline__notch,
   .mdc-text-field--focused .mdc-notched-outline__trailing {
     border-color: var(--naranja) !important;
+    border-width: 2px !important;
   }
 }
