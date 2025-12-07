@@ -46,6 +46,7 @@ import { CapitalizarNombrePipe } from "../../../../pipes/capitalizar-nombre.pipe
 import { LoadingService } from '../../../../services/loading.service';
 import { DoctorPipe } from "../../../../pipes/doctor.pipe";
 import { HistoriaClinicaDialogComponent } from '../../historia-clinica-dialog/historia-clinica-dialog.component';
+import { DatoDinamico, TipoDatoDinamico } from '../../../models/dato-dinamico.model';
 
 
 @Component({
@@ -371,6 +372,237 @@ export class UsuariosAdminComponent implements OnInit {
   // =========================================================================================
   //  MÉTODO PDF REPLICADO (DISEÑO IDÉNTICO AL PACIENTE)
   // =========================================================================================
+  // async descargarTurnosPdf(usuario: UsuarioAdmin): Promise<void> {
+  //   const turnosParaExportar = await this.obtenerTurnosUsuario(usuario);
+
+  //   if (!turnosParaExportar.length) {
+  //     this.snackBar.open('No hay turnos para exportar.', 'Cerrar', { duration: 2500 });
+  //     return;
+  //   }
+
+  //   this.snackBar.open('Generando PDF con historial clínico...', 'OK', { duration: 2000 });
+
+  //   // PASO 1: Obtener IDs para buscar HC completa
+  //   const idsTurnos = turnosParaExportar.map(t => t.id);
+
+  //   // PASO 2: Buscar datos médicos en BD
+  //   const { data: historiasData } = await this.supa.client
+  //     .from('historia_clinica')
+  //     .select(`*, historia_datos_dinamicos (*)`)
+  //     .in('turno_id', idsTurnos);
+
+  //   const historiasMap = new Map();
+  //   if (historiasData) {
+  //     historiasData.forEach((h: any) => historiasMap.set(h.turno_id, h));
+  //   }
+
+  //   // --- GENERACIÓN PDF (Tu código exacto adaptado) ---
+  //   const doc = new jsPDF('p', 'mm', 'a4');
+  //   const pageWidth = doc.internal.pageSize.getWidth();
+  //   const pageHeight = doc.internal.pageSize.getHeight();
+  //   const marginX = 15;
+  //   const marginBottom = 15;
+  //   const cardPadding = 5;
+  //   const lineHeight = 5;
+  //   const paragraphSpacing = 2;
+  //   const headerBottom = 32;
+
+  //   // SVG Logo (EL MISMO)
+  //   const svgLogo = `
+  // <svg width="600" height="200" viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg">
+  //   <defs>
+  //     <linearGradient id="gradBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+  //       <stop offset="0%" style="stop-color:#0099ff;stop-opacity:1" /> 
+  //       <stop offset="100%" style="stop-color:#0055b3;stop-opacity:1" /> 
+  //     </linearGradient>
+  //   </defs>
+  //   <g transform="translate(50, 50)">
+  //     <path d="M 80 0 H 120 A 10 10 0 0 1 130 10 V 80 H 200 A 10 10 0 0 1 210 90 V 130 A 10 10 0 0 1 200 140 H 130 V 210 A 10 10 0 0 1 120 220 H 80 A 10 10 0 0 1 70 210 V 140 H 0 A 10 10 0 0 1 -10 130 V 90 A 10 10 0 0 1 0 80 H 70 V 10 A 10 10 0 0 1 80 0 Z" fill="url(#gradBlue)" transform="scale(0.5) translate(30,30)"/>
+  //     <path d="M 60 115 L 90 145 L 150 85" stroke="white" stroke-width="14" fill="none" stroke-linecap="round" stroke-linejoin="round" transform="scale(0.5) translate(30,30)"/>
+  //   </g>
+  //   <g transform="translate(180, 115)">
+  //     <text x="0" y="-25" font-family="Arial" font-weight="bold" font-size="28" fill="#0077cc">CLINICA</text>
+  //     <text x="0" y="25" font-family="Arial" font-weight="bold" font-size="52" fill="#003366">MONLLOR</text>
+  //   </g>
+  // </svg>`;
+  //   const svgBase64 = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgLogo)));
+
+  //   const generarDocumento = (pngDataUrl?: string) => {
+  //     const drawHeader = () => {
+  //       // Fondo Header
+  //       doc.setFillColor(17, 24, 39);
+  //       doc.rect(0, 0, pageWidth, headerBottom, 'F');
+
+  //       if (pngDataUrl) {
+  //         doc.setFillColor(255, 255, 255);
+  //         doc.roundedRect(marginX - 2, 5, 65, 22, 2, 2, 'F');
+  //         doc.addImage(pngDataUrl, 'PNG', marginX, 6, 60, 20);
+  //       }
+
+  //       // Títulos
+  //       doc.setTextColor(255, 255, 255);
+  //       doc.setFont('helvetica', 'bold');
+  //       doc.setFontSize(16);
+  //       doc.text('Reporte de Atenciones', pageWidth - marginX, 18, { align: 'right' });
+
+  //       doc.setFont('helvetica', 'normal');
+  //       doc.setFontSize(10);
+
+  //       // Título dinámico: Si estoy viendo a un Especialista, dice "Especialista: ...". Si no, "Paciente: ..."
+  //       const rolTexto = usuario.rol === 'ESPECIALISTA' ? 'Especialista' : 'Paciente';
+  //       doc.text(`${rolTexto}: ${usuario.nombre} ${usuario.apellido}`, pageWidth - marginX, 24, { align: 'right' });
+
+  //       const hoy = new Date().toLocaleDateString('es-AR');
+  //       doc.setTextColor(209, 213, 219);
+  //       doc.setFontSize(8);
+  //       doc.text(`Emisión: ${hoy}`, pageWidth - marginX, 28, { align: 'right' });
+
+  //       doc.setDrawColor(251, 191, 36);
+  //       doc.setLineWidth(0.4);
+  //       doc.line(marginX, headerBottom - 1, pageWidth - marginX, headerBottom - 1);
+  //     };
+
+  //     drawHeader();
+  //     let y = headerBottom + 10;
+  //     const contentWidth = pageWidth - (marginX * 2);
+
+  //     turnosParaExportar.forEach((t, index) => {
+  //       const paragraphs: { lines: string[]; bold?: boolean }[] = [];
+  //       const anchoTexto = contentWidth - cardPadding * 2;
+
+  //       const addParagraph = (text: string, opts?: { bold?: boolean }) => {
+  //         paragraphs.push({ lines: doc.splitTextToSize(text, anchoTexto), bold: opts?.bold });
+  //       };
+
+  //       // 1. Cabecera (Fecha y Estado)
+  //       const fechaStr = t.fecha_hora_inicio ? new Date(t.fecha_hora_inicio).toLocaleDateString('es-AR') : 'Sin fecha';
+  //       const horaStr = t.fecha_hora_inicio ? new Date(t.fecha_hora_inicio).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' }) : '';
+  //       const estadoPrint = (t.estado?.codigo || 'SIN ESTADO').toUpperCase();
+  //       addParagraph(`Turno #${index + 1} · ${fechaStr} ${horaStr} · (${estadoPrint})`, { bold: true });
+
+  //       // 2. Datos del turno (Especialidad y Contraparte)
+  //       const nombreEspecialidad = t.especialidad?.nombre || 'Varios';
+
+  //       // Si el usuario del reporte es Especialista, la contraparte es el Paciente. Y viceversa.
+  //       const userObj = usuario.rol === 'ESPECIALISTA' ? t.paciente : t.especialista;
+  //       const nombreContraparte = userObj ? `${userObj.apellido}, ${userObj.nombre}` : 'Sin datos';
+  //       const labelContraparte = usuario.rol === 'ESPECIALISTA' ? 'Paciente' : 'Especialista';
+
+  //       addParagraph(`Especialidad: ${nombreEspecialidad} | ${labelContraparte}: ${nombreContraparte}`);
+
+  //       // 3. DATOS CLÍNICOS (si hay)
+  //       const hc = historiasMap.get(t.id);
+
+  //       if (hc) {
+  //         let detalles = [];
+  //         if (hc.altura) detalles.push(`Altura: ${hc.altura} cm`);
+  //         if (hc.peso) detalles.push(`Peso: ${hc.peso} kg`);
+  //         if (hc.temperatura) detalles.push(`Temp: ${hc.temperatura} °C`);
+  //         if (hc.presion) detalles.push(`Presión: ${hc.presion}`);
+
+  //         if (detalles.length > 0) {
+  //           addParagraph('Datos Biométricos: ' + detalles.join(' | '), { bold: false });
+  //         }
+
+  //         // if (hc.historia_datos_dinamicos && hc.historia_datos_dinamicos.length > 0) {
+  //         //   addParagraph('Datos Dinámicos:', { bold: true });
+  //         //   hc.historia_datos_dinamicos.forEach((d: any) => {
+  //         //     const valor = d.valor_texto || d.valor_numerico || (d.valor_boolean ? 'Sí' : 'No');
+  //         //     addParagraph(`• ${d.clave}: ${valor}`);
+  //         //   });
+  //         // }
+
+
+  //         // --- DATOS DINAMICOS EN EL PDF (CORREGIDO) ---
+  //         if (hc.historia_datos_dinamicos && hc.historia_datos_dinamicos.length > 0) {
+  //           addParagraph('Datos Dinámicos:', { bold: true });
+
+  //           hc.historia_datos_dinamicos.forEach((d: any) => {
+  //             let valorPrint = '';
+
+  //             // Verificamos explícitamente qué columna tiene el dato
+  //             if (d.valor_texto !== null && d.valor_texto !== undefined) {
+  //               valorPrint = d.valor_texto;
+  //             } else if (d.valor_numerico !== null && d.valor_numerico !== undefined) {
+  //               valorPrint = d.valor_numerico.toString();
+  //               // Agregamos unidades visuales si corresponde (igual que en los otros componentes)
+  //               if (d.tipo_control === 'RANGO_0_100') valorPrint += ' %';
+  //               if (d.clave && d.clave.toLowerCase().includes('glucosa')) valorPrint += ' mg/dL';
+  //             } else if (d.valor_boolean !== null && d.valor_boolean !== undefined) {
+  //               // Aquí forzamos el SI/NO
+  //               valorPrint = d.valor_boolean ? 'SI' : 'NO';
+  //             }
+
+  //             addParagraph(`• ${d.clave}: ${valorPrint}`);
+  //           });
+  //         }
+
+  //       } else {
+  //         // Si no hay HC, mostramos comentario/motivo
+  //         if (t.comentario) addParagraph(`Reseña/Comentario: ${t.comentario}`);
+  //         else addParagraph('Sin datos clínicos registrados.');
+  //       }
+
+  //       // CÁLCULO DE ALTURA DE TARJETA
+  //       let cardHeight = cardPadding * 2;
+  //       paragraphs.forEach((p, i) => {
+  //         cardHeight += p.lines.length * lineHeight;
+  //         if (i > 0) cardHeight += paragraphSpacing;
+  //       });
+
+  //       // NUEVA PÁGINA SI NO ENTRA
+  //       if (y + cardHeight > pageHeight - marginBottom) {
+  //         doc.addPage();
+  //         drawHeader();
+  //         y = headerBottom + 10;
+  //       }
+
+  //       // DIBUJAR TARJETA
+  //       doc.setFillColor(248, 250, 252); // Gris muy claro
+  //       doc.setDrawColor(59, 130, 246);  // Azul borde
+  //       doc.setLineWidth(0.4);
+  //       doc.roundedRect(marginX, y, contentWidth, cardHeight, 3, 3, 'FD');
+
+  //       // Borde decorativo izq
+  //       doc.setFillColor(59, 130, 246);
+  //       doc.rect(marginX, y, 2, cardHeight, 'F');
+
+  //       // IMPRIMIR TEXTO
+  //       let textY = y + cardPadding + lineHeight;
+  //       doc.setTextColor(51, 65, 85);
+  //       doc.setFontSize(10);
+  //       paragraphs.forEach((p, i) => {
+  //         doc.setFont('helvetica', p.bold ? 'bold' : 'normal');
+  //         p.lines.forEach(l => {
+  //           doc.text(l, marginX + cardPadding + 4, textY);
+  //           textY += lineHeight;
+  //         });
+  //         if (i < paragraphs.length - 1) textY += paragraphSpacing;
+  //       });
+
+  //       y += cardHeight + 6;
+  //     });
+
+  //     const nombreArchivo = `Atenciones_${usuario.apellido}_${new Date().getTime()}.pdf`;
+  //     doc.save(nombreArchivo);
+  //   };
+
+  //   // Cargar imagen y generar
+  //   const img = new Image();
+  //   img.src = svgBase64;
+  //   img.onload = () => {
+  //     const canvas = document.createElement('canvas');
+  //     canvas.width = 600;
+  //     canvas.height = 200;
+  //     const ctx = canvas.getContext('2d');
+  //     if (ctx) {
+  //       ctx.drawImage(img, 0, 0);
+  //       generarDocumento(canvas.toDataURL('image/png'));
+  //     } else generarDocumento();
+  //   };
+  //   img.onerror = () => generarDocumento();
+  // }
+
   async descargarTurnosPdf(usuario: UsuarioAdmin): Promise<void> {
     const turnosParaExportar = await this.obtenerTurnosUsuario(usuario);
 
@@ -381,10 +613,10 @@ export class UsuariosAdminComponent implements OnInit {
 
     this.snackBar.open('Generando PDF con historial clínico...', 'OK', { duration: 2000 });
 
-    // PASO 1: Obtener IDs para buscar HC completa
+    // PASO 1: Obtener IDs
     const idsTurnos = turnosParaExportar.map(t => t.id);
 
-    // PASO 2: Buscar datos médicos en BD
+    // PASO 2: Buscar datos médicos
     const { data: historiasData } = await this.supa.client
       .from('historia_clinica')
       .select(`*, historia_datos_dinamicos (*)`)
@@ -395,7 +627,7 @@ export class UsuariosAdminComponent implements OnInit {
       historiasData.forEach((h: any) => historiasMap.set(h.turno_id, h));
     }
 
-    // --- GENERACIÓN PDF (Tu código exacto adaptado) ---
+    // --- GENERACIÓN PDF ---
     const doc = new jsPDF('p', 'mm', 'a4');
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
@@ -406,59 +638,47 @@ export class UsuariosAdminComponent implements OnInit {
     const paragraphSpacing = 2;
     const headerBottom = 32;
 
-    // SVG Logo (EL MISMO)
-    const svgLogo = `
-  <svg width="600" height="200" viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <linearGradient id="gradBlue" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" style="stop-color:#0099ff;stop-opacity:1" /> 
-        <stop offset="100%" style="stop-color:#0055b3;stop-opacity:1" /> 
-      </linearGradient>
-    </defs>
-    <g transform="translate(50, 50)">
-      <path d="M 80 0 H 120 A 10 10 0 0 1 130 10 V 80 H 200 A 10 10 0 0 1 210 90 V 130 A 10 10 0 0 1 200 140 H 130 V 210 A 10 10 0 0 1 120 220 H 80 A 10 10 0 0 1 70 210 V 140 H 0 A 10 10 0 0 1 -10 130 V 90 A 10 10 0 0 1 0 80 H 70 V 10 A 10 10 0 0 1 80 0 Z" fill="url(#gradBlue)" transform="scale(0.5) translate(30,30)"/>
-      <path d="M 60 115 L 90 145 L 150 85" stroke="white" stroke-width="14" fill="none" stroke-linecap="round" stroke-linejoin="round" transform="scale(0.5) translate(30,30)"/>
-    </g>
-    <g transform="translate(180, 115)">
-      <text x="0" y="-25" font-family="Arial" font-weight="bold" font-size="28" fill="#0077cc">CLINICA</text>
-      <text x="0" y="25" font-family="Arial" font-weight="bold" font-size="52" fill="#003366">MONLLOR</text>
-    </g>
-  </svg>`;
+    // const svgLogo = `... TU SVG ACÁ ...`; // Mantené tu variable svgLogo tal cual la tenés
+
+      const svgLogo = `
+      <svg width="600" height="200" viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="gradBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#0099ff;stop-opacity:1" /> 
+            <stop offset="100%" style="stop-color:#0055b3;stop-opacity:1" /> 
+          </linearGradient>
+        </defs>
+        <g transform="translate(50, 50)">
+          <path d="M 80 0 H 120 A 10 10 0 0 1 130 10 V 80 H 200 A 10 10 0 0 1 210 90 V 130 A 10 10 0 0 1 200 140 H 130 V 210 A 10 10 0 0 1 120 220 H 80 A 10 10 0 0 1 70 210 V 140 H 0 A 10 10 0 0 1 -10 130 V 90 A 10 10 0 0 1 0 80 H 70 V 10 A 10 10 0 0 1 80 0 Z" fill="url(#gradBlue)" transform="scale(0.5) translate(30,30)"/>
+          <path d="M 60 115 L 90 145 L 150 85" stroke="white" stroke-width="14" fill="none" stroke-linecap="round" stroke-linejoin="round" transform="scale(0.5) translate(30,30)"/>
+        </g>
+        <g transform="translate(180, 115)">
+          <text x="0" y="-25" font-family="Arial" font-weight="bold" font-size="28" fill="#0077cc">CLINICA</text>
+          <text x="0" y="25" font-family="Arial" font-weight="bold" font-size="52" fill="#003366">MONLLOR</text>
+        </g>
+      </svg>`;
+
+
+
     const svgBase64 = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgLogo)));
 
     const generarDocumento = (pngDataUrl?: string) => {
+      
       const drawHeader = () => {
-        // Fondo Header
-        doc.setFillColor(17, 24, 39);
-        doc.rect(0, 0, pageWidth, headerBottom, 'F');
-
-        if (pngDataUrl) {
-          doc.setFillColor(255, 255, 255);
-          doc.roundedRect(marginX - 2, 5, 65, 22, 2, 2, 'F');
-          doc.addImage(pngDataUrl, 'PNG', marginX, 6, 60, 20);
-        }
-
-        // Títulos
-        doc.setTextColor(255, 255, 255);
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(16);
-        doc.text('Reporte de Atenciones', pageWidth - marginX, 18, { align: 'right' });
-
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(10);
-
-        // Título dinámico: Si estoy viendo a un Especialista, dice "Especialista: ...". Si no, "Paciente: ..."
-        const rolTexto = usuario.rol === 'ESPECIALISTA' ? 'Especialista' : 'Paciente';
-        doc.text(`${rolTexto}: ${usuario.nombre} ${usuario.apellido}`, pageWidth - marginX, 24, { align: 'right' });
-
-        const hoy = new Date().toLocaleDateString('es-AR');
-        doc.setTextColor(209, 213, 219);
-        doc.setFontSize(8);
-        doc.text(`Emisión: ${hoy}`, pageWidth - marginX, 28, { align: 'right' });
-
-        doc.setDrawColor(251, 191, 36);
-        doc.setLineWidth(0.4);
-        doc.line(marginX, headerBottom - 1, pageWidth - marginX, headerBottom - 1);
+ 
+         // Mantené tu lógica de header acá (rect, addImage, text, etc)
+         doc.setFillColor(17, 24, 39);
+         doc.rect(0, 0, pageWidth, headerBottom, 'F');
+         if (pngDataUrl) {
+            doc.setFillColor(255, 255, 255);
+            doc.roundedRect(marginX - 2, 5, 65, 22, 2, 2, 'F');
+            doc.addImage(pngDataUrl, 'PNG', marginX, 6, 60, 20);
+         }
+         doc.setTextColor(255, 255, 255);
+         doc.setFontSize(16);
+         doc.text('Reporte de Atenciones', pageWidth - marginX, 18, { align: 'right' });
+         doc.setFontSize(10);
+         doc.text(`Usuario: ${usuario.nombre} ${usuario.apellido}`, pageWidth - marginX, 24, { align: 'right' });
       };
 
       drawHeader();
@@ -473,100 +693,96 @@ export class UsuariosAdminComponent implements OnInit {
           paragraphs.push({ lines: doc.splitTextToSize(text, anchoTexto), bold: opts?.bold });
         };
 
-        // 1. Cabecera (Fecha y Estado)
+        // CABECERA DEL TURNO 
         const fechaStr = t.fecha_hora_inicio ? new Date(t.fecha_hora_inicio).toLocaleDateString('es-AR') : 'Sin fecha';
-        const horaStr = t.fecha_hora_inicio ? new Date(t.fecha_hora_inicio).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' }) : '';
-        const estadoPrint = (t.estado?.codigo || 'SIN ESTADO').toUpperCase();
-        addParagraph(`Turno #${index + 1} · ${fechaStr} ${horaStr} · (${estadoPrint})`, { bold: true });
+        addParagraph(`Turno #${index + 1} · ${fechaStr} · (${(t.estado?.codigo || '').toUpperCase()})`, { bold: true });
+        addParagraph(`Especialidad: ${t.especialidad?.nombre || ''} | Profesional: ${this.nombreCompleto(t.especialista)}`);
 
-        // 2. Datos del turno (Especialidad y Contraparte)
-        const nombreEspecialidad = t.especialidad?.nombre || 'Varios';
-
-        // Si el usuario del reporte es Especialista, la contraparte es el Paciente. Y viceversa.
-        const userObj = usuario.rol === 'ESPECIALISTA' ? t.paciente : t.especialista;
-        const nombreContraparte = userObj ? `${userObj.apellido}, ${userObj.nombre}` : 'Sin datos';
-        const labelContraparte = usuario.rol === 'ESPECIALISTA' ? 'Paciente' : 'Especialista';
-
-        addParagraph(`Especialidad: ${nombreEspecialidad} | ${labelContraparte}: ${nombreContraparte}`);
-
-        // 3. DATOS CLÍNICOS (si hay)
+        //  DATOS CLINICOS
         const hc = historiasMap.get(t.id);
 
         if (hc) {
+          // Datos Fijos (IGUAL)
           let detalles = [];
           if (hc.altura) detalles.push(`Altura: ${hc.altura} cm`);
           if (hc.peso) detalles.push(`Peso: ${hc.peso} kg`);
           if (hc.temperatura) detalles.push(`Temp: ${hc.temperatura} °C`);
           if (hc.presion) detalles.push(`Presión: ${hc.presion}`);
+          if (detalles.length > 0) addParagraph('Datos Biométricos: ' + detalles.join(' | '));
 
-          if (detalles.length > 0) {
-            addParagraph('Datos Biométricos: ' + detalles.join(' | '), { bold: false });
-          }
-
+          // ============================================================
+          // CORRECCIÓN DE DATOS DINÁMICOS 
+          // ============================================================
           if (hc.historia_datos_dinamicos && hc.historia_datos_dinamicos.length > 0) {
             addParagraph('Datos Dinámicos:', { bold: true });
+            
             hc.historia_datos_dinamicos.forEach((d: any) => {
-              const valor = d.valor_texto || d.valor_numerico || (d.valor_boolean ? 'Sí' : 'No');
-              addParagraph(`• ${d.clave}: ${valor}`);
+              let valorPrint = '';
+
+              // Verificación explícita de tipos (NO usar || encadenados)
+              if (d.valor_texto !== null && d.valor_texto !== undefined && d.valor_texto !== '') {
+                  valorPrint = d.valor_texto;
+              } 
+              else if (d.valor_numerico !== null && d.valor_numerico !== undefined) {
+                  valorPrint = d.valor_numerico.toString();
+                  // Agregamos unidades visuales
+                  if (d.tipo_control === 'RANGO_0_100') valorPrint += ' %';
+                  if (d.clave && d.clave.toLowerCase().includes('glucosa')) valorPrint += ' mg/dL';
+              } 
+              else if (d.valor_boolean !== null && d.valor_boolean !== undefined) {
+                  // Forzamos SI / NO
+                  valorPrint = d.valor_boolean ? 'SI' : 'NO';
+              } else {
+                  valorPrint = '-'; // Valor por defecto si todo es null
+              }
+
+              addParagraph(`• ${d.clave}: ${valorPrint}`);
             });
           }
+          // ============================================================
         } else {
-          // Si no hay HC, mostramos comentario/motivo
-          if (t.comentario) addParagraph(`Reseña/Comentario: ${t.comentario}`);
-          else addParagraph('Sin datos clínicos registrados.');
+           if (t.comentario) addParagraph(`Reseña: ${t.comentario}`);
         }
 
-        // CÁLCULO DE ALTURA DE TARJETA
+        // ... (CÁLCULO DE ESPACIO Y DIBUJO IGUAL QUE ANTES) ...
         let cardHeight = cardPadding * 2;
         paragraphs.forEach((p, i) => {
           cardHeight += p.lines.length * lineHeight;
           if (i > 0) cardHeight += paragraphSpacing;
         });
 
-        // NUEVA PÁGINA SI NO ENTRA
         if (y + cardHeight > pageHeight - marginBottom) {
           doc.addPage();
           drawHeader();
           y = headerBottom + 10;
         }
 
-        // DIBUJAR TARJETA
-        doc.setFillColor(248, 250, 252); // Gris muy claro
-        doc.setDrawColor(59, 130, 246);  // Azul borde
+        doc.setFillColor(248, 250, 252);
+        doc.setDrawColor(59, 130, 246);
         doc.setLineWidth(0.4);
         doc.roundedRect(marginX, y, contentWidth, cardHeight, 3, 3, 'FD');
-
-        // Borde decorativo izq
-        doc.setFillColor(59, 130, 246);
-        doc.rect(marginX, y, 2, cardHeight, 'F');
-
-        // IMPRIMIR TEXTO
+        
         let textY = y + cardPadding + lineHeight;
         doc.setTextColor(51, 65, 85);
-        doc.setFontSize(10);
         paragraphs.forEach((p, i) => {
           doc.setFont('helvetica', p.bold ? 'bold' : 'normal');
-          p.lines.forEach(l => {
-            doc.text(l, marginX + cardPadding + 4, textY);
-            textY += lineHeight;
-          });
+          p.lines.forEach(l => { doc.text(l, marginX + cardPadding + 2, textY); textY += lineHeight; });
           if (i < paragraphs.length - 1) textY += paragraphSpacing;
         });
 
         y += cardHeight + 6;
       });
 
-      const nombreArchivo = `Atenciones_${usuario.apellido}_${new Date().getTime()}.pdf`;
+      const nombreArchivo = `Reporte_${usuario.apellido}_${new Date().getTime()}.pdf`;
       doc.save(nombreArchivo);
     };
 
-    // Cargar imagen y generar
+    // ... (CARGA DE IMAGEN IGUAL) ...
     const img = new Image();
     img.src = svgBase64;
     img.onload = () => {
       const canvas = document.createElement('canvas');
-      canvas.width = 600;
-      canvas.height = 200;
+      canvas.width = 600; canvas.height = 200;
       const ctx = canvas.getContext('2d');
       if (ctx) {
         ctx.drawImage(img, 0, 0);
@@ -576,20 +792,14 @@ export class UsuariosAdminComponent implements OnInit {
     img.onerror = () => generarDocumento();
   }
 
-  // ... (toISODateLocal, calcEdadFromISO, onFileChange, toggleAprobacion, crearUsuario, cancelarCreacion, guardarUsuario, etc.)
+
+
   private toISODateLocal(date: Date): string { const y = date.getFullYear(); const m = String(date.getMonth() + 1).padStart(2, '0'); const d = String(date.getDate()).padStart(2, '0'); return `${y}-${m}-${d}`; }
   private calcEdadFromISO(iso: string): number { const [y, m, d] = iso.split('-').map(Number); const today = new Date(); let edad = today.getFullYear() - y; const month = today.getMonth() + 1; const day = today.getDate(); if (month < m || (month === m && day < d)) edad--; return edad; }
   onFileChange(event: Event): void { const input = event.target as HTMLInputElement; if (!input.files?.length) return; const file = input.files[0]; this.formularioUsuario.get('imagenPerfil')!.setValue(file); this.formularioUsuario.get('imagenPerfil')!.markAsDirty(); const reader = new FileReader(); reader.onload = () => (this.imagenPrevia = reader.result as string); reader.readAsDataURL(file); }
   async toggleAprobacion(usuario: UsuarioAdmin): Promise<void> { if (usuario.rol !== 'ESPECIALISTA') return; const nuevoEstado = !usuario.aprobado; try { const { error } = await this.supa.client.from('usuarios').update({ esta_aprobado: nuevoEstado }).eq('id', usuario.id); if (error) throw error; usuario.aprobado = nuevoEstado; Swal.fire('Éxito', `Acceso ${nuevoEstado ? 'habilitado' : 'inhabilitado'}`, 'success'); } catch (e) { Swal.fire('Error', 'No se pudo actualizar', 'error'); } }
   crearUsuario(): void { this.mostrarFormulario = true; this.formularioUsuario.reset(); this.imagenPrevia = null; }
   cancelarCreacion(): void { this.mostrarFormulario = false; this.formularioUsuario.reset(); this.imagenPrevia = null; }
-
-
-
-
-  //async guardarUsuario(): Promise<void> { /* ... */ }
-
-
 
 
   async guardarUsuario(): Promise<void> {
@@ -675,6 +885,100 @@ export class UsuariosAdminComponent implements OnInit {
   }
 
 
+  // async verHistoriaClinica(pacienteId: string, pacienteNombre: string): Promise<void> {
+
+  //   this.loading.show();
+
+  //   try {
+  //     const { data: sessionData } = await this.supa.getSession();
+  //     if (!sessionData?.session) return;
+
+  //     const userId = sessionData.session.user.id;
+
+  //     // 1. OBTENER HISTORIAS + DATOS DINÁMICOS
+  //     // Agregamos historia_datos_dinamicos (*) para que salgan en el PDF/Dialog
+  //     let query = this.supa.client
+  //       .from('historia_clinica')
+  //       .select(`
+  //           *,
+  //           historia_datos_dinamicos (*)
+  //       `)
+  //       .eq('paciente_id', pacienteId)
+  //       .order('fecha_registro', { ascending: false });
+
+  //     // Si NO es admin, filtramos por especialista (por seguridad)
+  //     if (!this.esAdmin) {
+  //       query = query.eq('especialista_id', userId);
+  //     }
+
+  //     const { data: historias, error } = await query;
+
+  //     if (error) {
+  //       console.error('[UsuariosAdmin] Error al cargar historia clínica', error);
+  //       return;
+  //     }
+
+  //     // 2. MAPEAR DATOS COMPLETOS (Especialidad, Especialista, Fecha)
+  //     const historiasCompletas: HistoriaClinicaConExtras[] = await Promise.all(
+  //       (historias || []).map(async (h: any) => {
+
+  //         // Traemos Fecha y ESPECIALIDAD del turno original
+  //         const { data: turno } = await this.supa.client
+  //           .from('turnos')
+  //           .select('fecha_hora_inicio, especialidades(nombre)')
+  //           .eq('id', h.turno_id)
+  //           .single();
+
+  //         // Traemos datos del Especialista
+  //         const { data: especialista } = await this.supa.client
+  //           .from('usuarios')
+  //           .select('nombre, apellido')
+  //           .eq('id', h.especialista_id)
+  //           .single();
+
+  //         // Formatear nombre especialista
+  //         const especialistaNombre = especialista
+  //           ? `${especialista.nombre} ${especialista.apellido}`
+  //           : ''; // Dejar vacío en lugar de N/A para que se vea más limpio
+
+  //         // Formatear fecha atención
+  //         const fechaAtencion = turno?.fecha_hora_inicio
+  //           ? new Date(turno.fecha_hora_inicio).toLocaleDateString('es-AR')
+  //           : '';
+
+  //         // Formatear Especialidad (Solución del error de array/objeto)
+  //         const dataEspec: any = turno?.especialidades;
+  //         const nombreEspecialidad = dataEspec?.nombre || dataEspec?.[0]?.nombre || '';
+
+  //         return {
+  //           ...h,
+  //           paciente: pacienteNombre,       // Importante para el título del PDF
+  //           especialidad: nombreEspecialidad, // Importante para el badge
+  //           especialistaNombre,
+  //           fechaAtencion
+  //         } as HistoriaClinicaConExtras;
+  //       })
+  //     );
+
+  //     // 3. ABRIR EL DIÁLOGO COMPARTIDO
+  //     // Al pasarle 'historiasCompletas' bien cargado, el botón de PDF del diálogo funcionará perfecto.
+  //     this.dialog.open(HistoriaClinicaDialogComponent, {
+  //       width: '800px',
+  //       data: {
+  //         pacienteNombre,
+  //         historias: historiasCompletas
+  //       },
+  //       panelClass: 'hc-dialog-panel' // Asegúrate de tener este estilo o quítalo si no lo usas
+  //     });
+
+  //   } catch (err: any) {
+  //     console.error('[UsuariosAdmin] Error al cargar historia clínica', err);
+  //   }
+  //   finally {
+  //     this.loading.hide();
+  //   }
+
+  // }
 
   async verHistoriaClinica(pacienteId: string, pacienteNombre: string): Promise<void> {
 
@@ -687,7 +991,6 @@ export class UsuariosAdminComponent implements OnInit {
       const userId = sessionData.session.user.id;
 
       // 1. OBTENER HISTORIAS + DATOS DINÁMICOS
-      // Agregamos historia_datos_dinamicos (*) para que salgan en el PDF/Dialog
       let query = this.supa.client
         .from('historia_clinica')
         .select(`
@@ -697,7 +1000,7 @@ export class UsuariosAdminComponent implements OnInit {
         .eq('paciente_id', pacienteId)
         .order('fecha_registro', { ascending: false });
 
-      // Si NO es admin, filtramos por especialista (por seguridad)
+      // Si NO es admin, filtramos por especialista (por seguridad, aunque este componente es de admin)
       if (!this.esAdmin) {
         query = query.eq('especialista_id', userId);
       }
@@ -709,14 +1012,14 @@ export class UsuariosAdminComponent implements OnInit {
         return;
       }
 
-      // 2. MAPEAR DATOS COMPLETOS (Especialidad, Especialista, Fecha)
+      // 2. MAPEAR DATOS COMPLETOS (Especialidad, Especialista, Fecha, DINÁMICOS)
       const historiasCompletas: HistoriaClinicaConExtras[] = await Promise.all(
         (historias || []).map(async (h: any) => {
 
-          // Traemos Fecha y ESPECIALIDAD del turno original
+          // Traemos Fecha, Comentario y ESPECIALIDAD del turno original
           const { data: turno } = await this.supa.client
             .from('turnos')
-            .select('fecha_hora_inicio, especialidades(nombre)')
+            .select('fecha_hora_inicio, comentario, especialidades(nombre)')
             .eq('id', h.turno_id)
             .single();
 
@@ -730,7 +1033,7 @@ export class UsuariosAdminComponent implements OnInit {
           // Formatear nombre especialista
           const especialistaNombre = especialista
             ? `${especialista.nombre} ${especialista.apellido}`
-            : ''; // Dejar vacío en lugar de N/A para que se vea más limpio
+            : '';
 
           // Formatear fecha atención
           const fechaAtencion = turno?.fecha_hora_inicio
@@ -738,28 +1041,60 @@ export class UsuariosAdminComponent implements OnInit {
             : '';
 
           // Formatear Especialidad (Solución del error de array/objeto)
-          const dataEspec: any = turno?.especialidades;
-          const nombreEspecialidad = dataEspec?.nombre || dataEspec?.[0]?.nombre || '';
+          const rawEspec: any = turno?.especialidades;
+          const nombreEspecialidad = rawEspec?.nombre || rawEspec?.[0]?.nombre || '';
+
+          // --- CORRECCIÓN AQUÍ: PROCESAR DATOS DINÁMICOS ---
+          const datosDinamicosProcesados: DatoDinamico[] = (h.historia_datos_dinamicos || []).map((d: any) => {
+            let valor: any = '';
+            let tipo: TipoDatoDinamico = 'texto';
+            let unidad: string | null = null;
+
+            if (d.valor_texto !== null) {
+              valor = d.valor_texto;
+              tipo = 'texto';
+            } else if (d.valor_numerico !== null) {
+              valor = d.valor_numerico;
+              if (d.tipo_control === 'RANGO_0_100') {
+                tipo = 'rango';
+                unidad = '%';
+              } else {
+                tipo = 'numero';
+                if (d.clave && d.clave.toLowerCase().includes('glucosa')) unidad = 'mg/dL';
+              }
+            } else if (d.valor_boolean !== null) {
+              valor = d.valor_boolean;
+              tipo = 'booleano';
+            }
+
+            return {
+              clave: d.clave,
+              valor: valor,
+              tipo: tipo,
+              unidad: unidad
+            };
+          });
 
           return {
             ...h,
-            paciente: pacienteNombre,       // Importante para el título del PDF
-            especialidad: nombreEspecialidad, // Importante para el badge
+            paciente: pacienteNombre,
+            especialidad: nombreEspecialidad,
             especialistaNombre,
-            fechaAtencion
+            fechaAtencion,
+            resena: turno?.comentario || '', // Mapeamos el comentario del turno a la propiedad 'resena'
+            datos_dinamicos: datosDinamicosProcesados // <--- ¡AQUÍ ESTÁ LA MAGIA!
           } as HistoriaClinicaConExtras;
         })
       );
 
       // 3. ABRIR EL DIÁLOGO COMPARTIDO
-      // Al pasarle 'historiasCompletas' bien cargado, el botón de PDF del diálogo funcionará perfecto.
       this.dialog.open(HistoriaClinicaDialogComponent, {
         width: '800px',
         data: {
           pacienteNombre,
           historias: historiasCompletas
         },
-        panelClass: 'hc-dialog-panel' // Asegúrate de tener este estilo o quítalo si no lo usas
+        panelClass: 'hc-dialog-panel'
       });
 
     } catch (err: any) {
@@ -768,12 +1103,8 @@ export class UsuariosAdminComponent implements OnInit {
     finally {
       this.loading.hide();
     }
-
   }
 
-
-
-  // ... imports y código existente ...
 
   async hacerAdmin(u: UsuarioAdminCard): Promise<void> {
     if (!this.esAdmin) return;
@@ -893,12 +1224,6 @@ export class UsuariosAdminComponent implements OnInit {
     }
 
   }
-
-
-  // ====================================================================
-  //  DESCARGA PDF DE TODOS LOS USUARIOS (ESTILO TABLA)
-  // ====================================================================
-
 
   // ====================================================================
   //  DESCARGA PDF DE TODOS LOS USUARIOS (ESTILO TABLA CON LOGO)
@@ -1116,67 +1441,7 @@ export class UsuariosAdminComponent implements OnInit {
   }
 
 
-
-
-
 }
-
-
-// async descargarExcel(): Promise<void> {
-
-//   // 1. Validar que haya datos
-//   if (!this.usuarios || this.usuarios.length === 0) {
-//     Swal.fire('Atención', 'No hay usuarios para exportar.', 'warning');
-//     return;
-//   }
-
-//   this.loading.show();
-
-//   try {
-//     // 2. Mapear los datos para que el Excel quede prolijo
-//     // Creamos un array nuevo solo con las columnas que queremos mostrar
-//     const dataParaExcel = this.usuarios.map(u => ({
-//       Rol: u.rol,
-//       Apellido: u.apellido,
-//       Nombre: u.nombre,
-//       DNI: u.dni,
-//       Edad: u.edad,
-//       Email: u.email,
-//       'Obra Social': u.obra_social || 'N/A', // Solo aplica a pacientes
-//       'Estado': u.rol === 'ESPECIALISTA' ? (u.aprobado ? 'Habilitado' : 'Pendiente') : 'Activo',
-//       'Fecha Registro': u.fecha_registro ? new Date(u.fecha_registro).toLocaleDateString('es-AR') : ''
-//     }));
-
-//     // 3. Crear la hoja de trabajo (WorkSheet)
-//     const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(dataParaExcel);
-
-//     // 4. Crear el libro de trabajo (WorkBook) y agregar la hoja
-//     const wb: XLSX.WorkBook = XLSX.utils.book_new();
-//     XLSX.utils.book_append_sheet(wb, ws, 'Usuarios del Sistema');
-
-//     // 5. Generar nombre de archivo con fecha
-//     const fecha = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
-//     const nombreArchivo = `Usuarios_Clinica_${fecha}.xlsx`;
-
-//     // 6. Guardar archivo
-//     XLSX.writeFile(wb, nombreArchivo);
-
-//     // Feedback visual
-//     Swal.fire({
-//       icon: 'success',
-//       title: 'Exportación completada',
-//       text: `Se descargó el archivo ${nombreArchivo}`,
-//       timer: 2000,
-//       showConfirmButton: false
-//     });
-
-//   } catch (error) {
-//     console.error('Error al exportar Excel:', error);
-//     Swal.fire('Error', 'Hubo un problema al generar el archivo Excel.', 'error');
-//   } finally {
-//     this.loading.hide();
-//   }
-// }
 
 
 
