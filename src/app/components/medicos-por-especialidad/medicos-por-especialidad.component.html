@@ -1,4 +1,3 @@
-
 <section class="pagina-estadisticas">
   <header class="barra-acciones">
     <button mat-flat-button color="primary" routerLink="/seleccion-estadisticas">
@@ -7,23 +6,23 @@
     </button>
 
     <form class="filtros" [formGroup]="filtrosForm" (ngSubmit)="aplicarFiltros()">
+      
       <mat-form-field appearance="outline">
         <mat-label>Desde</mat-label>
-        <input matInput [matDatepicker]="dpDesde" formControlName="desde">
+        <input matInput [matDatepicker]="dpDesde" formControlName="desde" readonly>
         <mat-datepicker-toggle matSuffix [for]="dpDesde"></mat-datepicker-toggle>
         <mat-datepicker #dpDesde></mat-datepicker>
       </mat-form-field>
 
       <mat-form-field appearance="outline">
         <mat-label>Hasta</mat-label>
-        <input matInput [matDatepicker]="dpHasta" formControlName="hasta">
+        <input matInput [matDatepicker]="dpHasta" formControlName="hasta" readonly>
         <mat-datepicker-toggle matSuffix [for]="dpHasta"></mat-datepicker-toggle>
         <mat-datepicker #dpHasta></mat-datepicker>
       </mat-form-field>
 
-      <button mat-stroked-button color="accent" type="submit">
+      <button mat-stroked-button color="accent" type="submit" matTooltip="Refrescar datos">
         <mat-icon>refresh</mat-icon>
-        Aplicar
       </button>
     </form>
 
@@ -31,17 +30,25 @@
 
     <button mat-flat-button color="accent" (click)="descargarPDF()">
       <mat-icon>picture_as_pdf</mat-icon>
-      Descargar PDF
+      PDF
     </button>
-
     <button mat-flat-button color="primary" (click)="descargarImagen()">
       <mat-icon>image</mat-icon>
-      Descargar Imagen
+      Imagen
     </button>
   </header>
 
   <mat-card class="panel" id="captura-pdf">
-    <h2 class="titulo">Médicos por Especialidad</h2>
+    
+    <div class="chart-header">
+      <div class="logo-container">
+        <img [src]="logoClinicaBase64" alt="Clinica Monllor" class="logo-img">
+      </div>
+      <div class="titulos">
+        <h2 class="titulo">Médicos por Especialidad</h2>
+        <p class="subtitulo">Distribución de profesionales activos en la clínica</p>
+      </div>
+    </div>
 
     <div class="chart-wrapper" *ngIf="!cargando; else cargandoTpl">
       <apx-chart
@@ -62,11 +69,10 @@
     <ng-template #cargandoTpl>
       <div class="loading">
         <mat-spinner diameter="44"></mat-spinner>
-        <span>Cargando datos…</span>
+        <span>Analizando datos…</span>
       </div>
     </ng-template>
 
     <div class="mensaje-error" *ngIf="error">{{ error }}</div>
   </mat-card>
 </section>
-
