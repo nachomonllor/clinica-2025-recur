@@ -22,13 +22,11 @@ La aplicación cuenta con una **Página de Bienvenida** con accesos rápidos. El
 
 ![login](src/assets/imagenes_clinica/usuarios/login.jpg)
 
----
-
 ### 2. Módulo de Pacientes
 **Los pacientes pueden gestionar su atención médica de forma autónoma**
 
 #### Solicitar Turno
-Un asistente paso a paso permite seleccionar especialidad, médico y horario disponible (próximos 15 días), con validaciones de disponibilidad.
+**Un asistente paso a paso permite seleccionar especialidad, médico y horario disponible (próximos 15 días), con validaciones de disponibilidad.**
 
 **Solo aparecen horarios disponibles**
 ![Solicitar turno horas disponibles](src/assets/imagenes_clinica/paciente/solicitar_turno_solo_aparecen_dias_horas_disponibles.jpg)
@@ -36,7 +34,7 @@ Un asistente paso a paso permite seleccionar especialidad, médico y horario dis
 **El paciente puede solicitar un turno:**
 ![solicitar turno](src/assets/imagenes_clinica/paciente/solicitar_turno.jpg)
 
-**olo aparecen especialistas de la especialidad seleccionada:**
+**Solo aparecen especialistas de la especialidad seleccionada:**
 ![Solicitar turno especialistas de especialidad seleccionada](src/assets/imagenes_clinica/paciente/solicitar_turno_solo_aparecen_los_especialistas_de_esa_especialidad.jpg)
 
 
