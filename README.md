@@ -29,12 +29,12 @@ La aplicación cuenta con una **Página de Bienvenida** con accesos rápidos. El
 ---![login](https://github.com/user-attachments/assets/a182623e-1525-48ae-bcfe-5c6a787a3560)
 
 
-### 2. Módulo de Pacientes (Sprint 2 & 3)
+### 2. Módulo de Pacientes 
 Los pacientes pueden gestionar su atención médica de forma autónoma.
 
 #### Solicitar Turno
 
-Un asistente paso a paso (wizard) permite seleccionar especialidad, médico y horario disponible (próximos 15 días), sin utilizar `combobox` y con validaciones de disponibilidad.
+Un asistente paso a paso permite seleccionar especialidad, médico y horario disponible (próximos 15 días), con validaciones de disponibilidad.
 
 ![solicitar_turno_solo_aparecen_dias_horas_disponibles](https://github.com/user-attachments/assets/c3aced59-f616-4e2c-ab81-e772dea18d89)
 
