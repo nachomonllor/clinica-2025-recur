@@ -33,29 +33,31 @@ Un asistente paso a paso permite seleccionar especialidad, médico y horario dis
 
 * Solo aparecen horarios disponibles:
 
-![solicitar_turno_solo_aparecen_dias_horas_disponibles](src/assets/imagenes_clinica/paciente/solicitar_turno_solo_aparecen_dias_horas_disponibles.jpg)
+ ![solicitar_turno_solo_aparecen_dias_horas_disponibles](src/assets/imagenes_clinica/paciente/solicitar_turno_solo_aparecen_dias_horas_disponibles.jpg)
 
-![solicitar_turno](src/assets/imagenes_clinica/paciente/solicitar_turno.jpg)
+# El paciente puede solicitar un turno:
 
-* Solo aparecen especialistas de la especialidad seleccionada:
+ ![solicitar_turno](src/assets/imagenes_clinica/paciente/solicitar_turno.jpg)
+
+# Solo aparecen especialistas de la especialidad seleccionada:
 
 ![solicitar_turno_solo_aparecen_los_especialistas_de_esa_especialidad](src/assets/imagenes_clinica/paciente/solicitar_turno_solo_aparecen_los_especialistas_de_esa_especialidad.jpg)
 
 
 #### Mis Turnos y Perfil
-* Visualización de turnos con filtro único (por especialidad o especialista):
+# Visualización de turnos con filtro único (por especialidad o especialista):
 
   ![mis_turnos_paciente](src/assets/imagenes_clinica/paciente/mis_turnos_paciente.jpg)
 
-* Acciones disponibles: Cancelar turno, ver reseña, completar encuesta y calificar atención
+# Acciones disponibles: Cancelar turno, ver reseña, completar encuesta y calificar atención
 
-* **Perfil:** Descarga de **Historia Clínica en PDF** con logo de la clínica
+ **Perfil:** Descarga de **Historia Clínica en PDF** con logo de la clínica
 
 ![Pantalla Mis Turnos Paciente](src/assets/imagenes_clinica/paciente/mis_turnos_paciente.jpg)
 
-
 ### 3. Módulo de Especialistas (Sprint 2 & 3)
-Los médicos cuentan con herramientas para administrar su agenda y pacientes.
+
+Los médicos cuentan con herramientas para administrar su agenda y pacientes
 
 #### Gestión de Turnos y Agenda
 **Mis Horarios:** El especialista define su disponibilidad horaria por especialidad.
@@ -73,12 +75,12 @@ Panel de control exclusivo para gestionar la clínica.
 
 #### Gestión de Usuarios
 
-* Visualización de todos los usuarios con capacidad de habilitar o inhabilitar el acceso a Especialistas
 
-* Incluye descarga de nómina en Excel
+# Visualización de todos los usuarios con capacidad de habilitar o inhabilitar el acceso a Especialistas
+
+# Incluye descarga de nómina en Excel
 
 ![Pantalla Sección Usuarios](src/assets/imagenes_clinica/admin/usuarios_admin.jpg)
-
 
 
 #### Estadísticas e Informes
@@ -87,7 +89,7 @@ Pantalla de seleccion de estadisticas:
 
 ![Seleccion estadisticas](src/assets/imagenes_clinica/admin/seleccion_estadisticas.jpg)
 
-* Panel gráfico (Charts) con posibilidad de descarga en Excel o PDFIncluye:
+# Panel gráfico (Charts) con posibilidad de descarga en Excel o PDFIncluye:
 
 * Log de ingresos al sistema:
 ![log de ingresos](src/assets/imagenes_clinica/admin/log_ingresos.jpg)
