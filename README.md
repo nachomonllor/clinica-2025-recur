@@ -13,18 +13,24 @@ El sistema cuenta con un flujo de autenticación robusto. Desde la pantalla de b
 Acceso rápido a los diferentes portales de la aplicación.
 ![bienvenida](https://github.com/user-attachments/assets/8e4f12f1-57e4-4baa-b846-30856f019b23)
 
+
+**En la siguiente pantalla elegimos si nos registramos como paciente o como especialista**
 ![seleccion_registro](https://github.com/user-attachments/assets/ee28483d-e969-410f-9c78-4c8376c8f400)
 
 **Formularios de Registro:**
-* **Pacientes:** Carga de datos personales, obra social y doble validación de identidad mediante imágenes.
+* **Pacientes:** Carga de datos personales, obra social y doble validación de identidad.
 * **Especialistas:** Selección dinámica de especialidades.
 
+
 ![registro_del_paciente](https://github.com/user-attachments/assets/91e1c598-e426-4918-8c0f-52746e302260)
+
+**En el registro del especialista pueden agregarse hasta tres especialidades que no existen en el listado, ademas tenemos la posibilidad de desactivar el captcha**
 ![registro_del_especialista](https://github.com/user-attachments/assets/678a2dcf-94ba-440b-8928-99d6d76e0a0e)
 
 **Inicio de Sesión:**
 Validación de credenciales con verificaciones de correo electrónico y aprobación administrativa (para especialistas).
 
+**Disponemos de accesos rapidos en la esquina inferior derecha**
 ![login](https://github.com/user-attachments/assets/e8ddb539-457f-4ce9-a4ec-3c5d6a1bac31)
 
 ---
@@ -33,24 +39,39 @@ Validación de credenciales con verificaciones de correo electrónico y aprobaci
 Los pacientes gestionan su atención médica de forma autónoma con un asistente paso a paso.
 
 **Solicitud de Turnos:**
-Wizard inteligente que filtra especialistas según la especialidad seleccionada y muestra únicamente los días y horarios disponibles (próximos 15 días).
+Filtro de especialistas según la especialidad seleccionada y muestra únicamente los días y horarios disponibles (próximos 15 días).
 
+**Pantalla de solicitar turno**
 ![solicitar_turno](https://github.com/user-attachments/assets/d8bfcfb4-2ca3-493b-82bd-061d3b3dfa1d)
+
+**Solo son visibles los especialistas de la especialidad seleccionada**
 ![solicitar_turno_solo_aparecen_los_especialistas_de_esa_especialidad](https://github.com/user-attachments/assets/4077f1c6-dd26-441d-94ce-abdcc19fdbda)
+
+**Solo son visibles los dias y horas disponibles del especialista seleccionado**
 ![solicitar_turno_solo_aparecen_dias_horas_disponibles](https://github.com/user-attachments/assets/cf67f0ec-4f8a-483e-9c89-9b69a8a28c44)
 
 **Gestión de Turnos y Acciones:**
 Panel "Mis Turnos" con filtros y acciones rápidas: ver reseñas del médico, completar encuestas de satisfacción y calificar la atención.
 
+**El paciente puede descargar su historia clinica como PDF, ver la reseña que le dejo el especialista en un turno finalizado, calificar la atencion del especialista, ademas tiene la posibilidad cancelar el turno dejando un mensaje justificativo **
 ![mis_turnos_paciente](https://github.com/user-attachments/assets/606299ca-a80a-4a6c-9773-88f6e7d34196)
+
+**El paciente puede ver la reseña del especialista**
 ![ver_resena](https://github.com/user-attachments/assets/39a2723c-96c9-4c4b-a9bb-ae1d1ed81832)
+
+**El paciente puede completar una encuesta referente a la atencion brindada por el especialista**
 ![completar_encuesta](https://github.com/user-attachments/assets/9b6a9a37-2990-4c9c-9912-47961817d969)
+
+**Pantalla de detalle de la reseña**
 ![ver_resena_asignada_al_paciente_en_turno](https://github.com/user-attachments/assets/cc1bff90-1336-4837-8dcc-af2b9a08d565)
 
 **Reportes y Exportación:**
 Capacidad de descargar la lista de turnos en Excel y la **Historia Clínica** completa en formato PDF con el logo institucional.
 
+**El paciente tiene la posibilidad de exportar los turnos como archivo Excel**
 ![exportar_turnos_excel](https://github.com/user-attachments/assets/dce519e6-ecfa-4cb8-ad07-b3d5cc0d9b56)
+
+**Tambien tiene la posibilidad de exportar la historia clinica**
 ![exportar_historia_clinica_PDF](https://github.com/user-attachments/assets/9585ed72-96e6-4d82-a40c-80f24436d5c4)
 
 ---
