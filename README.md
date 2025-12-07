@@ -40,19 +40,17 @@ Un asistente paso a paso permite seleccionar especialidad, médico y horario dis
 
 ![solicitar_turno_solo_aparecen_dias_horas_disponibles](src/assets/imagenes_clinica/paciente/solicitar_turno_solo_aparecen_dias_horas_disponibles.jpg)
 
-![solicitar_turno](https://github.com/user-attachments/assets/61d89142-7d88-49b6-aa12-ff93dac58b84)
+![solicitar_turno](src/assets/imagenes_clinica/paciente/solicitar_turno.jpg)
 
 * Solo aparecen especialistas de la especialidad seleccionada:
 
 ![solicitar_turno_solo_aparecen_los_especialistas_de_esa_especialidad](src/assets/imagenes_clinica/paciente/solicitar_turno_solo_aparecen_los_especialistas_de_esa_especialidad.jpg)
 
 
-* Solicitar turno:
-![solicitar_turno](src/assets/imagenes_clinica/paciente/solicitar_turno.jpg)
-
 #### Mis Turnos y Perfil
-* Visualización de turnos con filtro único (por especialidad o especialista)[cite: 96, 97].
-  ![mis_turnos_paciente](https://github.com/user-attachments/assets/01ef76e7-657b-451c-be02-dbdd24ef2b04)
+* Visualización de turnos con filtro único (por especialidad o especialista):
+
+  ![mis_turnos_paciente](src/assets/imagenes_clinica/paciente/mis_turnos_paciente.jpg)
 
 * Acciones disponibles: Cancelar turno, ver reseña, completar encuesta y calificar atención
 
@@ -68,14 +66,14 @@ Los médicos cuentan con herramientas para administrar su agenda y pacientes.
 **Mis Horarios:** El especialista define su disponibilidad horaria por especialidad.
 **Administración de Turnos:** Permite Aceptar, Rechazar o Finalizar turnos dejando reseñas diagnósticas.
 
-![Pantalla Gestión Especialista](ruta/a/tu/imagen_gestion_especialista.png)
+![Pantalla Gestión Especialista](src/assets/imagenes_clinica/especialista/mis_pacientes.jpg)
 
 #### Carga de Historia Clínica
 Al finalizar un turno, el especialista carga la historia clínica compuesta por datos fijos (altura, peso, temperatura, presión) y datos dinámicos variables
 
-![Pantalla Historia Clínica](ruta/a/tu/imagen_historia_clinica.png)
+![Pantalla Historia Clínica](src/assets/imagenes_clinica/especialista/historia_clinica_al_finalizar_turno.jpg)
 
-### 4. Módulo de Administración (Sprint 1 & 4)
+### 4. Modulo de Administracion
 Panel de control exclusivo para gestionar la clínica.
 
 #### Gestión de Usuarios
@@ -84,38 +82,41 @@ Panel de control exclusivo para gestionar la clínica.
 
 * Incluye descarga de nómina en Excel
 
-![Pantalla Sección Usuarios](ruta/a/tu/imagen_usuarios_admin.png)`
+![Pantalla Sección Usuarios](src/assets/imagenes_clinica/admin/usuarios_admin.jpg)`
 
 #### Estadísticas e Informes
 
-* Panel gráfico (Charts) con posibilidad de descarga en Excel o PDF[cite: 228]. Incluye:
-* Log de ingresos al sistema[cite: 221].
-* Cantidad de turnos por especialidad y por día[cite: 224, 225].
-* Informes de turnos solicitados y finalizados por médico[cite: 226, 227].
+* Panel gráfico (Charts) con posibilidad de descarga en Excel o PDFIncluye:
+
+* Log de ingresos al sistema:
+
+* Cantidad de turnos por especialidad y por día:
+
+* Informes de turnos solicitados y finalizados por médico:
+
 
 ![Pantalla Estadísticas](ruta/a/tu/imagen_estadisticas.png)
 
 ## Características Técnicas Adicionales
-**Animaciones:** Transiciones entre componentes (mínimo 6 aplicadas)[cite: 245].
+**Animaciones:** Transiciones entre componentes (mínimo 6 aplicadas)
 
-**Directivas y Pipes:** Personalizados para mejorar la UX/UI[cite: 217, 218].
+**Directivas y Pipes:** Personalizados para mejorar la UX/UI
 
-**Captcha Propio:** Implementado como directiva reutilizable[cite: 236].
+**Captcha Propio:** Implementado como directiva reutilizable
 
-**Multilenguaje (Sprint 6):** Soporte para Español, Inglés y Portugués[cite: 254, 255].
+**Multilenguaje (Sprint 6):** Soporte para Español, Inglés y Portugués
 
-**Encuestas:** Sistema de encuestas de satisfacción con diversos controles[cite: 262].
+**Encuestas:** Sistema de encuestas de satisfacción con diversos controles
 
 ### 🛠 Tecnologías Utilizadas
 * **Frontend:** Angular (Framework)
 
-**Base de Datos:** Firebase (Firestore).
+**Base de Datos:** Supabase
 
-**Almacenamiento:** Firebase Storage (Imágenes de perfil)
-
-**Autenticación:** Firebase Auth.
+**Almacenamiento:** Supabase Storage 
 
 **Librerías:** `chart.js` (Gráficos), `jspdf` (Reportes), `xlsx` (Excel)
+
 
 
   
