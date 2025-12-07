@@ -181,37 +181,95 @@ export class TurnosPorEspecialidadComponent implements OnInit {
   }
 
   // --- DESCARGA PDF ---
+  // async descargarPDF(): Promise<void> {
+  //   const el = document.getElementById('captura-pdf');
+  //   if (!el) return;
+
+  //   const canvas = await html2canvas(el, {
+  //     scale: 2,
+  //     backgroundColor: '#061126',
+  //     logging: false,
+  //     useCORS: true
+  //   });
+
+  //   const imgData = canvas.toDataURL('image/png');
+  //   const pdf = new jsPDF('landscape', 'mm', 'a4');
+
+  //   const pdfW = pdf.internal.pageSize.getWidth();
+  //   const pdfH = pdf.internal.pageSize.getHeight();
+  //   const ratio = canvas.width / canvas.height;
+
+  //   let w = pdfW - 20;
+  //   let h = w / ratio;
+
+  //   if (h > pdfH - 20) {
+  //     h = pdfH - 20;
+  //     w = h * ratio;
+  //   }
+
+  //   const x = (pdfW - w) / 2;
+  //   const y = (pdfH - h) / 2;
+
+  //   pdf.addImage(imgData, 'PNG', x, y, w, h);
+  //   pdf.save(`estadistica_tortas_${new Date().getTime()}.pdf`);
+  // }
+
+
   async descargarPDF(): Promise<void> {
     const el = document.getElementById('captura-pdf');
     if (!el) return;
 
+    // 1. Capturamos TODO el elemento (Header con Logo + Gráfico)
+    // Usamos la misma lógica que en 'descargarImagen' para revelar el header oculto
     const canvas = await html2canvas(el, {
-      scale: 2,
-      backgroundColor: '#061126',
+      scale: 2, // Mayor calidad para que el texto del logo se vea nítido
+      backgroundColor: '#061126', // Mismo color de fondo que tu tarjeta
       logging: false,
-      useCORS: true
+      useCORS: true,
+      onclone: (clonedDoc) => {
+        const header = clonedDoc.querySelector('.chart-header') as HTMLElement;
+        if (header) {
+          // Aseguramos que el header sea visible y tenga el espaciado correcto para el PDF
+          header.style.display = 'flex';
+          header.style.justifyContent = 'space-between';
+          header.style.alignItems = 'center';
+          header.style.padding = '20px';
+          header.style.marginBottom = '20px';
+          header.style.backgroundColor = '#061126'; // Asegurar fondo
+        }
+        
+        // Opcional: Si quieres forzar que el texto del título sea blanco/visible
+        const titulos = clonedDoc.querySelectorAll('.titulos h2, .titulos p');
+        titulos.forEach((t: any) => t.style.color = '#EAF2FF');
+      }
     });
 
+    // 2. Generar PDF
     const imgData = canvas.toDataURL('image/png');
-    const pdf = new jsPDF('landscape', 'mm', 'a4');
+    // 'l' = landscape (horizontal), 'mm', 'a4'
+    const pdf = new jsPDF('l', 'mm', 'a4');
 
-    const pdfW = pdf.internal.pageSize.getWidth();
-    const pdfH = pdf.internal.pageSize.getHeight();
-    const ratio = canvas.width / canvas.height;
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+    const margin = 10;
 
-    let w = pdfW - 20;
-    let h = w / ratio;
+    // Calculamos las dimensiones para ajustar la imagen al ancho del PDF (respetando ratio)
+    const imgProps = pdf.getImageProperties(imgData);
+    const imgWidth = pdfWidth - (margin * 2);
+    const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
 
-    if (h > pdfH - 20) {
-      h = pdfH - 20;
-      w = h * ratio;
-    }
+    // Centramos verticalmente si sobra espacio
+    const yPos = (pdfHeight - imgHeight) / 2;
 
-    const x = (pdfW - w) / 2;
-    const y = (pdfH - h) / 2;
+    // Si el gráfico es muy alto, usamos el margen superior, si no, lo centramos
+    const finalY = imgHeight > (pdfHeight - 20) ? margin : yPos;
 
-    pdf.addImage(imgData, 'PNG', x, y, w, h);
-    pdf.save(`estadistica_tortas_${new Date().getTime()}.pdf`);
+    // Si prefieres que todo el fondo del PDF sea oscuro (estético profesional):
+    // pdf.setFillColor(6, 17, 38); // #061126
+    // pdf.rect(0, 0, pdfWidth, pdfHeight, 'F');
+
+    pdf.addImage(imgData, 'PNG', margin, finalY, imgWidth, imgHeight);
+    pdf.save(`turnos_clinica_monllor_${new Date().getTime()}.pdf`);
   }
 
   // --- DESCARGA IMAGEN ---

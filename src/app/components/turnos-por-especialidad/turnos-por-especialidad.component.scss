@@ -124,3 +124,49 @@
     border-color: rgba(255, 255, 255, 0.3) !important;
   }
 }
+
+/* turnos-por-dia.component.scss */
+
+// El contenedor principal
+#captura-pdf {
+  background-color: #061126; // Fondo oscuro consistente
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.chart-header {
+  // Oculto por defecto en la vista normal (si así lo deseas)
+  // html2canvas lo forzará a 'flex' gracias a onclone
+  display: none; 
+  
+  // Estilos para cuando se exporta
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  padding-bottom: 15px;
+
+  .logo-container {
+    .logo-img {
+      height: 60px; // Ajusta el tamaño del logo SVG aquí
+      width: auto;
+    }
+  }
+
+  .titulos {
+    text-align: right;
+    color: #EAF2FF;
+    
+    .titulo {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 500;
+    }
+    .subtitulo {
+      margin: 0;
+      font-size: 0.9rem;
+      opacity: 0.7;
+    }
+  }
+}

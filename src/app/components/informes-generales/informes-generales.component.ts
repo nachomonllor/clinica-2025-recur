@@ -173,37 +173,126 @@ export class InformesGeneralesComponent implements OnInit {
     }
   }
 
+  // async descargarPDF() {
+  //   // Definimos el ID según el tab activo (o el panel completo)
+  //   const idCaptura = 'captura-pdf'; 
+  //   const titulo = this.tabIndex === 0 ? 'Informe: Turnos por Día' : 'Informe: Ingresos al Sistema';
+
+  //   const el = document.getElementById(idCaptura);
+  //   if (!el) return;
+
+  //   // Aumentamos scale para mejor calidad
+  //   const canvas = await html2canvas(el, { scale: 2, backgroundColor: '#061126' });
+  //   const img = canvas.toDataURL('image/png');
+  //   const pdf = new jsPDF('l', 'mm', 'a4');
+    
+  //   const pageW = pdf.internal.pageSize.getWidth();
+  //   const pageH = pdf.internal.pageSize.getHeight();
+  //   const ratio = Math.min(pageW / canvas.width, pageH / canvas.height);
+  //   const imgW = canvas.width * ratio * 0.9;
+  //   const imgH = canvas.height * ratio * 0.9;
+  //   const x = (pageW - imgW) / 2;
+
+  //   pdf.setFont('helvetica', 'bold');
+  //   pdf.setFontSize(18);
+  //   pdf.text(titulo, 20, 20);
+  //   pdf.setFontSize(10);
+  //   pdf.setFont('helvetica', 'normal');
+  //   // Usamos el locale español para la fecha de emisión también
+  //   pdf.text(`Fecha de emisión: ${new Date().toLocaleDateString('es-AR')}`, 20, 26);
+
+  //   pdf.addImage(img, 'PNG', x, 35, imgW, imgH);
+  //   pdf.save(`informe_${this.tabIndex === 0 ? 'turnos' : 'visitas'}.pdf`);
+  // }
+
+
+  // === REEMPLAZA TU FUNCIÓN descargarPDF POR ESTA ===
   async descargarPDF() {
-    // Definimos el ID según el tab activo (o el panel completo)
-    const idCaptura = 'captura-pdf'; 
+    const DATA = document.getElementById('captura-pdf');
+    if (!DATA) return;
+
+    // 1. DEFINICIÓN DEL LOGO (Igual que en los otros componentes)
+    const svgLogo = `
+    <svg width="600" height="200" viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="gradBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#0099ff;stop-opacity:1" /> 
+          <stop offset="100%" style="stop-color:#0055b3;stop-opacity:1" /> 
+        </linearGradient>
+      </defs>
+      <g transform="translate(50, 50)">
+        <path d="M 80 0 H 120 A 10 10 0 0 1 130 10 V 80 H 200 A 10 10 0 0 1 210 90 V 130 A 10 10 0 0 1 200 140 H 130 V 210 A 10 10 0 0 1 120 220 H 80 A 10 10 0 0 1 70 210 V 140 H 0 A 10 10 0 0 1 -10 130 V 90 A 10 10 0 0 1 0 80 H 70 V 10 A 10 10 0 0 1 80 0 Z" fill="url(#gradBlue)" transform="scale(0.5) translate(30,30)"/>
+        <path d="M 60 115 L 90 145 L 150 85" stroke="white" stroke-width="14" fill="none" stroke-linecap="round" stroke-linejoin="round" transform="scale(0.5) translate(30,30)"/>
+      </g>
+      <g transform="translate(180, 115)">
+        <text x="0" y="-25" font-family="Arial" font-weight="bold" font-size="28" fill="#0077cc">CLINICA</text>
+        <text x="0" y="25" font-family="Arial" font-weight="bold" font-size="52" fill="#003366">MONLLOR</text>
+      </g>
+    </svg>`;
+
+    // 2. PROCESAR LOGO (SVG -> Canvas -> PNG)
+    const svgBase64 = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgLogo)));
+    const logoImg = new Image();
+    logoImg.src = svgBase64;
+    await new Promise((resolve) => { logoImg.onload = resolve; });
+
+    const canvasLogo = document.createElement('canvas');
+    canvasLogo.width = 600; 
+    canvasLogo.height = 200;
+    const ctxLogo = canvasLogo.getContext('2d');
+    if (ctxLogo) ctxLogo.drawImage(logoImg, 0, 0);
+    const logoPng = canvasLogo.toDataURL('image/png');
+
+    // 3. CAPTURAR EL GRÁFICO (HTML2CANVAS)
+    // Usamos el fondo oscuro para que coincida con tu tema
+    const canvasChart = await html2canvas(DATA, {
+      scale: 2, 
+      backgroundColor: '#061126', 
+      logging: false,
+      useCORS: true
+    });
+    const chartPng = canvasChart.toDataURL('image/png');
+
+    // 4. ARMAR EL PDF
+    const pdf = new jsPDF('l', 'mm', 'a4'); // Horizontal
+    const w = pdf.internal.pageSize.getWidth();
+    
+    // A. Agregar Logo
+    pdf.addImage(logoPng, 'PNG', 10, 10, 50, 16); 
+
+    // B. Definir Título según el Tab seleccionado
     const titulo = this.tabIndex === 0 ? 'Informe: Turnos por Día' : 'Informe: Ingresos al Sistema';
 
-    const el = document.getElementById(idCaptura);
-    if (!el) return;
-
-    // Aumentamos scale para mejor calidad
-    const canvas = await html2canvas(el, { scale: 2, backgroundColor: '#061126' });
-    const img = canvas.toDataURL('image/png');
-    const pdf = new jsPDF('l', 'mm', 'a4');
-    
-    const pageW = pdf.internal.pageSize.getWidth();
-    const pageH = pdf.internal.pageSize.getHeight();
-    const ratio = Math.min(pageW / canvas.width, pageH / canvas.height);
-    const imgW = canvas.width * ratio * 0.9;
-    const imgH = canvas.height * ratio * 0.9;
-    const x = (pageW - imgW) / 2;
-
-    pdf.setFont('helvetica', 'bold');
+    // C. Agregar Textos
     pdf.setFontSize(18);
-    pdf.text(titulo, 20, 20);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text(titulo, w - 10, 18, { align: 'right' });
+    
     pdf.setFontSize(10);
     pdf.setFont('helvetica', 'normal');
-    // Usamos el locale español para la fecha de emisión también
-    pdf.text(`Fecha de emisión: ${new Date().toLocaleDateString('es-AR')}`, 20, 26);
+    pdf.setTextColor(100);
+    pdf.text(`Fecha de emisión: ${new Date().toLocaleDateString('es-AR')}`, w - 10, 24, { align: 'right' });
 
-    pdf.addImage(img, 'PNG', x, 35, imgW, imgH);
-    pdf.save(`informe_${this.tabIndex === 0 ? 'turnos' : 'visitas'}.pdf`);
+    // D. Línea Separadora
+    pdf.setDrawColor(200);
+    pdf.line(10, 30, w - 10, 30);
+
+    // E. Agregar la imagen del gráfico
+    const margin = 10;
+    const topMargin = 35; 
+    
+    const imgProps = pdf.getImageProperties(chartPng);
+    const pdfImgWidth = w - (margin * 2);
+    // Calculamos la altura proporcional para que no se deforme
+    const pdfImgHeight = (imgProps.height * pdfImgWidth) / imgProps.width;
+
+    pdf.addImage(chartPng, 'PNG', margin, topMargin, pdfImgWidth, pdfImgHeight);
+    
+    pdf.save(`informe_general_${Date.now()}.pdf`);
   }
+
+
+
 }
 
 

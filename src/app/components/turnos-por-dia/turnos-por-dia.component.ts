@@ -1,14 +1,13 @@
-
-import { Component, OnInit } from '@angular/core';
-import { CommonModule, registerLocaleData } from '@angular/common'; // <--- 1. Importar registerLocaleData
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { CommonModule, registerLocaleData } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import localeEsAr from '@angular/common/locales/es-AR'; // <--- 2. Importar datos de Argentina
+import localeEsAr from '@angular/common/locales/es-AR';
 
-// Registramos el idioma español AR
 registerLocaleData(localeEsAr, 'es-AR');
 
 import {
   ApexAxisChartSeries,
+  ChartComponent,
   NgApexchartsModule
 } from 'ng-apexcharts';
 
@@ -36,56 +35,23 @@ import { ChartOptions, EstadisticaTurnosPorDia } from '../../models/estadistica.
   selector: 'app-turnos-por-dia',
   standalone: true,
   imports: [
-    CommonModule,
-    FormsModule,
-    RouterLink,
-    // Material
-    MatCardModule,
-    MatIconModule,
-    MatButtonModule,
-    MatMenuModule,
-    MatRippleModule,
-    MatTooltipModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
-    MatProgressSpinnerModule,
-    MatCheckboxModule,
-    // Forms y Charts
-    ReactiveFormsModule,
-    NgApexchartsModule
+    CommonModule, FormsModule, RouterLink,
+    MatCardModule, MatIconModule, MatButtonModule, MatMenuModule, MatRippleModule,
+    MatTooltipModule, MatFormFieldModule, MatInputModule,
+    MatDatepickerModule, MatNativeDateModule, MatProgressSpinnerModule,
+    MatCheckboxModule, ReactiveFormsModule, NgApexchartsModule
   ],
   templateUrl: './turnos-por-dia.component.html',
   styleUrls: ['./turnos-por-dia.component.scss'],
-  // ESTO AHORA SÍ FUNCIONARÁ PORQUE REGISTRAMOS EL IDIOMA ARRIBA
   providers: [
-    { provide: MAT_DATE_LOCALE, useValue: 'es-AR' } 
+    { provide: MAT_DATE_LOCALE, useValue: 'es-AR' }
   ]
 })
 export class TurnosPorDiaComponent implements OnInit {
+  @ViewChild('chart') chart!: ChartComponent;
 
-  private readonly USE_MOCK = false;
+  // Variable para el HTML (vista en pantalla)
   logoClinicaBase64: string = '';
-
-  // private readonly RAW_MOCK: Array<{
-  //   fecha: string;
-  //   estado: 'finalizado' | 'pendiente' | 'cancelado' | 'completado' | 'atendido' | 'realizado';
-  // }> = [
-  //     { fecha: '2025-10-10T10:00:00Z', estado: 'finalizado' },
-  //     { fecha: '2025-10-10T11:00:00Z', estado: 'finalizado' },
-  //     { fecha: '2025-10-11T10:00:00Z', estado: 'pendiente' },
-  //     { fecha: '2025-10-12T09:00:00Z', estado: 'completado' },
-  //     { fecha: '2025-10-14T13:30:00Z', estado: 'realizado' },
-  //     { fecha: '2025-10-14T16:15:00Z', estado: 'completado' },
-  //     { fecha: '2025-10-15T08:00:00Z', estado: 'cancelado' },
-  //     { fecha: '2025-10-16T08:00:00Z', estado: 'finalizado' },
-  //     { fecha: '2025-10-18T08:00:00Z', estado: 'atendido' },
-  //     { fecha: '2025-10-20T08:00:00Z', estado: 'finalizado' },
-  //     { fecha: '2025-10-22T10:00:00Z', estado: 'finalizado' },
-  //     { fecha: '2025-10-22T14:00:00Z', estado: 'finalizado' }
-  //   ];
-
   cargando = false;
   error?: string;
   filtrosForm!: FormGroup;
@@ -105,17 +71,16 @@ export class TurnosPorDiaComponent implements OnInit {
     xaxis: {
       categories: [],
       title: { text: 'Fecha' },
-      tickAmount: 10, 
-      labels: { rotate: -20, trim: true }
+      tickAmount: 10,
+      labels: { rotate: -20, trim: true, style: { colors: '#cbd5e1' } }
     },
     yaxis: {
-      title: { text: 'Cantidad de Turnos' },
+      title: { text: 'Cantidad de Turnos', style: { color: '#cbd5e1' } },
+      labels: { formatter: (val: number) => val.toFixed(0), style: { colors: '#cbd5e1' } },
       min: 0,
-      forceNiceScale: true,
-      // CORRECCIÓN DEL TIPO: Agregamos ": number"
-      labels: { formatter: (val: number) => val.toFixed(0) } 
+      forceNiceScale: true
     },
-    colors: ['#22D3EE'], 
+    colors: ['#22D3EE'],
     fill: {
       type: 'gradient',
       gradient: {
@@ -125,16 +90,16 @@ export class TurnosPorDiaComponent implements OnInit {
         stops: [0, 90, 100]
       }
     },
-    grid: { 
+    grid: {
       borderColor: 'rgba(255,255,255,.08)',
       strokeDashArray: 4,
       xaxis: { lines: { show: true } },
       yaxis: { lines: { show: true } }
     },
-    tooltip: { 
+    tooltip: {
       theme: 'dark',
       x: { show: true },
-      y: { formatter: (val:number) => `${val} turnos` }
+      y: { formatter: (val: number) => `${val} turnos` }
     },
     title: { text: '' }
   };
@@ -142,15 +107,16 @@ export class TurnosPorDiaComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private api: EstadisticasService
-  ) { 
+  ) {
+    // Inicializamos el Logo PARA EL HTML (la vista normal)
     const svg = `<svg width="600" height="200" viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#0099ff;stop-opacity:1"/><stop offset="100%" style="stop-color:#0055b3;stop-opacity:1"/></linearGradient></defs><g transform="translate(50,50)"><path d="M80 0H120A10 10 0 0 1 130 10V80H200A10 10 0 0 1 210 90V130A10 10 0 0 1 200 140H130V210A10 10 0 0 1 120 220H80A10 10 0 0 1 70 210V140H0A10 10 0 0 1-10 130V90A10 10 0 0 1 0 80H70V10A10 10 0 0 1 80 0Z" fill="url(#g)" transform="scale(0.5) translate(30,30)"/><path d="M60 115L90 145L150 85" stroke="white" stroke-width="14" fill="none" stroke-linecap="round" stroke-linejoin="round" transform="scale(0.5) translate(30,30)"/></g><g transform="translate(180,115)"><text x="0" y="-25" font-family="Arial" font-weight="bold" font-size="28" fill="#0077cc">CLINICA</text><text x="0" y="25" font-family="Arial" font-weight="bold" font-size="52" fill="#003366">MONLLOR</text></g></svg>`;
     this.logoClinicaBase64 = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
   }
 
   ngOnInit(): void {
     this.filtrosForm = this.fb.group({
-      desde: [null as Date | null],
-      hasta: [null as Date | null],
+      desde: [null],
+      hasta: [null],
       soloFinalizados: [true]
     });
     this.cargarDatos();
@@ -169,54 +135,26 @@ export class TurnosPorDiaComponent implements OnInit {
     this.cargarDatos();
   }
 
-  private toIso(d?: Date | null): string | undefined {
-    return d
-      ? new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())).toISOString()
-      : undefined;
-  }
-
-  private buildDayRange(startISO: string, endISO: string): string[] {
-    const out: string[] = [];
-    const start = new Date(startISO);
-    const end = new Date(endISO);
-
-    let cur = new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth(), start.getUTCDate()));
-    const endMid = new Date(Date.UTC(end.getUTCFullYear(), end.getUTCMonth(), end.getUTCDate()));
-
-    while (cur <= endMid) {
-      const y = cur.getUTCFullYear();
-      const m = String(cur.getUTCMonth() + 1).padStart(2, '0');
-      const d = String(cur.getUTCDate()).padStart(2, '0');
-      out.push(`${y}-${m}-${d}`);
-      cur = new Date(Date.UTC(cur.getUTCFullYear(), cur.getUTCMonth(), cur.getUTCDate() + 1));
-    }
-    return out;
-  }
-
-  private labelFromDayKey(dayKey: string): string {
-    const [y, m, d] = dayKey.split('-').map(Number);
-    const dt = new Date(Date.UTC(y, m - 1, d));
-    // Formato visual para el gráfico
-    return dt.toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit' });
-  }
-
   private cargarDatos(): void {
     this.cargando = true;
     this.error = undefined;
 
-    const { desde, hasta, soloFinalizados } = this.filtrosForm.value as {
-      desde: Date | null;
-      hasta: Date | null;
-      soloFinalizados: boolean;
-    };
+    const { desde, hasta, soloFinalizados } = this.filtrosForm.value;
+    
+    let isoDesde: string | undefined;
+    let isoHasta: string | undefined;
 
-    const isoDesde = this.toIso(desde ?? null);
-    const isoHasta = this.toIso(hasta ?? null);
+    if (desde) {
+      const d = new Date(desde);
+      d.setHours(0, 0, 0, 0);
+      isoDesde = d.toISOString();
+    }
 
-    // if (this.USE_MOCK) {
-    //   this.cargarDatosMockConFiltros(isoDesde, isoHasta, !!soloFinalizados);
-    //   return;
-    // }
+    if (hasta) {
+      const h = new Date(hasta);
+      h.setHours(23, 59, 59, 999);
+      isoHasta = h.toISOString();
+    }
 
     this.api
       .turnosPorDia(isoDesde, isoHasta, !!soloFinalizados)
@@ -235,85 +173,117 @@ export class TurnosPorDiaComponent implements OnInit {
       });
   }
 
+  private labelFromDayKey(dayKey: string): string {
+    const [y, m, d] = dayKey.split('-').map(Number);
+    const dt = new Date(Date.UTC(y, m - 1, d));
+    return dt.toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit' });
+  }
+
   private renderByDayItems(items: Array<{ dia: string; cantidad: number }>): void {
     const sorted = [...items].sort((a, b) => a.dia.localeCompare(b.dia));
     const categorias = sorted.map(i => this.labelFromDayKey(i.dia));
     const valores = sorted.map(i => i.cantidad);
 
-    const baseChart = this.chartOptions.chart ?? { type: 'area' as const, height: 420 };
-
     this.chartSeries = [{ name: 'Turnos', data: valores }];
     this.chartOptions = {
       ...this.chartOptions,
-      chart: { ...baseChart, type: 'area', height: 420 },
-      xaxis: { ...(this.chartOptions.xaxis ?? {}), categories: categorias }
+      xaxis: {
+        ...(this.chartOptions.xaxis ?? {}),
+        categories: categorias
+      }
     };
     this.cargando = false;
   }
 
-  // private cargarDatosMockConFiltros(isoDesde?: string, isoHasta?: string, soloFinalizados = true): void {
-  //   const allTimes = this.RAW_MOCK.map(r => new Date(r.fecha).getTime()).sort((a, b) => a - b);
-  //   const startISO = isoDesde ?? new Date(allTimes[0]).toISOString();
-  //   const endISO = isoHasta ?? new Date(allTimes[allTimes.length - 1]).toISOString();
-
-  //   const dayKeys = this.buildDayRange(startISO, endISO);
-  //   const mapCount = new Map<string, number>(dayKeys.map(k => [k, 0]));
-  //   const estadosOk = soloFinalizados
-  //     ? new Set(['finalizado', 'completado', 'atendido', 'realizado'])
-  //     : null;
-
-  //   for (const r of this.RAW_MOCK) {
-  //     const t = new Date(r.fecha).getTime();
-  //     if (t < new Date(startISO).getTime() || t > new Date(endISO).getTime()) continue;
-  //     if (estadosOk && !estadosOk.has(r.estado)) continue;
-
-  //     const dt = new Date(r.fecha);
-  //     const key = `${dt.getUTCFullYear()}-${String(dt.getUTCMonth() + 1).padStart(2, '0')}-${String(dt.getUTCDate()).padStart(2, '0')}`;
-  //     mapCount.set(key, (mapCount.get(key) ?? 0) + 1);
-  //   }
-  //   const items = dayKeys.map(k => ({ dia: k, cantidad: mapCount.get(k) ?? 0 }));
-  //   this.renderByDayItems(items);
-  // }
-
+  // === EXPORTAR PDF (LOGO DEFINIDO EN FUNCION) ===
   async descargarPDF(): Promise<void> {
-    const el = document.getElementById('captura-pdf');
-    if (!el) return;
+    const DATA = document.getElementById('captura-pdf');
+    if (!DATA) return;
 
-    const canvas = await html2canvas(el, { 
+    // 1. Definimos el SVG EXACTO que pasaste (para el PDF)
+    const svgLogo = `
+    <svg width="600" height="200" viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="gradBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#0099ff;stop-opacity:1" /> 
+          <stop offset="100%" style="stop-color:#0055b3;stop-opacity:1" /> 
+        </linearGradient>
+      </defs>
+      <g transform="translate(50, 50)">
+        <path d="M 80 0 H 120 A 10 10 0 0 1 130 10 V 80 H 200 A 10 10 0 0 1 210 90 V 130 A 10 10 0 0 1 200 140 H 130 V 210 A 10 10 0 0 1 120 220 H 80 A 10 10 0 0 1 70 210 V 140 H 0 A 10 10 0 0 1 -10 130 V 90 A 10 10 0 0 1 0 80 H 70 V 10 A 10 10 0 0 1 80 0 Z" fill="url(#gradBlue)" transform="scale(0.5) translate(30,30)"/>
+        <path d="M 60 115 L 90 145 L 150 85" stroke="white" stroke-width="14" fill="none" stroke-linecap="round" stroke-linejoin="round" transform="scale(0.5) translate(30,30)"/>
+      </g>
+      <g transform="translate(180, 115)">
+        <text x="0" y="-25" font-family="Arial" font-weight="bold" font-size="28" fill="#0077cc">CLINICA</text>
+        <text x="0" y="25" font-family="Arial" font-weight="bold" font-size="52" fill="#003366">MONLLOR</text>
+      </g>
+    </svg>`;
+
+    // 2. Convertimos SVG a PNG (Paso critico para que jsPDF no falle)
+    const svgBase64 = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgLogo)));
+    
+    const logoImg = new Image();
+    logoImg.src = svgBase64;
+    // Esperamos que cargue la imagen
+    await new Promise((resolve) => { logoImg.onload = resolve; });
+
+    // Dibujamos en un canvas temporal invisible
+    const canvasLogo = document.createElement('canvas');
+    canvasLogo.width = 600; 
+    canvasLogo.height = 200;
+    const ctxLogo = canvasLogo.getContext('2d');
+    if (ctxLogo) ctxLogo.drawImage(logoImg, 0, 0);
+    const logoPng = canvasLogo.toDataURL('image/png');
+
+    // 3. Capturamos el Gráfico (IMPORTANTE: Ocultamos el header HTML para no duplicarlo)
+    const canvasChart = await html2canvas(DATA, {
       scale: 2, 
       backgroundColor: '#061126', 
       logging: false,
       useCORS: true,
       onclone: (clonedDoc) => {
-        const logo = clonedDoc.querySelector('.logo-container') as HTMLElement;
-        if (logo) {
-          logo.style.display = 'flex';
-          logo.style.justifyContent = 'center';
-          logo.style.marginBottom = '20px';
+        // Buscamos el header en el clon y lo ocultamos, porque lo vamos a dibujar manualmente arriba
+        const htmlHeader = clonedDoc.querySelector('.chart-header') as HTMLElement;
+        if (htmlHeader) {
+          htmlHeader.style.display = 'none';
         }
       }
     });
+
+    const chartPng = canvasChart.toDataURL('image/png');
+
+    // 4. Armamos el PDF
+    const pdf = new jsPDF('l', 'mm', 'a4'); // Horizontal
+    const w = pdf.internal.pageSize.getWidth();
+    const h = pdf.internal.pageSize.getHeight();
+
+    // A. Logo (Arriba Izquierda)
+    pdf.addImage(logoPng, 'PNG', 10, 10, 50, 16); 
+
+    // B. Textos (Arriba Derecha)
+    pdf.setFontSize(18);
+    pdf.text('Reporte de Turnos por Día', w - 10, 18, { align: 'right' });
     
-    const img = canvas.toDataURL('image/png');
-    const pdf = new jsPDF('landscape', 'mm', 'a4');
+    pdf.setFontSize(10);
+    pdf.setTextColor(100);
+    pdf.text(`Fecha de emisión: ${new Date().toLocaleDateString('es-AR')}`, w - 10, 24, { align: 'right' });
 
-    const pdfW = pdf.internal.pageSize.getWidth();
-    const pdfH = pdf.internal.pageSize.getHeight();
-    const ratio = canvas.width / canvas.height;
+    // C. Línea divisoria
+    pdf.setDrawColor(200);
+    pdf.line(10, 30, w - 10, 30);
+
+    // D. Gráfico
+    const margin = 10;
+    const topMargin = 35; 
     
-    let w = pdfW - 20;
-    let h = w / ratio;
+    // Calculamos proporciones para ajustar al ancho
+    const imgProps = pdf.getImageProperties(chartPng);
+    const pdfImgWidth = w - (margin * 2);
+    const pdfImgHeight = (imgProps.height * pdfImgWidth) / imgProps.width;
 
-    if (h > pdfH - 20) {
-      h = pdfH - 20;
-      w = h * ratio;
-    }
-
-    const x = (pdfW - w) / 2;
-    const y = (pdfH - h) / 2;
-
-    pdf.addImage(img, 'PNG', x, y, w, h);
-    pdf.save(`turnos_por_dia_${new Date().toISOString().slice(0, 10)}.pdf`);
+    pdf.addImage(chartPng, 'PNG', margin, topMargin, pdfImgWidth, pdfImgHeight);
+    
+    pdf.save(`Turnos_Por_Dia_${Date.now()}.pdf`);
   }
 
   async descargarImagen(): Promise<void> {
@@ -326,20 +296,17 @@ export class TurnosPorDiaComponent implements OnInit {
       logging: false,
       useCORS: true,
       onclone: (clonedDoc) => {
-        const logo = clonedDoc.querySelector('.logo-container') as HTMLElement;
-        if (logo) {
-          logo.style.display = 'flex';
-          logo.style.justifyContent = 'center';
-          logo.style.marginBottom = '20px';
+        // Para la imagen JPG, SÍ queremos ver el header HTML si estaba oculto
+        const header = clonedDoc.querySelector('.chart-header') as HTMLElement;
+        if (header) {
+          header.style.display = 'flex'; 
         }
       }
     });
 
     const link = document.createElement('a');
     link.href = canvas.toDataURL('image/jpeg', 0.9);
-    link.download = `turnos_por_dia_grafico_${new Date().getTime()}.jpg`;
+    link.download = `turnos_por_dia_${Date.now()}.jpg`;
     link.click();
   }
 }
-
-

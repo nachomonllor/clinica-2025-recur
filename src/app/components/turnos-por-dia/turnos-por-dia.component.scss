@@ -1,7 +1,7 @@
 :host {
-  --azul: #1565C0;
+  --azul: #1565C0;        
   --azul-oscuro: #0B1D3A;
-  --naranja: #FF8F00;
+  --naranja: #FF8F00;     
   --texto: #EAF2FF;
   --texto-2: rgba(255,255,255,.8);
 }
@@ -13,81 +13,60 @@
     radial-gradient(900px 500px at -5% 0%, rgba(255,143,0,.18), transparent 60%),
     radial-gradient(1100px 600px at 110% 15%, rgba(21,101,192,.20), transparent 60%),
     linear-gradient(180deg, #061126, var(--azul-oscuro) 45%, #061126 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
+/* --- BARRA DE ACCIONES --- */
 .barra-acciones {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
+  gap: 1rem;
   flex-wrap: wrap; 
-}
+  margin-bottom: 16px;
 
-.filtros {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-
-  // Ajuste opcional para que los datepickers no sean tan anchos
-  .mat-mdc-form-field {
-    width: 150px;
-    font-size: 13px;
+  .espaciador {
+    flex: 1 1 auto; 
   }
 }
 
-.espaciador { flex: 1 1 auto; }
+/* --- FILTROS --- */
+.filtros {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap; 
 
+  mat-form-field {
+    width: 150px; 
+    font-size: 0.9rem;
+
+    ::ng-deep .mat-mdc-text-field-wrapper {
+      height: 48px; 
+      padding-top: 4px;
+    }
+    
+    ::ng-deep .mat-mdc-form-field-flex {
+      height: 100%;
+      align-items: center;
+    }
+  }
+}
+
+/* --- PANEL --- */
 .panel {
   border-radius: 18px;
   padding: clamp(12px, 2.2vw, 22px);
-  // Mantenemos tu fondo glass, pero aseguramos opacidad suficiente para el gráfico
   background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
   border: 1px solid rgba(255,255,255,.12);
   color: var(--texto);
   box-shadow: 0 10px 30px rgba(0,0,0,.35);
   backdrop-filter: blur(6px);
-  margin-top: 10px;
+  overflow: hidden;
 }
-
-/* =========================================================
-   NUEVO: ESTILOS PARA EL LOGO FANTASMA Y CABECERA
-   ========================================================= */
-
-.chart-header {
-  text-align: center;
-  margin-bottom: 20px;
-  
-  // Contenedor del Título y Subtítulo
-  .titulos {
-    .titulo {
-      margin: 0;
-      font-weight: 800;
-      font-size: 1.5rem;
-      color: var(--texto);
-    }
-    .subtitulo {
-      margin: 4px 0 0 0;
-      font-size: 0.9rem;
-      color: var(--texto-2);
-    }
-  }
-}
-
-// EL LOGO: Invisible en pantalla (display: none)
-// El TypeScript lo pondrá en 'flex' solo al descargar
-.logo-container {
-  display: none; 
-  width: 100%;
-  margin-bottom: 10px;
-
-  .logo-img {
-    height: 70px; // Tamaño controlado para el PDF
-    width: auto;
-  }
-}
-
-/* ========================================================= */
 
 .chart-wrapper {
   width: 100%;
@@ -99,111 +78,94 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
   gap: 10px;
   padding: 40px 0;
   color: var(--texto-2);
 }
 
 .mensaje-error {
-  display: block;
-  text-align: center;
   margin-top: 10px;
   color: #ffcdd2;
+  text-align: center;
 }
 
+/* --- HEADER DE EXPORTACION (Oculto) --- */
+.chart-header {
+  display: none; 
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: #061126;
 
+  .logo-container {
+    width: 140px;
+    .logo-img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+    }
+  }
 
-/* Botones */
-
-
-::ng-deep .chk-finalizados .mdc-label {
-  color: var(--texto) !important;
-  font-weight: 500;
+  .titulos {
+    text-align: left;
+    .titulo {
+      margin: 0;
+      font-size: 1.8rem;
+      font-weight: 500;
+      color: #fff;
+      letter-spacing: 0.5px;
+    }
+    .subtitulo {
+      margin: 4px 0 0;
+      color: #cbd5e1;
+      font-size: 0.95rem;
+    }
+  }
 }
 
-/* Opcional: Cambiar el color del cuadradito (checkbox) si está vacío */
-::ng-deep .chk-finalizados .mdc-checkbox .mdc-checkbox__native-control:enabled:not(:checked) ~ .mdc-checkbox__background {
-  border-color: var(--texto-2) !important; 
-}
-
-
-
+/* --- MATERIAL OVERRIDES (Botones + Inputs) --- */
 ::ng-deep .mat-mdc-unelevated-button.mat-primary {
   --mdc-filled-button-container-color: var(--azul);
 }
 ::ng-deep .mat-mdc-unelevated-button.mat-accent,
-::ng-deep .mat-mdc-raised-button.mat-accent,
-::ng-deep .mat-mdc-stroked-button.mat-accent { /* Agregado stroked */
+::ng-deep .mat-mdc-raised-button.mat-accent {
   --mdc-filled-button-container-color: var(--naranja);
   --mdc-protected-button-container-color: var(--naranja);
-  --mdc-outlined-button-label-text-color: var(--naranja); /* Para botón bordeado */
 }
 
-/* =========================================================
-   ARREGLO VISUAL PARA MAT-DATEPICKER (MODO OSCURO)
-   ========================================================= */
-
-/* 1. Inputs y Labels */
-::ng-deep .filtros .mat-mdc-input-element {
-  color: var(--texto) !important;
-  caret-color: var(--naranja);
+::ng-deep .pagina-estadisticas {
+  /* Inputs Fecha */
+  .mat-mdc-input-element {
+    color: #e2e8f0 !important;
+    caret-color: var(--naranja);
+  }
+  .mdc-text-field .mdc-floating-label {
+    color: #cbd5e1 !important; 
+    top: 14px !important;
+  }
+  .mdc-text-field--focused .mdc-floating-label,
+  .mdc-text-field--filled .mdc-floating-label {
+    color: var(--naranja) !important;
+    top: 6px !important;
+  }
+  .mat-datepicker-toggle {
+    color: var(--naranja) !important;
+    opacity: 0.9;
+  }
+  .mdc-notched-outline__leading,
+  .mdc-notched-outline__notch,
+  .mdc-notched-outline__trailing {
+    border-color: rgba(255, 255, 255, 0.25) !important;
+  }
+  .mdc-text-field--focused .mdc-notched-outline__leading,
+  .mdc-text-field--focused .mdc-notched-outline__notch,
+  .mdc-text-field--focused .mdc-notched-outline__trailing {
+    border-color: var(--naranja) !important;
+    border-width: 2px !important;
+  }
 }
-::ng-deep .filtros .mat-mdc-floating-label {
-  color: rgba(255, 255, 255, 0.6) !important;
-}
-::ng-deep .filtros .mdc-text-field--focused .mat-mdc-floating-label {
-  color: var(--naranja) !important;
-}
-::ng-deep .filtros .mat-datepicker-toggle {
-  color: var(--texto-2) !important;
-}
-::ng-deep .filtros .mdc-notched-outline__leading,
-::ng-deep .filtros .mdc-notched-outline__notch,
-::ng-deep .filtros .mdc-notched-outline__trailing {
-  border-color: rgba(255, 255, 255, 0.3) !important;
-}
-::ng-deep .filtros .mdc-text-field--focused .mdc-notched-outline__leading,
-::ng-deep .filtros .mdc-text-field--focused .mdc-notched-outline__notch,
-::ng-deep .filtros .mdc-text-field--focused .mdc-notched-outline__trailing {
-  border-color: var(--naranja) !important;
-}
-
-/* 2. EL ALMANAQUE FLOTANTE (POPUP) */
-::ng-deep .mat-datepicker-content {
-  background-color: #0B1D3A !important;
-  color: #EAF2FF !important;
-}
-
-/* Números del mes */
-::ng-deep .mat-calendar-body-cell-content {
-  color: #EAF2FF !important;
-  border-color: transparent !important;
-}
-
-/* Cabecera (Mes/Año) */
-::ng-deep .mat-calendar-body-label {
-  color: #EAF2FF !important;
-}
-
-/* Días de la semana */
-::ng-deep .mat-calendar-table-header th {
-  color: rgba(255, 255, 255, 0.7) !important;
-}
-
-/* Flechas navegación */
-::ng-deep .mat-calendar-previous-button,
-::ng-deep .mat-calendar-next-button {
-  color: #EAF2FF !important;
-}
-
-/* Día seleccionado (Naranja) */
-::ng-deep .mat-calendar-body-selected {
-  background-color: #FF8F00 !important;
-  color: #000000 !important;
-}
-
-/* Hover */
-::ng-deep .mat-calendar-body-cell:not(.mat-calendar-body-disabled):hover > .mat-calendar-body-cell-content:not(.mat-calendar-body-selected) {
-  background-color: rgba(255, 255, 255, 0.1) !important;
-}
-

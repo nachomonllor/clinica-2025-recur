@@ -1,133 +1,32 @@
 <section class="pagina-estadisticas">
   <header class="barra-acciones">
-    
     <button mat-flat-button color="primary" routerLink="/seleccion-estadisticas">
       <mat-icon>arrow_back</mat-icon>
       Volver al Dashboard
     </button>
 
     <form class="filtros" [formGroup]="filtrosForm" (ngSubmit)="aplicarFiltros()">
-      <mat-form-field appearance="outline" class="dense">
-        <mat-label>Inicio</mat-label>
-        <input matInput [matDatepicker]="dpDesde" formControlName="desde">
+      
+      <mat-form-field appearance="outline">
+        <mat-label>Desde</mat-label>
+        <input matInput [matDatepicker]="dpDesde" formControlName="desde" readonly>
         <mat-datepicker-toggle matSuffix [for]="dpDesde"></mat-datepicker-toggle>
         <mat-datepicker #dpDesde></mat-datepicker>
       </mat-form-field>
 
-      <mat-form-field appearance="outline" class="dense">
-        <mat-label>Fin</mat-label>
-        <input matInput [matDatepicker]="dpHasta" formControlName="hasta">
+      <mat-form-field appearance="outline">
+        <mat-label>Hasta</mat-label>
+        <input matInput [matDatepicker]="dpHasta" formControlName="hasta" readonly>
         <mat-datepicker-toggle matSuffix [for]="dpHasta"></mat-datepicker-toggle>
         <mat-datepicker #dpHasta></mat-datepicker>
       </mat-form-field>
 
-      <mat-checkbox formControlName="soloFinalizados" class="chk-finalizados" color="accent">
+      <mat-checkbox formControlName="soloFinalizados" color="warn" style="color: #e2e8f0;">
         Solo Finalizados
       </mat-checkbox>
 
-      <button mat-icon-button color="accent" type="submit" matTooltip="Refrescar">
+      <button mat-stroked-button color="accent" type="submit" matTooltip="Refrescar datos">
         <mat-icon>refresh</mat-icon>
-      </button>
-
-      <button mat-icon-button type="button" (click)="limpiarFiltros()" matTooltip="Limpiar filtros">
-        <mat-icon>filter_alt_off</mat-icon>
-      </button>
-    </form>
-
-    <span class="espaciador"></span>
-
-    <button mat-stroked-button color="warn" [matMenuTriggerFor]="menuDescargas">
-      <mat-icon>download</mat-icon>
-      Descargar
-    </button>
-    <mat-menu #menuDescargas="matMenu">
-      <button mat-menu-item (click)="descargarPDF()">
-        <mat-icon>picture_as_pdf</mat-icon>
-        <span>Como PDF</span>
-      </button>
-      <button mat-menu-item (click)="descargarImagen()">
-        <mat-icon>image</mat-icon>
-        <span>Como Imagen</span>
-      </button>
-    </mat-menu>
-  </header>
-
-  <mat-card class="panel" id="captura-pdf">
-    
-    <div class="chart-header">
-      
-      <div class="logo-container">
-        <img [src]="logoClinicaBase64" alt="Clinica Monllor" class="logo-img">
-      </div>
-
-      <div class="titulos">
-        <h2 class="titulo">Turnos por Día</h2>
-        <p class="subtitulo">Evolución temporal de atenciones</p>
-      </div>
-    </div>
-
-    <div class="chart-wrapper" *ngIf="!cargando; else cargandoTpl">
-      <apx-chart
-        [series]="chartSeries"
-        [chart]="chartOptions.chart!"
-        [xaxis]="chartOptions.xaxis!"
-        [yaxis]="chartOptions.yaxis!"
-        [dataLabels]="chartOptions.dataLabels!"
-        [plotOptions]="chartOptions.plotOptions!"
-        [tooltip]="chartOptions.tooltip!"
-        [grid]="chartOptions.grid!"
-        [stroke]="chartOptions.stroke!"
-        [fill]="chartOptions.fill!"
-        [colors]="chartOptions.colors!">
-      </apx-chart>
-    </div>
-
-    <ng-template #cargandoTpl>
-      <div class="loading">
-        <mat-spinner diameter="44"></mat-spinner>
-        <span>Cargando datos…</span>
-      </div>
-    </ng-template>
-
-    <div class="mensaje-error" *ngIf="error">{{ error }}</div>
-  </mat-card>
-</section>
-
-
-
-<!-- 
-<section class="pagina-estadisticas">
-  <header class="barra-acciones">
-    <button mat-flat-button color="primary" routerLink="/seleccion-estadisticas">
-      <mat-icon>arrow_back</mat-icon>
-      Volver al Dashboard
-    </button>
-
-    <form class="filtros" [formGroup]="filtrosForm" (ngSubmit)="aplicarFiltros()">
-      <mat-form-field appearance="outline">
-        <mat-label>Inicio</mat-label>
-        <input matInput [matDatepicker]="dpDesde" formControlName="desde">
-        <mat-datepicker-toggle matSuffix [for]="dpDesde"></mat-datepicker-toggle>
-        <mat-datepicker #dpDesde></mat-datepicker>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>Fin</mat-label>
-        <input matInput [matDatepicker]="dpHasta" formControlName="hasta">
-        <mat-datepicker-toggle matSuffix [for]="dpHasta"></mat-datepicker-toggle>
-        <mat-datepicker #dpHasta></mat-datepicker>
-      </mat-form-field>
-
-      <mat-checkbox formControlName="soloFinalizados">Solo Finalizados</mat-checkbox>
-
-      <button mat-stroked-button color="accent" type="submit">
-        <mat-icon>refresh</mat-icon>
-        Aplicar
-      </button>
-
-      <button mat-flat-button color="warn" type="button" (click)="limpiarFiltros()">
-        <mat-icon>clear</mat-icon>
-        Limpiar
       </button>
     </form>
 
@@ -135,12 +34,25 @@
 
     <button mat-flat-button color="accent" (click)="descargarPDF()">
       <mat-icon>picture_as_pdf</mat-icon>
-      Descargar PDF
+      PDF
+    </button>
+    <button mat-flat-button color="primary" (click)="descargarImagen()">
+      <mat-icon>image</mat-icon>
+      Imagen
     </button>
   </header>
 
   <mat-card class="panel" id="captura-pdf">
-    <h2 class="titulo">Turnos por Día</h2>
+    
+    <div class="chart-header">
+      <div class="logo-container">
+        <img [src]="logoClinicaBase64" alt="Clinica Monllor" class="logo-img">
+      </div>
+      <div class="titulos">
+        <h2 class="titulo">Turnos por Día</h2>
+        <p class="subtitulo">Cantidad de turnos solicitados diariamente</p>
+      </div>
+    </div>
 
     <div class="chart-wrapper" *ngIf="!cargando; else cargandoTpl">
       <apx-chart
@@ -161,10 +73,11 @@
     <ng-template #cargandoTpl>
       <div class="loading">
         <mat-spinner diameter="44"></mat-spinner>
-        <span>Cargando datos…</span>
+        <span>Analizando datos…</span>
       </div>
     </ng-template>
 
     <div class="mensaje-error" *ngIf="error">{{ error }}</div>
   </mat-card>
-</section> -->
+</section>
+
