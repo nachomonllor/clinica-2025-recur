@@ -40,7 +40,7 @@ Panel administrativo con gráficos interactivos (ApexCharts/Chart.js) descargabl
 
 ### 2. Registro de Usuarios
 *Alta de Pacientes y Especialistas con validaciones.*
-![Registro](src/assets/imagenes_clinica/USUARIO_A_DEFINIR/registro.jpg)
+![Registro](src/assets/imagenes_clinica/USUARIO_A_DEFINIR/seleccion_registro.jpg)
 
 ### 3. Solicitud de Turnos
 *Selección de especialidad y profesional con horarios dinámicos.*
