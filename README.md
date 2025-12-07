@@ -1,6 +1,6 @@
 # Clínica Online - Sistema de Gestión de Turnos
 
-[cite_start]Este proyecto es una aplicación web desarrollada en **Angular** como trabajo final para la materia **Laboratorio de Computación IV** de la **UTN Avellaneda**[cite: 1, 3]. El sistema permite la gestión integral de una clínica, administrando pacientes, especialistas y turnos médicos con flujos diferenciados por rol.
+Este proyecto es una aplicación web desarrollada en **Angular** como trabajo final para la materia **Laboratorio de Computación IV** de la **UTN Avellaneda**. El sistema permite la gestión integral de una clínica, administrando pacientes, especialistas y turnos médicos con flujos diferenciados por rol.
 
 ---
 
@@ -10,11 +10,11 @@
 [cite_start]La aplicación cuenta con una **Página de Bienvenida** con accesos rápidos[cite: 31]. [cite_start]El sistema de autenticación incluye verificación de email y aprobación administrativa para especialistas[cite: 60, 67].
 
 #### Login y Registro
-* [cite_start]**Registro de Pacientes:** Se capturan datos personales, obra social y dos imágenes de perfil[cite: 36, 45].
-* [cite_start]**Registro de Especialistas:** Permite seleccionar o añadir especialidades dinámicamente[cite: 53, 55].
-* [cite_start]**Captcha:** Implementado en los registros para mayor seguridad[cite: 88].
+  **Registro de Pacientes:** Se capturan datos personales, obra social y dos imágenes de perfil
+  **Registro de Especialistas:** Permite seleccionar o añadir especialidades dinámicamente
+  **Captcha:** Implementado en los registros para mayor seguridad
 
-> `![Pantalla de Login y Registro](ruta/a/tu/imagen_login_registro.png)`
+> `![Pantalla de Login y Registro](assets/imagenes_clinica/login.jpg)`
 
 ---
 
