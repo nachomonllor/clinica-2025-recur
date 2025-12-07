@@ -77,3 +77,36 @@
   --mdc-protected-button-container-color: var(--naranja);
 }
 
+
+/* CORRECCIÓN VISUAL PARA INPUTS DE FECHA */
+::ng-deep .pagina-estadisticas {
+  
+  /* Color del texto del input (la fecha escrita) */
+  .mat-mdc-input-element {
+    color: #e2e8f0 !important; /* Blanco/Gris claro */
+  }
+
+  /* Color del placeholder/label flotante (Desde / Hasta) */
+  .mdc-text-field:not(.mdc-text-field--disabled) .mdc-floating-label {
+    color: #cbd5e1 !important; 
+  }
+
+  /* Color del icono del calendario */
+  .mat-datepicker-toggle {
+    color: var(--naranja) !important; /* Usamos tu variable naranja */
+  }
+
+  /* Bordes del input */
+  .mdc-notched-outline__leading,
+  .mdc-notched-outline__notch,
+  .mdc-notched-outline__trailing {
+    border-color: rgba(255, 255, 255, 0.3) !important;
+  }
+
+  /* Borde al hacer foco */
+  .mdc-text-field--focused .mdc-notched-outline__leading,
+  .mdc-text-field--focused .mdc-notched-outline__notch,
+  .mdc-text-field--focused .mdc-notched-outline__trailing {
+    border-color: var(--naranja) !important;
+  }
+}
