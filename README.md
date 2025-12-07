@@ -29,13 +29,13 @@ La aplicación cuenta con una **Página de Bienvenida** con accesos rápidos. El
 **Un asistente paso a paso permite seleccionar especialidad, médico y horario disponible (próximos 15 días), con validaciones de disponibilidad.**
 
 **Solo aparecen horarios disponibles**
-![Solicitar turno horas disponibles](src/assets/imagenes_clinica/paciente/solicitar_turno_solo_aparecen_dias_horas_disponibles.jpg)
+![Solicitar_turno_horas_disponibles](src/assets/imagenes_clinica/paciente/solicitar_turno_solo_aparecen_dias_horas_disponibles.jpg)
 
 **El paciente puede solicitar un turno:**
-![solicitar turno](src/assets/imagenes_clinica/paciente/solicitar_turno.jpg)
+![solicitar_turno](src/assets/imagenes_clinica/paciente/solicitar_turno.jpg)
 
 **Solo aparecen especialistas de la especialidad seleccionada:**
-![Solicitar turno especialistas de especialidad seleccionada](src/assets/imagenes_clinica/paciente/solicitar_turno_solo_aparecen_los_especialistas_de_esa_especialidad.jpg)
+![Solicitar_turno_especialistas_de_especialidad_seleccionada](src/assets/imagenes_clinica/paciente/solicitar_turno_solo_aparecen_los_especialistas_de_esa_especialidad.jpg)
 
 
 #### Mis Turnos y Perfil
