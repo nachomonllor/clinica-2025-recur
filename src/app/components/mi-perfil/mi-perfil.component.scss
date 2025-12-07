@@ -1,5 +1,5 @@
 /* -----------------------------------------------------------
-   ESTILOS BASE (MANTENIDOS)
+   ESTILOS BASE 
 ----------------------------------------------------------- */
 :host {
   --bg-1: #0a1020;
@@ -106,7 +106,7 @@
   flex-wrap: wrap;
 }
 
-/* BOTONES / CHIPS */
+/* BOTONES -- CHIPS */
 .btn {
   position: relative;
   display: inline-flex;
@@ -159,7 +159,7 @@
   border-color: #ffffff33;
 }
 
-/* GRID + PANELS */
+/* GRID Y PANELS */
 .content-grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
@@ -251,44 +251,26 @@
   text-decoration: underline;
 }
 
-/* TARJETAS HORARIOS BASE */
-// .horarios-grid {
-//   display: grid;
-//   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-//   gap: 12px;
-// }
+/* -----------------------------------------------------------
+   ESTRUCTURA DE HORARIOS (CORREGIDO)
+----------------------------------------------------------- */
 
-// .horario-card {
-//   border-radius: 14px;
-//   border: 1px solid var(--border);
-//   background: var(--glass);
-//   backdrop-filter: blur(8px);
-// }
-
-/* --- POR ESTO (FLEX + ANCHO TOTAL) --- */
 .horarios-grid {
   display: flex;
   flex-direction: column;
   width: 100%;
-  /* <--- LA CLAVE DEL ÉXITO */
   gap: 24px;
 }
 
-/* Asegurar que la tarjeta interna también ceda */
 .horario-card {
-  width: 100%;
+  width: 100%; /* ==============> OCUPA TODO EL ANCHO DISPONIBLE */
   box-sizing: border-box;
-  width: 60%;
-  /*  <--============================ANCHO */
   gap: 24px;
   border-radius: 14px;
   border: 1px solid var(--border);
   background: var(--glass);
   backdrop-filter: blur(8px);
 }
-
-
-/* ---------------------------------- */
 
 .horario-h {
   padding: 10px 12px 6px;
@@ -307,7 +289,222 @@
   gap: 1.25rem;
 }
 
-/* HISTORIA CLÍNICA */
+/* -----------------------------------------------------------
+   LAYOUT DOS COLUMNAS
+----------------------------------------------------------- */
+.layout-edicion-resumen {
+  display: grid;
+  /* Columna izquierda flexible Y columna derecha fija de 300px */
+  grid-template-columns: 1fr 300px;
+  gap: 2rem;
+  align-items: start;
+  padding-bottom: 1rem;
+
+  /* RESPONMSIVI Si la pantalla es menor a 1250px =>> colapsa a una columna */
+  @media (max-width: 1250px) {
+    grid-template-columns: 1fr;
+    
+    .resumen-semanal {
+      width: 100%;
+      margin-top: 1.5rem;
+      position: static; /* Deja de ser sticky */
+    }
+  }
+}
+
+/* --- COLUMNA IZQUIERDA (SLIDERS) --- */
+.lista-dias-slider {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.instruccion {
+  font-size: 0.9rem;
+  color: var(--muted);
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.dia-row {
+  display: flex;
+  align-items: center;
+  padding: 15px 20px;
+  border-radius: 16px;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+  background: rgba(255, 255, 255, 0.02);
+  flex-wrap: wrap; /* Permite wrapping */
+  gap: 15px;
+
+  &.activo {
+    background: rgba(30, 41, 59, 0.6);
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  }
+
+  .check-dia {
+    width: 120px;
+    flex-shrink: 0;
+
+    ::ng-deep .mdc-form-field {
+      color: var(--text) !important;
+      font-weight: 500;
+      font-size: 1rem;
+    }
+
+    ::ng-deep .mdc-checkbox .mdc-checkbox__native-control:enabled:checked~.mdc-checkbox__background {
+      background-color: var(--blue) !important;
+      border-color: var(--blue) !important;
+    }
+  }
+
+  .slider-wrapper {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap; /* <=================== Permite que los elementos bajen si no caben */
+
+    mat-slider {
+      flex: 1;
+      width: auto;
+      min-width: 140px; /* Evita que el slider se aplaste demasiado */
+      height: 40px;
+
+      /* Customizacion Slider Material */
+      ::ng-deep .mdc-slider__track--inactive {
+        background-color: rgba(255, 255, 255, 0.1) !important;
+        height: 8px !important;
+        border-radius: 4px;
+        opacity: 1 !important;
+      }
+
+      ::ng-deep .mdc-slider__track--active_fill {
+        background: linear-gradient(90deg, var(--blue) 0%, var(--teal) 100%);
+        border: none !important;
+        height: 8px !important;
+        border-radius: 4px;
+        opacity: 1 !important;
+      }
+
+      ::ng-deep .mdc-slider__thumb-knob {
+        background-color: #fff !important;
+        border: 4px solid var(--blue) !important;
+        width: 24px !important;
+        height: 24px !important;
+        box-shadow: 0 0 10px rgba(37, 99, 235, 0.5);
+      }
+    }
+
+    .hora-label {
+      background: rgba(249, 115, 22, 0.15);
+      color: var(--orange);
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(249, 115, 22, 0.3);
+      font-family: 'Roboto Mono', monospace;
+      font-weight: 700;
+      font-size: 0.9rem;
+      min-width: 65px;
+      text-align: center;
+    }
+  }
+
+  .mensaje-inactivo {
+    flex: 1;
+    color: var(--muted);
+    font-style: italic;
+    font-size: 0.95rem;
+    padding-left: 20px;
+    display: flex;
+    align-items: center;
+
+    &::before {
+      content: '';
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--muted);
+      margin-right: 10px;
+      opacity: 0.5;
+    }
+  }
+}
+
+/* --- COLUMNA DERECHA (RESUMEN) --- */
+.resumen-semanal {
+  padding: 1.5rem;
+  border-radius: 16px;
+  background: rgba(15, 23, 42, 0.6); /* Fondo mas oscuro para destacar */
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  position: sticky; /* Se queda fijo al scrollear (solo en desktop) */
+  top: 20px;
+  
+  h4 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    color: #fbbf24; 
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    border-bottom: 1px solid rgba(251, 191, 36, 0.3);
+    padding-bottom: 0.8rem;
+    text-align: center;
+  }
+
+  .lista-resumen {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .item-resumen {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    padding-bottom: 8px;
+    
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  .dia-badge {
+    background: rgba(59, 130, 246, 0.25);
+    color: #93c5fd;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.75rem;
+    min-width: 45px;
+    text-align: center;
+  }
+
+  .hora-rango {
+    color: #e2e8f0;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 0.85rem;
+  }
+
+  .sin-horarios {
+    color: #94a3b8;
+    font-style: italic;
+    text-align: center;
+    padding: 1rem 0;
+    background: rgba(255,255,255,0.03);
+    border-radius: 8px;
+  }
+}
+
+/* HISTORIA CLINICA  */
 .hist-accordion ::ng-deep .mat-expansion-panel {
   background: var(--glass) !important;
   border: 1px solid var(--border) !important;
@@ -340,7 +537,7 @@
   color: var(--muted);
 }
 
-/* MATERIAL UI OVERRIDES (Dark Theme) */
+/* MATERIAL UI OVERRIDES GENERICOS */
 ::ng-deep .mat-mdc-form-field-infix,
 ::ng-deep .mat-mdc-select-value {
   color: var(--text) !important;
@@ -363,7 +560,6 @@
   border-color: var(--orange) !important;
 }
 
-/* UTILIDADES */
 ::ng-deep .mat-mdc-card-content {
   padding-top: 0 !important;
   padding-bottom: 0 !important;
@@ -371,144 +567,4 @@
 
 .profile-page>* {
   margin: 0 !important;
-}
-
-/* -----------------------------------------------------------
-   NUEVOS ESTILOS PARA EL SLIDER (HORARIOS V2)
------------------------------------------------------------ */
-
-.instruccion {
-  font-size: 0.9rem;
-  color: var(--muted);
-  text-align: center;
-  margin-bottom: 1rem;
-}
-
-// Contenedor principal de la lista
-.lista-dias-slider {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-// Fila de cada día
-.dia-row {
-  display: flex;
-  align-items: center;
-  padding: 15px 20px;
-  border-radius: 16px;
-  transition: all 0.3s ease;
-  border: 1px solid transparent;
-  background: rgba(255, 255, 255, 0.02); // Fondo sutil por defecto
-
-  // Estado ACTIVO (Checkbox tildado)
-  &.activo {
-    background: rgba(30, 41, 59, 0.6); // Azul muy oscuro translúcido
-    border-color: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  }
-
-  // Estilos del Checkbox
-  .check-dia {
-    width: 140px;
-
-    ::ng-deep .mdc-form-field {
-      color: var(--text) !important;
-      font-weight: 500;
-      font-size: 1rem;
-      letter-spacing: 0.5px;
-    }
-
-    // Checkbox pintado de azul cuando está activo
-    ::ng-deep .mdc-checkbox .mdc-checkbox__native-control:enabled:checked~.mdc-checkbox__background {
-      background-color: var(--blue) !important;
-      border-color: var(--blue) !important;
-    }
-  }
-
-  // Contenedor Slider + Badges
-  .slider-wrapper {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-
-    // CUSTOMIZACIÓN PROFUNDA DE ANGULAR MATERIAL SLIDER
-    mat-slider {
-      flex: 1;
-      width: 100%;
-      min-width: 200px;
-      height: 40px;
-
-      // 1. TRACK INACTIVO (Gris)
-      ::ng-deep .mdc-slider__track--inactive {
-        background-color: rgba(255, 255, 255, 0.1) !important;
-        height: 8px !important; // Más grueso
-        border-radius: 4px;
-        opacity: 1 !important;
-      }
-
-      // 2. TRACK ACTIVO (Gradiente Azul-Cyan)
-      ::ng-deep .mdc-slider__track--active_fill {
-        background: linear-gradient(90deg, var(--blue) 0%, var(--teal) 100%);
-        border: none !important;
-        height: 8px !important;
-        border-radius: 4px;
-        opacity: 1 !important;
-      }
-
-      // 3. KNOBS (Círculos)
-      ::ng-deep .mdc-slider__thumb-knob {
-        background-color: #fff !important;
-        border: 4px solid var(--blue) !important;
-        width: 24px !important;
-        height: 24px !important;
-        box-shadow: 0 0 10px rgba(37, 99, 235, 0.5); // Glow azul
-        transition: transform 0.1s;
-      }
-
-      // Efecto hover/drag
-      ::ng-deep .mdc-slider__thumb--focused .mdc-slider__thumb-knob {
-        transform: scale(1.2);
-        box-shadow: 0 0 15px rgba(6, 182, 212, 0.7); // Glow cyan
-      }
-    }
-
-    // BADGES DE HORA (Cápsulas doradas)
-    .hora-label {
-      background: rgba(249, 115, 22, 0.15); // Naranja muy suave
-      color: var(--orange);
-      padding: 6px 12px;
-      border-radius: 8px;
-      border: 1px solid rgba(249, 115, 22, 0.3);
-      font-family: 'Roboto Mono', monospace;
-      font-weight: 700;
-      font-size: 0.9rem;
-      min-width: 75px;
-      text-align: center;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    }
-  }
-
-  // Texto inactivo
-  .mensaje-inactivo {
-    flex: 1;
-    color: var(--muted);
-    font-style: italic;
-    font-size: 0.95rem;
-    padding-left: 20px;
-    display: flex;
-    align-items: center;
-
-    &::before {
-      content: '';
-      display: inline-block;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background-color: var(--muted);
-      margin-right: 10px;
-      opacity: 0.5;
-    }
-  }
 }

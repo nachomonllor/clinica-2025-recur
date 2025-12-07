@@ -710,5 +710,10 @@ export class MiPerfilComponent implements OnInit {
     const el = document.getElementById('historiaClinica');
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
+
+  tieneDiasActivos(dias: DiaDisponibilidad[]): boolean {
+    return dias.some(d => d.activo);
+  }
+
 }
 
