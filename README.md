@@ -14,7 +14,7 @@ Este proyecto es una aplicación web desarrollada en **Angular** como trabajo fi
   **Registro de Especialistas:** Permite seleccionar o añadir especialidades dinámicamente
   **Captcha:** Implementado en los registros para mayor seguridad
 
-> `![Pantalla de Login y Registro](assets/imagenes_clinica/usuarios/login.jpg)`
+> `![Pantalla de Login y Registro](src/assets/imagenes_clinica/usuarios/login.jpg)`
 
 ---
 
