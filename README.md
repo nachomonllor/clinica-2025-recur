@@ -7,16 +7,27 @@ Este proyecto es una aplicación web desarrollada en **Angular** como trabajo fi
 ## Funcionalidades y Pantallas
 
 ### 1. Acceso y Seguridad (Sprint 1)
-[cite_start]La aplicación cuenta con una **Página de Bienvenida** con accesos rápidos[cite: 31]. [cite_start]El sistema de autenticación incluye verificación de email y aprobación administrativa para especialistas[cite: 60, 67].
+La aplicación cuenta con una **Página de Bienvenida** con accesos rápidos. El sistema de autenticación incluye verificación de email y aprobación administrativa para especialistas
+
+
+![bienvenida](https://github.com/user-attachments/assets/85848919-d43a-40fc-a0ff-5682e6435df1)
+
 
 #### Login y Registro
   **Registro de Pacientes:** Se capturan datos personales, obra social y dos imágenes de perfil
+
+
+  ![registro_del_paciente](https://github.com/user-attachments/assets/698c4471-d866-4eed-8420-d1a77162a3f8)
+
   **Registro de Especialistas:** Permite seleccionar o añadir especialidades dinámicamente
+  ![registro_del_especialista](https://github.com/user-attachments/assets/5d20a719-21f5-4f42-a77f-9c5753d4937b)
+
   **Captcha:** Implementado en los registros para mayor seguridad
 
-> `![Pantalla de Login y Registro](src/assets/imagenes_clinica/usuarios/login.jpg)`
 
----
+
+---![login](https://github.com/user-attachments/assets/a182623e-1525-48ae-bcfe-5c6a787a3560)
+
 
 ### 2. Módulo de Pacientes (Sprint 2 & 3)
 Los pacientes pueden gestionar su atención médica de forma autónoma.
