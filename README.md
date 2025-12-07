@@ -36,77 +36,86 @@ Los pacientes pueden gestionar su atención médica de forma autónoma.
 
 Un asistente paso a paso permite seleccionar especialidad, médico y horario disponible (próximos 15 días), con validaciones de disponibilidad.
 
-* Solo aparecen horarios disponibles
-![solicitar_turno_solo_aparecen_dias_horas_disponibles](src/assets/imagenes_clinica/paciente/solicitar_turno_solo_aparecen_dias_horas_disponibles.jpg)
+* Solo aparecen horarios disponibles:
 
+![solicitar_turno_solo_aparecen_dias_horas_disponibles](src/assets/imagenes_clinica/paciente/solicitar_turno_solo_aparecen_dias_horas_disponibles.jpg)
 
 ![solicitar_turno](https://github.com/user-attachments/assets/61d89142-7d88-49b6-aa12-ff93dac58b84)
 
-* Solo aparecen especialistas de la especialidad seleccionada
+* Solo aparecen especialistas de la especialidad seleccionada:
+
 ![solicitar_turno_solo_aparecen_los_especialistas_de_esa_especialidad](src/assets/imagenes_clinica/paciente/solicitar_turno_solo_aparecen_los_especialistas_de_esa_especialidad.jpg)
 
 
 * Solicitar turno:
-> `![Pantalla Solicitar Turno](src/assets/imagenes_clinica/paciente/solicitar_turno.jpg)`
+![solicitar_turno](src/assets/imagenes_clinica/paciente/solicitar_turno.jpg)
 
 #### Mis Turnos y Perfil
 * Visualización de turnos con filtro único (por especialidad o especialista)[cite: 96, 97].
   ![mis_turnos_paciente](https://github.com/user-attachments/assets/01ef76e7-657b-451c-be02-dbdd24ef2b04)
 
-* Acciones disponibles: Cancelar turno, ver reseña, completar encuesta y calificar atención[cite: 101, 102, 106].
-* **Perfil:** Descarga de **Historia Clínica en PDF** con logo de la clínica[cite: 183, 184].
+* Acciones disponibles: Cancelar turno, ver reseña, completar encuesta y calificar atención
 
-> `![Pantalla Mis Turnos Paciente](ruta/a/tu/imagen_mis_turnos_paciente.png)`
+* **Perfil:** Descarga de **Historia Clínica en PDF** con logo de la clínica
 
----
+![Pantalla Mis Turnos Paciente](src/assets/imagenes_clinica/paciente/mis_turnos_paciente.jpg)
+
 
 ### 3. Módulo de Especialistas (Sprint 2 & 3)
 Los médicos cuentan con herramientas para administrar su agenda y pacientes.
 
 #### Gestión de Turnos y Agenda
-* [cite_start]**Mis Horarios:** El especialista define su disponibilidad horaria por especialidad[cite: 175, 176].
-* [cite_start]**Administración de Turnos:** Permite Aceptar, Rechazar o Finalizar turnos dejando reseñas diagnósticas[cite: 120, 134, 136].
+**Mis Horarios:** El especialista define su disponibilidad horaria por especialidad.
+**Administración de Turnos:** Permite Aceptar, Rechazar o Finalizar turnos dejando reseñas diagnósticas.
 
-> `![Pantalla Gestión Especialista](ruta/a/tu/imagen_gestion_especialista.png)`
+![Pantalla Gestión Especialista](ruta/a/tu/imagen_gestion_especialista.png)
 
 #### Carga de Historia Clínica
-[cite_start]Al finalizar un turno, el especialista carga la historia clínica compuesta por datos fijos (altura, peso, temperatura, presión) y datos dinámicos variables[cite: 192, 195, 202].
+Al finalizar un turno, el especialista carga la historia clínica compuesta por datos fijos (altura, peso, temperatura, presión) y datos dinámicos variables
 
-> `![Pantalla Historia Clínica](ruta/a/tu/imagen_historia_clinica.png)`
-
----
+![Pantalla Historia Clínica](ruta/a/tu/imagen_historia_clinica.png)
 
 ### 4. Módulo de Administración (Sprint 1 & 4)
 Panel de control exclusivo para gestionar la clínica.
 
 #### Gestión de Usuarios
-[cite_start]Visualización de todos los usuarios con capacidad de habilitar o inhabilitar el acceso a Especialistas[cite: 69, 72]. [cite_start]Incluye descarga de nómina en Excel[cite: 182].
 
-> `![Pantalla Sección Usuarios](ruta/a/tu/imagen_usuarios_admin.png)`
+* Visualización de todos los usuarios con capacidad de habilitar o inhabilitar el acceso a Especialistas
+
+* Incluye descarga de nómina en Excel
+
+![Pantalla Sección Usuarios](ruta/a/tu/imagen_usuarios_admin.png)`
 
 #### Estadísticas e Informes
-[cite_start]Panel gráfico (Charts) con posibilidad de descarga en Excel o PDF[cite: 228]. Incluye:
-* [cite_start]Log de ingresos al sistema[cite: 221].
-* [cite_start]Cantidad de turnos por especialidad y por día[cite: 224, 225].
-* [cite_start]Informes de turnos solicitados y finalizados por médico[cite: 226, 227].
 
-> `![Pantalla Estadísticas](ruta/a/tu/imagen_estadisticas.png)`
+* Panel gráfico (Charts) con posibilidad de descarga en Excel o PDF[cite: 228]. Incluye:
+* Log de ingresos al sistema[cite: 221].
+* Cantidad de turnos por especialidad y por día[cite: 224, 225].
+* Informes de turnos solicitados y finalizados por médico[cite: 226, 227].
 
----
+![Pantalla Estadísticas](ruta/a/tu/imagen_estadisticas.png)
 
 ## Características Técnicas Adicionales
-* [cite_start]**Animaciones:** Transiciones entre componentes (mínimo 6 aplicadas)[cite: 245].
-* [cite_start]**Directivas y Pipes:** Personalizados para mejorar la UX/UI[cite: 217, 218].
-* [cite_start]**Captcha Propio:** Implementado como directiva reutilizable[cite: 236].
-* [cite_start]**Multilenguaje (Sprint 6):** Soporte para Español, Inglés y Portugués[cite: 254, 255].
-* [cite_start]**Encuestas:** Sistema de encuestas de satisfacción con diversos controles[cite: 262].
+**Animaciones:** Transiciones entre componentes (mínimo 6 aplicadas)[cite: 245].
 
----
+**Directivas y Pipes:** Personalizados para mejorar la UX/UI[cite: 217, 218].
+
+**Captcha Propio:** Implementado como directiva reutilizable[cite: 236].
+
+**Multilenguaje (Sprint 6):** Soporte para Español, Inglés y Portugués[cite: 254, 255].
+
+**Encuestas:** Sistema de encuestas de satisfacción con diversos controles[cite: 262].
 
 ### 🛠 Tecnologías Utilizadas
-* **Frontend:** Angular (Framework).
-* **Base de Datos:** Firebase (Firestore).
-* **Almacenamiento:** Firebase Storage (Imágenes de perfil).
-* **Autenticación:** Firebase Auth.
-* **Librerías:** `chart.js` (Gráficos), `jspdf` (Reportes), `xlsx` (Excel).
+* **Frontend:** Angular (Framework)
+
+**Base de Datos:** Firebase (Firestore).
+
+**Almacenamiento:** Firebase Storage (Imágenes de perfil)
+
+**Autenticación:** Firebase Auth.
+
+**Librerías:** `chart.js` (Gráficos), `jspdf` (Reportes), `xlsx` (Excel)
+
+
   
