@@ -1,160 +1,87 @@
-# Clínica Online – Guía de Uso
+# Clínica Online - Sistema de Gestión de Turnos
 
-Aplicación Angular 18 integrada con Supabase para gestionar turnos, historias clínicas y estadísticas. Esta guía resume únicamente lo necesario para levantar el proyecto y probarlo.
-
----
-
-## Requisitos
-- Node.js ≥ 18
-- npm (se recomienda v10)
-- Proyecto Supabase (cloud o CLI)
+Este proyecto es una aplicación web desarrollada en **Angular** como trabajo final para la materia **Laboratorio de Computación IV** de la **UTN Avellaneda**. El sistema permite la gestión integral de una clínica, administrando pacientes, especialistas y turnos médicos con flujos diferenciados por rol.
 
 ---
 
-## Instalación y ejecución
+## Funcionalidades y Pantallas
 
-```bash
-git clone <url-del-repo>
-cd clinica-2025-recur
-npm install
+### 1. Acceso y Seguridad (Sprint 1)
+[cite_start]La aplicación cuenta con una **Página de Bienvenida** con accesos rápidos[cite: 31]. [cite_start]El sistema de autenticación incluye verificación de email y aprobación administrativa para especialistas[cite: 60, 67].
 
-# Configurar credenciales en src/environments/environment*.ts
-# ver sección Supabase
+#### Login y Registro
+  **Registro de Pacientes:** Se capturan datos personales, obra social y dos imágenes de perfil
+  **Registro de Especialistas:** Permite seleccionar o añadir especialidades dinámicamente
+  **Captcha:** Implementado en los registros para mayor seguridad
 
-npm start            # abre en http://localhost:4200
-# Otra opción de puerto:
-npm start -- --port 4201
-```
+> `![Pantalla de Login y Registro](assets/imagenes_clinica/usuarios/login.jpg)`
 
 ---
 
-## Configuración Supabase
+### 2. Módulo de Pacientes (Sprint 2 & 3)
+Los pacientes pueden gestionar su atención médica de forma autónoma.
 
-1. Crear un proyecto en [supabase.com](https://supabase.com) o iniciar Supabase CLI (`supabase start`).
-2. Copiar `supabaseUrl` y `supabaseKey` (anon) en:
-   - `src/environments/environment.ts`
-   - `src/environments/environment.prod.ts`
-3. (Opcional) Si usás CLI, ejecutar migraciones/seeds necesarias:
-   ```bash
-   supabase db push
-   ```
-4. Variables esperadas:
-   ```ts
-   export const environment = {
-     supabaseUrl: 'https://<tu-id>.supabase.co',
-     supabaseKey: '<anon key>',
-     captchaEnabled: true,
-     quickLogins: { ... }   // ver siguiente sección
-   };
-   ```
+#### Solicitar Turno
+[cite_start]Un asistente paso a paso (wizard) permite seleccionar especialidad, médico y horario disponible (próximos 15 días), sin utilizar `combobox` y con validaciones de disponibilidad[cite: 159, 160, 164].
+
+> `![Pantalla Solicitar Turno](ruta/a/tu/imagen_solicitar_turno.png)`
+
+#### Mis Turnos y Perfil
+* [cite_start]Visualización de turnos con filtro único (por especialidad o especialista)[cite: 96, 97].
+* [cite_start]Acciones disponibles: Cancelar turno, ver reseña, completar encuesta y calificar atención[cite: 101, 102, 106].
+* [cite_start]**Perfil:** Descarga de **Historia Clínica en PDF** con logo de la clínica[cite: 183, 184].
+
+> `![Pantalla Mis Turnos Paciente](ruta/a/tu/imagen_mis_turnos_paciente.png)`
 
 ---
 
-## Accesos rápidos (dev)
+### 3. Módulo de Especialistas (Sprint 2 & 3)
+Los médicos cuentan con herramientas para administrar su agenda y pacientes.
 
-Los botones de acceso rápido completan el login con cuentas demo definidas en `environment.quickLogins`. Valores actuales:
+#### Gestión de Turnos y Agenda
+* [cite_start]**Mis Horarios:** El especialista define su disponibilidad horaria por especialidad[cite: 175, 176].
+* [cite_start]**Administración de Turnos:** Permite Aceptar, Rechazar o Finalizar turnos dejando reseñas diagnósticas[cite: 120, 134, 136].
 
-```ts
-paciente: [
-  { email: 'paciente@test.com', password: 'Paciente123', nombre: 'Paciente Demo' },
-  { email: 'marcela.rodriguez@test.com', password: 'Paciente123' },
-  { email: 'andres.lopez@test.com', password: 'Paciente123' }
-],
-especialista: [
-  { email: 'especialista@test.com', password: 'Especialista123' },
-  { email: 'jorge.perez@test.com', password: 'Especialista123' }
-],
-admin: [
-  { email: 'admin@test.com', password: 'Admin123' }
-]
-```
+> `![Pantalla Gestión Especialista](ruta/a/tu/imagen_gestion_especialista.png)`
 
-Editar los environments si necesitás otros usuarios.
+#### Carga de Historia Clínica
+[cite_start]Al finalizar un turno, el especialista carga la historia clínica compuesta por datos fijos (altura, peso, temperatura, presión) y datos dinámicos variables[cite: 192, 195, 202].
+
+> `![Pantalla Historia Clínica](ruta/a/tu/imagen_historia_clinica.png)`
 
 ---
 
-## Scripts npm útiles
+### 4. Módulo de Administración (Sprint 1 & 4)
+Panel de control exclusivo para gestionar la clínica.
 
-| Comando | Descripción |
-|---------|-------------|
-| `npm start` | Servidor de desarrollo |
-| `npm run build` | Build producción |
-| `npm test` | Pruebas unitarias |
-| `npm run lint` | Linter (ESLint) |
-| `npm run format` | Prettier |
+#### Gestión de Usuarios
+[cite_start]Visualización de todos los usuarios con capacidad de habilitar o inhabilitar el acceso a Especialistas[cite: 69, 72]. [cite_start]Incluye descarga de nómina en Excel[cite: 182].
 
----
+> `![Pantalla Sección Usuarios](ruta/a/tu/imagen_usuarios_admin.png)`
 
-## Problemas frecuentes
+#### Estadísticas e Informes
+[cite_start]Panel gráfico (Charts) con posibilidad de descarga en Excel o PDF[cite: 228]. Incluye:
+* [cite_start]Log de ingresos al sistema[cite: 221].
+* [cite_start]Cantidad de turnos por especialidad y por día[cite: 224, 225].
+* [cite_start]Informes de turnos solicitados y finalizados por médico[cite: 226, 227].
 
-- **Lock de Supabase en login**  
-  Cerrar pestañas duplicadas e intentar nuevamente (el API usa `navigator.locks`).
-
-- **Cambios que no refrescan**  
-  Hacer “Clear site data” en DevTools → Application → Storage o abrir en incógnito.
-
-- **Conexión fallida a Supabase**  
-  Revisar `supabaseUrl` y `supabaseKey` en los environments.
+> `![Pantalla Estadísticas](ruta/a/tu/imagen_estadisticas.png)`
 
 ---
 
-## Nota legal
-
-Proyecto académico con dependencias OSS. Revisar licencias de terceros antes de desplegar en producción.
-
-Editar `src/environments/environment.ts`:
-
-```typescript
-export const environment = {
-  production: false,
-  supabaseUrl: 'https://tuwlrspqlkpqatnaintx.supabase.co',
-  supabaseKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR1d2xyc3BxbGtwcWF0bmFpbnR4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU3NDcyOTEsImV4cCI6MjA3MTMyMzI5MX0.O5eawMd27SKifzyOvKp5fJZcvgBodxXA5LZWZdexRSA', // key pública (anon)
-  captchaEnabled: true, // Habilitar/deshabilitar captcha
-  quickLogins: { // Solo para desarrollo
-    paciente: { email: '...', password: '...' },
-    especialista: { email: '...', password: '...' },
-    admin: { email: '...', password: '...' }
-  }
-};
-```
-
-> Si necesitás volver al entorno local, seguí `SUPABASE_LOCAL_SETUP.md` y reemplazá `supabaseUrl`/`supabaseKey` por los de localhost. Para cloud, usá la CLI como se detalla debajo.
-
-### Supabase Cloud (CLI)
-
-```bash
-# 1) Token personal (Settings → Access Tokens)
-export SUPABASE_ACCESS_TOKEN=sbp_xxx
-
-# 2) Iniciar sesión y linkear proyecto
-supabase login
-supabase link --project-ref tuwlrspqlkpqatnaintx --password pU2jyBIb8rziRbOm
-
-# 3) Aplicar migraciones
-supabase db push
-
-# 4) Crear usuarios demo (usa service role)
-export SUPABASE_SERVICE_ROLE_KEY=<SERVICE_ROLE_KEY>
-curl -X POST "https://tuwlrspqlkpqatnaintx.supabase.co/auth/v1/admin/users" \
-  -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" \
-  -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"email":"paciente@test.com","password":"Paciente123","email_confirm":true}'
-# repetir para especialista/admin
-```
-
-Usuarios ya preconfigurados en cloud:
-
-- Paciente: `paciente@test.com / Paciente123`
-- Especialista (aprobado): `especialista@test.com / Especialista123`
-- Admin: `admin@test.com / Admin123`
+## Características Técnicas Adicionales
+* [cite_start]**Animaciones:** Transiciones entre componentes (mínimo 6 aplicadas)[cite: 245].
+* [cite_start]**Directivas y Pipes:** Personalizados para mejorar la UX/UI[cite: 217, 218].
+* [cite_start]**Captcha Propio:** Implementado como directiva reutilizable[cite: 236].
+* [cite_start]**Multilenguaje (Sprint 6):** Soporte para Español, Inglés y Portugués[cite: 254, 255].
+* [cite_start]**Encuestas:** Sistema de encuestas de satisfacción con diversos controles[cite: 262].
 
 ---
 
-## 📝 Scripts Disponibles
-
-```bash
-npm start          # Servidor de desarrollo (puerto 4200)
-npm run build      # Build de producción
-npm test           # Ejecutar tests
-```
+### 🛠 Tecnologías Utilizadas
+* **Frontend:** Angular (Framework).
+* **Base de Datos:** Firebase (Firestore).
+* **Almacenamiento:** Firebase Storage (Imágenes de perfil).
+* **Autenticación:** Firebase Auth.
+* **Librerías:** `chart.js` (Gráficos), `jspdf` (Reportes), `xlsx` (Excel).
+  
