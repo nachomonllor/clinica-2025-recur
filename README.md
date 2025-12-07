@@ -33,14 +33,25 @@ La aplicación cuenta con una **Página de Bienvenida** con accesos rápidos. El
 Los pacientes pueden gestionar su atención médica de forma autónoma.
 
 #### Solicitar Turno
-[cite_start]Un asistente paso a paso (wizard) permite seleccionar especialidad, médico y horario disponible (próximos 15 días), sin utilizar `combobox` y con validaciones de disponibilidad[cite: 159, 160, 164].
+
+Un asistente paso a paso (wizard) permite seleccionar especialidad, médico y horario disponible (próximos 15 días), sin utilizar `combobox` y con validaciones de disponibilidad.
+
+![solicitar_turno_solo_aparecen_dias_horas_disponibles](https://github.com/user-attachments/assets/c3aced59-f616-4e2c-ab81-e772dea18d89)
+
+
+![solicitar_turno](https://github.com/user-attachments/assets/61d89142-7d88-49b6-aa12-ff93dac58b84)
+
+
+![solicitar_turno_solo_aparecen_los_especialistas_de_esa_especialidad](https://github.com/user-attachments/assets/2779d755-23fd-49bd-8193-9e99071e20e1)
 
 > `![Pantalla Solicitar Turno](ruta/a/tu/imagen_solicitar_turno.png)`
 
 #### Mis Turnos y Perfil
-* [cite_start]Visualización de turnos con filtro único (por especialidad o especialista)[cite: 96, 97].
-* [cite_start]Acciones disponibles: Cancelar turno, ver reseña, completar encuesta y calificar atención[cite: 101, 102, 106].
-* [cite_start]**Perfil:** Descarga de **Historia Clínica en PDF** con logo de la clínica[cite: 183, 184].
+* Visualización de turnos con filtro único (por especialidad o especialista)[cite: 96, 97].
+  ![mis_turnos_paciente](https://github.com/user-attachments/assets/01ef76e7-657b-451c-be02-dbdd24ef2b04)
+
+* Acciones disponibles: Cancelar turno, ver reseña, completar encuesta y calificar atención[cite: 101, 102, 106].
+* **Perfil:** Descarga de **Historia Clínica en PDF** con logo de la clínica[cite: 183, 184].
 
 > `![Pantalla Mis Turnos Paciente](ruta/a/tu/imagen_mis_turnos_paciente.png)`
 
