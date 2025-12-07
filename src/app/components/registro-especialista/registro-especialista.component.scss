@@ -1,6 +1,16 @@
+mat-slide-toggle {
+    // Forzamos al host
+    color: white !important;
+    
+    // Penetramos la estructura interna específica de las nuevas versiones (MDC)
+    ::ng-deep .mdc-label {
+        color: white !important;
+        opacity: 1 !important; // A veces Material baja la opacidad
+    }
+}
 
 
-// 🎨 Paleta compartida (si ya la tenés global, podés borrar esto)
+//  Paleta compartida (si ya la tenés global, podés borrar esto)
 $login-primary: #3b82f6;
 $login-success: #22c55e;
 $bg-body: #020617;

@@ -59,7 +59,7 @@
 
         <mat-chip-listbox formControlName="especialidades" multiple aria-label="Selección de especialidades">
           <mat-chip-option *ngFor="let esp of especialidadesBase" [value]="esp" color="accent"
-            [selected]="especialidadesSeleccionadas.includes(esp)" 
+            [selected]="especialidadesSeleccionadas.includes(esp)"
             [disabled]="loading || (!especialidadesSeleccionadas.includes(esp) && especialidadesSeleccionadas.length >= maxEspecialidades)">
             <mat-icon matChipAvatar *ngIf="especialidadesSeleccionadas.includes(esp)">check</mat-icon>
             {{ esp }}
@@ -67,32 +67,31 @@
         </mat-chip-listbox>
 
         <div class="custom-specialty-wrapper" *ngIf="especialidadesSeleccionadas.includes('Otro')"
-             style="display: flex; gap: 10px; align-items: flex-start; margin-top: 15px;">
-          
+          style="display: flex; gap: 10px; align-items: flex-start; margin-top: 15px;">
+
           <mat-form-field appearance="outline" style="flex: 1;">
             <mat-label>Escribí la nueva especialidad</mat-label>
-            <input matInput 
-                   [formControl]="nuevaEspecialidadCtrl" 
-                   (keyup.enter)="agregarEspecialidadCustom()"
-                   placeholder="Ej: Traumatología" />
+            <input matInput [formControl]="nuevaEspecialidadCtrl" (keyup.enter)="agregarEspecialidadCustom()"
+              placeholder="Ej: Traumatología" />
             <mat-hint>Presioná Enter o el botón + para agregarla</mat-hint>
           </mat-form-field>
 
-          <button mat-mini-fab color="primary" type="button" 
-                  [disabled]="!nuevaEspecialidadCtrl.value || especialidadesSeleccionadas.length >= maxEspecialidades"
-                  (click)="agregarEspecialidadCustom()"
-                  style="margin-top: 4px;">
+          <button mat-mini-fab color="primary" type="button"
+            [disabled]="!nuevaEspecialidadCtrl.value || especialidadesSeleccionadas.length >= maxEspecialidades"
+            (click)="agregarEspecialidadCustom()" style="margin-top: 4px;">
             <mat-icon>add</mat-icon>
           </button>
         </div>
 
-        <mat-error *ngIf="especialidadesSeleccionadas.length >= maxEspecialidades && especialidadesSeleccionadas.includes('Otro')" 
-                   style="font-size: 0.75rem; margin-top: 5px; display: block;">
-            Límite alcanzado. Deseleccioná alguna para agregar una nueva.
+        <mat-error
+          *ngIf="especialidadesSeleccionadas.length >= maxEspecialidades && especialidadesSeleccionadas.includes('Otro')"
+          style="font-size: 0.75rem; margin-top: 5px; display: block;">
+          Límite alcanzado. Deseleccioná alguna para agregar una nueva.
         </mat-error>
 
         <div class="especialidades-error" *ngIf="f.get('especialidades')?.touched">
-          <span *ngIf="f.get('especialidades')?.hasError('required') || f.get('especialidades')?.hasError('minSelected')">
+          <span
+            *ngIf="f.get('especialidades')?.hasError('required') || f.get('especialidades')?.hasError('minSelected')">
             Seleccioná al menos una especialidad.
           </span>
         </div>
@@ -116,10 +115,11 @@
           <mat-icon>image</mat-icon>
           Subir Foto de Perfil
         </button>
-        
+
         <input #fileInput type="file" hidden (change)="onFileChange($any($event))" accept="image/*" />
 
-        <mat-error *ngIf="f.get('imagenPerfil')?.hasError('required') && f.get('imagenPerfil')?.touched" style="font-size: 0.75rem; margin-top: 5px;">
+        <mat-error *ngIf="f.get('imagenPerfil')?.hasError('required') && f.get('imagenPerfil')?.touched"
+          style="font-size: 0.75rem; margin-top: 5px;">
           La imagen es obligatoria.
         </mat-error>
 
@@ -128,31 +128,25 @@
         </div>
       </div>
 
-      <div style="margin: 20px 0 10px 0; display: flex; justify-content: flex-end;">
-        <mat-slide-toggle 
-            color="warn" 
-            [checked]="!captchaEnabled" 
-            (change)="toggleCaptcha()">
-            Desactivar Captcha (Modo Pruebas)
-        </mat-slide-toggle>
-      </div>
+      <mat-slide-toggle color="warn" [checked]="!captchaEnabled" (change)="toggleCaptcha()">
+
+        <span style="color: #ffffff !important; opacity: 1; font-weight: 500;">
+          Desactivar Captcha (Modo Pruebas)
+        </span>
+      </mat-slide-toggle>
 
       <div class="captcha-wrapper" style="margin: 1rem 0;" *ngIf="captchaEnabled">
-        <ngx-recaptcha2 
-          formControlName="recaptcha" 
-          [siteKey]="siteKey" 
-          (success)="onCaptchaValid(true)"
-          (expire)="registroForm.get('recaptcha')?.reset(); onCaptchaValid(false)" 
-          (error)="onCaptchaValid(false)">
+        <ngx-recaptcha2 formControlName="recaptcha" [siteKey]="siteKey" (success)="onCaptchaValid(true)"
+          (expire)="registroForm.get('recaptcha')?.reset(); onCaptchaValid(false)" (error)="onCaptchaValid(false)">
         </ngx-recaptcha2>
 
         <mat-error *ngIf="f.get('recaptcha')?.invalid && f.get('recaptcha')?.touched">
           Debes completar el captcha.
         </mat-error>
-        
-        <div *ngIf="registroForm.get('recaptcha')?.touched && !captchaValido" 
-             style="color: #f44336; font-size: 0.8rem; margin-top: 5px;">
-             El captcha expiró o es inválido.
+
+        <div *ngIf="registroForm.get('recaptcha')?.touched && !captchaValido"
+          style="color: #f44336; font-size: 0.8rem; margin-top: 5px;">
+          El captcha expiró o es inválido.
         </div>
       </div>
 
