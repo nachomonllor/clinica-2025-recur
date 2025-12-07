@@ -1,65 +1,87 @@
-# Clínica Online - Laboratorio de Computación IV
+# Clínica Online - Sistema de Gestión de Turnos
 
-Este proyecto es una aplicación web Single Page Application desarrollada en **Angular** para la gestión de una clínica médica. El sistema permite la administración de usuarios, gestión de turnos médicos, historias clínicas y reportes estadísticos.
-
-## Funcionalidades Principales
-
-### [cite_start] Módulo de Usuarios [cite: 25, 33, 59]
-* **Registro:**
-    * Pacientes (con carga de imágenes de perfil).
-    * Especialistas (requieren aprobación del administrador).
-* **Login:** Validación de email verificado y aprobación administrativa (para especialistas).
-**Captcha:** Implementación propia y/o servicio externo para seguridad en registros.
-
-### [cite_start] Gestión de Turnos 
-* [cite_start]**Solicitud:** Filtros por especialidad y médico (sin usar combobox, con selección visual)
-* **Estados:** Los turnos pasan por estados: Pendiente, Aceptado, Rechazado, Cancelado, Realizado.
-* **Acciones:**
-     **Paciente:** Cancelar, Ver Reseña, Completar Encuesta, Calificar Atención[cite: 94].
-     **Especialista:** Rechazar, Aceptar, Finalizar (con carga de historia clínica), Ver Reseña[cite: 114].
-     **Admin:** Cancelar turnos, Solicitar turnos para terceros[cite: 146].
-
-### [cite_start] Historia Clínica y Reportes [cite: 186, 220]
-* [cite_start]Carga de datos fijos (Altura, Peso, Temperatura, Presión) y dinámicos[cite: 195].
-* [cite_start]Descarga de **Historia Clínica en PDF** con logo de la clínica[cite: 183].
-* [cite_start]Exportación de listas de usuarios a Excel[cite: 182].
-
-### [cite_start]📊 Estadísticas y Gráficos [cite: 219]
-Panel administrativo con gráficos interactivos (ApexCharts/Chart.js) descargables en PDF/Excel:
-* [cite_start]Logs de ingreso al sistema[cite: 221].
-* [cite_start]Turnos por especialidad y por día[cite: 224, 225].
-* [cite_start]Turnos solicitados/finalizados por médico[cite: 226, 227].
+[cite_start]Este proyecto es una aplicación web desarrollada en **Angular** como trabajo final para la materia **Laboratorio de Computación IV** de la **UTN Avellaneda**[cite: 1, 3]. El sistema permite la gestión integral de una clínica, administrando pacientes, especialistas y turnos médicos con flujos diferenciados por rol.
 
 ---
 
-## 📷 Galería de Pantallas
+## Funcionalidades y Pantallas
 
-### 1. Bienvenida y Login
-*Acceso principal al sistema.*
-![Pantalla Login](src/assets/imagenes_clinica/USUARIO_A_DEFINIR/login.jpg)
+### 1. Acceso y Seguridad (Sprint 1)
+[cite_start]La aplicación cuenta con una **Página de Bienvenida** con accesos rápidos[cite: 31]. [cite_start]El sistema de autenticación incluye verificación de email y aprobación administrativa para especialistas[cite: 60, 67].
 
-### 2. Registro de Usuarios
-*Alta de Pacientes y Especialistas con validaciones.*
-![Registro](src/assets/imagenes_clinica/USUARIO_A_DEFINIR/seleccion_registro.jpg)
+#### Login y Registro
+* [cite_start]**Registro de Pacientes:** Se capturan datos personales, obra social y dos imágenes de perfil[cite: 36, 45].
+* [cite_start]**Registro de Especialistas:** Permite seleccionar o añadir especialidades dinámicamente[cite: 53, 55].
+* [cite_start]**Captcha:** Implementado en los registros para mayor seguridad[cite: 88].
 
-### 3. Solicitud de Turnos
-*Selección de especialidad y profesional con horarios dinámicos.*
-![Solicitar Turno](src/assets/imagenes_clinica/USUARIO_A_DEFINIR/solicitar_turno.jpg)
-
-### 4. Dashboard de Turnos (Paciente/Especialista)
-*Listado de turnos con filtros y acciones rápidas.*
-![Mis Turnos](src/assets/imagenes_clinica/USUARIO_A_DEFINIR/mis_turnos.jpg)
-
-### 5. Panel de Estadísticas
-*Gráficos para el administrador.*
-![Estadísticas](src/assets/imagenes_clinica/USUARIO_A_DEFINIR/estadisticas.jpg)
+> `![Pantalla de Login y Registro](ruta/a/tu/imagen_login_registro.png)`
 
 ---
 
-## 🛠️ Tecnologías Utilizadas
-* **Framework:** Angular 17+
-* **Base de Datos / Backend:** Firebase (Firestore, Auth, Storage)
-* **Diseño:** Angular Material, SCSS, Animaciones.
-* **Librerías Extra:** * `jspdf` & `html2canvas` (PDFs)
-    * `ng-apexcharts` (Gráficos)
-    * `xlsx` (Excel)
+### 2. Módulo de Pacientes (Sprint 2 & 3)
+Los pacientes pueden gestionar su atención médica de forma autónoma.
+
+#### Solicitar Turno
+[cite_start]Un asistente paso a paso (wizard) permite seleccionar especialidad, médico y horario disponible (próximos 15 días), sin utilizar `combobox` y con validaciones de disponibilidad[cite: 159, 160, 164].
+
+> `![Pantalla Solicitar Turno](ruta/a/tu/imagen_solicitar_turno.png)`
+
+#### Mis Turnos y Perfil
+* [cite_start]Visualización de turnos con filtro único (por especialidad o especialista)[cite: 96, 97].
+* [cite_start]Acciones disponibles: Cancelar turno, ver reseña, completar encuesta y calificar atención[cite: 101, 102, 106].
+* [cite_start]**Perfil:** Descarga de **Historia Clínica en PDF** con logo de la clínica[cite: 183, 184].
+
+> `![Pantalla Mis Turnos Paciente](ruta/a/tu/imagen_mis_turnos_paciente.png)`
+
+---
+
+### 3. Módulo de Especialistas (Sprint 2 & 3)
+Los médicos cuentan con herramientas para administrar su agenda y pacientes.
+
+#### Gestión de Turnos y Agenda
+* [cite_start]**Mis Horarios:** El especialista define su disponibilidad horaria por especialidad[cite: 175, 176].
+* [cite_start]**Administración de Turnos:** Permite Aceptar, Rechazar o Finalizar turnos dejando reseñas diagnósticas[cite: 120, 134, 136].
+
+> `![Pantalla Gestión Especialista](ruta/a/tu/imagen_gestion_especialista.png)`
+
+#### Carga de Historia Clínica
+[cite_start]Al finalizar un turno, el especialista carga la historia clínica compuesta por datos fijos (altura, peso, temperatura, presión) y datos dinámicos variables[cite: 192, 195, 202].
+
+> `![Pantalla Historia Clínica](ruta/a/tu/imagen_historia_clinica.png)`
+
+---
+
+### 4. Módulo de Administración (Sprint 1 & 4)
+Panel de control exclusivo para gestionar la clínica.
+
+#### Gestión de Usuarios
+[cite_start]Visualización de todos los usuarios con capacidad de habilitar o inhabilitar el acceso a Especialistas[cite: 69, 72]. [cite_start]Incluye descarga de nómina en Excel[cite: 182].
+
+> `![Pantalla Sección Usuarios](ruta/a/tu/imagen_usuarios_admin.png)`
+
+#### Estadísticas e Informes
+[cite_start]Panel gráfico (Charts) con posibilidad de descarga en Excel o PDF[cite: 228]. Incluye:
+* [cite_start]Log de ingresos al sistema[cite: 221].
+* [cite_start]Cantidad de turnos por especialidad y por día[cite: 224, 225].
+* [cite_start]Informes de turnos solicitados y finalizados por médico[cite: 226, 227].
+
+> `![Pantalla Estadísticas](ruta/a/tu/imagen_estadisticas.png)`
+
+---
+
+## Características Técnicas Adicionales
+* [cite_start]**Animaciones:** Transiciones entre componentes (mínimo 6 aplicadas)[cite: 245].
+* [cite_start]**Directivas y Pipes:** Personalizados para mejorar la UX/UI[cite: 217, 218].
+* [cite_start]**Captcha Propio:** Implementado como directiva reutilizable[cite: 236].
+* [cite_start]**Multilenguaje (Sprint 6):** Soporte para Español, Inglés y Portugués[cite: 254, 255].
+* [cite_start]**Encuestas:** Sistema de encuestas de satisfacción con diversos controles[cite: 262].
+
+---
+
+### 🛠 Tecnologías Utilizadas
+* **Frontend:** Angular (Framework).
+* **Base de Datos:** Firebase (Firestore).
+* **Almacenamiento:** Firebase Storage (Imágenes de perfil).
+* **Autenticación:** Firebase Auth.
+* **Librerías:** `chart.js` (Gráficos), `jspdf` (Reportes), `xlsx` (Excel).
+  
