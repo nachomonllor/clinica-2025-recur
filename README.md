@@ -7,29 +7,51 @@ Este proyecto es una aplicación web desarrollada en **Angular** como trabajo fi
 ## Funcionalidades y Pantallas
 
 ### 1. Acceso y Seguridad (Sprint 1)
-[cite_start]La aplicación cuenta con una **Página de Bienvenida** con accesos rápidos[cite: 31]. [cite_start]El sistema de autenticación incluye verificación de email y aprobación administrativa para especialistas[cite: 60, 67].
+La aplicación cuenta con una **Página de Bienvenida** con accesos rápidos. El sistema de autenticación incluye verificación de email y aprobación administrativa para especialistas
+
+
+![bienvenida](https://github.com/user-attachments/assets/85848919-d43a-40fc-a0ff-5682e6435df1)
+
 
 #### Login y Registro
   **Registro de Pacientes:** Se capturan datos personales, obra social y dos imágenes de perfil
+
+
+  ![registro_del_paciente](https://github.com/user-attachments/assets/698c4471-d866-4eed-8420-d1a77162a3f8)
+
   **Registro de Especialistas:** Permite seleccionar o añadir especialidades dinámicamente
+  ![registro_del_especialista](https://github.com/user-attachments/assets/5d20a719-21f5-4f42-a77f-9c5753d4937b)
+
   **Captcha:** Implementado en los registros para mayor seguridad
 
-> `![Pantalla de Login y Registro](assets/imagenes_clinica/usuarios/login.jpg)`
 
----
 
-### 2. Módulo de Pacientes (Sprint 2 & 3)
+---![login](https://github.com/user-attachments/assets/a182623e-1525-48ae-bcfe-5c6a787a3560)
+
+
+### 2. Módulo de Pacientes 
 Los pacientes pueden gestionar su atención médica de forma autónoma.
 
 #### Solicitar Turno
-[cite_start]Un asistente paso a paso (wizard) permite seleccionar especialidad, médico y horario disponible (próximos 15 días), sin utilizar `combobox` y con validaciones de disponibilidad[cite: 159, 160, 164].
+
+Un asistente paso a paso permite seleccionar especialidad, médico y horario disponible (próximos 15 días), con validaciones de disponibilidad.
+
+![solicitar_turno_solo_aparecen_dias_horas_disponibles](https://github.com/user-attachments/assets/c3aced59-f616-4e2c-ab81-e772dea18d89)
+
+
+![solicitar_turno](https://github.com/user-attachments/assets/61d89142-7d88-49b6-aa12-ff93dac58b84)
+
+
+![solicitar_turno_solo_aparecen_los_especialistas_de_esa_especialidad](https://github.com/user-attachments/assets/2779d755-23fd-49bd-8193-9e99071e20e1)
 
 > `![Pantalla Solicitar Turno](ruta/a/tu/imagen_solicitar_turno.png)`
 
 #### Mis Turnos y Perfil
-* [cite_start]Visualización de turnos con filtro único (por especialidad o especialista)[cite: 96, 97].
-* [cite_start]Acciones disponibles: Cancelar turno, ver reseña, completar encuesta y calificar atención[cite: 101, 102, 106].
-* [cite_start]**Perfil:** Descarga de **Historia Clínica en PDF** con logo de la clínica[cite: 183, 184].
+* Visualización de turnos con filtro único (por especialidad o especialista)[cite: 96, 97].
+  ![mis_turnos_paciente](https://github.com/user-attachments/assets/01ef76e7-657b-451c-be02-dbdd24ef2b04)
+
+* Acciones disponibles: Cancelar turno, ver reseña, completar encuesta y calificar atención[cite: 101, 102, 106].
+* **Perfil:** Descarga de **Historia Clínica en PDF** con logo de la clínica[cite: 183, 184].
 
 > `![Pantalla Mis Turnos Paciente](ruta/a/tu/imagen_mis_turnos_paciente.png)`
 
