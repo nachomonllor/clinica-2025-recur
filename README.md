@@ -89,13 +89,16 @@ Panel de control exclusivo para gestionar la clínica.
 * Panel gráfico (Charts) con posibilidad de descarga en Excel o PDFIncluye:
 
 * Log de ingresos al sistema:
+![log de ingresos](src/assets/imagenes_clinica/admin/log_ingresos.jpg)`
 
-* Cantidad de turnos por especialidad y por día:
+* Cantidad de turnos por especialidad:
+
+* Cantidad de turnos por dia:
 
 * Informes de turnos solicitados y finalizados por médico:
 
 
-![Pantalla Estadísticas](ruta/a/tu/imagen_estadisticas.png)
+![Seleccion estadisticas](src/assets/imagenes_clinica/admin/seleccion_estadisticas.jpg)
 
 ## Características Técnicas Adicionales
 **Animaciones:** Transiciones entre componentes (mínimo 6 aplicadas)
