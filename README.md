@@ -9,25 +9,20 @@ Este proyecto es una aplicación web desarrollada en **Angular** como trabajo fi
 ### 1. Acceso y Seguridad (Sprint 1)
 La aplicación cuenta con una **Página de Bienvenida** con accesos rápidos. El sistema de autenticación incluye verificación de email y aprobación administrativa para especialistas
 
-
 ![bienvenida](src/assets/imagenes_clinica/usuarios/bienvenida.jpg)
-
 
 #### Login y Registro
   **Registro de Pacientes:** Se capturan datos personales, obra social y dos imágenes de perfil
 
-
   ![registro_del_paciente](src/assets/imagenes_clinica/usuarios/registro_del_paciente.jpg)
 
-  **Registro de Especialistas:** Permite seleccionar o añadir especialidades dinámicamente
+  **Registro de Especialistas:** Permite seleccionar o añadir especialidades dinámicamente:
+
   ![registro_del_especialista](src/assets/imagenes_clinica/usuarios/registro_del_especialista.jpg)
 
   **Captcha:** Implementado en los registros para mayor seguridad
 
-
-
 ---![login](src/assets/imagenes_clinica/usuarios/login.jpg)
-
 
 ### 2. Módulo de Pacientes 
 Los pacientes pueden gestionar su atención médica de forma autónoma.
@@ -82,23 +77,34 @@ Panel de control exclusivo para gestionar la clínica.
 
 * Incluye descarga de nómina en Excel
 
-![Pantalla Sección Usuarios](src/assets/imagenes_clinica/admin/usuarios_admin.jpg)`
+![Pantalla Sección Usuarios](src/assets/imagenes_clinica/admin/usuarios_admin.jpg)
+
+
 
 #### Estadísticas e Informes
+
+Pantalla de seleccion de estadisticas:
+
+![Seleccion estadisticas](src/assets/imagenes_clinica/admin/seleccion_estadisticas.jpg)
 
 * Panel gráfico (Charts) con posibilidad de descarga en Excel o PDFIncluye:
 
 * Log de ingresos al sistema:
-![log de ingresos](src/assets/imagenes_clinica/admin/log_ingresos.jpg)`
+![log de ingresos](src/assets/imagenes_clinica/admin/log_ingresos.jpg)
 
 * Cantidad de turnos por especialidad:
+![Turnos por especialidad](src/assets/imagenes_clinica/admin/estadisticas/turnos_por_especialidad.jpg)
 
 * Cantidad de turnos por dia:
+![Turnos por dia](src/assets/imagenes_clinica/admin/estadisticas/estadisticas_turnos_por_dia.jpg)
 
 * Informes de turnos solicitados y finalizados por médico:
+![Informes de turnos solicitados y finalizados por medico](src/assets/imagenes_clinica/admin/estadisticas/estadisticas_turnos_por_medico.jpg)
+
+* Turnos por especialidad:
+![Informes de turnos por especialidad](src/assets/imagenes_clinica/admin/estadisticas/turnos_por_especialidad.jpg)
 
 
-![Seleccion estadisticas](src/assets/imagenes_clinica/admin/seleccion_estadisticas.jpg)
 
 ## Características Técnicas Adicionales
 **Animaciones:** Transiciones entre componentes (mínimo 6 aplicadas)
@@ -111,13 +117,11 @@ Panel de control exclusivo para gestionar la clínica.
 
 **Encuestas:** Sistema de encuestas de satisfacción con diversos controles
 
-### 🛠 Tecnologías Utilizadas
-* **Frontend:** Angular (Framework)
+### Tecnologías Utilizadas:
 
+**Frontend:** Angular (Framework)
 **Base de Datos:** Supabase
-
 **Almacenamiento:** Supabase Storage 
-
 **Librerías:** `chart.js` (Gráficos), `jspdf` (Reportes), `xlsx` (Excel)
 
 
