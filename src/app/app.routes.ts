@@ -81,13 +81,7 @@ export const routes: Routes = [
         loadComponent: () => import('./components/pacientes-especialista/pacientes-especialista.component').then(m => m.PacientesEspecialistaComponent),
         data: { roles: ['ESPECIALISTA'] }
       },
-      // {
-      //   path: 'listar-pacientes',
-      //   canActivate: [RoleGuard],
-      //   // Generalmente para especialistas o admin
-      //   loadComponent: () => import('./components/listar-pacientes/listar-pacientes.component').then(m => m.ListarPacientesComponent),
-      //   data: { roles: ['ESPECIALISTA', 'ADMIN'] }
-      // },
+
       {
         path: 'resenia-especialista',
         canActivate: [RoleGuard],
@@ -198,13 +192,7 @@ export const routes: Routes = [
         loadComponent: () => import('./components/mi-perfil/mi-perfil.component').then(m => m.MiPerfilComponent),
         data: { animation: 'miPerfil', roles: ['PACIENTE', 'ESPECIALISTA', 'ADMIN'] }
       },
-      // {
-      //   path: 'listar-especialistas',
-      //   canActivate: [RoleGuard],
-      //   // Puede que el paciente quiera ver lista de especialistas o el admin
-      //   loadComponent: () => import('./components/listar-especialistas/listar-especialistas.component').then(m => m.ListarEspecialistasComponent),
-      //   data: { roles: ['PACIENTE', 'ADMIN'] }
-      // }
+
     ]
   },
 
