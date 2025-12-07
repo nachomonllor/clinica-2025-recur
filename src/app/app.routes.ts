@@ -26,20 +26,11 @@ export const routes: Routes = [
     path: 'registro-especialista',
     loadComponent: () => import('./components/registro-especialista/registro-especialista.component').then(m => m.RegistroEspecialistaComponent)
   },
-  // {
-  //   path: 'seleccionar-usuario',
-  //   loadComponent: () => import('./components/seleccionar-usuario/seleccionar-usuario.component').then(m => m.SeleccionarUsuarioComponent)
-  // },
-  // {
-  //   path: 'seleccionar-usuario-login',
-  //   loadComponent: () => import('./components/seleccionar-usuario-login/seleccionar-usuario-login.component').then(m => m.SeleccionarUsuarioLoginComponent)
-  // },
+
   {
     path: 'seleccionar-usuario-registro',
     loadComponent: () => import('./components/seleccionar-usuario-registro/seleccionar-usuario-registro.component').then(m => m.SeleccionarUsuarioRegistroComponent)
   },
-
-
   // Le agregamos el Guard porque solo el especialista debe verla.
   {
     path: 'mis-horarios-especialista',
@@ -68,13 +59,7 @@ export const routes: Routes = [
         loadComponent: () => import('./components/solicitar-turno/solicitar-turno.component').then(m => m.SolicitarTurnoComponent),
         data: { roles: ['PACIENTE', 'ADMIN'] }
       },
-      {
-        path: 'historia-clinica',
-        canActivate: [RoleGuard],
-        // El especialista la carga, el paciente la ve.
-        loadComponent: () => import('./components/historia-clinica/historia-clinica.component').then(m => m.HistoriaClinicaComponent),
-        data: { roles: ['PACIENTE', 'ESPECIALISTA'] }
-      },
+
       {
         path: 'encuesta-atencion',
         canActivate: [RoleGuard],
@@ -192,12 +177,6 @@ export const routes: Routes = [
         loadComponent: () => import('./components/informes-generales/informes-generales.component').then(m => m.InformesGeneralesComponent),
         data: { roles: ['ADMIN'] }
       },
-      // {
-      //   path: 'turnos-especialidad',
-      //   canActivate: [RoleGuard],
-      //   loadComponent: () => import('./components/turnos-especialidad/turnos-especialidad.component').then(m => m.TurnosEspecialidadComponent),
-      //   data: { roles: ['ADMIN'] }
-      // },
       {
         path: 'turnos-por-paciente',
         canActivate: [RoleGuard],
