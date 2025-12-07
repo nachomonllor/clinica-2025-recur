@@ -83,7 +83,7 @@ Accesos directos a **Login** y **Registro**.
 Formulario para crear cuentas de **Paciente** y **Especialista** (con validaciones). El especialista puede **elegir o crear** su especialidad.  
 
 ### 3) **Login**
-![Pantalla de Login](.assets/imagenes_clinica/USUARIO_A_DEFINIR/login.jpg)
+![Pantalla de Login](src/assets/imagenes_clinica/USUARIO_A_DEFINIR/login.jpg)
 
 Permite ingresar al sistema. Incluye **botones de acceso rápido**. (Requiere email verificado; además, el Especialista necesita **aprobación de Administrador**). 
 
