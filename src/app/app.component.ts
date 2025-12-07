@@ -2,16 +2,16 @@ import { Component } from '@angular/core';
 import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { slideInAnimation, fadeInAnimation } from './animations';
 import { filter } from 'rxjs/operators';
-import { MainNavComponent } from './components/main-nav/main-nav.component';
+import { fadeAnimation } from './route-animations';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, MainNavComponent],
+  imports: [RouterOutlet],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
-  animations: [slideInAnimation, fadeInAnimation]
-})
+  animations: [slideInAnimation, fadeInAnimation, fadeAnimation]
+})  
 export class AppComponent {
   title = 'clinica-online';
 
@@ -27,4 +27,6 @@ export class AppComponent {
   prepareRoute(outlet: RouterOutlet) {
     return outlet && outlet.activatedRouteData && outlet.activatedRouteData['animation'];
   }
+
+
 }

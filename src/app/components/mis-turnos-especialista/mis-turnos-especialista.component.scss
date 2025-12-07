@@ -561,3 +561,55 @@
     color: white !important;
   }
 }
+
+
+/* === Estilos para los Diálogos (Cancelar, Rechazar, etc) === */
+::ng-deep .mat-mdc-dialog-container {
+  /* Forzamos que el fondo del diálogo sea oscuro (azul grisáceo profundo) */
+  --mdc-dialog-container-color: #1e293b; 
+
+  /* Títulos en blanco brillante */
+  .mat-mdc-dialog-title {
+    color: #ffffff !important;
+    font-weight: 600;
+  }
+
+  /* Contenido general en gris muy claro */
+  .mat-mdc-dialog-content {
+    color: #e2e8f0 !important;
+
+    p {
+      color: #e2e8f0; /* Asegura que los párrafos hereden el color */
+      margin-bottom: 8px;
+    }
+
+    /* Resaltamos las etiquetas (Paciente, Especialidad) en dorado/ámbar */
+    strong {
+      color: #fbbf24; 
+      font-weight: 600;
+    }
+  }
+
+  /* Botón de "Cancelar" (el simple) en gris claro */
+  .mat-mdc-dialog-actions button:not(.mat-mdc-raised-button) {
+    color: #cbd5e1 !important;
+  }
+}
+
+/* Ajuste extra para el textarea dentro del diálogo */
+::ng-deep .mat-mdc-dialog-content {
+  .mat-mdc-form-field {
+    width: 100%;
+    margin-top: 10px;
+    
+    /* Color del texto dentro del input/textarea */
+    textarea {
+      color: #ffffff !important;
+    }
+    
+    /* Color del label flotante */
+    .mat-mdc-floating-label {
+      color: #94a3b8 !important;
+    }
+  }
+}

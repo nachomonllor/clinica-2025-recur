@@ -42,3 +42,13 @@ $color-bg-soft: #0b1120;
 .mat-mdc-dialog-content { 
     color: #e2e8f0 !important; 
 }
+
+// Contenedor principal
+.page-centered {
+  min-height: 100vh;
+  display: block;
+  // Fondo base para que no se vea blanco al cambiar
+  background-color: #020617; 
+}
+
+

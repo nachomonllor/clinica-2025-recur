@@ -1,5 +1,14 @@
-
-
-<main class="page-centered">
-  <router-outlet></router-outlet> 
+<!-- <main class="page-centered" [@routeAnimations]="prepareRoute(outlet)">
+  <router-outlet #outlet="outlet"></router-outlet>
 </main>
+ -->
+
+<!-- <main class="page-centered">
+  <router-outlet></router-outlet> 
+</main>  -->
+
+<main [@routeAnimations]="prepareRoute(outlet)">
+  <router-outlet #outlet="outlet"></router-outlet>
+</main>
+
+
