@@ -30,7 +30,7 @@ Acceso rápido a los diferentes portales de la aplicación.
 **Inicio de Sesión:**
 Validación de credenciales con verificaciones de correo electrónico y aprobación administrativa (para especialistas).
 
-**Disponemos de accesos rapidos en la esquina inferior derecha**
+**Disponemos de accesos rapidos de los usuarios en la esquina inferior derecha**
 ![login](https://github.com/user-attachments/assets/e8ddb539-457f-4ce9-a4ec-3c5d6a1bac31)
 
 ---
