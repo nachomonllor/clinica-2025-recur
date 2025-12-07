@@ -29,73 +29,110 @@ La aplicación cuenta con una **Página de Bienvenida** con accesos rápidos. El
 **Un asistente paso a paso permite seleccionar especialidad, médico y horario disponible (próximos 15 días), con validaciones de disponibilidad.**
 
 **Solo aparecen horarios disponibles**
-![Solicitar_turno_horas_disponibles](src/assets/imagenes_clinica/paciente/solicitar_turno_solo_aparecen_dias_horas_disponibles.jpg)
+
+
+![solicitar_turno_solo_aparecen_dias_horas_disponibles](https://github.com/user-attachments/assets/5df4a061-0f01-42f2-83b7-3c786e8e4ee7)
+
 
 **El paciente puede solicitar un turno:**
 ![solicitar_turno](src/assets/imagenes_clinica/paciente/solicitar_turno.jpg)
 
 **Solo aparecen especialistas de la especialidad seleccionada:**
-![Solicitar_turno_especialistas_de_especialidad_seleccionada](src/assets/imagenes_clinica/paciente/solicitar_turno_solo_aparecen_los_especialistas_de_esa_especialidad.jpg)
+
+
+![solicitar_turno_solo_aparecen_los_especialistas_de_esa_especialidad](https://github.com/user-attachments/assets/b7c96f67-4af3-4087-846c-40b32ce28434)
 
 
 #### Mis Turnos y Perfil
 **Visualización de turnos con filtro único (por especialidad o especialista):**
 
-![mis_turnos_paciente](src/assets/imagenes_clinica/paciente/mis_turnos_paciente.jpg)
+
+![mis_turnos_paciente](https://github.com/user-attachments/assets/5c9fa59a-8b6f-4299-9478-3d503d568054)
+
 
 **Acciones disponibles: Cancelar turno, ver reseña, completar encuesta y calificar atención.**
 
 **Perfil: Descarga de Historia Clínica en PDF con logo de la clínica.**
 
-![Pantalla Mis Turnos Paciente](src/assets/imagenes_clinica/paciente/mis_turnos_paciente.jpg)
 
----
 
 ### 3. Seccion del especialista: 
-Los médicos cuentan con herramientas para administrar su agenda y pacientes.
 
-#### Gestión de Turnos y Agenda
-**Mis Horarios El especialista define su disponibilidad horaria por especialidad.**
-**Administración de Turnos Permite Aceptar, Rechazar o Finalizar turnos dejando reseñas diagnósticas.**
+![mis_pacientes](https://github.com/user-attachments/assets/2144bed0-7dbe-4176-b2c0-dd8192e104a3)
 
-![Pantalla Gestión Especialista](src/assets/imagenes_clinica/especialista/mis_pacientes.jpg)
 
-#### Carga de Historia Clínica
-**Al finalizar un turno, el especialista carga la historia clínica compuesta por datos fijos (altura, peso, temperatura, presión) y datos dinámicos variables.**
 
-![Pantalla Historia Clínica](src/assets/imagenes_clinica/especialista/historia_clinica_al_finalizar_turno.jpg)
 
----
+![cancelar_turno](https://github.com/user-attachments/assets/714bfc91-acc6-46a2-9680-771b3779df20)
+
+
+![filtro_por_resena](https://github.com/user-attachments/assets/64f163a9-a522-4c82-b15f-26deaa2e4903)
+
+
+![historia_clinica_al_finalizar_turno](https://github.com/user-attachments/assets/8aaa81bb-fd73-4c59-8741-fdc0d716dd3b)
+
+
+
+
+![historias_clinicas_de_cada_paciente](https://github.com/user-attachments/assets/171dc98b-0fc8-4bd7-a498-3a1086f79a46)
+
+
+
+
+
+![mis_pacientes](https://github.com/user-attachments/assets/3c830ec7-0450-4472-8bfd-8c9cc5c6c567)
+
+
+
+
+![resena_del_especialista](https://github.com/user-attachments/assets/cced1802-da38-4777-aa2c-fc4be9373556)
+
+
+
+
+![resena_del_paciente_estrellita](https://github.com/user-attachments/assets/3a53c660-6c4b-418a-942a-0a37481bd4b3)
+
+
+
 
 ### 4. Seccion del Administrador:
-**Panel de control exclusivo para gestionar la clínica.**
 
-#### Gestión de Usuarios
-**Visualización de todos los usuarios con capacidad de habilitar o inhabilitar el acceso a Especialistas. Incluye descarga de nómina en Excel.**
 
-![Pantalla Sección Usuarios](src/assets/imagenes_clinica/admin/usuarios_admin.jpg)
 
-#### Estadísticas e Informes
-Pantalla de selección de estadísticas:
 
-![Seleccion estadisticas](src/assets/imagenes_clinica/admin/seleccion_estadisticas.jpg)
 
-**Panel gráfico (Charts)** con posibilidad de descarga en Excel o PDF. Incluye:
+![filtros_usuarios_admin](https://github.com/user-attachments/assets/7d651d64-e409-4579-85a4-f8aeba2de773)
+![usuarios_admin](https://github.com/user-attachments/assets/fa99921e-bf53-4b93-baf1-47cf9b1dc572)
+![turnos_admin](https://github.com/user-attachments/assets/23baf275-85f3-4d16-b48a-9d72b77c543c)
+![seleccion_estadisticas](https://github.com/user-attachments/assets/b794bacf-8100-41be-b951-aa544c257abe)
+![perfil_administrador](https://github.com/user-attachments/assets/9d086a7a-ef0f-48e9-aaf5-45bbe8172f93)
+![historial_clinico_por_paciente_filtrador](https://github.com/user-attachments/assets/113b9702-bb61-4206-9617-5a451a018aec)
 
-**Log de ingresos al sistema**
-![log de ingresos](src/assets/imagenes_clinica/admin/estadisticas/log_ingresos.jpg)
 
-**Cantidad de turnos por especialidad:**
-![Turnos por especialidad](src/assets/imagenes_clinica/admin/estadisticas/turnos_por_especialidad.jpg)
 
-**Cantidad de turnos por día:**
-![Turnos por dia](src/assets/imagenes_clinica/admin/estadisticas/estadisticas_turnos_por_dia.jpg)
 
-**Informes de turnos solicitados y finalizados por médico:**
-![Informes de turnos solicitados y finalizados por medico](src/assets/imagenes_clinica/admin/estadisticas/estadisticas_turnos_por_medico.jpg)
+![usuarios_clinica_EXCEL](https://github.com/user-attachments/assets/964154c2-dce9-468a-aa68-37fda373fb30)
+![turnos_por_especialidad](https://github.com/user-attachments/assets/7faa2d8c-1327-4dcf-a1a3-c20f7a61fede)
+![pdf_log_ingresos](https://github.com/user-attachments/assets/69055bd6-cca0-4078-9b6e-5d99e7b7f6d4)
+![log_ingresos](https://github.com/user-attachments/assets/38b86a00-0809-4b33-bf1e-b19057705422)
+![lista_usuario_PDF](https://github.com/user-attachments/assets/6b6f4bf5-a948-4f95-8417-6fc7245dac51)
+![estadisticas_turnos_por_medico_descarga_excel](https://github.com/user-attachments/assets/65b035fa-4b26-4316-ac6b-4ec463668a00)
+![estadisticas_turnos_por_medico](https://github.com/user-attachments/assets/408ff41f-fe71-480b-abcf-003f6d43556d)
+![estadisticas_turnos_por_dia](https://github.com/user-attachments/assets/ec40d9f7-0a0e-46e6-9a0f-e5eac15e659a)
 
-**Turnos por especialidad (Gráfico):**
-![Informes de turnos por especialidad](src/assets/imagenes_clinica/admin/estadisticas/turnos_por_especialidad.jpg)
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ## Características Técnicas Adicionales
