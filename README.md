@@ -83,15 +83,26 @@ Herramientas para la gestión de la agenda médica y el seguimiento de pacientes
 Visualización de pacientes atendidos y administración de turnos (Finalizar, Cancelar, Rechazar).
 
 ![mis_pacientes](https://github.com/user-attachments/assets/2144bed0-7dbe-4176-b2c0-dd8192e104a3)
+
+
+**El especialista dispone de la posibilidad de cancelar un turno solicitado por el paciente**
 ![cancelar_turno](https://github.com/user-attachments/assets/714bfc91-acc6-46a2-9680-771b3779df20)
 
 **Historia Clínica y Reseñas:**
 Al finalizar una consulta, el especialista carga los datos fijos y dinámicos de la historia clínica. También puede visualizar reseñas y comentarios.
 
 ![historia_clinica_al_finalizar_turno](https://github.com/user-attachments/assets/8aaa81bb-fd73-4c59-8741-fdc0d716dd3b)
+
+**En la siguiente seccion el especialista puede acceder a todas las historias clinicas de cada uno de sus pacientes**
 ![historias_clinicas_de_cada_paciente](https://github.com/user-attachments/assets/171dc98b-0fc8-4bd7-a498-3a1086f79a46)
+
+**El especialista dispone de la posibilidad de dejar su reseña sobre el paciente**
 ![resena_del_especialista](https://github.com/user-attachments/assets/cced1802-da38-4777-aa2c-fc4be9373556)
+
+**El especialista puede filtrar por reseña y que se filtren todos los turnos de sus pacientes que contengan esa parte de la reseña**
 ![filtro_por_resena](https://github.com/user-attachments/assets/64f163a9-a522-4c82-b15f-26deaa2e4903)
+
+**El especialista puede ver la reseña que dejo cada paciente**
 ![resena_del_paciente_estrellita](https://github.com/user-attachments/assets/3a53c660-6c4b-418a-942a-0a37481bd4b3)
 
 ---
@@ -102,29 +113,52 @@ Panel de control centralizado para la gestión operativa y análisis de datos.
 **Gestión de Usuarios y Turnos:**
 Listados completos con filtros avanzados, descarga de nóminas en Excel/PDF y control de acceso.
 
+
 ![usuarios_admin](https://github.com/user-attachments/assets/fa99921e-bf53-4b93-baf1-47cf9b1dc572)
+
+**El administrador puede filtrar en la seccion de turnos**
 ![filtros_usuarios_admin](https://github.com/user-attachments/assets/7d651d64-e409-4579-85a4-f8aeba2de773)
+
+
 ![turnos_admin](https://github.com/user-attachments/assets/23baf275-85f3-4d16-b48a-9d72b77c543c)
+
+**El administrador puede exportar los turnos como archivo EXcel**
 ![usuarios_clinica_EXCEL](https://github.com/user-attachments/assets/964154c2-dce9-468a-aa68-37fda373fb30)
+
+**El administrador puede exportar como excel a todos los usuarios**
 ![lista_usuario_PDF](https://github.com/user-attachments/assets/6b6f4bf5-a948-4f95-8417-6fc7245dac51)
 
 **Estadísticas e Informes:**
 Dashboard con gráficos interactivos (Charts) exportables. Incluye análisis de turnos por especialidad, por día, por médico y logs de ingreso al sistema.
 
+**El administrador tiene acceso a una pantalla para seleccionar estadisticas**
 ![seleccion_estadisticas](https://github.com/user-attachments/assets/b794bacf-8100-41be-b951-aa544c257abe)
+
+**Puede ver los turnos por dia**
 ![estadisticas_turnos_por_dia](https://github.com/user-attachments/assets/ec40d9f7-0a0e-46e6-9a0f-e5eac15e659a)
+
+**Tambien puede visualizar los turnos por especialidad**
 ![turnos_por_especialidad](https://github.com/user-attachments/assets/7faa2d8c-1327-4dcf-a1a3-c20f7a61fede)
+
+**Puede visualizar los turnos por medico**
 ![estadisticas_turnos_por_medico](https://github.com/user-attachments/assets/408ff41f-fe71-480b-abcf-003f6d43556d)
 
 **Logs y Descargas:**
 Registro de actividad y descargas de reportes.
 
+**El administrador tiene acceso a el historial de ingresos**
 ![log_ingresos](https://github.com/user-attachments/assets/38b86a00-0809-4b33-bf1e-b19057705422)
+
+**Tambien puede exportar el registro de ingresos como PDF**
 ![pdf_log_ingresos](https://github.com/user-attachments/assets/69055bd6-cca0-4078-9b6e-5d99e7b7f6d4)
+
+**Puede exportar las estadisticas de turnos por medico como excel**
 ![estadisticas_turnos_por_medico_descarga_excel](https://github.com/user-attachments/assets/65b035fa-4b26-4316-ac6b-4ec463668a00)
 
 **Perfil Administrador y Control Global:**
 ![perfil_administrador](https://github.com/user-attachments/assets/9d086a7a-ef0f-48e9-aaf5-45bbe8172f93)
+
+**El administrador dispone de la posibilidad de filtrar en la seccion del historial**
 ![historial_clinico_por_paciente_filtrador](https://github.com/user-attachments/assets/113b9702-bb61-4206-9617-5a451a018aec)
 
 ---
