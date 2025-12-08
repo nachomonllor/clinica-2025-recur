@@ -48,7 +48,6 @@ import { DoctorPipe } from "../../../../pipes/doctor.pipe";
 import { HistoriaClinicaDialogComponent } from '../../historia-clinica-dialog/historia-clinica-dialog.component';
 import { DatoDinamico, TipoDatoDinamico } from '../../../models/dato-dinamico.model';
 
-
 @Component({
   selector: 'app-usuarios-admin',
   standalone: true,
@@ -70,7 +69,7 @@ import { DatoDinamico, TipoDatoDinamico } from '../../../models/dato-dinamico.mo
     MatProgressSpinnerModule,
     MatSnackBarModule,
     CapitalizarNombrePipe,
-    DoctorPipe
+    DoctorPipe,
   ],
   templateUrl: './usuarios-admin.component.html',
   styleUrls: ['./usuarios-admin.component.scss'],
@@ -148,6 +147,11 @@ export class UsuariosAdminComponent implements OnInit {
     private loading: LoadingService
   ) { }
 
+  /*
+  Verifica la sesión actual con Supabase para saber si el usuario logueado es "ADMIN" (para habilitar botones de gestión), 
+  inicializa el formulario de creación y llama a cargar la lista de usuarios.
+  */
+
   async ngOnInit(): Promise<void> {
     this.maxDateISO = this.toISODateLocal(new Date());
     this.inicializarFormulario();
@@ -174,6 +178,14 @@ export class UsuariosAdminComponent implements OnInit {
     await this.cargarUsuarios();
   }
 
+  /*
+  Es un getter ==> GETTER LO DEL FILTRO: se ejecuta automaticamente cuando cambias los filtros. 
+    Devuelve la lista de tarjetas de usuario (UsuarioAdminCard) filtrada por:
+    Rol (Paciente, Especialista, Todos).
+    Estado (Solo habilitados).
+    Texto del buscador (nombre, dni, etc.).
+  */
+
   get filtered(): UsuarioAdminCard[] {
     const base = this.usuarios.map(u => this.toCardVM(u));
     const rolFiltered = this.filtroRol === 'todos' ? base : base.filter(u => u.rol === this.filtroRol);
@@ -183,16 +195,21 @@ export class UsuariosAdminComponent implements OnInit {
     return habilitadosFiltered.filter(u => this.matchesSearch(u, term));
   }
 
+  /*
+  UTILITARIA PARA EL GETTER ANTERIOR. 
+  Comprueba si un usuario especifico coincide con el texto que el usuario escribio en el buscador.
+  */
   private matchesSearch(u: UsuarioAdminCard, term: string): boolean {
     const haystack = [u.nombre, u.apellido, u.email, u.obraSocial ?? '', ...(u.especialidades ?? [])].join(' ').toLowerCase();
     return haystack.includes(term);
   }
 
+  // Transforma los datos crudos que vienen de la base de datos
   private toCardVM(u: UsuarioAdmin): UsuarioAdminCard {
     return {
       id: u.id,
       rol: u.rol,
-      habilitado: u.rol === 'ESPECIALISTA' ? !!u.aprobado : true,
+      habilitado: u.rol === 'ESPECIALISTA' ? !!u.aprobado : true,   // <=== !!u.aprobado ==> uso la doble negacion para asegurarme de que la variable final sea true o false cuando viene booleano o undefined
       nombre: u.nombre || '',
       apellido: u.apellido || '',
       email: u.email || '',
@@ -200,20 +217,35 @@ export class UsuariosAdminComponent implements OnInit {
       avatarUrl: u.avatar_url ?? undefined,
       obraSocial: u.obra_social ?? undefined,
       edad: typeof u.edad === 'number' ? u.edad : undefined,
-      color: this.pickColor(u.id),
+      color: this.pickColor(u.id),  // <==== SELECCIONA EL COLOR DEL USUARIO EN BASE A SU ID
       especialidades: undefined
     };
   }
 
   trackById(index: number, u: UsuarioAdminCard): string { return u.id; }
+
+
+  /*
+  Toma el nombre y apellido y devuelve las iniciales 
+  (ej: "Juan Perez" ====> "JP") para mostrar cuando no hay foto de perfil.
+  */
   initials(u: UsuarioAdminCard): string {
     const a = (u.nombre || '').trim()[0] ?? '';
     const b = (u.apellido || '').trim()[0] ?? '';
     return (a + b).toUpperCase() || 'U';
   }
+
+  /*
+  Traduce el codigo del rol (ej: 'ADMIN') a un texto mas facil dee ntender ('Administrador').
+  */
   rolChip(u: UsuarioAdminCard): string {
     switch (u.rol) { case 'ADMIN': return 'Administrador'; case 'ESPECIALISTA': return 'Especialista'; case 'PACIENTE': return 'Paciente'; default: return u.rol; }
   }
+
+  /*
+  Genera un color consistente (purple, teal, etc.) basado en el ID del usuario. 
+  Sirve para que la tarjeta de "Juan" siempre tenga el mismo color.
+  */
   private pickColor(id: string): AccentColor {
     const colors: AccentColor[] = ['purple', 'teal', 'blue', 'pink'];
     let hash = 0; for (let i = 0; i < id.length; i++) hash = (hash * 31 + id.charCodeAt(i)) | 0;
@@ -244,7 +276,12 @@ export class UsuariosAdminComponent implements OnInit {
     await this.toggleAprobacion(origen);
   }
 
-  // ... (Inicialización, filtros, etc.)
+
+  /*
+  Crea el FormGroup (formulario reactivo) para crear nuevos usuarios. 
+ ACA SE DEFINIEN LAS VALIDACIONES (MAIL VALIDO, CONTRASEÑA MINIMA, ETC) 
+ y una lógica especial: si el rol es "PACIENTE" ====> hace obligatorio el campo "Obra Social"
+  */
   inicializarFormulario(): void {
     this.formularioUsuario = this.fb.group({
       rol: this.fb.control<Rol | null>(null, Validators.required),
@@ -265,6 +302,10 @@ export class UsuariosAdminComponent implements OnInit {
     });
   }
 
+  /* 
+  Se usa para filtrar la lista interna usuariosFiltrados (usada quizás en otra vista o móvil). 
+  Actualiza la variable filtro y busca coincidencias parciales.
+  */
   aplicarFiltro(valor: string, preferId?: string): void {
     this.filtroTexto = valor ?? '';
     this.filtro = this.filtroTexto.trim().toLowerCase();
@@ -284,6 +325,9 @@ export class UsuariosAdminComponent implements OnInit {
     }
   }
 
+  //trackById - trackUsuario - trackTurno====> 
+  // SON Optimizaciones para *ngFor en Angular. 
+  // Evitan que se renderice toda la lista de nuevo si solo cambia un elemento.
   trackUsuario(index: number, u: UsuarioAdmin): string { return u.id; }
   trackTurno(index: number, t: TurnoAdminResumen): string { return t.id; }
 
@@ -293,9 +337,22 @@ export class UsuariosAdminComponent implements OnInit {
     await this.cargarTurnosUsuario(usuario);
   }
 
-  // ... (cargarUsuarios, cargarTurnosUsuario, obtenerTurnosUsuario, helpers fecha)
-  private async cargarUsuarios(): Promise<void> {
 
+  /*
+    Hace la consulta SELECT a la tabla usuarios de Supabase, 
+    trayendo todos los datos necesarios y los guarda en el array this.usuarios. 
+    Usa un spinner de carga (loading).
+
+   Con el MAP: RESUELVE EL problema DE que la base de datos (Supabase) a veces  devuelve nombres feos, nulos, o formatos que al Frontend no le gustan.
+    id:                     u.id,                    // Pasa igual
+    rol:                    u.perfil,                // CAMBIO DE NOMBRE: 'perfil' ahora es 'rol'
+    aprobado:               !!u.esta_aprobado,       // LIMPIEZA: Convierte null/undefined a true/false
+    nombre:                 u.nombre || '',          // PROTECCION: Si es null, pone string vacío
+    apellido:               u.apellido || '',        // PROTECCION
+    avatar_url:             u.imagen_perfil_1,       // CAMBIO DE NOMBRE: De 'imagen_perfil_1' a 'avatar_url'
+  */
+
+  private async cargarUsuarios(): Promise<void> {
     this.loading.show();
     try {
       const { data, error } = await this.supa.client.from('usuarios').select('id, perfil, esta_aprobado, nombre, apellido, email, dni, obra_social, imagen_perfil_1, edad, fecha_registro, activo').order('apellido', { ascending: true });
@@ -311,6 +368,11 @@ export class UsuariosAdminComponent implements OnInit {
     }
   }
 
+
+  /*
+  Se dispara al seleccionar un usuario. 
+  Llama a obtenerTurnosUsuario y formata los datos para mostrarlos en la lista lateral o modal.
+  */
   private async cargarTurnosUsuario(usuario: UsuarioAdmin): Promise<void> {
 
     this.loading.show();
@@ -331,10 +393,12 @@ export class UsuariosAdminComponent implements OnInit {
     }
   }
 
+  /*
+  obtenerTurnosUsuario(usuario): Es la consulta "fuerte". 
+  Hace un SELECT a la tabla turnos con varios JOINs (paciente, especialista, especialidad, estado). 
+  FILTRA FIJANDOSE SI EL USUARIO ES PACIENTE, BUSCA LOS TURNOS COMO PACIENTEE, SI ES MEDICO COMO MEDICO
+  */
   private async obtenerTurnosUsuario(usuario: UsuarioAdmin): Promise<TurnoAdminSupabase[]> {
-
-
-
     let query = this.supa.client.from('turnos').select(`id, fecha_hora_inicio, motivo, comentario, estado:estados_turno!fk_turno_estado(codigo), especialidad:especialidades!fk_turno_especialidad(nombre), paciente:usuarios!fk_turno_paciente(nombre, apellido), especialista:usuarios!fk_turno_especialista(nombre, apellido)`);
     if (usuario.rol === 'PACIENTE') query = query.eq('paciente_id', usuario.id);
     else if (usuario.rol === 'ESPECIALISTA') query = query.eq('especialista_id', usuario.id);
@@ -344,11 +408,14 @@ export class UsuariosAdminComponent implements OnInit {
     return (data || []) as TurnoAdminSupabase[];
   }
 
+  // Concatena apellido y nombre
   private nombreCompleto(p?: PerfilMin | null): string { return p ? `${p.apellido} ${p.nombre}` : 'Sin datos'; }
+ 
+  // Formatea una fecha ISO a texto legible (ej: "8 de diciembre de 2025").
   fechaLarga(iso?: string | null): string { return iso ? new Date(iso).toLocaleDateString('es-AR', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Sin registrar'; }
 
-  async descargarTurnosUsuario(usuario: UsuarioAdmin): Promise<void> {
 
+  async descargarTurnosUsuario(usuario: UsuarioAdmin): Promise<void> {
 
     this.loading.show();
 
@@ -369,239 +436,6 @@ export class UsuariosAdminComponent implements OnInit {
     }
   }
 
-  // =========================================================================================
-  //  MÉTODO PDF REPLICADO (DISEÑO IDÉNTICO AL PACIENTE)
-  // =========================================================================================
-  // async descargarTurnosPdf(usuario: UsuarioAdmin): Promise<void> {
-  //   const turnosParaExportar = await this.obtenerTurnosUsuario(usuario);
-
-  //   if (!turnosParaExportar.length) {
-  //     this.snackBar.open('No hay turnos para exportar.', 'Cerrar', { duration: 2500 });
-  //     return;
-  //   }
-
-  //   this.snackBar.open('Generando PDF con historial clínico...', 'OK', { duration: 2000 });
-
-  //   // PASO 1: Obtener IDs para buscar HC completa
-  //   const idsTurnos = turnosParaExportar.map(t => t.id);
-
-  //   // PASO 2: Buscar datos médicos en BD
-  //   const { data: historiasData } = await this.supa.client
-  //     .from('historia_clinica')
-  //     .select(`*, historia_datos_dinamicos (*)`)
-  //     .in('turno_id', idsTurnos);
-
-  //   const historiasMap = new Map();
-  //   if (historiasData) {
-  //     historiasData.forEach((h: any) => historiasMap.set(h.turno_id, h));
-  //   }
-
-  //   // --- GENERACIÓN PDF (Tu código exacto adaptado) ---
-  //   const doc = new jsPDF('p', 'mm', 'a4');
-  //   const pageWidth = doc.internal.pageSize.getWidth();
-  //   const pageHeight = doc.internal.pageSize.getHeight();
-  //   const marginX = 15;
-  //   const marginBottom = 15;
-  //   const cardPadding = 5;
-  //   const lineHeight = 5;
-  //   const paragraphSpacing = 2;
-  //   const headerBottom = 32;
-
-  //   // SVG Logo (EL MISMO)
-  //   const svgLogo = `
-  // <svg width="600" height="200" viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg">
-  //   <defs>
-  //     <linearGradient id="gradBlue" x1="0%" y1="0%" x2="100%" y2="100%">
-  //       <stop offset="0%" style="stop-color:#0099ff;stop-opacity:1" /> 
-  //       <stop offset="100%" style="stop-color:#0055b3;stop-opacity:1" /> 
-  //     </linearGradient>
-  //   </defs>
-  //   <g transform="translate(50, 50)">
-  //     <path d="M 80 0 H 120 A 10 10 0 0 1 130 10 V 80 H 200 A 10 10 0 0 1 210 90 V 130 A 10 10 0 0 1 200 140 H 130 V 210 A 10 10 0 0 1 120 220 H 80 A 10 10 0 0 1 70 210 V 140 H 0 A 10 10 0 0 1 -10 130 V 90 A 10 10 0 0 1 0 80 H 70 V 10 A 10 10 0 0 1 80 0 Z" fill="url(#gradBlue)" transform="scale(0.5) translate(30,30)"/>
-  //     <path d="M 60 115 L 90 145 L 150 85" stroke="white" stroke-width="14" fill="none" stroke-linecap="round" stroke-linejoin="round" transform="scale(0.5) translate(30,30)"/>
-  //   </g>
-  //   <g transform="translate(180, 115)">
-  //     <text x="0" y="-25" font-family="Arial" font-weight="bold" font-size="28" fill="#0077cc">CLINICA</text>
-  //     <text x="0" y="25" font-family="Arial" font-weight="bold" font-size="52" fill="#003366">MONLLOR</text>
-  //   </g>
-  // </svg>`;
-  //   const svgBase64 = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgLogo)));
-
-  //   const generarDocumento = (pngDataUrl?: string) => {
-  //     const drawHeader = () => {
-  //       // Fondo Header
-  //       doc.setFillColor(17, 24, 39);
-  //       doc.rect(0, 0, pageWidth, headerBottom, 'F');
-
-  //       if (pngDataUrl) {
-  //         doc.setFillColor(255, 255, 255);
-  //         doc.roundedRect(marginX - 2, 5, 65, 22, 2, 2, 'F');
-  //         doc.addImage(pngDataUrl, 'PNG', marginX, 6, 60, 20);
-  //       }
-
-  //       // Títulos
-  //       doc.setTextColor(255, 255, 255);
-  //       doc.setFont('helvetica', 'bold');
-  //       doc.setFontSize(16);
-  //       doc.text('Reporte de Atenciones', pageWidth - marginX, 18, { align: 'right' });
-
-  //       doc.setFont('helvetica', 'normal');
-  //       doc.setFontSize(10);
-
-  //       // Título dinámico: Si estoy viendo a un Especialista, dice "Especialista: ...". Si no, "Paciente: ..."
-  //       const rolTexto = usuario.rol === 'ESPECIALISTA' ? 'Especialista' : 'Paciente';
-  //       doc.text(`${rolTexto}: ${usuario.nombre} ${usuario.apellido}`, pageWidth - marginX, 24, { align: 'right' });
-
-  //       const hoy = new Date().toLocaleDateString('es-AR');
-  //       doc.setTextColor(209, 213, 219);
-  //       doc.setFontSize(8);
-  //       doc.text(`Emisión: ${hoy}`, pageWidth - marginX, 28, { align: 'right' });
-
-  //       doc.setDrawColor(251, 191, 36);
-  //       doc.setLineWidth(0.4);
-  //       doc.line(marginX, headerBottom - 1, pageWidth - marginX, headerBottom - 1);
-  //     };
-
-  //     drawHeader();
-  //     let y = headerBottom + 10;
-  //     const contentWidth = pageWidth - (marginX * 2);
-
-  //     turnosParaExportar.forEach((t, index) => {
-  //       const paragraphs: { lines: string[]; bold?: boolean }[] = [];
-  //       const anchoTexto = contentWidth - cardPadding * 2;
-
-  //       const addParagraph = (text: string, opts?: { bold?: boolean }) => {
-  //         paragraphs.push({ lines: doc.splitTextToSize(text, anchoTexto), bold: opts?.bold });
-  //       };
-
-  //       // 1. Cabecera (Fecha y Estado)
-  //       const fechaStr = t.fecha_hora_inicio ? new Date(t.fecha_hora_inicio).toLocaleDateString('es-AR') : 'Sin fecha';
-  //       const horaStr = t.fecha_hora_inicio ? new Date(t.fecha_hora_inicio).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' }) : '';
-  //       const estadoPrint = (t.estado?.codigo || 'SIN ESTADO').toUpperCase();
-  //       addParagraph(`Turno #${index + 1} · ${fechaStr} ${horaStr} · (${estadoPrint})`, { bold: true });
-
-  //       // 2. Datos del turno (Especialidad y Contraparte)
-  //       const nombreEspecialidad = t.especialidad?.nombre || 'Varios';
-
-  //       // Si el usuario del reporte es Especialista, la contraparte es el Paciente. Y viceversa.
-  //       const userObj = usuario.rol === 'ESPECIALISTA' ? t.paciente : t.especialista;
-  //       const nombreContraparte = userObj ? `${userObj.apellido}, ${userObj.nombre}` : 'Sin datos';
-  //       const labelContraparte = usuario.rol === 'ESPECIALISTA' ? 'Paciente' : 'Especialista';
-
-  //       addParagraph(`Especialidad: ${nombreEspecialidad} | ${labelContraparte}: ${nombreContraparte}`);
-
-  //       // 3. DATOS CLÍNICOS (si hay)
-  //       const hc = historiasMap.get(t.id);
-
-  //       if (hc) {
-  //         let detalles = [];
-  //         if (hc.altura) detalles.push(`Altura: ${hc.altura} cm`);
-  //         if (hc.peso) detalles.push(`Peso: ${hc.peso} kg`);
-  //         if (hc.temperatura) detalles.push(`Temp: ${hc.temperatura} °C`);
-  //         if (hc.presion) detalles.push(`Presión: ${hc.presion}`);
-
-  //         if (detalles.length > 0) {
-  //           addParagraph('Datos Biométricos: ' + detalles.join(' | '), { bold: false });
-  //         }
-
-  //         // if (hc.historia_datos_dinamicos && hc.historia_datos_dinamicos.length > 0) {
-  //         //   addParagraph('Datos Dinámicos:', { bold: true });
-  //         //   hc.historia_datos_dinamicos.forEach((d: any) => {
-  //         //     const valor = d.valor_texto || d.valor_numerico || (d.valor_boolean ? 'Sí' : 'No');
-  //         //     addParagraph(`• ${d.clave}: ${valor}`);
-  //         //   });
-  //         // }
-
-
-  //         // --- DATOS DINAMICOS EN EL PDF (CORREGIDO) ---
-  //         if (hc.historia_datos_dinamicos && hc.historia_datos_dinamicos.length > 0) {
-  //           addParagraph('Datos Dinámicos:', { bold: true });
-
-  //           hc.historia_datos_dinamicos.forEach((d: any) => {
-  //             let valorPrint = '';
-
-  //             // Verificamos explícitamente qué columna tiene el dato
-  //             if (d.valor_texto !== null && d.valor_texto !== undefined) {
-  //               valorPrint = d.valor_texto;
-  //             } else if (d.valor_numerico !== null && d.valor_numerico !== undefined) {
-  //               valorPrint = d.valor_numerico.toString();
-  //               // Agregamos unidades visuales si corresponde (igual que en los otros componentes)
-  //               if (d.tipo_control === 'RANGO_0_100') valorPrint += ' %';
-  //               if (d.clave && d.clave.toLowerCase().includes('glucosa')) valorPrint += ' mg/dL';
-  //             } else if (d.valor_boolean !== null && d.valor_boolean !== undefined) {
-  //               // Aquí forzamos el SI/NO
-  //               valorPrint = d.valor_boolean ? 'SI' : 'NO';
-  //             }
-
-  //             addParagraph(`• ${d.clave}: ${valorPrint}`);
-  //           });
-  //         }
-
-  //       } else {
-  //         // Si no hay HC, mostramos comentario/motivo
-  //         if (t.comentario) addParagraph(`Reseña/Comentario: ${t.comentario}`);
-  //         else addParagraph('Sin datos clínicos registrados.');
-  //       }
-
-  //       // CÁLCULO DE ALTURA DE TARJETA
-  //       let cardHeight = cardPadding * 2;
-  //       paragraphs.forEach((p, i) => {
-  //         cardHeight += p.lines.length * lineHeight;
-  //         if (i > 0) cardHeight += paragraphSpacing;
-  //       });
-
-  //       // NUEVA PÁGINA SI NO ENTRA
-  //       if (y + cardHeight > pageHeight - marginBottom) {
-  //         doc.addPage();
-  //         drawHeader();
-  //         y = headerBottom + 10;
-  //       }
-
-  //       // DIBUJAR TARJETA
-  //       doc.setFillColor(248, 250, 252); // Gris muy claro
-  //       doc.setDrawColor(59, 130, 246);  // Azul borde
-  //       doc.setLineWidth(0.4);
-  //       doc.roundedRect(marginX, y, contentWidth, cardHeight, 3, 3, 'FD');
-
-  //       // Borde decorativo izq
-  //       doc.setFillColor(59, 130, 246);
-  //       doc.rect(marginX, y, 2, cardHeight, 'F');
-
-  //       // IMPRIMIR TEXTO
-  //       let textY = y + cardPadding + lineHeight;
-  //       doc.setTextColor(51, 65, 85);
-  //       doc.setFontSize(10);
-  //       paragraphs.forEach((p, i) => {
-  //         doc.setFont('helvetica', p.bold ? 'bold' : 'normal');
-  //         p.lines.forEach(l => {
-  //           doc.text(l, marginX + cardPadding + 4, textY);
-  //           textY += lineHeight;
-  //         });
-  //         if (i < paragraphs.length - 1) textY += paragraphSpacing;
-  //       });
-
-  //       y += cardHeight + 6;
-  //     });
-
-  //     const nombreArchivo = `Atenciones_${usuario.apellido}_${new Date().getTime()}.pdf`;
-  //     doc.save(nombreArchivo);
-  //   };
-
-  //   // Cargar imagen y generar
-  //   const img = new Image();
-  //   img.src = svgBase64;
-  //   img.onload = () => {
-  //     const canvas = document.createElement('canvas');
-  //     canvas.width = 600;
-  //     canvas.height = 200;
-  //     const ctx = canvas.getContext('2d');
-  //     if (ctx) {
-  //       ctx.drawImage(img, 0, 0);
-  //       generarDocumento(canvas.toDataURL('image/png'));
-  //     } else generarDocumento();
-  //   };
-  //   img.onerror = () => generarDocumento();
-  // }
 
   async descargarTurnosPdf(usuario: UsuarioAdmin): Promise<void> {
     const turnosParaExportar = await this.obtenerTurnosUsuario(usuario);
@@ -657,7 +491,6 @@ export class UsuariosAdminComponent implements OnInit {
           <text x="0" y="25" font-family="Arial" font-weight="bold" font-size="52" fill="#003366">MONLLOR</text>
         </g>
       </svg>`;
-
 
 
     const svgBase64 = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgLogo)));
@@ -818,6 +651,14 @@ export class UsuariosAdminComponent implements OnInit {
     reader.onload = () => (this.imagenPrevia = reader.result as string); 
     reader.readAsDataURL(file); 
   }
+
+
+
+  /*
+    alternar aprobacion:
+    Cambia el campo esta_aprobado (true - false) en la base de datos ==> UPDATE
+    Sirve para que el Admin habilite o deshabilite especialistas 
+  */
   async toggleAprobacion(usuario: UsuarioAdmin): Promise<void> { 
     if (usuario.rol !== 'ESPECIALISTA') return;
      const nuevoEstado = !usuario.aprobado; 
@@ -829,8 +670,8 @@ export class UsuariosAdminComponent implements OnInit {
    }
    
   crearUsuario(): void { this.mostrarFormulario = true; this.formularioUsuario.reset(); this.imagenPrevia = null; }
-  cancelarCreacion(): void { this.mostrarFormulario = false; this.formularioUsuario.reset(); this.imagenPrevia = null; }
 
+  cancelarCreacion(): void { this.mostrarFormulario = false; this.formularioUsuario.reset(); this.imagenPrevia = null; }
 
   async guardarUsuario(): Promise<void> {
     if (this.formularioUsuario.invalid) {
@@ -914,101 +755,6 @@ export class UsuariosAdminComponent implements OnInit {
     }
   }
 
-
-  // async verHistoriaClinica(pacienteId: string, pacienteNombre: string): Promise<void> {
-
-  //   this.loading.show();
-
-  //   try {
-  //     const { data: sessionData } = await this.supa.getSession();
-  //     if (!sessionData?.session) return;
-
-  //     const userId = sessionData.session.user.id;
-
-  //     // 1. OBTENER HISTORIAS + DATOS DINÁMICOS
-  //     // Agregamos historia_datos_dinamicos (*) para que salgan en el PDF/Dialog
-  //     let query = this.supa.client
-  //       .from('historia_clinica')
-  //       .select(`
-  //           *,
-  //           historia_datos_dinamicos (*)
-  //       `)
-  //       .eq('paciente_id', pacienteId)
-  //       .order('fecha_registro', { ascending: false });
-
-  //     // Si NO es admin, filtramos por especialista (por seguridad)
-  //     if (!this.esAdmin) {
-  //       query = query.eq('especialista_id', userId);
-  //     }
-
-  //     const { data: historias, error } = await query;
-
-  //     if (error) {
-  //       console.error('[UsuariosAdmin] Error al cargar historia clínica', error);
-  //       return;
-  //     }
-
-  //     // 2. MAPEAR DATOS COMPLETOS (Especialidad, Especialista, Fecha)
-  //     const historiasCompletas: HistoriaClinicaConExtras[] = await Promise.all(
-  //       (historias || []).map(async (h: any) => {
-
-  //         // Traemos Fecha y ESPECIALIDAD del turno original
-  //         const { data: turno } = await this.supa.client
-  //           .from('turnos')
-  //           .select('fecha_hora_inicio, especialidades(nombre)')
-  //           .eq('id', h.turno_id)
-  //           .single();
-
-  //         // Traemos datos del Especialista
-  //         const { data: especialista } = await this.supa.client
-  //           .from('usuarios')
-  //           .select('nombre, apellido')
-  //           .eq('id', h.especialista_id)
-  //           .single();
-
-  //         // Formatear nombre especialista
-  //         const especialistaNombre = especialista
-  //           ? `${especialista.nombre} ${especialista.apellido}`
-  //           : ''; // Dejar vacío en lugar de N/A para que se vea más limpio
-
-  //         // Formatear fecha atención
-  //         const fechaAtencion = turno?.fecha_hora_inicio
-  //           ? new Date(turno.fecha_hora_inicio).toLocaleDateString('es-AR')
-  //           : '';
-
-  //         // Formatear Especialidad (Solución del error de array/objeto)
-  //         const dataEspec: any = turno?.especialidades;
-  //         const nombreEspecialidad = dataEspec?.nombre || dataEspec?.[0]?.nombre || '';
-
-  //         return {
-  //           ...h,
-  //           paciente: pacienteNombre,       // Importante para el título del PDF
-  //           especialidad: nombreEspecialidad, // Importante para el badge
-  //           especialistaNombre,
-  //           fechaAtencion
-  //         } as HistoriaClinicaConExtras;
-  //       })
-  //     );
-
-  //     // 3. ABRIR EL DIÁLOGO COMPARTIDO
-  //     // Al pasarle 'historiasCompletas' bien cargado, el botón de PDF del diálogo funcionará perfecto.
-  //     this.dialog.open(HistoriaClinicaDialogComponent, {
-  //       width: '800px',
-  //       data: {
-  //         pacienteNombre,
-  //         historias: historiasCompletas
-  //       },
-  //       panelClass: 'hc-dialog-panel' // Asegúrate de tener este estilo o quítalo si no lo usas
-  //     });
-
-  //   } catch (err: any) {
-  //     console.error('[UsuariosAdmin] Error al cargar historia clínica', err);
-  //   }
-  //   finally {
-  //     this.loading.hide();
-  //   }
-
-  // }
 
   async verHistoriaClinica(pacienteId: string, pacienteNombre: string): Promise<void> {
 

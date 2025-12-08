@@ -59,19 +59,9 @@
       <!-- Cabecera -->
       <div class="card-header">
         <div class="avatar" [class.has-img]="u.avatarUrl">
-          <img *ngIf="u.avatarUrl" [src]="u.avatarUrl" [alt]="u.nombre + ' ' + u.apellido" />
+          <img *ngIf="u.avatarUrl" [src]="u.avatarUrl" [alt]="u.nombre + ' ' + u.apellido" appImagenRota />
           <span *ngIf="!u.avatarUrl">{{ initials(u) }}</span>
         </div>
-
-        <!-- <div class="title">
-          <h3>{{ u.nombre | capitalizarNombre}} {{ u.apellido | capitalizarNombre }}</h3>
-
-          <div class="sub">
-            <span class="role">{{ rolChip(u) }}</span>
-            <span class="dot" *ngIf="u.edad !== undefined"></span>
-            <span *ngIf="u.edad !== undefined">{{ u.edad }} años</span>
-          </div>
-        </div> -->
 
         <div class="title">
           <h3>
