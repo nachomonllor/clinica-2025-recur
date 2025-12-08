@@ -146,7 +146,8 @@ export class MainNavComponent implements OnInit {
           { label: 'Usuarios', route: '/usuarios-admin', icon: 'supervisor_account' },
           { label: 'Estadísticas', route: '/seleccion-estadisticas', icon: 'insights' },
           { label: 'Ingresos', route: '/log-ingreso', icon: 'event_note' },
-          { label: 'Mi perfil', route: '/perfil-usuario', icon: 'account_circle' }
+          { label: 'Mi perfil', route: '/perfil-usuario', icon: 'account_circle' },
+          { label: 'Solicitar turno', route: '/solicitar-turno', icon: 'add_circle' }
         ];
       default:
         return [];

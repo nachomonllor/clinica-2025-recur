@@ -1,0 +1,34 @@
+Módulo,Funcionalidad,Detalle del Testeo / Criterio de Aceptación,Fuente / Ref
+General,Configuración,La aplicación tiene Favicon y título correcto.,1
+General,Animaciones,Existen al menos 2 animaciones de transición entre rutas.,2222
+General,Animaciones,"Al menos una animación es de ""Derecha a Izquierda"" (Slide) según pedido explícito.",Usuario
+Bienvenida,Interfaz,La pantalla muestra accesos claros a Login y Registro.,3
+Login,Acceso Rápido,Existen 3 botones flotantes (Favbuttons) en la esquina inferior derecha.,Usuario
+Login,Acceso Rápido,Los botones muestran la foto de perfil del usuario.,Usuario
+Login,Acceso Rápido,"Hay exactamente 6 usuarios para elegir: 3 pacientes, 2 especialistas, 1 administrador.",Usuario
+Login,Validación Esp.,Un especialista NO puede ingresar si el Admin no lo habilitó previamente.,4
+Login,Validación Email,Paciente y Especialista no pueden ingresar si no verificaron el email.,5
+Registro,Selección Rol,"Al entrar, SOLO se ven 2 botones redondos (imágenes) para elegir Paciente o Especialista.",Usuario
+Registro,Form. Paciente,"Pide: Nombre, Apellido, Edad, DNI, Obra Social, Mail, Password y 2 imágenes.",6
+Registro,Form. Especialista,"Pide: Nombre, Apellido, Edad, DNI, Especialidad, Mail, Password y 1 imagen.",7
+Registro,Validación,Los campos obligatorios están validados correctamente.,8
+Registro,Captcha,Existe un captcha (Google o propio) en el formulario de registro.,9999
+Admin,Lista Usuarios,Se visualizan todos los usuarios registrados.,10
+Admin,Estilo UI,Los usuarios se ven como Favbuttons redondos con imagen y nombre.,Usuario
+Admin,Habilitación,El admin puede habilitar/inhabilitar el ingreso de especialistas.,11
+Admin,Alta Admin,El admin puede crear un nuevo usuario Administrador (con 1 imagen).,12121212
+Admin,Descarga General,Botón para descargar Excel con datos de TODOS los usuarios.,13
+Admin,Descarga Indiv.,"Al clickear un usuario (favbutton), se descarga Excel con sus turnos tomados.",Usuario
+Admin,Informes,"Se ven gráficos de turnos por especialidad, día, y por médico.",14
+Especialista,Mis Pacientes,Filtro: Solo muestra pacientes que el especialista haya atendido al menos 1 vez.,15
+Especialista,Estilo UI,Los pacientes se muestran como Favbuttons redondos con imagen y nombre.,Usuario
+Especialista,Detalle,"Al seleccionar un paciente, muestra detalles de turnos y acceso a reseña.",Usuario
+Especialista,Hist. Clínica,Puede cargar/ver Historia Clínica (Datos fijos + Dinámicos).,16
+Especialista,Turnos,Puede rechazar (con comentario) o finalizar turno (con historia clínica).,17171717
+Solicitud,Turno,El paciente elige turno dentro de los próximos 15 días.,18
+Solicitud,UI Filtros,NO se utiliza Datepicker ni Combobox (selects nativos o botones).,19191919
+Paciente,Mis Turnos,Filtros por Especialidad y Especialista (sin combobox).,20
+Paciente,Acciones,"Puede cancelar, ver reseña, y completar encuesta si corresponde.",21
+Mi Perfil,Descarga HC,Botón para bajar PDF de Historia Clínica (con logo y fecha).,22
+Mi Perfil,Descarga Prof.,Botón para bajar PDF de atenciones filtrado por un profesional específico.,Usuario
+Perfil Esp.,Horarios,El especialista puede configurar sus horarios y disponibilidad.,23

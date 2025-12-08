@@ -31,10 +31,17 @@ interface EspecialistaOption {
   especialidad: string;
 }
 
+// interface PacienteOption {
+//   id: string;
+//   nombre: string;
+//   apellido: string;
+// }
+
 interface PacienteOption {
   id: string;
   nombre: string;
   apellido: string;
+  dni?: string; // <--- El signo de pregunta lo hace opcional y seguro
 }
 
 interface HorarioEspecialistaRow {
@@ -720,11 +727,46 @@ export class SolicitarTurnoComponent implements OnInit {
     }
   }
 
+  // async cargarPacientes(): Promise<void> {
+  //   try {
+  //     const { data, error } = await this.supa.client
+  //       .from('usuarios')
+  //       .select('id, nombre, apellido, perfil, activo')
+  //       .eq('perfil', 'PACIENTE')
+  //       .eq('activo', true)
+  //       .order('apellido', { ascending: true });
+
+  //     if (error) throw error;
+
+  //     const rows = (data ?? []) as any[];
+  //     this.pacientes = rows.map(
+  //       (p): PacienteOption => ({
+  //         id: p.id,
+  //         nombre: p.nombre ?? '',
+  //         apellido: p.apellido ?? ''
+  //       })
+  //     );
+  //   } catch (e: any) {
+  //     console.error('[SolicitarTurno] Error al cargar pacientes', e);
+
+  //     this.snackBar.open(
+  //       this.translate.instant('APPOINTMENT.ERROR_LOAD_PATIENTS'),
+  //       this.translate.instant('COMMON.CLOSE'),
+  //       { duration: 2500 }
+  //     );
+
+
+  //     this.pacientes = [];
+  //   }
+  // }
+
+
   async cargarPacientes(): Promise<void> {
     try {
+      //  AGREGAMOS 'dni' EN EL SELECT
       const { data, error } = await this.supa.client
         .from('usuarios')
-        .select('id, nombre, apellido, perfil, activo')
+        .select('id, nombre, apellido, dni, perfil, activo') 
         .eq('perfil', 'PACIENTE')
         .eq('activo', true)
         .order('apellido', { ascending: true });
@@ -732,29 +774,29 @@ export class SolicitarTurnoComponent implements OnInit {
       if (error) throw error;
 
       const rows = (data ?? []) as any[];
+      
+      // LO MAPEAMOS EN EL OBJETO
       this.pacientes = rows.map(
         (p): PacienteOption => ({
           id: p.id,
           nombre: p.nombre ?? '',
-          apellido: p.apellido ?? ''
+          apellido: p.apellido ?? '',
+          dni: p.dni ?? '---' // Si no trae DNI agregamos guiones
         })
       );
     } catch (e: any) {
       console.error('[SolicitarTurno] Error al cargar pacientes', e);
-
       this.snackBar.open(
         this.translate.instant('APPOINTMENT.ERROR_LOAD_PATIENTS'),
         this.translate.instant('COMMON.CLOSE'),
         { duration: 2500 }
       );
-
-
       this.pacientes = [];
     }
   }
 
   // =================================================================
-  // Fechas / horarios
+  // Fechas - horarios
   // =================================================================
   generarDiasDisponibles(): void {
     const hoy = new Date();

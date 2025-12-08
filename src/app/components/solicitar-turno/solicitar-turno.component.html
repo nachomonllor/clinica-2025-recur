@@ -1,6 +1,4 @@
-
 <mat-card class="st-shell mat-elevation-z6">
-  <!-- Hero con degradado azul y acento naranja -->
   <header class="st-hero">
     <div class="hero-text">
       <h2>
@@ -18,62 +16,39 @@
     </div>
   </header>
 
-  <!-- Pasos (resaltan progreso) -->
   <nav class="st-steps">
-    <div
-      class="step"
-      [class.done]="formularioTurno.get('especialidad')?.valid"
-      [class.active]="!formularioTurno.get('especialidad')?.valid"
-    >
+    <div class="step" 
+         [class.done]="formularioTurno.get('especialidad')?.valid"
+         [class.active]="!formularioTurno.get('especialidad')?.valid">
       <span>1</span>
       {{ 'APPOINTMENT.STEPS.SPECIALITY' | translate }}
     </div>
-    <div
-      class="step"
-      [class.disabled]="!formularioTurno.get('especialidad')?.valid"
-      [class.done]="formularioTurno.get('especialista')?.valid"
-      [class.active]="
-        formularioTurno.get('especialidad')?.valid &&
-        !formularioTurno.get('especialista')?.valid
-      "
-    >
+    <div class="step" 
+         [class.disabled]="!formularioTurno.get('especialidad')?.valid"
+         [class.done]="formularioTurno.get('especialista')?.valid" 
+         [class.active]="formularioTurno.get('especialidad')?.valid && !formularioTurno.get('especialista')?.valid">
       <span>2</span>
       {{ 'APPOINTMENT.STEPS.SPECIALIST' | translate }}
     </div>
-    <div
-      class="step"
-      [class.disabled]="!formularioTurno.get('especialista')?.valid"
-      [class.done]="formularioTurno.get('dia')?.valid"
-      [class.active]="
-        formularioTurno.get('especialista')?.valid &&
-        !formularioTurno.get('dia')?.valid
-      "
-    >
+    <div class="step" 
+         [class.disabled]="!formularioTurno.get('especialista')?.valid"
+         [class.done]="formularioTurno.get('dia')?.valid" 
+         [class.active]="formularioTurno.get('especialista')?.valid && !formularioTurno.get('dia')?.valid">
       <span>3</span>
       {{ 'APPOINTMENT.STEPS.DAY' | translate }}
     </div>
-    <div
-      class="step"
-      [class.disabled]="!formularioTurno.get('dia')?.valid"
-      [class.done]="formularioTurno.get('hora')?.valid"
-      [class.active]="
-        formularioTurno.get('dia')?.valid &&
-        !formularioTurno.get('hora')?.valid
-      "
-    >
+    <div class="step" 
+         [class.disabled]="!formularioTurno.get('dia')?.valid"
+         [class.done]="formularioTurno.get('hora')?.valid" 
+         [class.active]="formularioTurno.get('dia')?.valid && !formularioTurno.get('hora')?.valid">
       <span>4</span>
       {{ 'APPOINTMENT.STEPS.TIME' | translate }}
     </div>
   </nav>
 
-  <form
-    [formGroup]="formularioTurno"
-    (ngSubmit)="onSubmit()"
-    class="st-grid"
-  >
-    <!-- Columna izquierda: formulario -->
+  <form [formGroup]="formularioTurno" (ngSubmit)="onSubmit()" class="st-grid">
     <section class="st-column form">
-      <!-- Especialidad -->
+      
       <mat-form-field appearance="outline" class="full">
         <mat-label>
           {{ 'APPOINTMENT.FORM.SPECIALITY_LABEL' | translate }}
@@ -83,117 +58,74 @@
             {{ esp }}
           </mat-option>
         </mat-select>
-        <mat-error
-          *ngIf="
-            formularioTurno.get('especialidad')?.hasError('required')
-          "
-        >
+        <mat-error *ngIf="formularioTurno.get('especialidad')?.hasError('required')">
           {{ 'APPOINTMENT.FORM.SPECIALITY_REQUIRED' | translate }}
         </mat-error>
       </mat-form-field>
 
-      <!-- Especialista -->
       <mat-form-field appearance="outline" class="full">
         <mat-label>
           {{ 'APPOINTMENT.FORM.SPECIALIST_LABEL' | translate }}
         </mat-label>
         <mat-select formControlName="especialista">
-          <mat-option
-            *ngFor="let esp of especialistasFiltrados"
-            [value]="esp.id"
-          >
-            {{ esp.apellido | capitalizarNombre }}, {{ esp.nombre  | capitalizarNombre }}
+          <mat-option *ngFor="let esp of especialistasFiltrados" [value]="esp.id">
+            {{ esp.apellido | capitalizarNombre }}, {{ esp.nombre | capitalizarNombre }}
           </mat-option>
         </mat-select>
-        <mat-error
-          *ngIf="
-            formularioTurno.get('especialista')?.hasError('required')
-          "
-        >
+        <mat-error *ngIf="formularioTurno.get('especialista')?.hasError('required')">
           {{ 'APPOINTMENT.FORM.SPECIALIST_REQUIRED' | translate }}
         </mat-error>
       </mat-form-field>
 
-      <!-- Paciente (solo admin) -->
-      <mat-form-field
-        appearance="outline"
-        class="full"
-        *ngIf="esAdmin"
-      >
+      <mat-form-field appearance="outline" class="full" *ngIf="esAdmin">
         <mat-label>
           {{ 'APPOINTMENT.FORM.PATIENT_LABEL' | translate }}
         </mat-label>
         <mat-select formControlName="paciente">
           <mat-option *ngFor="let pac of pacientes" [value]="pac.id">
-            {{ pac.apellido | capitalizarNombre }}, {{ pac.nombre | capitalizarNombre }}
+            {{ pac.apellido | capitalizarNombre }}, {{ pac.nombre | capitalizarNombre }} (DNI: {{ pac.dni || '---' }})
           </mat-option>
         </mat-select>
-        <mat-error
-          *ngIf="formularioTurno.get('paciente')?.hasError('required')"
-        >
+        <mat-error *ngIf="formularioTurno.get('paciente')?.hasError('required')">
           {{ 'APPOINTMENT.FORM.PATIENT_REQUIRED' | translate }}
         </mat-error>
       </mat-form-field>
 
-      <!-- Día: grilla “quick-pick” -->
       <div class="field-title">
         {{ 'APPOINTMENT.FORM.DAY_TITLE' | translate }}
       </div>
       <div class="days-grid" *ngIf="diasDisponibles.length">
-        <button
-          type="button"
-          class="day-card"
-          *ngFor="let d of diasDisponibles"
-          [class.selected]="isDiaSelected(d)"
-          (click)="selectDia(d)"
-        >
+        <button type="button" class="day-card" 
+                *ngFor="let d of diasDisponibles" 
+                [class.selected]="isDiaSelected(d)"
+                (click)="selectDia(d)">
           <span class="day-label">{{ d.split('|')[1] }}</span>
         </button>
       </div>
 
-      <!-- Hora: grilla de “pills” -->
       <div class="field-title">
         {{ 'APPOINTMENT.FORM.TIME_TITLE' | translate }}
       </div>
       <div class="hours-grid">
-        <button
-          type="button"
-          class="time-pill"
-          *ngFor="let h of horariosDisponibles"
-          [class.selected]="isHoraSelected(h)"
-          (click)="selectHora(h)"
-        >
+        <button type="button" class="time-pill" 
+                *ngFor="let h of horariosDisponibles"
+                [class.selected]="isHoraSelected(h)" 
+                (click)="selectHora(h)">
           {{ h }}
         </button>
       </div>
 
-      <!-- Botones -->
       <div class="actions">
-        <button
-          mat-raised-button
-          type="button"
-          class="btn-secondary"
-          (click)="router.navigate(['/bienvenida'])"
-        >
+        <button mat-raised-button type="button" class="btn-secondary" (click)="router.navigate(['/bienvenida'])">
           {{ 'APPOINTMENT.ACTIONS.CANCEL' | translate }}
         </button>
-        <button
-          mat-raised-button
-          color="primary"
-          type="submit"
-          class="btn-primary"
-          [disabled]="loading || formularioTurno.invalid"
-        >
-          {{
-            loading
-              ? ('APPOINTMENT.ACTIONS.SUBMIT_LOADING' | translate)
-              : ('APPOINTMENT.ACTIONS.SUBMIT' | translate)
-          }}
+        <button mat-raised-button color="primary" type="submit" class="btn-primary"
+          [disabled]="loading || formularioTurno.invalid">
+          {{ loading ? ('APPOINTMENT.ACTIONS.SUBMIT_LOADING' | translate) : ('APPOINTMENT.ACTIONS.SUBMIT' | translate) }}
         </button>
       </div>
     </section>
 
-    <!-- Columna derecha: preview/resumen -->
     <aside class="st-column preview">
       <h3>{{ 'APPOINTMENT.SUMMARY.TITLE' | translate }}</h3>
       <div class="summary">
@@ -206,21 +138,19 @@
         <div class="row">
           <span>{{ 'APPOINTMENT.SUMMARY.SPECIALIST' | translate }}</span>
           <strong>
-            {{
-              especialistaLabel(
-                $any(formularioTurno.get('especialista'))?.value
-              ) || '—'
-            }}
+            {{ especialistaLabel($any(formularioTurno.get('especialista'))?.value) || '—' }}
           </strong>
         </div>
+        
+        <div class="row" *ngIf="esAdmin && formularioTurno.get('paciente')?.value">
+           <span>Paciente</span>
+           <strong>Seleccionado</strong>
+        </div>
+
         <div class="row">
           <span>{{ 'APPOINTMENT.SUMMARY.DAY' | translate }}</span>
           <strong>
-            {{
-              formularioTurno.value.dia
-                ? $any(formularioTurno.value.dia).split('|')[1]
-                : '—'
-            }}
+            {{ formularioTurno.value.dia ? $any(formularioTurno.value.dia).split('|')[1] : '—' }}
           </strong>
         </div>
         <div class="row">
@@ -240,83 +170,106 @@
 </mat-card>
 
 
-
-
-<!-- 
-<mat-card class="st-shell mat-elevation-z6">
+<!-- <mat-card class="st-shell mat-elevation-z6">
   <header class="st-hero">
     <div class="hero-text">
-      <h2>{{ esAdmin ? 'Solicitar Turno (Admin)' : 'Solicitar Turno' }}</h2>
-      <p>Seleccioná especialidad, profesional, día y horario.</p>
+      <h2>
+        {{
+        esAdmin
+        ? ('APPOINTMENT.TITLE_ADMIN' | translate)
+        : ('APPOINTMENT.TITLE' | translate)
+        }}
+      </h2>
+      <p>{{ 'APPOINTMENT.SUBTITLE' | translate }}</p>
     </div>
     <div class="hero-badge">
-      <span class="dot"></span> Atención Online
+      <span class="dot"></span>
+      {{ 'APPOINTMENT.BADGE' | translate }}
     </div>
   </header>
-
-
   <nav class="st-steps">
     <div class="step" [class.done]="formularioTurno.get('especialidad')?.valid"
       [class.active]="!formularioTurno.get('especialidad')?.valid">
-      <span>1</span> Especialidad
+      <span>1</span>
+      {{ 'APPOINTMENT.STEPS.SPECIALITY' | translate }}
     </div>
     <div class="step" [class.disabled]="!formularioTurno.get('especialidad')?.valid"
-      [class.done]="formularioTurno.get('especialista')?.valid"
-      [class.active]="formularioTurno.get('especialidad')?.valid && !formularioTurno.get('especialista')?.valid">
-      <span>2</span> Especialista
+      [class.done]="formularioTurno.get('especialista')?.valid" [class.active]="
+        formularioTurno.get('especialidad')?.valid &&
+        !formularioTurno.get('especialista')?.valid
+      ">
+      <span>2</span>
+      {{ 'APPOINTMENT.STEPS.SPECIALIST' | translate }}
     </div>
     <div class="step" [class.disabled]="!formularioTurno.get('especialista')?.valid"
-      [class.done]="formularioTurno.get('dia')?.valid"
-      [class.active]="formularioTurno.get('especialista')?.valid && !formularioTurno.get('dia')?.valid">
-      <span>3</span> Día
+      [class.done]="formularioTurno.get('dia')?.valid" [class.active]="
+        formularioTurno.get('especialista')?.valid &&
+        !formularioTurno.get('dia')?.valid
+      ">
+      <span>3</span>
+      {{ 'APPOINTMENT.STEPS.DAY' | translate }}
     </div>
     <div class="step" [class.disabled]="!formularioTurno.get('dia')?.valid"
-      [class.done]="formularioTurno.get('hora')?.valid"
-      [class.active]="formularioTurno.get('dia')?.valid && !formularioTurno.get('hora')?.valid">
-      <span>4</span> Hora
+      [class.done]="formularioTurno.get('hora')?.valid" [class.active]="
+        formularioTurno.get('dia')?.valid &&
+        !formularioTurno.get('hora')?.valid
+      ">
+      <span>4</span>
+      {{ 'APPOINTMENT.STEPS.TIME' | translate }}
     </div>
   </nav>
 
   <form [formGroup]="formularioTurno" (ngSubmit)="onSubmit()" class="st-grid">
-
     <section class="st-column form">
-
       <mat-form-field appearance="outline" class="full">
-        <mat-label>Especialidad</mat-label>
+        <mat-label>
+          {{ 'APPOINTMENT.FORM.SPECIALITY_LABEL' | translate }}
+        </mat-label>
         <mat-select formControlName="especialidad">
-          <mat-option *ngFor="let esp of especialidades" [value]="esp">{{ esp }}</mat-option>
-        </mat-select>
-        <mat-error *ngIf="formularioTurno.get('especialidad')?.hasError('required')">
-          La especialidad es obligatoria
-        </mat-error>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="full">
-        <mat-label>Especialista</mat-label>
-        <mat-select formControlName="especialista">
-          <mat-option *ngFor="let esp of especialistasFiltrados" [value]="esp.id">
-            {{ esp.apellido }}, {{ esp.nombre }}
+          <mat-option *ngFor="let esp of especialidades" [value]="esp">
+            {{ esp }}
           </mat-option>
         </mat-select>
-        <mat-error *ngIf="formularioTurno.get('especialista')?.hasError('required')">
-          El especialista es obligatorio
+        <mat-error *ngIf="
+            formularioTurno.get('especialidad')?.hasError('required')
+          ">
+          {{ 'APPOINTMENT.FORM.SPECIALITY_REQUIRED' | translate }}
         </mat-error>
       </mat-form-field>
 
+      <mat-form-field appearance="outline" class="full">
+        <mat-label>
+          {{ 'APPOINTMENT.FORM.SPECIALIST_LABEL' | translate }}
+        </mat-label>
+        <mat-select formControlName="especialista">
+          <mat-option *ngFor="let esp of especialistasFiltrados" [value]="esp.id">
+            {{ esp.apellido | capitalizarNombre }}, {{ esp.nombre | capitalizarNombre }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="
+            formularioTurno.get('especialista')?.hasError('required')
+          ">
+          {{ 'APPOINTMENT.FORM.SPECIALIST_REQUIRED' | translate }}
+        </mat-error>
+      </mat-form-field>
 
       <mat-form-field appearance="outline" class="full" *ngIf="esAdmin">
-        <mat-label>Paciente</mat-label>
+        <mat-label>
+          {{ 'APPOINTMENT.FORM.PATIENT_LABEL' | translate }}
+        </mat-label>
         <mat-select formControlName="paciente">
           <mat-option *ngFor="let pac of pacientes" [value]="pac.id">
-            {{ pac.apellido }}, {{ pac.nombre }}
+            {{ pac.apellido | capitalizarNombre }}, {{ pac.nombre | capitalizarNombre }}
           </mat-option>
         </mat-select>
         <mat-error *ngIf="formularioTurno.get('paciente')?.hasError('required')">
-          El paciente es obligatorio
+          {{ 'APPOINTMENT.FORM.PATIENT_REQUIRED' | translate }}
         </mat-error>
       </mat-form-field>
 
-      <div class="field-title">Día</div>
+      <div class="field-title">
+        {{ 'APPOINTMENT.FORM.DAY_TITLE' | translate }}
+      </div>
       <div class="days-grid" *ngIf="diasDisponibles.length">
         <button type="button" class="day-card" *ngFor="let d of diasDisponibles" [class.selected]="isDiaSelected(d)"
           (click)="selectDia(d)">
@@ -324,42 +277,52 @@
         </button>
       </div>
 
-  
-
-
-      <div class="field-title">Hora</div>
+      <div class="field-title">
+        {{ 'APPOINTMENT.FORM.TIME_TITLE' | translate }}
+      </div>
       <div class="hours-grid">
         <button type="button" class="time-pill" *ngFor="let h of horariosDisponibles"
           [class.selected]="isHoraSelected(h)" (click)="selectHora(h)">
           {{ h }}
         </button>
       </div>
-  
+
       <div class="actions">
         <button mat-raised-button type="button" class="btn-secondary" (click)="router.navigate(['/bienvenida'])">
-          Cancelar
+          {{ 'APPOINTMENT.ACTIONS.CANCEL' | translate }}
         </button>
         <button mat-raised-button color="primary" type="submit" class="btn-primary"
           [disabled]="loading || formularioTurno.invalid">
-          {{ loading ? 'Solicitando…' : 'Solicitar Turno' }}
+          {{
+          loading
+          ? ('APPOINTMENT.ACTIONS.SUBMIT_LOADING' | translate)
+          : ('APPOINTMENT.ACTIONS.SUBMIT' | translate)
+          }}
         </button>
       </div>
     </section>
 
     <aside class="st-column preview">
-      <h3>Resumen</h3>
+      <h3>{{ 'APPOINTMENT.SUMMARY.TITLE' | translate }}</h3>
       <div class="summary">
         <div class="row">
-          <span>Especialidad</span>
-          <strong>{{ formularioTurno.get('especialidad')?.value || '—' }}</strong>
+          <span>{{ 'APPOINTMENT.SUMMARY.SPECIALITY' | translate }}</span>
+          <strong>
+            {{ formularioTurno.get('especialidad')?.value || '—' }}
+          </strong>
         </div>
         <div class="row">
-          <span>Especialista</span>
-          <strong>{{ especialistaLabel($any(formularioTurno.get('especialista'))?.value) || '—' }}</strong>
-
+          <span>{{ 'APPOINTMENT.SUMMARY.SPECIALIST' | translate }}</span>
+          <strong>
+            {{
+            especialistaLabel(
+            $any(formularioTurno.get('especialista'))?.value
+            ) || '—'
+            }}
+          </strong>
         </div>
         <div class="row">
-          <span>Día</span>
+          <span>{{ 'APPOINTMENT.SUMMARY.DAY' | translate }}</span>
           <strong>
             {{
             formularioTurno.value.dia
@@ -367,19 +330,19 @@
             : '—'
             }}
           </strong>
-
         </div>
         <div class="row">
-          <span>Hora</span>
-          <strong>{{ formularioTurno.get('hora')?.value || '—' }}</strong>
+          <span>{{ 'APPOINTMENT.SUMMARY.TIME' | translate }}</span>
+          <strong>
+            {{ formularioTurno.get('hora')?.value || '—' }}
+          </strong>
         </div>
       </div>
 
       <div class="note">
         <mat-icon>info</mat-icon>
-        Los turnos se confirman por email. Si no recibís el correo en 5 min, revisá tu carpeta de spam.
+        {{ 'APPOINTMENT.NOTE' | translate }}
       </div>
     </aside>
   </form>
-</mat-card>
- -->
+</mat-card> -->

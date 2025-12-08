@@ -82,11 +82,31 @@ const defaultSlide = [
   ])
 ];
 
+// export const slideInAnimation = trigger('routeAnimations', [
+//   transition('login => estadisticas', slideLeft),
+//   transition('estadisticas => login', slideRight),
+//   transition('estadisticas => miPerfil', fadeZoom),
+//   transition('miPerfil => estadisticas', fadeZoom),
+//   transition('* <=> *', defaultSlide)
+// ]);
+
+
 export const slideInAnimation = trigger('routeAnimations', [
-  transition('login => estadisticas', slideLeft),
-  transition('estadisticas => login', slideRight),
-  transition('estadisticas => miPerfil', fadeZoom),
-  transition('miPerfil => estadisticas', fadeZoom),
+  // 1. Del Login al Home o Bienvenida (Efecto entrar)
+  transition('LoginPage => BienvenidaPage', slideLeft),
+  transition('LoginPage => TurnosPage', slideLeft),
+  
+  // 2. Transiciones de Perfil (Efecto Zoom elegante)
+  transition('* => PerfilPage', fadeZoom),
+  transition('PerfilPage => *', fadeZoom),
+
+  // 3. Transiciones de Admin/Estadísticas (Efecto deslizar)
+  // Cuando vas a estadísticas, deslizás a la izquierda
+  transition('* => AdminStatsPage', slideLeft),
+  // Cuando salís de estadísticas, deslizás a la derecha (volver)
+  transition('AdminStatsPage => *', slideRight),
+
+  // 4. Todo lo demás usa la animación suave vertical
   transition('* <=> *', defaultSlide)
 ]);
 

@@ -1,0 +1,66 @@
+Modulo;Sub-Modulo;Caso de Prueba / Detalle;Rol;Criterio de Aceptacion
+General;Configuracion;Verificar Favicon y Titulo;Todos;Se ve el icono y titulo "Clinica Online".
+General;Animaciones;Transicion Login -> Home;Todos;Debe existir animacion (Slide o Fade).
+General;Animaciones;Transicion entre Secciones;Todos;Minimo 6 animaciones distintas en toda la app.
+General;Idiomas;Traduccion Ingles;Todos;Al cambiar idioma, se traducen textos fijos.
+General;Idiomas;Traduccion Portugues;Todos;Al cambiar idioma, se traducen textos fijos.
+General;Idiomas;Persistencia Idioma;Todos;Mantiene el idioma al recargar (opcional pero recomendado).
+Login;UI;Acceso Rapido - Visibilidad;Anonimo;Se ven 3 botones flotantes (Favbuttons) abajo derecha.
+Login;UI;Acceso Rapido - Fotos;Anonimo;Cada boton muestra la foto real del usuario.
+Login;UI;Acceso Rapido - Cantidad;Anonimo;Hay 6 perfiles: 3 Pacientes, 2 Esp, 1 Admin.
+Login;UI;Formulario;Anonimo;Inputs de correo y clave visibles y limpios.
+Login;Logica;Ingreso Admin;Admin;Entra directo a Home Admin.
+Login;Logica;Ingreso Paciente OK;Paciente;Entra directo a Home Paciente.
+Login;Logica;Ingreso Especialista OK;Especialista;Entra directo a Home Especialista.
+Login;Validacion;Email no verificado;Pac/Esp;Muestra error "Debe verificar su email".
+Login;Validacion;Cuenta inhabilitada;Especialista;Muestra error "Cuenta no habilitada por Admin".
+Login;Validacion;Datos incorrectos;Todos;Muestra error de credenciales invalidas.
+Registro;UI;Seleccion Rol;Anonimo;Muestra SOLO 2 botones grandes (img) para elegir rol.
+Registro;Paciente;Formulario Completo;Paciente;Campos: Nombre, Ape, Edad, DNI, OS, Mail, Pass.
+Registro;Paciente;Carga de Imagenes;Paciente;Permite subir 2 fotos (Previsualizacion recomendada).
+Registro;Especialista;Formulario Completo;Especialista;Campos: Nombre, Ape, Edad, DNI, Esp, Mail, Pass.
+Registro;Especialista;Carga de Imagenes;Especialista;Permite subir 1 foto.
+Registro;Especialista;Nueva Especialidad;Especialista;Opcion para agregar especialidad si no esta en lista.
+Registro;General;Captcha Visual;Anonimo;Se ve el componente de Captcha (Google o Propio).
+Registro;General;Captcha Logica;Anonimo;No permite registrarse si el captcha no esta resuelto.
+Registro;Validacion;Campos Vacios;Anonimo;Botón "Registrar" deshabilitado o muestra error.
+Home;Bienvenida;Accesos;Anonimo;Botones claros para ir a Login o Registro.
+Admin;Usuarios;Listado Visual;Admin;Se ven los usuarios como botones redondos (Favbutton).
+Admin;Usuarios;Datos Usuario;Admin;Al pasar mouse o click, muestra info basica.
+Admin;Usuarios;Accion Habilitar;Admin;Puede cambiar estado de Especialista (Off -> On).
+Admin;Usuarios;Alta Admin;Admin;Formulario para crear nuevo Admin (con foto).
+Admin;Descargas;Excel General;Admin;Descarga lista completa de usuarios.
+Admin;Descargas;Excel Individual;Admin;Click en usuario -> Descarga excel con sus turnos.
+Admin;Estadisticas;Log Ingresos;Admin;Tabla/Lista: Quien entro, dia y hora.
+Admin;Estadisticas;Grafico Esp;Admin;Turnos por especialidad (Grafico visible).
+Admin;Estadisticas;Grafico Dias;Admin;Turnos por dia (Grafico visible).
+Admin;Estadisticas;Grafico Medicos (Sol);Admin;Turnos solicitados por medico (lapso tiempo).
+Admin;Estadisticas;Grafico Medicos (Fin);Admin;Turnos finalizados por medico (lapso tiempo).
+Admin;Estadisticas;Descarga Informes;Admin;Boton para bajar graficos en PDF o Excel.
+Especialista;Mi Perfil;Disponibilidad;Especialista;Selecciona dias y rangos horarios por especialidad.
+Especialista;Mis Pacientes;Listado;Especialista;Solo ve pacientes que atendio (Turno Finalizado).
+Especialista;Mis Pacientes;Visual;Especialista;Favbuttons redondos con foto y nombre.
+Especialista;Mis Pacientes;Historia Clinica;Especialista;Click en paciente -> Ve toda su HC.
+Turnos;Solicitud;Filtro Especialidad;Pac/Admin;Seleccion sin Combobox (Botones o Tarjetas).
+Turnos;Solicitud;Filtro Especialista;Pac/Admin;Seleccion sin Combobox.
+Turnos;Solicitud;Fechas;Pac/Admin;Muestra prox 15 dias segun disponibilidad (Sin Datepicker).
+Turnos;Solicitud;Confirmacion;Pac/Admin;Boton final para crear el turno.
+Turnos;Listado;Filtro Global;Todos;Input de busqueda filtra por cualquier dato (incluido HC).
+Turnos;Listado;Visualizacion;Todos;Se distingue el estado (Pendiente, Realizado, etc) con colores/texto.
+Turnos;Accion;Cancelar (Pac);Paciente;Solo si no realizado. Pide comentario.
+Turnos;Accion;Ver Reseña;Paciente;Solo si tiene reseña.
+Turnos;Accion;Encuesta;Paciente;Solo si finalizado + reseña. Formulario de encuesta.
+Turnos;Accion;Calificar;Paciente;Solo si finalizado. Texto + Estrellas.
+Turnos;Accion;Rechazar (Esp);Especialista;Solo si es Pendiente. Pide comentario.
+Turnos;Accion;Aceptar (Esp);Especialista;Pasa a estado "Aceptado".
+Turnos;Accion;Finalizar (Esp);Especialista;Abre modal/form de Finalizacion.
+Turnos;Finalizacion;Carga Reseña;Especialista;Input de texto diagnostico/reseña.
+Turnos;Finalizacion;Datos Fijos HC;Especialista;Inputs: Altura, Peso, Temp, Presion.
+Turnos;Finalizacion;Datos Dinamicos HC;Especialista;3 pares clave-valor libres.
+Turnos;Finalizacion;Datos Dinamicos Sprint 5;Especialista;Rango (0-100), Numerico, Switch (Si/No).
+Mi Perfil;Paciente;Ver Historia Clinica;Paciente;Ve listado de sus atenciones.
+Mi Perfil;Paciente;Descarga PDF HC;Paciente;PDF con logo, titulo, fecha y datos de HC.
+Mi Perfil;Paciente;Descarga PDF Esp;Paciente;Filtro por medico -> Descarga PDF de esas atenciones.
+Tecnico;Codigo;Pipes;Dev;Uso de 3 pipes personalizados (ej: formato fecha, estado turno).
+Tecnico;Codigo;Directivas;Dev;Uso de 3 directivas (ej: hover, validacion, captcha).
+Tecnico;Codigo;Modularizacion;Dev;Lazy Loading implementado en rutas.

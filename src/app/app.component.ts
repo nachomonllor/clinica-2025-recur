@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { slideInAnimation, fadeInAnimation } from './animations';
 import { filter } from 'rxjs/operators';
-import { fadeAnimation } from './route-animations';
 
 @Component({
   selector: 'app-root',
@@ -10,7 +9,7 @@ import { fadeAnimation } from './route-animations';
   imports: [RouterOutlet],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
-  animations: [slideInAnimation, fadeInAnimation, fadeAnimation]
+  animations: [slideInAnimation, fadeInAnimation]
 })  
 export class AppComponent {
   title = 'clinica-online';

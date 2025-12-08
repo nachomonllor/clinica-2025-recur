@@ -1,24 +1,25 @@
-* Captcha en el registro especialista
-* Boton deshabilitar Captcha
-* Validación datos de la historia clinica , que salga validacion
-* Grafico de trta y otros
-* Encuesta del lado del paciente 
-* la pantalla seleccionar usaruio tienen que ser circulos (lo que pide el cliente)  
-* favbuttons ? ? 
-* Logo de la clinica en todos los graficos
-* hacer un switch si/no en requiere seguimiento de la historia clinca [class="switch"]
-* Directiva propia
-* Verificar que guarda mas de una especialidad el registro del especialista
-* Animaciones de transicion que no sean la ruedita
-* Traer todos los usuarios del lado del admin
-* Boton para desactivar el Captcha
-* Turnos por especialista
-* Readme con imagenes
-* En mi-perfil del especialista, tiene que verse a la derecha los horarios que le quedaron al especialista ,
+* Captcha en el registro especialista (LISTO)
+* Boton deshabilitar Captcha (LISTO)
+* Validación datos de la historia clinica , que salga validacion (LISTO)
+* Grafico de trta y otros (LISTO)
+* Encuesta del lado del paciente  (LISTO)
+* la pantalla seleccionar usaruio tienen que ser circulos (lo que pide el cliente)   (LISTO)
+* favbuttons ? ? (LISTO)
+* Logo de la clinica en todos los graficos (LISTO)
+* hacer un switch si/no en requiere seguimiento de la historia clinca [class="switch"] (LISTO)
+* Directiva propia 
+
+* Verificar que guarda mas de una especialidad el registro del especialista (LISTO)
+* Animaciones de transicion que no sean la ruedita 
+* Traer todos los usuarios del lado del admin (LISTO)
+* Boton para desactivar el Captcha (LISTO)
+* Turnos por especialista (LISTO)
+* Readme con imagenes (LISTO)
+* En mi-perfil del especialista, tiene que verse a la derecha los horarios que le quedaron al especialista , (LISTO)
   es decir, si en otra sesion dejo sus horarios cargados, tiene que quedar fijo en mi-perfil, que pueda verse , pero tambien poder editarlos
 
-* poder buscar por reseña desde los distintos perfiles
-* Datos dinamicos, tiene que verse en la historia clinica en pantalla (ya se ve en el PDF) queda en la pantalla.
+* poder buscar por reseña desde los distintos perfiles 
+* Datos dinamicos, tiene que verse en la historia clinica en pantalla (ya se ve en el PDF) queda en la pantalla. (LISTO)
 
 
 
