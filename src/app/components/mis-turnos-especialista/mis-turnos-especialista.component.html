@@ -21,7 +21,7 @@
         Se eliminó el '?' antes del .toLowerCase() en las clases dinámicas
         para evitar el warning NG8107.
     -->
-  <article class="turno-card" *ngFor="let t of turnos" [class.aceptado]="t.estado.toLowerCase() === 'aceptado'"
+  <article class="turno-card" *ngFor="let t of turnos" [class.aceptado]="t.estado.toLowerCase() === 'aceptado'" appElevateOnHover
     [class.realizado]="t.estado.toLowerCase() === 'realizado' || t.estado === 'FINALIZADO'"
     [class.pendiente]="t.estado.toLowerCase() === 'pendiente'"
     [class.rechazado]="t.estado.toLowerCase() === 'rechazado'"

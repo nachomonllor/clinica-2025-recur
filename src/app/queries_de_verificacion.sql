@@ -56,3 +56,26 @@ WHERE
     AND estado.codigo = 'CANCELADO'
 ORDER BY 
     turno.fecha_hora_inicio DESC;
+
+
+-- VER TODAS LAS ENCUESTAS DE UN ESPECIALISTA
+
+SELECT 
+    ea.fecha_respuesta,
+    p.apellido || ', ' || p.nombre as paciente, -- Quien opinó
+    ea.estrellas as calificacion,
+    ea.comentario as opinion_texto,
+    -- Datos extra del sprint 6 (si los cargaron)
+    ea.respuesta_radio as pregunta_radio,
+    ea.respuesta_checkbox as pregunta_check,
+    ea.valor_rango as puntaje_rango
+FROM esquema_clinica.encuestas_atencion ea
+-- 1. Unimos para identificar a la Especialista (Nora)
+JOIN esquema_clinica.usuarios e ON ea.especialista_id = e.id
+-- 2. Unimos para ver el nombre del Paciente
+JOIN esquema_clinica.usuarios p ON ea.paciente_id = p.id
+WHERE 
+    e.email = 'nora@hotmail.com' -- Filtramos por el mail de Nora
+ORDER BY 
+    ea.fecha_respuesta DESC;
+

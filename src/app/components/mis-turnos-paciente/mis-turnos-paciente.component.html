@@ -1,4 +1,4 @@
-<mat-card class="mis-shell mat-elevation-z6" appElevateOnHover>
+<mat-card class="mis-shell mat-elevation-z6"  appElevateOnHover>
 
     <div class="toolbar">
         <mat-form-field appearance="outline" class="toolbar__filtro">
@@ -31,12 +31,12 @@
             CORRECCIÓN DE CLASES (BORDES):
             Ya tenías esto bien, usamos .toLowerCase() directo.
         -->
-        <article class="turno-card" *ngFor="let t of turnos" 
+        <article class="turno-card" *ngFor="let t of turnos" appElevateOnHover
             [class.aceptado]="t.estado.toLowerCase() === 'aceptado'"
             [class.realizado]="t.estado.toLowerCase() === 'realizado' || t.estado === 'FINALIZADO'"
             [class.pendiente]="t.estado.toLowerCase() === 'pendiente'"
             [class.rechazado]="t.estado.toLowerCase() === 'rechazado'"
-            [class.cancelado]="t.estado.toLowerCase() === 'cancelado'">
+            [class.cancelado]="t.estado.toLowerCase() === 'cancelado'" > 
 
             <div class="card-header">
                 <div class="fecha-hora">
@@ -140,76 +140,6 @@
         </button>
     </mat-dialog-actions>
 </ng-template>
-
-<!-- <ng-template #calificarDialog let-data>
-    <h2 mat-dialog-title style="color: #38bdf8;">Encuesta de Satisfacción</h2>
-    <mat-dialog-content>
-        <p style="color: #cbd5e1; margin-bottom: 1rem;">
-            Ayúdanos a mejorar completando esta encuesta sobre tu atención con <strong>{{ data?.turno?.especialista
-                }}</strong>.
-        </p>
-
-        <form [formGroup]="data?.form" style="display: flex; flex-direction: column; gap: 1.2rem;">
-
-            <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Calificación General</mat-label>
-                <mat-select formControlName="estrellas">
-                    <mat-option [value]="5">⭐⭐⭐⭐⭐ (5) Excelente</mat-option>
-                    <mat-option [value]="4">⭐⭐⭐⭐ (4) Muy bueno</mat-option>
-                    <mat-option [value]="3">⭐⭐⭐ (3) Bueno</mat-option>
-                    <mat-option [value]="2">⭐⭐ (2) Regular</mat-option>
-                    <mat-option [value]="1">⭐ (1) Malo</mat-option>
-                </mat-select>
-            </mat-form-field>
-
-            <div>
-                <div
-                    style="display: flex; justify-content: space-between; color: #e2e8f0; font-size: 0.9rem; margin-bottom: 4px;">
-                    <label>Nivel de satisfacción (1 al 10)</label>
-                    <strong>{{ data?.form?.get('rango')?.value }}</strong>
-                </div>
-                <mat-slider min="1" max="10" step="1" showTickMarks discrete style="width: 100%;">
-                    <input matSliderThumb formControlName="rango">
-                </mat-slider>
-            </div>
-
-            <div>
-                <label style="display:block; margin-bottom: 8px; color: #cbd5e1; font-size: 0.9rem;">¿Recomendarías este
-                    especialista?</label>
-                <mat-radio-group formControlName="recomendaria" style="display: flex; gap: 20px; color: #e2e8f0;">
-                    <mat-radio-button value="si">Sí, seguro</mat-radio-button>
-                    <mat-radio-button value="no">No creo</mat-radio-button>
-                </mat-radio-group>
-            </div>
-
-            <div>
-                <label style="display:block; margin-bottom: 8px; color: #cbd5e1; font-size: 0.9rem;">Aspectos a
-                    destacar:</label>
-                <div style="display: flex; flex-wrap: wrap; gap: 10px; color: #e2e8f0;">
-                    <mat-checkbox formControlName="puntualidad">Puntualidad</mat-checkbox>
-                    <mat-checkbox formControlName="amabilidad">Amabilidad</mat-checkbox>
-                    <mat-checkbox formControlName="limpieza">Limpieza</mat-checkbox>
-                </div>
-            </div>
-
-            <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Comentario adicional</mat-label>
-                <textarea matInput formControlName="comentario" rows="3"
-                    placeholder="Describe tu experiencia (mínimo 10 caracteres)"></textarea>
-                <mat-error *ngIf="data?.form?.get('comentario')?.hasError('required')">Requerido</mat-error>
-                <mat-error *ngIf="data?.form?.get('comentario')?.hasError('minlength')">Mínimo 10 caracteres</mat-error>
-            </mat-form-field>
-
-        </form>
-    </mat-dialog-content>
-
-    <mat-dialog-actions align="end">
-        <button mat-button mat-dialog-close>Cancelar</button>
-        <button mat-raised-button color="primary" [disabled]="!data?.form?.valid" [mat-dialog-close]="true">
-            Enviar Encuesta
-        </button>
-    </mat-dialog-actions>
-</ng-template> -->
 
 <ng-template #calificarDialog let-data>
     <h2 mat-dialog-title style="color: #38bdf8;">Encuesta de Satisfacción</h2>

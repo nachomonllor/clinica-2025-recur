@@ -103,3 +103,75 @@ body {
     color: #e2e8f0 !important;
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
+
+/* --- LUZ NARANJA: USO A LA DIRECTIVA appElevateOnHover --- */
+
+// .click-flash {
+//   border-color: #f97316 !important;
+
+//   /* Luz mucho más ajustada al borde */
+//   box-shadow: 
+//       0 0 8px 1px rgba(249, 115, 22, 0.9),   /* Núcleo fino */
+//       0 0 15px 2px rgba(249, 115, 22, 0.5) !important; /* Resplandor corto */
+
+//   transition: all 0.05s ease-out !important;
+//   z-index: 200 !important;
+// }
+
+/* 1. Estado persistente mientras el mouse está encima (Neón suave) */
+// .hover-elevated {
+//   transform: translateY(-6px) scale(1.02) !important;
+//   border: 2px solid #f97316 !important;
+//   /* Sombra naranja normal */
+
+
+// //   box-shadow:
+// //       0 0 10px rgba(249, 115, 22, 0.8),
+// //       0 0 25px rgba(249, 115, 22, 0.5) !important;
+
+//     /* Luz: 
+//      - Núcleo: 5px (antes 8px) -> Más pequeño
+//      - Opacidad: 0.5 (antes 0.9) -> Más tenue
+//      - Resplandor: 15px (antes 20px) -> Menos extensión */
+//   box-shadow:
+//       0 0 5px 1px rgba(255, 255, 255, 0.5),   /* Núcleo de luz suave */
+//       0 0 15px 3px rgba(249, 115, 22, 0.6) !important; /* Resplandor naranja contenido */
+
+
+//   z-index: 100 !important;
+//   cursor: pointer;
+//   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+// }
+
+.hover-elevated {
+    /* Borde: En lugar de blanco (#fff), usamos un naranja muy pálido */
+  border-color: #fed7aa !important; 
+
+  /* Luz: 
+     - Núcleo: 5px (antes 8px) -> Más pequeño
+     - Opacidad: 0.5 (antes 0.9) -> Más tenue
+     - Resplandor: 15px (antes 20px) -> Menos extensión */
+  box-shadow:
+      0 0 5px 1px rgba(255, 255, 255, 0.5),   /* Núcleo de luz suave */
+      0 0 15px 3px rgba(249, 115, 22, 0.6) !important; /* Resplandor naranja contenido */
+
+  /* Transición: Aumentada a 0.5s para que el encendido sea gradual */
+  transition: all 0.5s ease-out !important;
+  
+  z-index: 200 !important;
+}
+
+/* 2. CLASE PARA EL DESTELLO AL ENTRAR (Flash intenso inicial) */
+/* Esta clase se aplica junto con la anterior por 300ms y luego se va */
+.enter-flash {
+  border-color: #ffffff !important; /* Borde blanco momentáneo para más brillo */
+
+  /* Luz naranja MUY intensa y concentrada (usando los valores ajustados que pediste) */
+  box-shadow:
+      0 0 8px 2px rgba(34, 163, 2, 0.9),   /* Núcleo blanco brillante */
+      0 0 10px 5px rgb(78, 161, 0) !important; /* Resplandor naranja máximo */
+
+  /* Transición muy rápida para el golpe de luz */
+  transition: all 0.1s ease-out !important;
+  z-index: 200 !important;
+}

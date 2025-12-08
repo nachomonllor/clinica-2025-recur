@@ -125,12 +125,12 @@ export const routes: Routes = [
         // Animación al entrar a estadísticas
         data: { animation: 'AdminStatsPage', roles: ['ADMIN'] }
       },
-      {
-        path: 'estadisticas',
-        canActivate: [RoleGuard],
-        loadComponent: () => import('./components/estadisticas/estadisticas.component').then(m => m.EstadisticasComponent),
-        data: { animation: 'AdminStatsPage', roles: ['ADMIN'] }
-      },
+      // {
+      //   path: 'estadisticas',
+      //   canActivate: [RoleGuard],
+      //   loadComponent: () => import('./components/estadisticas/estadisticas.component').then(m => m.EstadisticasComponent),
+      //   data: { animation: 'AdminStatsPage', roles: ['ADMIN'] }
+      // },
       // reportes específicos
       {
         path: 'reportes',

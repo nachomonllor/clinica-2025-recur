@@ -47,27 +47,6 @@
       </ng-template>
     </button>
 
-
-
-
-    <!-- <div class="quick-access-inline" *ngIf="accesosRapidos.length">
-      <h4>{{ 'LOGIN.QUICK_ACCESS' | translate }}</h4>
-      <div class="quick-inline-grid">
-        <button type="button" class="inline-fav" *ngFor="let user of accesosRapidos"
-          [class.rol-paciente]="user.rol === 'PACIENTE'" [class.rol-especialista]="user.rol === 'ESPECIALISTA'"
-          [class.rol-admin]="user.rol === 'ADMIN'" (click)="loginRapidoUser(user)"
-          [attr.title]="user.nombre + ' (' + (('ROLES.' + user.rol) | translate) + ')'">
-          <div class="inline-avatar">
-            <img [src]="user.avatar" [alt]="user.nombre" />
-          </div>
-          <span class="inline-name">{{ user.nombre }}</span>
-          <span class="inline-role">
-            {{ ('ROLES.' + user.rol) | translate }}
-          </span>
-        </button>
-      </div>
-    </div> -->
-
   </form>
 
   <div class="quick-access-inline note">
@@ -75,12 +54,9 @@
   </div>
 </mat-card>
 
-
-
 <app-quick-login-buttons 
     [quickLogins]="quickLoginsData" 
     (loginAttempt)="activarQuick($event)"> 
 </app-quick-login-buttons>
-
 
 <app-fab-bienvenida></app-fab-bienvenida>

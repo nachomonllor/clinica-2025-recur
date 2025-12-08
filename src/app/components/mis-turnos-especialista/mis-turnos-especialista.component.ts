@@ -27,6 +27,7 @@ import { TurnosService } from '../../../services/turnos.service';
 
 import { MatDialogRef } from '@angular/material/dialog';
 import { CapitalizarNombrePipe } from "../../../pipes/capitalizar-nombre.pipe";
+import { ElevateOnHoverDirective } from "../../../directives/elevate-on-hover.directive";
 
 
 @Component({
@@ -52,8 +53,9 @@ import { CapitalizarNombrePipe } from "../../../pipes/capitalizar-nombre.pipe";
     StatusLabelPipe,
     StatusBadgeDirective,
     FormsModule, ReactiveFormsModule,
-    CapitalizarNombrePipe
-  ]
+    CapitalizarNombrePipe,
+    ElevateOnHoverDirective
+]
 })
 export class MisTurnosEspecialistaComponent implements OnInit {
 
