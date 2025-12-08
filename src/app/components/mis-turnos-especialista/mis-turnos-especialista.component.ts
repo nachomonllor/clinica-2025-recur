@@ -542,32 +542,6 @@ export class MisTurnosEspecialistaComponent implements OnInit {
     });
   }
 
-  // verResena(turno: any): void {
-  //   this.resenaDialogRef = this.dialog.open(this.resenaDialog, {
-  //     data: {
-  //       resena: turno.resena,
-  //       paciente: turno.paciente,
-  //       especialidad: turno.especialidad,
-  //       fecha: turno.fecha,
-  //       hora: turno.hora
-  //     },
-  //     panelClass: 'resena-dialog',
-  //     disableClose: true,  // sólo se cierra con el botón
-  //     autoFocus: false
-  //   });
-  // }
-
-  //   verResena(t: TurnoVM): void {
-  //   if (!t.resena || t.resena.trim().length === 0) {
-  //     this.snackBar.open('Este turno no tiene reseña disponible', 'Cerrar', { duration: 2500 });
-  //     return;
-  //   }
-  //   this.dialog.open(this.verResenaDialog, {
-  //     data: { turno: t, resena: t.resena },
-  //     width: '500px'
-  //   });
-  // }
-
   verResena(t: TurnoEspecialista): void {
     if (!t.resena || t.resena.trim().length === 0) {
       this.snackBar.open('Este turno no tiene reseña disponible', 'Cerrar', { duration: 2500 });
