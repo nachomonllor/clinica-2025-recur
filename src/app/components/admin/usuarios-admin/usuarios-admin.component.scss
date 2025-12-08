@@ -197,11 +197,37 @@
   }
 }
 
+// .status {
+//   padding: 6px 10px; border-radius: 999px; font-size: 11px;
+//   border: 1px solid #ffffff22;
+//   transition: transform 180ms ease;
+//   will-change: background-color;
+//   @media (prefers-reduced-motion: no-preference) {
+//     .user-card:hover & { transform: translateY(-2px); }
+//   }
+// }
+
 .status {
-  padding: 6px 10px; border-radius: 999px; font-size: 11px;
+  padding: 6px 10px; 
+  border-radius: 999px; 
+  font-size: 11px;
+  font-weight: 700;        /* Un poco más de peso para que se lea bien */
   border: 1px solid #ffffff22;
-  transition: transform 180ms ease;
+  transition: transform 180ms ease, background-color 200ms ease;
   will-change: background-color;
+
+  /* Estado por defecto (DESHABILITADO) -> Rojo suave o Gris */
+  background-color: rgba(239, 68, 68, 0.2); /* Fondo rojo transparente */
+  color: #fca5a5;                           /* Texto rojo claro */
+  border-color: rgba(239, 68, 68, 0.4);
+
+  /* Estado ACTIVO (HABILITADO) -> Verde */
+  &.active {
+    background-color: rgba(34, 197, 94, 0.2); /* Fondo verde transparente */
+    color: #86efac;                           /* Texto verde claro */
+    border-color: rgba(34, 197, 94, 0.4);
+  }
+
   @media (prefers-reduced-motion: no-preference) {
     .user-card:hover & { transform: translateY(-2px); }
   }

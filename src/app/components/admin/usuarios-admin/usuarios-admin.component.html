@@ -86,9 +86,15 @@
           </div>
         </div>
 
-        <span class="status" [@statusChanged]="u.habilitado">
+        <!-- <span class="status" [@statusChanged]="u.habilitado">
+          {{ u.habilitado ? 'HABILITADO' : 'DESHABILITADO' }}
+        </span> -->
+
+        <span class="status" [class.active]="u.habilitado" [@statusChanged]="u.habilitado">
           {{ u.habilitado ? 'HABILITADO' : 'DESHABILITADO' }}
         </span>
+
+
       </div>
 
       <!-- Cuerpo -->
