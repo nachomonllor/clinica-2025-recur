@@ -9,7 +9,8 @@ export class RoleGuard implements CanActivate {
 
   async canActivate(route: ActivatedRouteSnapshot): Promise<boolean | UrlTree> {
     
-    // 1. Verificar sesión Auth
+  
+    //Verificar sesión Auth
     const { data: u } = await this.supa.obtenerUsuarioActual();
     const authUser = u?.user;
 
@@ -17,7 +18,7 @@ export class RoleGuard implements CanActivate {
       return this.router.parseUrl('/login');
     }
 
-    // 2. Verificar datos en BD
+    // Verificar datos en BD
     const userId = authUser.id;
     const { data: usuario, error } = await this.supa.obtenerUsuarioPorId(userId);
 
