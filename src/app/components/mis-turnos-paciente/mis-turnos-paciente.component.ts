@@ -111,12 +111,24 @@ export class MisTurnosPacienteComponent implements OnInit {
   // LÓGICA DE VALIDACIÓN (Reglas de Negocio)
   // ==========================================================
 
+
   puedeCancelar(t: TurnoVM): boolean {
+    //  Si ya tiene reseña, está cerrado.
     if (t.resena && t.resena.trim().length > 0) return false;
+
     const estado = (t.estado || '').toUpperCase();
-    const estadosBloqueantes = ['FINALIZADO', 'CANCELADO', 'RECHAZADO', 'REALIZADO'];
+
+    //  Estados que impiden cancelar
+    const estadosBloqueantes = [
+      'FINALIZADO', 
+      'CANCELADO', 
+      'RECHAZADO', 
+      'REALIZADO', 
+      'ACEPTADO' //
+    ];
+
     if (estadosBloqueantes.includes(estado)) return false;
-    // ... tu lógica de fecha aquí si quieres ...
+
     return true; 
   }
 
