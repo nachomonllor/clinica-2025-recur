@@ -36,10 +36,10 @@ SELECT
     especialista.nombre AS nombre_especialista,
     especialista.apellido AS apellido_especialista,
     
-    -- Motivo de la cancelación (guardado en el campo comentario)
+    -- Motivo de la cancelación guardado en el campo comentario
     turno.comentario AS motivo_cancelacion,
     
-    -- Estado (confirmación visual)
+    -- Estado confirmación visual
     estado.codigo AS estado_turno
 FROM 
     esquema_clinica.turnos AS turno

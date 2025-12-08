@@ -640,7 +640,7 @@ export class UsuariosAdminComponent implements OnInit {
 
     // const svgLogo = `... TU SVG ACÁ ...`; // Mantené tu variable svgLogo tal cual la tenés
 
-      const svgLogo = `
+    const svgLogo = `
       <svg width="600" height="200" viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <linearGradient id="gradBlue" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -663,22 +663,22 @@ export class UsuariosAdminComponent implements OnInit {
     const svgBase64 = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgLogo)));
 
     const generarDocumento = (pngDataUrl?: string) => {
-      
+
       const drawHeader = () => {
- 
-         // Mantené tu lógica de header acá (rect, addImage, text, etc)
-         doc.setFillColor(17, 24, 39);
-         doc.rect(0, 0, pageWidth, headerBottom, 'F');
-         if (pngDataUrl) {
-            doc.setFillColor(255, 255, 255);
-            doc.roundedRect(marginX - 2, 5, 65, 22, 2, 2, 'F');
-            doc.addImage(pngDataUrl, 'PNG', marginX, 6, 60, 20);
-         }
-         doc.setTextColor(255, 255, 255);
-         doc.setFontSize(16);
-         doc.text('Reporte de Atenciones', pageWidth - marginX, 18, { align: 'right' });
-         doc.setFontSize(10);
-         doc.text(`Usuario: ${usuario.nombre} ${usuario.apellido}`, pageWidth - marginX, 24, { align: 'right' });
+
+        // Mantené tu lógica de header acá (rect, addImage, text, etc)
+        doc.setFillColor(17, 24, 39);
+        doc.rect(0, 0, pageWidth, headerBottom, 'F');
+        if (pngDataUrl) {
+          doc.setFillColor(255, 255, 255);
+          doc.roundedRect(marginX - 2, 5, 65, 22, 2, 2, 'F');
+          doc.addImage(pngDataUrl, 'PNG', marginX, 6, 60, 20);
+        }
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(16);
+        doc.text('Reporte de Atenciones', pageWidth - marginX, 18, { align: 'right' });
+        doc.setFontSize(10);
+        doc.text(`Usuario: ${usuario.nombre} ${usuario.apellido}`, pageWidth - marginX, 24, { align: 'right' });
       };
 
       drawHeader();
@@ -715,25 +715,25 @@ export class UsuariosAdminComponent implements OnInit {
           // ============================================================
           if (hc.historia_datos_dinamicos && hc.historia_datos_dinamicos.length > 0) {
             addParagraph('Datos Dinámicos:', { bold: true });
-            
+
             hc.historia_datos_dinamicos.forEach((d: any) => {
               let valorPrint = '';
 
               // Verificación explícita de tipos (NO usar || encadenados)
               if (d.valor_texto !== null && d.valor_texto !== undefined && d.valor_texto !== '') {
-                  valorPrint = d.valor_texto;
-              } 
+                valorPrint = d.valor_texto;
+              }
               else if (d.valor_numerico !== null && d.valor_numerico !== undefined) {
-                  valorPrint = d.valor_numerico.toString();
-                  // Agregamos unidades visuales
-                  if (d.tipo_control === 'RANGO_0_100') valorPrint += ' %';
-                  if (d.clave && d.clave.toLowerCase().includes('glucosa')) valorPrint += ' mg/dL';
-              } 
+                valorPrint = d.valor_numerico.toString();
+                // Agregamos unidades visuales
+                if (d.tipo_control === 'RANGO_0_100') valorPrint += ' %';
+                if (d.clave && d.clave.toLowerCase().includes('glucosa')) valorPrint += ' mg/dL';
+              }
               else if (d.valor_boolean !== null && d.valor_boolean !== undefined) {
-                  // Forzamos SI / NO
-                  valorPrint = d.valor_boolean ? 'SI' : 'NO';
+                // Forzamos SI / NO
+                valorPrint = d.valor_boolean ? 'SI' : 'NO';
               } else {
-                  valorPrint = '-'; // Valor por defecto si todo es null
+                valorPrint = '-'; // Valor por defecto si todo es null
               }
 
               addParagraph(`• ${d.clave}: ${valorPrint}`);
@@ -741,7 +741,7 @@ export class UsuariosAdminComponent implements OnInit {
           }
           // ============================================================
         } else {
-           if (t.comentario) addParagraph(`Reseña: ${t.comentario}`);
+          if (t.comentario) addParagraph(`Reseña: ${t.comentario}`);
         }
 
         // ... (CÁLCULO DE ESPACIO Y DIBUJO IGUAL QUE ANTES) ...
@@ -761,7 +761,7 @@ export class UsuariosAdminComponent implements OnInit {
         doc.setDrawColor(59, 130, 246);
         doc.setLineWidth(0.4);
         doc.roundedRect(marginX, y, contentWidth, cardHeight, 3, 3, 'FD');
-        
+
         let textY = y + cardPadding + lineHeight;
         doc.setTextColor(51, 65, 85);
         paragraphs.forEach((p, i) => {
@@ -794,10 +794,40 @@ export class UsuariosAdminComponent implements OnInit {
 
 
 
-  private toISODateLocal(date: Date): string { const y = date.getFullYear(); const m = String(date.getMonth() + 1).padStart(2, '0'); const d = String(date.getDate()).padStart(2, '0'); return `${y}-${m}-${d}`; }
-  private calcEdadFromISO(iso: string): number { const [y, m, d] = iso.split('-').map(Number); const today = new Date(); let edad = today.getFullYear() - y; const month = today.getMonth() + 1; const day = today.getDate(); if (month < m || (month === m && day < d)) edad--; return edad; }
-  onFileChange(event: Event): void { const input = event.target as HTMLInputElement; if (!input.files?.length) return; const file = input.files[0]; this.formularioUsuario.get('imagenPerfil')!.setValue(file); this.formularioUsuario.get('imagenPerfil')!.markAsDirty(); const reader = new FileReader(); reader.onload = () => (this.imagenPrevia = reader.result as string); reader.readAsDataURL(file); }
-  async toggleAprobacion(usuario: UsuarioAdmin): Promise<void> { if (usuario.rol !== 'ESPECIALISTA') return; const nuevoEstado = !usuario.aprobado; try { const { error } = await this.supa.client.from('usuarios').update({ esta_aprobado: nuevoEstado }).eq('id', usuario.id); if (error) throw error; usuario.aprobado = nuevoEstado; Swal.fire('Éxito', `Acceso ${nuevoEstado ? 'habilitado' : 'inhabilitado'}`, 'success'); } catch (e) { Swal.fire('Error', 'No se pudo actualizar', 'error'); } }
+  private toISODateLocal(date: Date): string { const y = date.getFullYear(); 
+    const m = String(date.getMonth() + 1).padStart(2, '0'); 
+    const d = String(date.getDate()).padStart(2, '0'); 
+    return `${y}-${m}-${d}`;
+  }
+  private calcEdadFromISO(iso: string): number 
+  { 
+    const [y, m, d] = iso.split('-').map(Number);
+     const today = new Date(); let edad = today.getFullYear() - y; 
+     const month = today.getMonth() + 1; 
+     const day = today.getDate(); 
+     if (month < m || (month === m && day < d)) edad--; return edad; 
+    }
+
+  onFileChange(event: Event): void { 
+    const input = event.target as HTMLInputElement; 
+    if (!input.files?.length) return; 
+    const file = input.files[0]; 
+    this.formularioUsuario.get('imagenPerfil')!.setValue(file); 
+    this.formularioUsuario.get('imagenPerfil')!.markAsDirty(); 
+    const reader = new FileReader(); 
+    reader.onload = () => (this.imagenPrevia = reader.result as string); 
+    reader.readAsDataURL(file); 
+  }
+  async toggleAprobacion(usuario: UsuarioAdmin): Promise<void> { 
+    if (usuario.rol !== 'ESPECIALISTA') return;
+     const nuevoEstado = !usuario.aprobado; 
+     try { const { error } = await this.supa.client.from('usuarios').update({ esta_aprobado: nuevoEstado }).eq('id', usuario.id);
+      if (error) throw error; usuario.aprobado = nuevoEstado; 
+      Swal.fire('Éxito', `Acceso ${nuevoEstado ? 'habilitado' : 'inhabilitado'}`, 'success'); 
+    } catch (e) 
+    { Swal.fire('Error', 'No se pudo actualizar', 'error'); }
+   }
+   
   crearUsuario(): void { this.mostrarFormulario = true; this.formularioUsuario.reset(); this.imagenPrevia = null; }
   cancelarCreacion(): void { this.mostrarFormulario = false; this.formularioUsuario.reset(); this.imagenPrevia = null; }
 
