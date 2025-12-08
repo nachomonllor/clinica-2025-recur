@@ -144,11 +144,78 @@
 .linea .valor.estrellas{ color:#ffd7ba; }
 
 /* Chip de estado (glass + contraste azul–naranja) */
-.estado-chip{
-  padding:4px 10px; border-radius:999px; font-size:12px; letter-spacing:.5px; font-weight:700;
-  background:linear-gradient(135deg, rgba(37,99,235,.20), rgba(249,115,22,.22));
-  border:1px solid rgba(148,163,184,.5); color:#f8fafc; text-shadow:0 1px 0 rgba(0,0,0,.25);
+// .estado-chip{
+//   padding:4px 10px; border-radius:999px; font-size:12px; letter-spacing:.5px; font-weight:700;
+//   background:linear-gradient(135deg, rgba(37,99,235,.20), rgba(249,115,22,.22));
+//   border:1px solid rgba(148,163,184,.5); color:#f8fafc; text-shadow:0 1px 0 rgba(0,0,0,.25);
+// }
+
+
+/* 1. Estilo base del CHIP (Pastilla) */
+.estado-chip {
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  letter-spacing: 0.8px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5); /* Sombra texto */
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3);  /* Sombra chip */
+  border: 1px solid rgba(255,255,255,0.2);
+  transition: all 0.2s ease;
 }
+
+/* 2. DEFINICIÓN DE COLORES (Borde Card + Fondo Chip) */
+
+/* --- ACEPTADO (Verde) --- */
+.turno-card.aceptado {
+  border-image: linear-gradient(180deg, #10b981, rgba(16,185,129,0.4)) 1;
+}
+.turno-card.aceptado .estado-chip {
+  background-color: #059669; 
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+}
+
+/* --- REALIZADO / FINALIZADO (Violeta) --- */
+.turno-card.realizado,
+.turno-card.finalizado {
+  border-image: linear-gradient(180deg, #8b5cf6, rgba(139,92,246,0.4)) 1;
+}
+.turno-card.realizado .estado-chip,
+.turno-card.finalizado .estado-chip {
+  background-color: #7c3aed;
+  box-shadow: 0 0 10px rgba(139, 92, 246, 0.4);
+}
+
+/* --- PENDIENTE (Azul) --- */
+.turno-card.pendiente {
+  border-image: linear-gradient(180deg, #3b82f6, rgba(59,130,246,0.4)) 1;
+}
+.turno-card.pendiente .estado-chip {
+  background-color: #2563eb;
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.4);
+}
+
+/* --- RECHAZADO (Rojo) --- */
+.turno-card.rechazado {
+  border-image: linear-gradient(180deg, #ef4444, rgba(239,68,68,0.4)) 1;
+}
+.turno-card.rechazado .estado-chip {
+  background-color: #dc2626;
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
+}
+
+/* --- CANCELADO (Naranja) --- */
+.turno-card.cancelado {
+  border-image: linear-gradient(180deg, #f97316, rgba(249,115,22,0.4)) 1;
+}
+.turno-card.cancelado .estado-chip {
+  background-color: #ea580c;
+  box-shadow: 0 0 10px rgba(249, 115, 22, 0.4);
+}
+
+
 
 /* Acciones compactas */
 .card-actions{ display:flex; flex-wrap:wrap; gap:6px; padding-top:4px; margin-top:4px; border-top:1px dashed rgba(148,163,184,.35); }
