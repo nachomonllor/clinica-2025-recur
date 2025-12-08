@@ -26,3 +26,33 @@ ORDER BY
 
 
 
+-- LISTA DE TURNOS CANCELADOS POR EL PACIENTE P
+SELECT 
+    -- Datos del turno
+    turno.fecha_hora_inicio,
+    
+    -- Especialidad y Especialista
+    especialidad.nombre AS especialidad,
+    especialista.nombre AS nombre_especialista,
+    especialista.apellido AS apellido_especialista,
+    
+    -- Motivo de la cancelación (guardado en el campo comentario)
+    turno.comentario AS motivo_cancelacion,
+    
+    -- Estado (confirmación visual)
+    estado.codigo AS estado_turno
+FROM 
+    esquema_clinica.turnos AS turno
+INNER JOIN 
+    esquema_clinica.usuarios AS paciente ON turno.paciente_id = paciente.id
+INNER JOIN 
+    esquema_clinica.usuarios AS especialista ON turno.especialista_id = especialista.id
+INNER JOIN 
+    esquema_clinica.especialidades AS especialidad ON turno.especialidad_id = especialidad.id
+INNER JOIN 
+    esquema_clinica.estados_turno AS estado ON turno.estado_turno_id = estado.id
+WHERE 
+    paciente.email = 'ana@hotmail.com'
+    AND estado.codigo = 'CANCELADO'
+ORDER BY 
+    turno.fecha_hora_inicio DESC;
