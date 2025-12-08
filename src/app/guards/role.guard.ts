@@ -27,7 +27,7 @@ export class RoleGuard implements CanActivate {
     }
 
     // =========================================================
-    // NUEVA VALIDACIÓN: BLOQUEO DE ESPECIALISTAS NO APROBADOS
+    //  BLOQUEO DE ESPECIALISTAS NO APROBADOS
     // =========================================================
     if (usuario.perfil === 'ESPECIALISTA' && !usuario.esta_aprobado) {
       console.warn('[RoleGuard] Especialista NO aprobado. Cerrando sesión y redirigiendo.');
@@ -38,11 +38,11 @@ export class RoleGuard implements CanActivate {
       return this.router.parseUrl('/login');
     }
 
-    // 3. Verificar Roles (Lógica original)
+    //  Verificar Roles (Logica original)
     const perfil = (usuario.perfil || '').toUpperCase() as Rol;
     const allowed: Rol[] = route.data['roles'] ?? [];
 
-    // Si la ruta no tiene roles definidos (acceso público logueado)
+    // Si la ruta no tiene roles definidos (acceso publico logueado)
     if (allowed.length === 0) {
       return true;
     }
@@ -57,7 +57,7 @@ export class RoleGuard implements CanActivate {
     
     switch (perfil) {
       case 'PACIENTE': return this.router.parseUrl('/mis-turnos-paciente');
-      case 'ESPECIALISTA': return this.router.parseUrl('/mis-turnos-especialista'); // Ahora solo llega aquí si está aprobado
+      case 'ESPECIALISTA': return this.router.parseUrl('/mis-turnos-especialista'); // =========> SOLO SI ESTA APROBADO
       case 'ADMIN': return this.router.parseUrl('/turnos-admin');
       default: return this.router.parseUrl('/bienvenida');
     }
