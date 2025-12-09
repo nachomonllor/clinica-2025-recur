@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core'; // <--- Importar Input/Output
 import {
   FormBuilder,
   FormGroup,
   Validators,
   ReactiveFormsModule
 } from '@angular/forms';
+// ... (Tus imports de Material siguen igual) ...
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -14,6 +15,14 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBar } from '@angular/material/snack-bar'; // <--- Para avisar al usuario
+
+// Importa tu servicio y modelo
+import { SupabaseService } from '../../../services/supabase.service'; 
+import { TurnoUI } from '../../models/turno.model';
+
+// SweetAlert2
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-encuesta-atencion',
@@ -34,65 +43,171 @@ import { MatIconModule } from '@angular/material/icon';
   styleUrls: ['./encuesta-atencion.component.scss']
 })
 export class EncuestaAtencionComponent implements OnInit {
+  
+
+  @Input() turno!: TurnoUI; // <=== PARA SABER QUE TURNO ES
+  @Output() encuestaCompletada = new EventEmitter<void>(); // Avisar al padre para cerrar
+
   encuestaForm!: FormGroup;
   starIcons = [1, 2, 3, 4, 5];
+  enviando = false;
 
-  // Inyecta el constructor de formularios (FormBuilder) para crear el grupo de controles
-  constructor(private fb: FormBuilder) {}
+  constructor(
+    private fb: FormBuilder,
+    private supa: SupabaseService, // ==> INYECTAR SERVICIO DE SUPABASE
+    private snackBar: MatSnackBar
+  ) {}
 
-  /*
-  Se ejecuta al iniciar el componente. 
-  Su función principal es inicializar el Formulario Reactivo (this.encuestaForm) con la estructura exacta que pide el TP:
-  comentario: (Cuadro de texto) Validador required.
-  calificacion: (Estrellas) Se inicializa en 0, pero requiere minimo 1.
-  opcion: (Radio Button) Para preguntas tipo => Recomendaria?
-  aspectos: (Checkboxes) Un sub-grupo (fb.group) para marcar varias opciones (puntualidad, limpieza, etc.).
-  rango: (Slider) Un valor numérico (ej. del 1 al 10)
-  */
   ngOnInit(): void {
     this.encuestaForm = this.fb.group({
-      comentario: ['', Validators.required],              // 1. cuadro de texto
-      calificacion: [0, [Validators.required, Validators.min(1)]], // 2. estrellas
-      opcion: ['', Validators.required],                  // 3. radio button
-      aspectos: this.fb.group({                           // 4. checkboxes
+      comentario: ['', [Validators.required, Validators.minLength(6)]],
+      calificacion: [0, [Validators.required, Validators.min(1)]],
+      opcion: ['', Validators.required], // Radio (Si- No)
+      aspectos: this.fb.group({          // Checkboxes
         puntualidad: [false],
         amabilidad: [false],
         limpieza: [false],
         explicacion: [false]
       }),
-      rango: [5, Validators.required]                     // 5. control de rango
+      rango: [5, Validators.required]    // Slider
     });
   }
 
-/*
-  setRating(value: number):
-  Esta función conecta la interfaz visual de las estrellas con el formulario 
-  Como un <div> con iconos de estrellas no es un input nativo de HTML, 
-  cuando el usuario hace clic en la 4ta estrella, el HTML llama a esta función con el valor 4.
-  La funcion actualiza manualmente el control calificacion usando setValue(value)
-*/
   setRating(value: number): void {
     this.encuestaForm.get('calificacion')?.setValue(value);
   }
 
- /*
-  Se ejecuta cuando el usuario presiona "Enviar".
-  Validación: Primero verifica this.encuestaForm.valid.
-  Camino Feliz: Si es válido, captura los valores (this.encuestaForm.value). 
-  ACA es donde SE LLAMARIA al servicio para guardar en Supabase, 
-  aunque en este snippet solo haces un console.log.
-  Si es inválido, llama a markAllAsTouched(). 
-  Esto hace que todos los campos se pongan en rojo para mostrarle al usuario qué le faltó completar.
-  */
-  onSubmit(): void {
-    if (this.encuestaForm.valid) {
-      console.log('Encuesta enviada:', this.encuestaForm.value);
-      // TODO: enviar al servicio
-    } else {
+  // async onSubmit(): Promise<void> {
+  //   if (this.encuestaForm.invalid) {
+  //     this.encuestaForm.markAllAsTouched();
+  //     return;
+  //   }
+
+  //   this.enviando = true;
+  //   const fv = this.encuestaForm.value;
+
+ 
+  //   // Convertimos {puntualidad: true, limpieza: false} ======> Puntualidad
+  //   const aspectosSeleccionados = [];
+  //   if (fv.aspectos.puntualidad) aspectosSeleccionados.push('Puntualidad');
+  //   if (fv.aspectos.amabilidad) aspectosSeleccionados.push('Amabilidad');
+  //   if (fv.aspectos.limpieza) aspectosSeleccionados.push('Limpieza');
+  //   if (fv.aspectos.explicacion) aspectosSeleccionados.push('Explicación');
+    
+  //   const stringCheckboxes = aspectosSeleccionados.join(', ');
+
+  //   // PREPARAR OBJETO PARA SUPABASE
+  //   const datosEncuesta = {
+  //     turno_id: this.turno.id,
+  //     paciente_id: this.turno.pacienteId,         //  
+  //     especialista_id: this.turno.especialistaId, //  
+  //     comentario: fv.comentario,
+  //     estrellas: fv.calificacion,
+  //     respuesta_radio: fv.opcion,                 // 'si' o 'no'
+  //     respuesta_checkbox: stringCheckboxes,
+  //     valor_rango: fv.rango,
+  //     fecha_respuesta: new Date().toISOString()
+  //   };
+
+  //   try {
+  //     //  LLAMADA A LA BASE DE DATOS
+  //     const { error } = await this.supa.client
+  //       .from('encuestas_atencion')
+  //       .insert(datosEncuesta);
+
+  //     if (error) throw error;
+
+  //     //  EXITO
+  //     this.snackBar.open('¡Gracias por tu opinión!', 'Cerrar', { duration: 3000 });
+  //     this.encuestaCompletada.emit(); // Avisamos al padre para que cierre el modal o actualice la lista
+
+  //   } catch (error) {
+  //     console.error('Error al guardar encuesta:', error);
+  //     this.snackBar.open('Error al enviar. Intenta nuevamente.', 'Cerrar');
+  //   } finally {
+  //     this.enviando = false;
+  //   }
+  // }
+
+  async onSubmit(): Promise<void> {
+    // 1. Validación inicial
+    if (this.encuestaForm.invalid) {
       this.encuestaForm.markAllAsTouched();
+      //AVISAR SI FALTAN DATOS
+      Swal.fire({
+        icon: 'warning',
+        title: 'Faltan datos',
+        text: 'Por favor completa todos los campos obligatorios.',
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000
+      });
+      return;
+    }
+
+    this.enviando = true;
+    const fv = this.encuestaForm.value;
+
+    // Procesar Checkboxes
+    const aspectosSeleccionados = [];
+    if (fv.aspectos.puntualidad) aspectosSeleccionados.push('Puntualidad');
+    if (fv.aspectos.amabilidad) aspectosSeleccionados.push('Amabilidad');
+    if (fv.aspectos.limpieza) aspectosSeleccionados.push('Limpieza');
+    if (fv.aspectos.explicacion) aspectosSeleccionados.push('Explicación');
+    
+    const stringCheckboxes = aspectosSeleccionados.join(', ');
+
+    //  Preparar objeto para BD
+    const datosEncuesta = {
+      turno_id: this.turno.id,
+      paciente_id: this.turno.pacienteId,
+      especialista_id: this.turno.especialistaId,
+      comentario: fv.comentario,
+      estrellas: fv.calificacion,
+      respuesta_radio: fv.opcion,
+      respuesta_checkbox: stringCheckboxes,
+      valor_rango: fv.rango,
+      fecha_respuesta: new Date().toISOString()
+    };
+
+    try {
+      const { error } = await this.supa.client
+        .from('encuestas_atencion')
+        .insert(datosEncuesta);
+
+      if (error) throw error;
+
+      // EXITO CON SWAL
+      await Swal.fire({
+        icon: 'success',
+        title: '¡Encuesta Enviada!',
+        text: 'Gracias por ayudarnos a mejorar nuestros servicios.',
+        confirmButtonText: 'Cerrar',
+        timer: 2500,
+        timerProgressBar: true
+      });
+
+      this.encuestaCompletada.emit(); 
+
+    } catch (error) {
+      console.error('Error al guardar encuesta:', error);
+      
+      //  ERROR CON SWAL
+      Swal.fire({
+        icon: 'error',
+        title: 'Ups...',
+        text: 'Ocurrió un error al enviar la encuesta. Intenta nuevamente.',
+        confirmButtonText: 'Entendido'
+      });
+    } finally {
+      this.enviando = false;
     }
   }
 
+
 }
+
+
 
 

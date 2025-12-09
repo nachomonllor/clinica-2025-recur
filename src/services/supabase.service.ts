@@ -38,8 +38,8 @@ export class SupabaseService {
         // que causaba el NavigatorLockAcquireTimeoutError.
         storageKey: 'sb-clinica-online-auth-v3',
 
-      lock: false,
-      }  as any,
+        lock: false,
+      } as any,
     });
 
     // Escuchar cambios de Auth automáticamente
@@ -153,6 +153,16 @@ export class SupabaseService {
       return true;
     }
   }
+
+  async guardarEncuesta(encuesta: any): Promise<any> {
+    const { data, error } = await this.client
+      .from('encuestas_atencion')
+      .insert(encuesta);
+
+    if (error) throw error;
+    return data;
+  }
+
 }
 
 
