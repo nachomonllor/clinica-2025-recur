@@ -66,18 +66,17 @@ export class BienvenidaComponent implements OnInit, OnDestroy {
     localStorage.setItem('lang', lang);
   }
 
-
-
-
-
   //---------------------------
-
-
   //  constructor(
   //   private supabase: SupabaseService,
   //   private router: Router,
   // ) { } 
 
+
+  /*
+   Detecta si hay un Token de Verificación en la URL (significa que el usuario viene de confirmar su mail). 
+   Si es asi espera un segundo para darle tiempo a Supabase a procesarlo.
+   */
   async ngOnInit(): Promise<void> {
     // Verificar si hay tokens de verificación en la URL (viene del email)
     const tieneTokensEnUrl = this.tieneTokensDeVerificacion();
@@ -111,10 +110,21 @@ export class BienvenidaComponent implements OnInit, OnDestroy {
     this.unsubscribeAuthChange?.();
   }
 
+  /*
+  Revisa la URL del navegador en busca de parámetros como access_token o type=signup. Devuelve true si es un link de autenticación de Supabase.
+  */
   private tieneTokensDeVerificacion(): boolean {
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.has('token') || urlParams.has('type') || urlParams.has('access_token');
   }
+
+/*
+  Comprueba activamente si existe una sesión válida (supabase.getSession()).
+  Tiene una lógica de "reintentos" (bucle for): Si hay tokens en la URL
+  intenta hasta 3 veces verificar la sesión
+  porque a veces el proceso de confirmación de email tarda unos milisegundos en impactar.
+  Si encuentra sesión, llama a redirigirSegunRol.
+*/
 
   private async verificarSesion(): Promise<void> {
     try {
@@ -131,7 +141,7 @@ export class BienvenidaComponent implements OnInit, OnDestroy {
 
         if (tieneSesion) break;
 
-        // Si hay tokens pero aún no hay sesión, esperar un poco más
+        // Si hay tokens pero aun no hay sesion, esperar un poco más
         if (tieneTokens && i < intentos - 1) {
           await new Promise(resolve => setTimeout(resolve, 500));
         }
@@ -153,6 +163,7 @@ export class BienvenidaComponent implements OnInit, OnDestroy {
     }
   }
 
+  // Consulta la base de datos (usuarios) para saber qué Rol tiene el usuario autenticado.
   private async redirigirSegunRol(userId: string): Promise<void> {
     try {
       // -------------------------- Nuevo método del SupabaseService --------------------------
