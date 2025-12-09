@@ -155,8 +155,8 @@ export class MisTurnosEspecialistaComponent implements OnInit {
     return this.encuestasIds.has(t.id);
   }
 
-  // Carga 'Lazy' (perezosa): Solo traemos el contenido completo de la encuesta (comentarios, estrellas)
-  //  cuando el especialista hace clic explicitamente en el botón
+  // Carga 'Lazy' (perezosa): Solo traemos el contenido completo de la encuesta [comentarios, estrellas]
+  // cuando el especialista hace clic explicitamente en el botón
   // solo existe la carga si se hace click
   async verEncuesta(t: TurnoEspecialista): Promise<void> {
     // Buscamos el detalle completo de la encuesta al hacer click
@@ -312,6 +312,7 @@ export class MisTurnosEspecialistaComponent implements OnInit {
   }
 
 
+  // Permite eliminar un dato dinámico específico del array por su indice
   eliminarDatoDinamico(form: FormGroup, index: number): void {
     this.getDatosDinamicos(form).removeAt(index);
   }
@@ -334,7 +335,7 @@ export class MisTurnosEspecialistaComponent implements OnInit {
       const especialistaId = sessionData.session.user.id;
       const fv = form.value;
 
-      // 1) Obtener paciente_id del turno
+      //  Obtener paciente_id del turno
       const { data: turnoData, error: turnoError } = await this.supa.client
         .from('turnos')
         .select('paciente_id')
@@ -345,14 +346,14 @@ export class MisTurnosEspecialistaComponent implements OnInit {
         throw new Error('No se pudo obtener el turno');
       }
 
-      // 2) Datos dinámicos "base" (fijos del formulario)
+      //  Datos dinamicos "base" (fijos del formulario)
       const datosDinamicosBase: DatoDinamico[] = [
         { clave: 'Índice de riesgo', valor: Number(fv.riesgo), tipo: 'rango', unidad: '%' },
         { clave: 'Nivel de glucosa', valor: Number(fv.nivelGlucosa), tipo: 'numero', unidad: 'mg/dL' },
         { clave: 'Requiere seguimiento', valor: !!fv.requiereSeguimiento, tipo: 'booleano', unidad: null }
       ];
 
-      // 3) Datos dinámicos libres (clave/valor) que agrega el especialista en el FormArray
+      // Datos dinamicos libres (clave-valor) que agrega el especialista en el FormArray
       const datosLibresRaw = (fv.datosDinamicos ?? []) as { clave: string; valor: string }[];
 
       const datosLibres: DatoDinamico[] = datosLibresRaw
@@ -364,13 +365,13 @@ export class MisTurnosEspecialistaComponent implements OnInit {
           unidad: null
         }));
 
-      // 4) Unir todos los datos dinámicos
+      //  Unir todos los datos dinamicos
       const datosDinamicos: DatoDinamico[] = [
         ...datosDinamicosBase,
         ...datosLibres
       ];
 
-      // 5) Insertar en historia_clinica y recuperar el id de la historia
+      //  Insertar en historia_clinica y recuperar el id de la historia
       const { data: historiaData, error: historiaError } = await this.supa.client
         .from('historia_clinica')
         .insert({
@@ -391,7 +392,7 @@ export class MisTurnosEspecialistaComponent implements OnInit {
 
       const historiaId = historiaData.id;
 
-      // 6) Mapear datos_dinamicos a la tabla historia_datos_dinamicos
+      //  Mapear datos_dinamicos a la tabla historia_datos_dinamicos
       const dinamicosPayload = datosDinamicos.map(d => {
         let tipo_control: string | null = null;
         let valor_texto: string | null = null;
@@ -431,24 +432,24 @@ export class MisTurnosEspecialistaComponent implements OnInit {
         };
       });
 
-      // 7) Insertar los datos dinámicos
+      // Insertar los datos dinamicos
       const { error: dinamicosError } = await this.supa.client
         .from('historia_datos_dinamicos')
         .insert(dinamicosPayload);
 
       if (dinamicosError) throw dinamicosError;
 
-      // 8) Tomar el comentario del formulario (reseña)
+      // Tomar el comentario del formulario (reseña)
       const comentario: string | null = fv.comentario?.trim() || null;
 
-      // 9) Cambiar estado del turno y guardar la reseña en turnos.comentario
+      // Cambiar estado del turno y guardar la reseña en turnos.comentario
       await this.turnoService.cambiarEstadoPorCodigo(
         turno.id,
         'FINALIZADO',
         comentario
       );
 
-      // 10) Actualizar el objeto en memoria para que el especialista lo vea al instante
+      // Actualizar el objeto en memoria para que el especialista lo vea al instante
       turno.estado = 'FINALIZADO';
       turno.resena = comentario ?? undefined;
       this.dataSource.data = [...this.dataSource.data];
@@ -477,6 +478,7 @@ export class MisTurnosEspecialistaComponent implements OnInit {
   // HABILITACIONES POR ESTADO
   // =================================== 
 
+  //Regla de Negocio ====> Un especialista solo puede ACEPTAR o RECHAZAR turnos que esten estrictamente en estado PENDIENTE
   puedeAceptar(turno: TurnoEspecialista): boolean {
     // El estado puede venir en mayúsculas o minúsculas desde la BD
     const estadoNormalizado = String(turno.estado || '').toUpperCase().trim();
@@ -488,11 +490,14 @@ export class MisTurnosEspecialistaComponent implements OnInit {
     return this.puedeAceptar(turno);
   }
 
+  //Regla de Negocio: 
+  //Se puede cancelar en cualquier momento salvo que el turno ya haya concluido (Finalizado - Realizado) o ya este cancelado
   puedeCancelar(turno: TurnoEspecialista): boolean {
     const e = turno.estado.toString().toUpperCase();
     return !['FINALIZADO', 'CANCELADO', 'RECHAZADO'].includes(e);
   }
 
+  // El flujo del medico exige que el turno haya sido previamente ACEPTADO para poder cargar la historia clínica (Finalizar)
   puedeFinalizar(turno: TurnoEspecialista): boolean {
     return turno.estado.toString().toUpperCase() === 'ACEPTADO';
   }
@@ -501,7 +506,7 @@ export class MisTurnosEspecialistaComponent implements OnInit {
     return !!(turno.resena && turno.resena.trim().length > 0);
   }
 
-
+  // Modal de confirmacion simple antes de cambiar estado a ACEPTADO
   aceptarTurno(turno: TurnoEspecialista): void {
     const ref = this.dialog.open(this.confirmDialog, {
       data: { message: `¿Aceptar el turno con ${turno.paciente}?` }
@@ -522,6 +527,7 @@ export class MisTurnosEspecialistaComponent implements OnInit {
       }
     });
   }
+
 
   verResena(t: TurnoEspecialista): void {
     if (!t.resena || t.resena.trim().length === 0) {
