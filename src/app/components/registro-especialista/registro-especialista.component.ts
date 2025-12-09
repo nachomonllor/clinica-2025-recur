@@ -33,6 +33,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSlideToggleModule } from "@angular/material/slide-toggle";
 
 // ===== Validadores para selección múltiple =====
+// Verifican la longitud del array de especialidades para asegurar que se cumpla el minimo y maximo requerido
 function minSelected(min: number): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
     const v = control.value as string[] | null | undefined;
@@ -96,6 +97,9 @@ export class RegistroEspecialistaComponent implements OnInit {
   nuevaEspecialidadCtrl = new FormControl('');
 
   // ===== Form (typed) =====
+  // Uso un FormGroup TIPADO estrictamente
+
+  // Esto me permite evitar errores de tipo en tiempo de desarrollo y acceder a las propiedades con seguridad
   registroForm!: FormGroup<{
     nombre: FormControl<string | null>;
     apellido: FormControl<string | null>;
@@ -109,6 +113,7 @@ export class RegistroEspecialistaComponent implements OnInit {
     recaptcha: FormControl<string | null>;
   }>;
 
+  // Getter para acceder a las especialidades marcadas y manipular la logica de Otra especialidad
   get especialidadesSeleccionadas(): string[] {
     return (this.registroForm?.get('especialidades')?.value as string[]) || [];
   }
@@ -119,6 +124,10 @@ export class RegistroEspecialistaComponent implements OnInit {
     private router: Router
   ) { }
 
+  // En el inicio: 
+  // Calculamos la fecha maxima para la validacion de edad
+  // Inicializamos el formulario con todos los validadores (required, email, regex)
+  // Disparamos la carga asíncrona de especialidades desde la base de datos
   async ngOnInit(): Promise<void> {
     this.maxDateISO = this.toISODateLocal(new Date());
 
@@ -215,10 +224,7 @@ export class RegistroEspecialistaComponent implements OnInit {
     }
   }
 
-  // ======================================================
-  // Lógica para AGREGAR especialidad 
-  // ======================================================
-
+  // --------------- Logica para AGREGAR especialidad 
   agregarEspecialidadCustom(): void {
     const valor = this.nuevaEspecialidadCtrl.value?.trim(); 
     
@@ -266,10 +272,7 @@ export class RegistroEspecialistaComponent implements OnInit {
     
   }
 
-  // ======================================================
-  // Captcha / archivo
-  // ======================================================
-
+  // Captcha - archivo
   onCaptchaValid(esValido: boolean): void {
     this.captchaValido = esValido;
   }
@@ -280,11 +283,11 @@ export class RegistroEspecialistaComponent implements OnInit {
     const captchaControl = this.registroForm.get('recaptcha');
 
     if (this.captchaEnabled) {
-      // Si lo activamos, le ponemos la validación de nuevo
+      // Si lo activamos, le ponemos la validacion de nuevo
       captchaControl?.setValidators(Validators.required);
       this.captchaValido = false; // Reseteamos validez
     } else {
-      // Si lo desactivamos, LE QUITAMOS la validación (importante)
+      // Si lo desactivamos, LE QUITAMOS la validacion (importante)
       captchaControl?.clearValidators();
       this.captchaValido = true; // Lo damos por válido automáticamente
     }
@@ -334,7 +337,7 @@ export class RegistroEspecialistaComponent implements OnInit {
     this.loading = true;
 
     try {
-      // 1) Normalizar especialidades
+      // Normalizar especialidades
       const seleccion = (fv.especialidades ?? []).filter(Boolean);
       const especialidades = seleccion
         .filter(e => e !== 'Otro')
@@ -342,7 +345,7 @@ export class RegistroEspecialistaComponent implements OnInit {
 
       const primeraEspecialidad = especialidades[0] || 'Sin especialidad';
 
-      // 2) Alta en Auth (Supabase Auth)
+      // Alta en Auth (Supabase Auth)
       const { data, error }: any = await this.supa.client.auth.signUp({
         email: fv.email!,
         password: fv.password!,
@@ -365,15 +368,15 @@ export class RegistroEspecialistaComponent implements OnInit {
       if (!userId) throw new Error('No se pudo crear el usuario.');
 
       // =========================================================================
-      // CAMBIO CLAVE: Subimos la imagen AQUÍ, antes de guardar en la base de datos
+      // Subimos la imagen aca antes de guardar en la base de datos
       // =========================================================================
       let fotoUrl = '';
       if (fv.imagenPerfil) {
-        // Subimos la foto usando el ID del usuario recién creado
+        // Subimos la foto usando el ID del usuario recien creado
         fotoUrl = await this.supa.uploadAvatar(userId, fv.imagenPerfil, 1);
       }
 
-      // 3) Insert/Upsert en usuarios CON LA FOTO INCLUIDA
+      //  Insert-Upsert en usuarios CON LA FOTO INCLUIDA
       const edadCalculada = this.calcEdadFromISO(fv.fechaNacimiento!);
 
       const { error: usuarioError } = await this.supa.client
