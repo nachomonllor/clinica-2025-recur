@@ -138,7 +138,7 @@
         <ng-template #accionesEspecialista>
           <div class="actions">
 
-            <button class="btn danger ripple" *ngIf="esAdmin" (click)="toggleHabilitado(u)"
+            <button class="btn danger ripple" *ngIf="esAdmin" (click)="alternarHabilitado(u)"
               [attr.aria-pressed]="!u.habilitado">
               <svg class="icon" viewBox="0 0 24 24">
                 <path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" />

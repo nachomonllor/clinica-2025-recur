@@ -252,6 +252,7 @@ export class UsuariosAdminComponent implements OnInit {
     return colors[Math.abs(hash) % colors.length];
   }
 
+  // ENVOLTORIO QUE LLAMA A LA FUNCION verHistoriaClinica
   async verHistoria(u: UsuarioAdminCard): Promise<void> {
     await this.verHistoriaClinica(u.id, `${u.nombre} ${u.apellido}`.trim());
   }
@@ -262,18 +263,18 @@ export class UsuariosAdminComponent implements OnInit {
     await this.descargarTurnosUsuario(origen);
   }
 
-  // HELPER PARA EL BOTÓN PDF EN EL HTML
+  // HELPER PARA EL BOTON PDF EN EL HTML
   async descargarPdf(u: UsuarioAdminCard): Promise<void> {
     const origen = this.usuarios.find(x => x.id === u.id);
     if (!origen) return;
     await this.descargarTurnosPdf(origen);
   }
 
-  async toggleHabilitado(u: UsuarioAdminCard): Promise<void> {
+  async alternarHabilitado(u: UsuarioAdminCard): Promise<void> {
     if (u.rol !== 'ESPECIALISTA') return;
     const origen = this.usuarios.find(x => x.id === u.id);
     if (!origen) return;
-    await this.toggleAprobacion(origen);
+    await this.alternarAprobacion(origen);
   }
 
 
@@ -641,6 +642,10 @@ export class UsuariosAdminComponent implements OnInit {
      if (month < m || (month === m && day < d)) edad--; return edad; 
     }
 
+
+  /*
+    Detecta cuando se selecciona una foto de perfil, la guarda en el formulario y genera una vista previa (imagenPrevia) usando FileReader
+  */
   onFileChange(event: Event): void { 
     const input = event.target as HTMLInputElement; 
     if (!input.files?.length) return; 
@@ -659,7 +664,7 @@ export class UsuariosAdminComponent implements OnInit {
     Cambia el campo esta_aprobado (true - false) en la base de datos ==> UPDATE
     Sirve para que el Admin habilite o deshabilite especialistas 
   */
-  async toggleAprobacion(usuario: UsuarioAdmin): Promise<void> { 
+  async alternarAprobacion(usuario: UsuarioAdmin): Promise<void> { 
     if (usuario.rol !== 'ESPECIALISTA') return;
      const nuevoEstado = !usuario.aprobado; 
      try { const { error } = await this.supa.client.from('usuarios').update({ esta_aprobado: nuevoEstado }).eq('id', usuario.id);
@@ -669,10 +674,22 @@ export class UsuariosAdminComponent implements OnInit {
     { Swal.fire('Error', 'No se pudo actualizar', 'error'); }
    }
    
-  crearUsuario(): void { this.mostrarFormulario = true; this.formularioUsuario.reset(); this.imagenPrevia = null; }
 
+   // muestra u oculta el formulario modal y resetea los campos.
+   crearUsuario(): void { this.mostrarFormulario = true; this.formularioUsuario.reset(); this.imagenPrevia = null; }
+
+   // ocultan el formulario modal y resetea los campos.
   cancelarCreacion(): void { this.mostrarFormulario = false; this.formularioUsuario.reset(); this.imagenPrevia = null; }
 
+
+
+  /*
+    Crea el usuario en Supabase Auth (signUp).
+    Sube la foto al Storage (si existe).
+    Calcula la edad.
+    Guarda los datos adicionales en la tabla pública usuarios.
+    Muestra alertas de exito o error.
+  */
   async guardarUsuario(): Promise<void> {
     if (this.formularioUsuario.invalid) {
       this.formularioUsuario.markAllAsTouched();
@@ -683,7 +700,7 @@ export class UsuariosAdminComponent implements OnInit {
     const supabase = this.supa.client;
 
     try {
-      // 1) Crear usuario en Auth
+      //  Crear usuario en Auth
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email: fv.email!,
         password: fv.password!,
@@ -703,18 +720,18 @@ export class UsuariosAdminComponent implements OnInit {
       const user = signUpData.user;
       if (!user) throw new Error('No se pudo crear el usuario en Auth.');
 
-      // 2) Subir avatar (si hay)
+      // Subir avatar (si hay)
       let avatarUrl: string | null = null;
       if (fv.imagenPerfil) {
         avatarUrl = await this.supa.uploadAvatar(user.id, fv.imagenPerfil, 1);
       }
 
-      // 3) Edad calculada desde fechaNacimiento (opcional)
+      // Edad calculada desde fechaNacimiento (opcional)
       const edadCalculada = fv.fechaNacimiento
         ? this.calcEdadFromISO(fv.fechaNacimiento)
         : null;
 
-      // 4) Insertar fila en esquema_clinica.usuarios
+      // Insertar fila en esquema_clinica.usuarios
       const nuevoUsuario: UsuarioCreate = {
         id: user.id,
         nombre: fv.nombre!,
@@ -755,7 +772,12 @@ export class UsuariosAdminComponent implements OnInit {
     }
   }
 
-
+ /*
+  Trae la historia clínica desde Supabase.
+  Trae los Datos Dinamicos asociados CLAVE-VALOR
+  Procesa esos datos (detecta si es rango, numero, texto).
+  Abre el componente HistoriaClinicaDialogComponent una ventana modal pasando toda esa data procesada para que se vea linda.
+  */
   async verHistoriaClinica(pacienteId: string, pacienteNombre: string): Promise<void> {
 
     this.loading.show();
@@ -766,7 +788,7 @@ export class UsuariosAdminComponent implements OnInit {
 
       const userId = sessionData.session.user.id;
 
-      // 1. OBTENER HISTORIAS + DATOS DINÁMICOS
+      //  OBTENER HISTORIAS Y DATOS DINAMICOS
       let query = this.supa.client
         .from('historia_clinica')
         .select(`
@@ -776,7 +798,7 @@ export class UsuariosAdminComponent implements OnInit {
         .eq('paciente_id', pacienteId)
         .order('fecha_registro', { ascending: false });
 
-      // Si NO es admin, filtramos por especialista (por seguridad, aunque este componente es de admin)
+      // Si NO es admin filtramos por especialista por seguridad aunque este componente es de admin
       if (!this.esAdmin) {
         query = query.eq('especialista_id', userId);
       }
@@ -788,7 +810,7 @@ export class UsuariosAdminComponent implements OnInit {
         return;
       }
 
-      // 2. MAPEAR DATOS COMPLETOS (Especialidad, Especialista, Fecha, DINÁMICOS)
+      // MAPEAR DATOS COMPLETOS (Especialidad, Especialista, Fecha, DINAMICOS
       const historiasCompletas: HistoriaClinicaConExtras[] = await Promise.all(
         (historias || []).map(async (h: any) => {
 
@@ -811,16 +833,16 @@ export class UsuariosAdminComponent implements OnInit {
             ? `${especialista.nombre} ${especialista.apellido}`
             : '';
 
-          // Formatear fecha atención
+          // Formatear fecha atencion
           const fechaAtencion = turno?.fecha_hora_inicio
             ? new Date(turno.fecha_hora_inicio).toLocaleDateString('es-AR')
             : '';
 
-          // Formatear Especialidad (Solución del error de array/objeto)
+          // Formatear Especialidad (Solucion del error de array-objeto)
           const rawEspec: any = turno?.especialidades;
           const nombreEspecialidad = rawEspec?.nombre || rawEspec?.[0]?.nombre || '';
 
-          // --- CORRECCIÓN AQUÍ: PROCESAR DATOS DINÁMICOS ---
+          // --- CORRECCION: PROCESAR DATOS DINAMICOS ---
           const datosDinamicosProcesados: DatoDinamico[] = (h.historia_datos_dinamicos || []).map((d: any) => {
             let valor: any = '';
             let tipo: TipoDatoDinamico = 'texto';
@@ -858,12 +880,12 @@ export class UsuariosAdminComponent implements OnInit {
             especialistaNombre,
             fechaAtencion,
             resena: turno?.comentario || '', // Mapeamos el comentario del turno a la propiedad 'resena'
-            datos_dinamicos: datosDinamicosProcesados // <--- ¡AQUÍ ESTÁ LA MAGIA!
+            datos_dinamicos: datosDinamicosProcesados // <=============== DATOS DINAMICOS FORMATEADOS
           } as HistoriaClinicaConExtras;
         })
       );
 
-      // 3. ABRIR EL DIÁLOGO COMPARTIDO
+      // ABRIR EL DIALOGO COMPARTIDO
       this.dialog.open(HistoriaClinicaDialogComponent, {
         width: '800px',
         data: {
@@ -881,14 +903,14 @@ export class UsuariosAdminComponent implements OnInit {
     }
   }
 
-
+  // Convierte a un usuario normal en Administrador actualizando su campo
   async hacerAdmin(u: UsuarioAdminCard): Promise<void> {
     if (!this.esAdmin) return;
 
-    // 1. Confirmación con SweetAlert
+    // Confirmacion con SweetAlert
     const confirmacion = await Swal.fire({
       title: '¿Estás seguro?',
-      text: `Estás a punto de convertir a ${u.nombre} ${u.apellido} en ADMINISTRADOR. Tendrá acceso total al sistema.`,
+      text: `Estás a punto de convertir a ${u.nombre} ${u.apellido} en ADMINISTRADOR. Tendra acceso total al sistema.`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -902,7 +924,7 @@ export class UsuariosAdminComponent implements OnInit {
     this.loading.show();
 
     try {
-      // 2. Actualizar en Base de Datos (campo 'perfil' a 'ADMIN')
+      //  Actualizar en Base de Datos campo 'perfil' a 'ADMIN'
       const { error } = await this.supa.client
         .from('usuarios')
         .update({ perfil: 'ADMIN' })
@@ -918,7 +940,7 @@ export class UsuariosAdminComponent implements OnInit {
         showConfirmButton: false
       });
 
-      // 3. Recargar la lista para reflejar el cambio (la tarjeta desaparecerá o cambiará de color según tus filtros)
+      // Recargar la lista para reflejar el cambio la tarjeta desaparecera o cambiara de color segun los filtros
       await this.cargarUsuarios();
 
     } catch (e: any) {
@@ -930,9 +952,14 @@ export class UsuariosAdminComponent implements OnInit {
   }
 
 
-  // ====================================================================
-  //  DESCARGA EXCEL DE TODOS LOS USUARIOS (REQUERIMIENTO ADMIN)
-  // ====================================================================
+  //  -------------- DESCARGA EXCEL DE TODOS LOS USUARIOS (REQUERIMIENTO ADMIN) --------------
+  /*
+        Genera un reporte de TODOS los usuarios.
+        Clona la lista de usuarios.
+        Ordena por email (o rol).
+        Mapea los datos a un formato limpio (Title Case para nombres).
+        Usa la librería XLSX para crear el archivo y descargarlo.
+  */
   async descargarExcel(): Promise<void> {
 
     if (!this.usuarios || this.usuarios.length === 0) {
@@ -963,7 +990,7 @@ export class UsuariosAdminComponent implements OnInit {
         }).join(' ');
       };
 
-      // 2. Mapear los datos YA ORDENADOS
+      // Mapear los datos YA ORDENADOS
       const dataParaExcel = usuariosOrdenados.map(u => ({
         Rol: u.rol,
         Apellido: toTitleCase(u.apellido), // <============
@@ -976,12 +1003,12 @@ export class UsuariosAdminComponent implements OnInit {
         'Fecha Registro': u.fecha_registro ? new Date(u.fecha_registro).toLocaleDateString('es-AR') : ''
       }));
 
-      // 3. Crear hoja y libro (Igual que antes)
+      // Crear hoja y libro (Igual que antes)
       const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(dataParaExcel);
       const wb: XLSX.WorkBook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, 'Usuarios');
 
-      // 4. Guardar
+      // Guardar
       const fecha = new Date().toISOString().slice(0, 10);
       XLSX.writeFile(wb, `Usuarios_Clinica_${fecha}.xlsx`);
 
@@ -1001,11 +1028,17 @@ export class UsuariosAdminComponent implements OnInit {
 
   }
 
-  // ====================================================================
-  //  DESCARGA PDF DE TODOS LOS USUARIOS (ESTILO TABLA CON LOGO)
-  // ====================================================================
-  async descargarUsuariosPdf(): Promise<void> {
 
+  /*
+    Genera un PDF visual de la lista de usuarios.
+    Dibuja un encabezado azul.
+    Inserta el logo SVG (convertido a Base64).
+    Dibuja una tabla fila por fila con colores alternados (efecto cebra).
+    Pone en rojo o verde el estado "Habilitado-Pendiente".
+    Genera un Excel de los turnos de un solo usuario.
+  */
+  // ---------------- DESCARGA PDF DE TODOS LOS USUARIOS ---ESTILO TABLA CON LOGO -----------------------
+  async descargarUsuariosPdf(): Promise<void> {
     // 1. Validar que existan datos
     if (!this.usuarios || this.usuarios.length === 0) {
       this.snackBar.open('No hay usuarios para exportar.', 'Cerrar', { duration: 3000 });
@@ -1016,11 +1049,11 @@ export class UsuariosAdminComponent implements OnInit {
     this.snackBar.open('Generando PDF de usuarios...', 'Espere', { duration: 2000 });
 
     try {
-      // 2. ORDENAR POR ROL (Admin -> Especialista -> Paciente)
+      // ORDENAR POR ROL (Admin -> Especialista -> Paciente)
       const usuariosOrdenados = [...this.usuarios].sort((a, b) => a.rol.localeCompare(b.rol));
 
-      // 3. FUNCIÓN HELPER PARA CAPITALIZAR (Title Case)
-      // Convierte "JUAN CARLOS" -> "Juan Carlos"
+      //  FUNCION HELPER PARA CAPITALIZAR (Title Case)
+      // Convierte "JUAN CARLOS" =====> "Juan Carlos"
       const toTitleCase = (str: string | null | undefined) => {
         if (!str) return '';
         return str.toLowerCase().split(' ').map(word => {
@@ -1028,7 +1061,7 @@ export class UsuariosAdminComponent implements OnInit {
         }).join(' ');
       };
 
-      // 4. CONFIGURACIÓN PDF Y LOGO
+      //  CONFIGURACION PDF Y LOGO
       const doc = new jsPDF('p', 'mm', 'a4');
       const pageWidth = doc.internal.pageSize.getWidth();
       const pageHeight = doc.internal.pageSize.getHeight();
@@ -1055,10 +1088,10 @@ export class UsuariosAdminComponent implements OnInit {
         </svg>`;
       const svgBase64 = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgLogo)));
 
-      // 5. FUNCIÓN PRINCIPAL DE DIBUJO
+      // FUNCION PRINCIPAL DE DIBUJO
       const generarDocumento = (pngDataUrl?: string) => {
 
-        // --- DIBUJAR CABECERA DE PÁGINA ---
+        // --- DIBUJAR CABECERA DE PAGINA ---
         const drawPageHeader = () => {
           // Fondo oscuro superior
           doc.setFillColor(17, 24, 39);
@@ -1121,9 +1154,9 @@ export class UsuariosAdminComponent implements OnInit {
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(8);
 
-        // ITERACIÓN DE USUARIOS
+        // ITERACION DE USUARIOS
         usuariosOrdenados.forEach((u, index) => {
-          // Salto de página si se acaba el espacio
+          // Salto de pagina si se acaba el espacio
           if (y > pageHeight - 15) {
             doc.addPage();
             drawPageHeader();
@@ -1141,11 +1174,11 @@ export class UsuariosAdminComponent implements OnInit {
 
           doc.setTextColor(51, 65, 85); // Texto gris oscuro
 
-          // 1. Rol (Cortado si es largo)
+          //  Rol (Cortado si es largo)
           doc.setFont('helvetica', 'bold');
           doc.text(u.rol.substring(0, 12), cols[0].x, y + 5);
 
-          // 2. Apellido y Nombre (Capitalizado)
+          //  Apellido y Nombre (Capitalizado)
           doc.setFont('helvetica', 'normal');
           const apellidoCap = toTitleCase(u.apellido);
           const nombreCap = toTitleCase(u.nombre);
@@ -1155,18 +1188,18 @@ export class UsuariosAdminComponent implements OnInit {
           const nombreFit = nombreCompleto.length > 28 ? nombreCompleto.substring(0, 28) + '...' : nombreCompleto;
           doc.text(nombreFit, cols[1].x, y + 5);
 
-          // 3. DNI
+          //  DNI
           doc.text(u.dni || '-', cols[2].x, y + 5);
 
-          // 4. Edad
+          //  Edad
           doc.text(u.edad ? u.edad.toString() : '-', cols[3].x, y + 5);
 
-          // 5. Email (Truncar)
+          //  Email (Truncar)
           const email = u.email || '';
           const emailFit = email.length > 25 ? email.substring(0, 25) + '...' : email;
           doc.text(emailFit, cols[4].x, y + 5);
 
-          // 6. Estado (Coloreado)
+          //  Estado (Coloreado)
           let estado = 'OK';
           if (u.rol === 'ESPECIALISTA') estado = u.aprobado ? 'Hab.' : 'Pend.';
 
@@ -1187,7 +1220,7 @@ export class UsuariosAdminComponent implements OnInit {
         doc.save(nombreArchivo);
       };
 
-      // 6. CARGAR IMAGEN -> EJECUTAR DIBUJO
+      //  CARGAR IMAGEN =====> EJECUTAR DIBUJO
       const img = new Image();
       img.src = svgBase64;
       img.onload = () => {
