@@ -48,6 +48,7 @@ export class PacientesEspecialistaComponent implements OnInit {
   cargandoDetalle = false;
   filtro = '';
 
+  //Getter auxiliar para mostrar el nombre completo en la UI de forma segura (evitando errores si es undefined)
   get nombreCompletoSeleccionado(): string {
     if (!this.pacienteSeleccionado) {
       return '';
@@ -66,6 +67,9 @@ export class PacientesEspecialistaComponent implements OnInit {
     void this.cargarPacientes();
   }
 
+  // consulta la tabla 'historia_clinica' filtrando por mi ID de especialista.
+  // Extrae un Set de IDs unicos de pacientes => para no repetir al mismo paciente
+  // Y consulta la tabla usuarios para traer los datos personales (foto, nombre) solo de esos IDs
   async cargarPacientes(): Promise<void> {
     const { data: sessionData } = await this.supa.getSession();
     if (!sessionData?.session) return;
@@ -118,6 +122,9 @@ export class PacientesEspecialistaComponent implements OnInit {
     }
   }
 
+  // Filtra el array localmente en memoria. 
+  // Si el paciente seleccionado deja de ser visible por el filtro
+  // reseteamos la selección para evitar inconsistencias en la vista
   aplicarFiltro(valor: string): void {
     this.filtro = (valor || '').trim().toLowerCase();
     if (!this.filtro) {
@@ -145,6 +152,8 @@ export class PacientesEspecialistaComponent implements OnInit {
     await this.cargarTurnosPaciente(paciente.id);
   }
 
+  // Carga el historial de turnos EXCLUSIVO entre este especialista y este paciente
+  // Realiza un Join con especialidades y 'estados_turno' para mostrar nombres legibles en la tabla
   private async cargarTurnosPaciente(pacienteId: string): Promise<void> {
     this.cargandoDetalle = true;
     this.turnosPaciente = [];
@@ -195,6 +204,7 @@ export class PacientesEspecialistaComponent implements OnInit {
     }
   }
 
+  //Abre un modal TemplateRef para leer la reseña completa del turno seleccionado
   verResena(t: TurnoDetalle): void {
     if (!t.resena || t.resena.trim().length === 0) {
       this.snackBar.open('Este turno no tiene reseña disponible', 'Cerrar', { duration: 2500 });
@@ -213,115 +223,25 @@ export class PacientesEspecialistaComponent implements OnInit {
     });
   }
 
+
   mostrarResena(resena: string): void {
     this.snackBar.open(resena, 'Cerrar', { duration: 3500 });
   }
 
-  // async verHistoriaClinica(pacienteId: string, pacienteNombre: string): Promise<void> {
-  //   try {
-  //     const { data: sessionData } = await this.supa.getSession();
-  //     if (!sessionData?.session) return;
 
-  //     const especialistaId = sessionData.session.user.id;
-
-  //     // 1. Buscamos historias + datos dinámicos (Esto estaba bien)
-  //     const { data: historias, error } = await this.supa.client
-  //       .from('historia_clinica')
-  //       .select(`
-  //           *,
-  //           historia_datos_dinamicos (*)
-  //       `)
-  //       .eq('paciente_id', pacienteId)
-  //       .eq('especialista_id', especialistaId)
-  //       .order('fecha_registro', { ascending: false });
-
-  //     if (error) {
-  //       console.error('[PacientesEspecialista] Error al cargar historia clínica', error);
-  //       return;
-  //     }
-
-  //     //  Mapeamos datos extra Y PROCESAMOS LOS DINÁMICOS
-  //     const historiasCompletas = await Promise.all((historias || []).map(async (h: any) => {
-
-  //       // --- LOGICA TURNOS-ESPECIALISTA ---
-  //       const { data: turno } = await this.supa.client
-  //         .from('turnos')
-  //         .select('fecha_hora_inicio, comentario, especialidades(nombre)')
-  //         .eq('id', h.turno_id)
-  //         .single();
-
-  //       const { data: especialista } = await this.supa.client
-  //         .from('usuarios')
-  //         .select('nombre, apellido')
-  //         .eq('id', h.especialista_id)
-  //         .single();
-
-  //       const dataEspec: any = turno?.especialidades;
-  //       const nombreEspecialidad = dataEspec?.nombre || dataEspec?.[0]?.nombre || '';
-
-  //       // --- CORRECCIÓN CLAVE: PROCESAR DATOS DINÁMICOS ---
-  //       // Convertimos las columnas separadas de la BD en un solo 'valor' legible
-  //       const datosDinamicosProcesados = (h.historia_datos_dinamicos || []).map((d: any) => {
-  //         let valorFormateado = '';
-
-  //         if (d.valor_texto) {
-  //           valorFormateado = d.valor_texto;
-  //         } else if (d.valor_numerico !== null && d.valor_numerico !== undefined) {
-  //           // Si es rango o número, lo convertimos a string. 
-  //           // AGREGAR la unidad si SE QUIERE (ej: "50 %")
-  //           valorFormateado = d.valor_numerico.toString();
-  //           // Opcional: PARA SER MAS ESPECIFICO CON LOS RANGOS:
-  //           if (d.tipo_control === 'RANGO_0_100') valorFormateado += ' %';
-  //         } else if (d.valor_boolean !== null && d.valor_boolean !== undefined) {
-  //           // Si es booleano (Switch), mostramos SI/NO
-  //           valorFormateado = d.valor_boolean ? 'Sí' : 'No';
-  //         }
-
-  //         return {
-  //           clave: d.clave,
-  //           valor: valorFormateado // <================== para el PDF Y DIALOG
-  //         };
-  //       });
-
-  //       return {
-  //         ...h,
-  //         paciente: pacienteNombre,
-  //         especialidad: nombreEspecialidad,
-  //         especialistaNombre: especialista ? `${especialista.nombre} ${especialista.apellido}` : '',
-  //         fechaAtencion: turno?.fecha_hora_inicio
-  //           ? new Date(turno.fecha_hora_inicio).toLocaleDateString('es-AR')
-  //           : '',
-  //         resena: turno?.comentario || '',
-
-  //         // Sobrescribimos la propiedad con la version procesada
-  //         datos_dinamicos: datosDinamicosProcesados 
-  //       };
-  //     }));
-
-  //     // Abrimos el diálogo con los datos ya "limpios"
-  //     this.dialog.open(HistoriaClinicaDialogComponent, {
-  //       width: '800px',
-  //       data: {
-  //         pacienteNombre: pacienteNombre,
-  //         historias: historiasCompletas
-  //       }
-  //     });
-
-  //   } catch (err: any) {
-  //     console.error('[PacientesEspecialista] Error al cargar historia clínica', err);
-  //   }
-  // }
-
-
-
+  //  Obtiene las historias clínicas 
+  //  Utiliza 'Promise.all' para enriquecer cada historia en paralelo.
+  //  Por cada historia => busca los detalles del Turno y procesa los Datos Dinamicos normalizando tipos: texto, numero, rango, boolean
+  //  Finalmente inyecta toda esta data estructurada en el componente HistoriaClinicaDialogComponent
   async verHistoriaClinica(pacienteId: string, pacienteNombre: string): Promise<void> {
     try {
-      // 1. Verificaciones de sesión
+
+      //  Verificaciones de sesion
       const { data: sessionData } = await this.supa.getSession();
       if (!sessionData?.session) return;
       const especialistaId = sessionData.session.user.id;
 
-      // 2. Buscamos historias de este paciente con este especialista
+      //  Buscamos historias de este paciente con este especialista
       const { data: historias, error } = await this.supa.client
         .from('historia_clinica')
         .select(`*, historia_datos_dinamicos (*)`)
@@ -334,28 +254,28 @@ export class PacientesEspecialistaComponent implements OnInit {
         return;
       }
 
-      // 3. Mapeamos cada historia con sus datos extra (Turno + Especialista + Dinámicos)
+      //  Mapeamos cada historia con sus datos extra (Turno + Especialista + Dinámicos)
       const historiasCompletas = await Promise.all((historias || []).map(async (h: any) => {
 
-        // A) Buscar datos del turno (Fecha, Reseña/Comentario, Especialidad)
+        // Buscar datos del turno (Fecha, Reseña/Comentario, Especialidad)
         const { data: turno } = await this.supa.client
           .from('turnos')
           .select('fecha_hora_inicio, comentario, especialidades(nombre)')
           .eq('id', h.turno_id)
           .single();
 
-        // B) Buscar datos del especialista (Nombre/Apellido)
+        // Buscar datos del especialista (Nombre/Apellido)
         const { data: espUser } = await this.supa.client
           .from('usuarios')
           .select('nombre, apellido')
           .eq('id', h.especialista_id)
           .single();
 
-        // C) Manejo seguro del nombre de la especialidad (Array vs Objeto)
+        //  Manejo seguro del nombre de la especialidad (Array vs Objeto)
         const rawEspec: any = turno?.especialidades;
         const nombreEspecialidad = rawEspec?.nombre || rawEspec?.[0]?.nombre || '';
 
-        // D) Procesar Datos Dinámicos (Unificar columnas en interfaz DatoDinamico)
+        //  Procesar Datos Dinámicos (Unificar columnas en interfaz DatoDinamico)
         const datosDinamicosProcesados: DatoDinamico[] = (h.historia_datos_dinamicos || []).map((d: any) => {
           let valor: any = '';
           let tipo: TipoDatoDinamico = 'texto';
@@ -387,7 +307,7 @@ export class PacientesEspecialistaComponent implements OnInit {
           };
         });
 
-        // E) Retornar objeto completo enriquecido
+        // Retornar objeto completo enriquecido
         return {
           ...h,
           paciente: pacienteNombre,
@@ -401,7 +321,7 @@ export class PacientesEspecialistaComponent implements OnInit {
         };
       }));
 
-      // 4. Abrir el diálogo con la data procesada
+      // Abrir el diálogo con la data procesada
       this.dialog.open(HistoriaClinicaDialogComponent, {
         width: '800px',
         data: {

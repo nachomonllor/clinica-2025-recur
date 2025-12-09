@@ -16,11 +16,11 @@ export interface DatoDinamico {
 
 
 // src/app/models/dato-dinamico.model.ts
-
+// formateo para la historia clinica
 export function formatearDatoDinamico(d: DatoDinamico): string {
   let val = d.valor;
 
-  // Si el valor es booleano (true-false), lo convertimos a texto
+  // Si el valor es booleano (true-false) lo convertimos a texto
   if (typeof val === 'boolean') {
     val = val ? 'SI' : 'NO';
   }

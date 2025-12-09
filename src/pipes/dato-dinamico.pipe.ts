@@ -2,6 +2,8 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { DatoDinamico, formatearDatoDinamico } from '../app/models/dato-dinamico.model';
 
+// formateo para la historia clinica
+
 @Pipe({
   name: 'datoDinamico',
   standalone: true
