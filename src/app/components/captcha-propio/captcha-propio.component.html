@@ -1,4 +1,6 @@
 
+<!-- Uso interpolación ({{ }}) para mostrar el nombre del objetivo que eligiO el azar en el TS (ej: "Gato").
+  El *ngIf asegura que no se muestre texto vacío si el juego aUn no se generO. -->
 
 <div class="captcha-wrapper" *ngIf="habilitado">
   
@@ -8,6 +10,19 @@
       Seleccioná la imagen de: <strong class="objetivo-texto">{{ objetivo.nombre }}</strong>
     </p>
   </div>
+
+
+  <!-- 
+    *ngFor: Itera sobre el array opcionesVisibles (que siempre son 4 imágenes mezcladas).
+    (click): Cuando el usuario toca una tarjeta, 
+    le paso el objeto opt (la imagen específica) a mi función seleccionar() del TS.
+    [class.success] y [class.error]: Esto es Binding de Clases
+
+    Angular agrega la clase CSS success (borde verde) o error (borde rojo) automaticamente evaluando la condicion booleana.
+    Verde: Si el juego está ganado (esCorrecto) Y esta es la tarjeta que toqué.
+    Rojo: Si perdi (!esCorrecto) Y esta es la tarjeta que toque. 
+  -->
+
 
   <div class="captcha-grid">
     <div 

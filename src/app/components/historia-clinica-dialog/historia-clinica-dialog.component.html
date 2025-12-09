@@ -82,14 +82,14 @@
                 <span class="value">{{ historia.presion ?? '-' }}</span>
               </div>
               
-              <!-- MOSTRAR RESEÑA EN PANTALLA -->
+              <!-- MOSTRAR RESEÑA EN PANTALLA -------- -->
               <div class="historia-item full-width" *ngIf="$any(historia).resena">
                 <span class="label">Reseña / Comentario</span>
                 <span class="value text-wrap">{{ $any(historia).resena }}</span>
               </div>
             </div>
 
-            <!-- MOSTRAR DATOS DINÁMICOS EN PANTALLA -->
+            <!---- --  MOSTRAR DATOS DINAMICOS EN PANTALLA ----------------->
             <div *ngIf="historia.datos_dinamicos && historia.datos_dinamicos.length" class="datos-dinamicos">
               <div class="datos-title">Datos dinámicos</div>
               <div class="datos-chips">

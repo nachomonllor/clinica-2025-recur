@@ -137,7 +137,7 @@ export class HistoriaClinicaDialogComponent {
 
     const svgBase64 = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgLogo)));
 
-    // Función interna para generar el documento una vez cargada la imagen
+    // Funcion interna para generar el documento una vez cargada la imagen
     const generarDocumento = (pngDataUrl?: string) => {
 
       // Dibujar Cabecera (Se repite por página si es necesario)
@@ -195,7 +195,7 @@ export class HistoriaClinicaDialogComponent {
           paragraphs.push({ lines: doc.splitTextToSize(text, anchoTexto), bold: opts?.bold });
         };
 
-        // 1. Datos Fijos del Turno
+        // Datos Fijos del Turno
         const fechaAt = h.fechaAtencion || 'N/A';
         const especialidad = h.especialidad ? `(${h.especialidad})` : '';
         addParagraph(`Atención #${this.data.historias.length - index} · ${fechaAt} ${especialidad}`, { bold: true });
@@ -214,8 +214,8 @@ export class HistoriaClinicaDialogComponent {
         }
 
         // ============================================================
-        // 2. DATOS DINÁMICOS (CORREGIDO)
-        // Usamos la función helper 'formatearDatoDinamico'
+        //  DATOS DINÁMICOS (CORREGIDO)
+        // Usamos la función helper formatearDatoDinamico
         // ============================================================
         if (h.datos_dinamicos?.length) {
           addParagraph('Datos dinámicos:', { bold: true });

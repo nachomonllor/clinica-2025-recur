@@ -18,6 +18,7 @@ interface OpcionCaptcha {
 })
 export class CaptchaPropioComponent implements OnInit {
 
+  // Evento de salida para avisarle al padre (Registro) si PASO o no la prueba el USUARIOS 
   @Output() captchaValido = new EventEmitter<boolean>();
 
   habilitado: boolean = true;
@@ -40,19 +41,31 @@ export class CaptchaPropioComponent implements OnInit {
 
   constructor(private supa: SupabaseService) {}
 
+  /**
+   * Consulta a Supabase si el sistema requiere Captcha (Configuración Global).
+   * Si estA DESHABILITADO: Emite TRUE automAticamente 
+   *  Si estA HABILITADO: Llama a generarJuego() para preparar las imAgenes.
+   */
   async ngOnInit() {
-    // 1. Verificar si está habilitado en BD
+    //Verificar si está habilitado en BD
     this.habilitado = await this.supa.estaHabilitadoCaptcha();
 
     if (!this.habilitado) {
-      // Si está deshabilitado, emitimos TRUE automáticamente y no mostramos nada
+      // Si estA deshabilitado ===> emitimos TRUE automAticamente y no mostramos nada
       this.captchaValido.emit(true);
     } else {
-      // Si está habilitado, iniciamos el juego
+      // Si estA habilitado, iniciamos el juego
       this.generarJuego();
     }
   }
 
+  /**
+     GENERARJUEGO: Logica de aleatoriedad
+     Resetea el estado (pone el captcha como invalido).
+     Mezcla el array de todas las opciones usando un sort aleatorio.
+     Toma las primeras 4 opciones para mostrar (slice).
+     Elige al azar una de esas 4 para que sea el "Objetivo" a encontrar.
+   */
   generarJuego() {
     this.esCorrecto = false;
     this.seleccionado = null;
@@ -67,6 +80,13 @@ export class CaptchaPropioComponent implements OnInit {
     this.objetivo = this.opcionesVisibles[indiceRandom];
   }
 
+  /**
+   * SELECCIONAR: Validación de la respuesta.
+   Recibe la opcion que el usuario clickeo.
+   Compara el nombre de la opcion clickeada con el nombre del objetivo.
+   Si coincide: Emite TRUE (el botón de registro se habilita).
+   Si falla: Emite FALSE (el botón sigue deshabilitado).
+   */
   seleccionar(opcion: OpcionCaptcha) {
     if (!this.objetivo) return;
     this.seleccionado = opcion;
