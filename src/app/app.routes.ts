@@ -68,12 +68,12 @@ export const routes: Routes = [
         data: { animation: 'SolicitarTurnoPage', roles: ['PACIENTE', 'ADMIN'] }
       },
 
-      {
-        path: 'encuesta-atencion',
-        canActivate: [RoleGuard],
-        loadComponent: () => import('./components/encuesta-atencion/encuesta-atencion.component').then(m => m.EncuestaAtencionComponent),
-        data: { animation: 'EncuestaPage', roles: ['PACIENTE'] }
-      },
+      // {
+      //   path: 'encuesta-atencion',
+      //   canActivate: [RoleGuard],
+      //   loadComponent: () => import('./components/encuesta-atencion/encuesta-atencion.component').then(m => m.EncuestaAtencionComponent),
+      //   data: { animation: 'EncuestaPage', roles: ['PACIENTE'] }
+      // },
 
       // --- SECCIÓN ESPECIALISTAS ---
       {
