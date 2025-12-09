@@ -77,6 +77,10 @@ export class MisTurnosPacienteComponent implements OnInit {
     public supa: SupabaseService
   ) { }
 
+  // DEFENSA: "En el inicio del ciclo de vida (ngOnInit), realizamos dos acciones asíncronas clave:
+  //  Nos suscribimos al observable del usuario para obtener su identidad (ID y Nombre).
+  //  Nos suscribimos al servicio de turnos para traer la data, y configuramos un 'FilterPredicate' 
+  //  personalizado para poder buscar por varios campos a la vez (especialidad, especialista, etc)."
   ngOnInit(): void {
     // 1. Obtener Usuario
     this.supa.usuario$.subscribe(usuario => {
@@ -100,20 +104,24 @@ export class MisTurnosPacienteComponent implements OnInit {
     });
   }
 
+  // Esta funcion captura el input del usuario, 
+  // limpia los espacios y normaliza el texto a minusculas para ejecutar el filtrado en tiempo real sobre la tabla
   applyFilter(value: string): void {
     this.dataSource.filter = (value || '').trim().toLowerCase();
   }
 
+  // Getter retorna los datos visibles actualmente en la tabla
+  // respetando si hay un filtro aplicado o no. Para las exportaciones
   get turnos(): TurnoVM[] {
     const ds = this.dataSource as MatTableDataSource<TurnoVM>;
     return (ds.filteredData && ds.filteredData.length ? ds.filteredData : ds.data) || [];
   }
 
   // ==========================================================
-  // LÓGICA DE VALIDACIÓN (Reglas de Negocio)
-  // ==========================================================
-
-
+  //(Regla de Negocio)
+  // Regla de negocio para la cancelacion: 
+  // Un paciente solo puede cancelar si el turno no estaen un estado final (Realizado, Rechazado, etc.)
+  //  y si aún no tiene una reseña medica cargada
   puedeCancelar(t: TurnoVM): boolean {
     //  Si ya tiene reseña, está cerrado.
     if (t.resena && t.resena.trim().length > 0) return false;
@@ -133,20 +141,26 @@ export class MisTurnosPacienteComponent implements OnInit {
 
     return true; 
   }
-
+ 
+  // Verifica simplemente si existe una reseña cargada para habilitar el boton de ver detall
   puedeVerResena(t: TurnoVM): boolean {
     return !!(t.resena && t.resena.trim().length > 0);
   }
 
   /**
-   * REGLA DEL BOTÓN ENCUESTA:
-   * 1. Turno FINALIZADO
-   * 2. Tiene Reseña del especialista
-   * 3. NO tiene encuesta completada todavía
+   * REGLA DEL BOTON ENCUESTA:
+   *  Turno FINALIZADO
+   * Tiene Reseña del especialista
+   * NO tiene encuesta completada todavía
+   
+  Regla  para habilitar la Encuesta de Satisfacción. 
+  El turno debe estar FINALIZADO, 
+  debe tener una reseña del médico, 
+  y verificamos que el campo 'encuesta' sea falso para evitar duplicados.
    */
   puedeCompletarEncuesta(t: TurnoVM): boolean {
     const estado = (t.estado || '').toUpperCase();
-    const esFinalizado = estado === 'FINALIZADO'; // Según tu enum EstadoTurnoCodigo
+    const esFinalizado = estado === 'FINALIZADO'; // Segun  enum EstadoTurnoCodigo
     
     // Validamos que tenga reseña
     const tieneResena = this.puedeVerResena(t);
@@ -158,8 +172,8 @@ export class MisTurnosPacienteComponent implements OnInit {
   }
 
   /**
-   * FUNCIÓN PRINCIPAL: COMPLETAR ENCUESTA (Sprint 6)
-   * Cumple con: Texto, Estrellas, Radio, Checkbox, Rango [cite: 264-269]
+   * FUNCION PRINCIPAL: COMPLETAR ENCUESTA
+   * Cumple con: Texto, Estrellas, Radio, Checkbox, Rango
    */
   completarEncuesta(t: TurnoVM): void {
     // Definimos el formulario con los 5 controles requeridos
@@ -191,7 +205,7 @@ export class MisTurnosPacienteComponent implements OnInit {
         const respuestaCheckbox = checks.join(', ');
 
         try {
-          // 1. Guardar en tabla 'encuestas_atencion'
+          //  Guardar en tabla 'encuestas_atencion'
           const { error } = await this.supa.client
             .from('encuestas_atencion')
             .insert({
@@ -207,11 +221,11 @@ export class MisTurnosPacienteComponent implements OnInit {
 
           if (error) throw error;
 
-          // 2. Actualizar UI inmediatamente
+          // Actualizar UI inmediatamente
           t.encuesta = true; 
           t.calificacion = fv.estrellas;
 
-          // 3. Actualizar flag en tabla turnos (Opcional pero recomendado para consistencia)
+          // Actualizar flag en tabla turnos (Opcional pero recomendado para consistencia)
           await this.supa.client.from('turnos')
              .update({ calificacion: fv.estrellas }) 
              .eq('id', t.id);
@@ -235,18 +249,19 @@ export class MisTurnosPacienteComponent implements OnInit {
     });
   }
 
+
   // Alias para mantener compatibilidad si el HTML llama a 'calificarAtencion'
   calificarAtencion(t: TurnoVM): void {
     this.completarEncuesta(t);
   }
 
-  // ==========================================================
-  // ACCIONES
-  // ==========================================================
 
-  
+  // Manejo de cancelaciOn lOgica. 
+  // Primero valida la regla de negocio. 
+  // Despues abre un dialog solicitando el motivo obligatorio. 
+  // Si confirma, llama al servicio y actualiza el estado del objeto en memoria para reflejar 'CANCELADO' instantaneamente
   cancelarTurno(t: TurnoVM): void {
-    // 1. Validar antes de abrir nada
+    //  Validar antes de abrir nada
     if (!this.puedeCancelar(t)) {
       this.snackBar.open('Este turno ya no puede cancelarse.', 'Cerrar', {
         duration: 2500
@@ -254,20 +269,20 @@ export class MisTurnosPacienteComponent implements OnInit {
       return;
     }
 
-    // 2. Preparar formulario
+    // Preparar formulario
     const comentarioForm = this.fb.group({
       comentario: ['', [Validators.required, Validators.minLength(10)]]
     });
 
-    // 3. Abrir diálogo
+    // Abrir diálogo
     const ref = this.dialog.open(this.cancelDialog, {
       data: { turno: t, form: comentarioForm },
       width: '500px'
     });
 
-    // 4. Procesar resultado al cerrar
+    // Procesar resultado al cerrar
     ref.afterClosed().subscribe(result => {
-      // Si el usuario cerró sin confirmar (result es false/undefined)
+      // Si el usuario cerro sin confirmar (result es false-undefined)
       if (!result) return;
 
       // Validación de seguridad adicional
@@ -282,10 +297,10 @@ export class MisTurnosPacienteComponent implements OnInit {
 
       const comentario = comentarioForm.value.comentario ?? '';
 
-      // 5. Llamar al servicio
+      // Llamar al servicio
       this.turnoService.cancelarTurno(t.id, comentario).subscribe({
         next: () => {
-          // IMPORTANTE: Actualizar el estado local en MAYÚSCULAS
+          // IMPORTANTE: Actualizar el estado local en MAYUSCULAS
           // para que coincida con tus tipos y la BD.
           t.estado = 'CANCELADO'; 
 
@@ -362,6 +377,7 @@ export class MisTurnosPacienteComponent implements OnInit {
   //   });
   // }
 
+  // Abre un modal simple de solo lectura inyectando los datos de la reseña en el componente de diálogo
   verResena(t: TurnoVM): void {
     if (!this.puedeVerResena(t)) return;
     this.dialog.open(this.verResenaDialog, {
@@ -371,6 +387,7 @@ export class MisTurnosPacienteComponent implements OnInit {
   }
 
   // EFUNCION PARA LA ENCUESTA
+  // logica alternativa para abrir la encuesta para no hacerlo en un componente por separado, uso el template calificarDialog
   abrirEncuesta(t: TurnoVM): void {
     const encuestaForm = this.fb.group({
       comentario: ['', [Validators.required, Validators.minLength(6)]], // MINLEN
@@ -433,7 +450,8 @@ export class MisTurnosPacienteComponent implements OnInit {
     });
   }
 
-
+ //  Genera un reporte rapido en Excel usando la libreria XLSX.
+ //  Toma los turnos filtrados actuales, mapea las columnas a un formato legible y descarga el archivo con timestamp
   exportarHistoriaClinicaExcel(): void {
     const turnos = this.turnos;  // respeta el filtro actual
 
