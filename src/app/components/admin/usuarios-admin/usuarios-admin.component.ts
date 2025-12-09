@@ -438,6 +438,15 @@ export class UsuariosAdminComponent implements OnInit {
   }
 
 
+  /*
+  Genera la Historia Clínica en PDF
+  Busca todos los turnos e historias clínicas del paciente.
+  Inserta el logo de la clínica.
+  Itera turno por turno agregando al PDF:
+  Datos fijos (presion, temperatura).
+  Datos Dinámicos: Itera sobre el array de datos variables y los imprime con sus unidades (ej: agrega "mg/dL" si es glucosa, "%" si es rango).
+  */
+ 
   async descargarTurnosPdf(usuario: UsuarioAdmin): Promise<void> {
     const turnosParaExportar = await this.obtenerTurnosUsuario(usuario);
 
