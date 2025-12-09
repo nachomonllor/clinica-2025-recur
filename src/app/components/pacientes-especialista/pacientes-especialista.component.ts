@@ -230,7 +230,12 @@ export class PacientesEspecialistaComponent implements OnInit {
 
 
   //  Obtiene las historias clínicas 
-  //  Utiliza 'Promise.all' para enriquecer cada historia en paralelo.
+  //  Utiliza 'Promise.all' para traer cada historia en paralelo.
+  //  La tabla historia_clinica tiene los datos médicos, 
+  //  pero la información contextual (qué especialidad fue, fecha exacta del turno, reseña) está en la tabla turnos.
+  //  En lugar de hacer joins gigantescos y complejos en la base de datos, 
+  //  opté por traer los datos base y luego 'hidratar' (enriquecer) cada registro en paralelo usando Promise.all
+
   //  Por cada historia => busca los detalles del Turno y procesa los Datos Dinamicos normalizando tipos: texto, numero, rango, boolean
   //  Finalmente inyecta toda esta data estructurada en el componente HistoriaClinicaDialogComponent
   async verHistoriaClinica(pacienteId: string, pacienteNombre: string): Promise<void> {
