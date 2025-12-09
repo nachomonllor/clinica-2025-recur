@@ -68,7 +68,7 @@ export class MisTurnosEspecialistaComponent implements OnInit {
   @ViewChild('verResenaDialog') verResenaDialog!: TemplateRef<unknown>;
 
   // Almacena los IDs de los turnos que tienen encuesta contestada
-  encuestasIds = new Set<string>();
+  encuestasIds = new Set<string>(); //Usamos un Set para busquedas de ID ultra rapidas (O(1)) en la vista
 
   @ViewChild('verEncuestaDialog') verEncuestaDialog!: TemplateRef<unknown>;
 
@@ -94,54 +94,16 @@ export class MisTurnosEspecialistaComponent implements OnInit {
 
   ) { }
 
-
-  // ngOnInit(): void {
-  //   this.turnoService.getTurnosEspecialista$().subscribe({
-  //     next: (ts: TurnoEspecialista[]) => {
-
-  //       // 1. LÓGICA DE ORDENAMIENTO (PENDIENTE PRIMERO)
-  //       const turnosOrdenados = ts.sort((a, b) => {
-  //         const estadoA = String(a.estado || '').toUpperCase();
-  //         const estadoB = String(b.estado || '').toUpperCase();
-
-  //         // Prioridad absoluta: PENDIENTE va primero (-1 sube, 1 baja)
-  //         if (estadoA === 'PENDIENTE' && estadoB !== 'PENDIENTE') return -1;
-  //         if (estadoA !== 'PENDIENTE' && estadoB === 'PENDIENTE') return 1;
-
-  //         // Orden secundario: Por fecha (los más viejos o próximos primero)
-  //         if (a.fecha < b.fecha) return -1;
-  //         if (a.fecha > b.fecha) return 1;
-
-  //         // Orden terciario: Por hora
-  //         if (a.hora < b.hora) return -1;
-  //         if (a.hora > b.hora) return 1;
-
-  //         return 0;
-  //       });
-
-  //       // Asignamos la lista ya ordenada
-  //       this.dataSource.data = turnosOrdenados;
-
-  //       // 2. CONFIGURACIÓN DEL FILTRO (INCLUYENDO RESEÑA)
-  //       this.dataSource.filterPredicate = (t, f) => {
-  //         // Concatenamos especialidad, paciente, estado, historia clínica...
-  //         // Y AHORA AGREGAMOS: ${t.resena || ''}
-  //         const haystack = `${t.especialidad} ${t.paciente} ${t.estado} ${t.historiaBusqueda || ''} ${t.resena || ''}`.toLowerCase();
-
-  //         return haystack.includes(f);
-  //       };
-  //     },
-  //     error: (e) => console.error('[MisTurnosEspecialista] Error', e)
-  //   });
-  // }
-
+  // recuperamos los turnos del especialista. 
+  // ORDENAMIENTO primero los 'PENDIENTES'y despues por fecha.
+  //verificarEncuestas ES para saber que turnos ya fueron calificados por el paciente
 
   ngOnInit(): void {
     this.turnoService.getTurnosEspecialista$().subscribe({
       next: (ts: TurnoEspecialista[]) => {
-        // 1. ORDENAMIENTO (Tu lógica existente)
+        // ORDENAMIENTO (logica existente)
         const turnosOrdenados = ts.sort((a, b) => {
-           // ... (tu lógica de sort se mantiene igual) ...
+
            const estadoA = String(a.estado || '').toUpperCase();
            const estadoB = String(b.estado || '').toUpperCase();
            if (estadoA === 'PENDIENTE' && estadoB !== 'PENDIENTE') return -1;
@@ -153,13 +115,13 @@ export class MisTurnosEspecialistaComponent implements OnInit {
 
         this.dataSource.data = turnosOrdenados;
 
-        // 2. FILTRO (Tu lógica existente)
+        //  FILTRO (Tu logica existente)
         this.dataSource.filterPredicate = (t, f) => {
           const haystack = `${t.especialidad} ${t.paciente} ${t.estado} ${t.historiaBusqueda || ''} ${t.resena || ''}`.toLowerCase();
           return haystack.includes(f);
         };
 
-        // 3. NUEVO: Verificar qué turnos tienen encuesta
+        // Verificar que turnos tienen encuesta
         this.verificarEncuestas(ts); 
       },
       error: (e) => console.error('[MisTurnosEspecialista] Error', e)
@@ -167,7 +129,8 @@ export class MisTurnosEspecialistaComponent implements OnInit {
   }
 
   /**
-   * Consulta en lote cuáles de los turnos cargados tienen una entrada en 'encuestas_atencion'
+   * Consulta en lote cuales de los turnos cargados tienen una entrada en 'encuestas_atencion'
+   * 
    */
   async verificarEncuestas(turnos: TurnoEspecialista[]): Promise<void> {
     if (turnos.length === 0) return;
@@ -181,16 +144,20 @@ export class MisTurnosEspecialistaComponent implements OnInit {
       .in('turno_id', ids);
 
     if (data && !error) {
-      // Guardamos en un Set para acceso rápido (O(1)) en el HTML
+      // Guardamos en un Set para acceso rapido (O(1)) en el HTML
       this.encuestasIds = new Set(data.map((d: any) => d.turno_id));
     }
   }
 
+  // Verifica contra el Set en memoria si el turno tiene encuesta
   puedeVerEncuesta(t: TurnoEspecialista): boolean {
-    // Solo si el ID está en el set de encuestas encontradas
+    // Solo si el ID esta en el set de encuestas encontradas
     return this.encuestasIds.has(t.id);
   }
 
+  // Carga 'Lazy' (perezosa): Solo traemos el contenido completo de la encuesta (comentarios, estrellas)
+  //  cuando el especialista hace clic explicitamente en el botón
+  // solo existe la carga si se hace click
   async verEncuesta(t: TurnoEspecialista): Promise<void> {
     // Buscamos el detalle completo de la encuesta al hacer click
     const { data, error } = await this.supa.client
@@ -217,13 +184,15 @@ export class MisTurnosEspecialistaComponent implements OnInit {
   // =========================================================
   // ACCIONES DE FILTRO
   // =========================================================
-
+  // Normaliza el input del usuario y filtra la tabla en el cliente
   applyFilter(valor: string = ''): void {
     this.dataSource.filter = (valor || '').trim().toLowerCase();
     this.dataSource.paginator?.firstPage?.();
   }
 
   //  -----------------------  ACCIONES SOBRE TURNOS -------------------------
+  // Flujo de rechazo ===> 
+  // Abre modal === > Valida motivo obligatorio ====> Llama al servicio => Actualiza estado localmente para evitar recargar la pagina
   rechazarTurno(turno: TurnoEspecialista): void {
     const comentarioForm = this.fb.group({
       comentario: ['', [Validators.required, Validators.minLength(10)]]
@@ -252,6 +221,7 @@ export class MisTurnosEspecialistaComponent implements OnInit {
     });
   }
 
+  // Reutilizo la logica de validacion de formularios
   cancelarTurno(turno: TurnoEspecialista): void {
     const comentarioForm = this.fb.group({
       comentario: ['', [Validators.required, Validators.minLength(10)]]
@@ -280,7 +250,8 @@ export class MisTurnosEspecialistaComponent implements OnInit {
     });
   }
 
-
+// Inicio del proceso de finalizacion
+// Inicializamos un Formulario Reactivo complejo que incluye validaciones numericas (rangos) y un FormArray para los datos dinamicos variables
   finalizarTurno(turno: TurnoEspecialista): void {
     const historiaForm = this.fb.group({
       altura: [null, [Validators.required, Validators.min(0)]],
@@ -317,12 +288,14 @@ export class MisTurnosEspecialistaComponent implements OnInit {
     this.historiaDialogRef?.close(ok);
   }
 
-  // ===== Datos dinámicos libres (clave/valor) =====
-
+  // ===== Datos dinámicos libres (clave-valor) =====
+  // obtiene tipadamente al FormArray de datos dinamicos desde el HTML
   getDatosDinamicos(form: FormGroup): FormArray {
     return form.get('datosDinamicos') as FormArray;
   }
 
+  // Agrega dinámicamente controles al formulario. 
+  // Implementamos la regla de negocio que limita a un maximo de 3 datos extra clave-valor
   agregarDatoDinamico(form: FormGroup): void {
     const arr = this.getDatosDinamicos(form);
     if (arr.length >= 3) {
@@ -338,14 +311,20 @@ export class MisTurnosEspecialistaComponent implements OnInit {
     );
   }
 
+
   eliminarDatoDinamico(form: FormGroup, index: number): void {
     this.getDatosDinamicos(form).removeAt(index);
   }
 
-
   // ---------------------------------------------------------------------------------------------------------------------------------
   // ---------------------------------------------------------------------------------------------------------------------------------
 
+  // Esta funcion maneja la transaccion completa de finalizacion:
+  //  Obtiene sesion y IDs necesarios.
+  //  Prepara los datos fijos y mapea los datos dinamicos del formulario
+  //  Inserta primero la cabecera en 'historia_clinica' para obtener su ID
+  //  Inserta el detalle en 'historia_datos_dinamicos' vinculándolos con la ID anterior
+  //  Finalmente, actualiza el estado del turno a 'FINALIZADO' y guarda la reseña
   async guardarHistoriaClinica(turno: TurnoEspecialista, form: FormGroup): Promise<void> {
     try {
       const { data: sessionData } = await this.supa.getSession();

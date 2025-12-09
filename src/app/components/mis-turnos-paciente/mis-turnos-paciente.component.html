@@ -1,3 +1,7 @@
+
+
+<!-- filtrado en tiempo real y la vista de  de botones  -->
+
 <mat-card class="mis-shell mat-elevation-z6"  appElevateOnHover>
 
     <div class="toolbar">
@@ -25,11 +29,12 @@
 
     </div>
 
+
+    <!-- destacamos como la UI cambia de color segun los datos (Class Binding) -->
+
     <section class="lista" *ngIf="turnos.length; else sinTurnos">
 
         <!-- 
-            CORRECCIÓN DE CLASES (BORDES):
-            Ya tenías esto bien, usamos .toLowerCase() directo.
         -->
         <article class="turno-card" *ngFor="let t of turnos" appElevateOnHover
             [class.aceptado]="t.estado.toLowerCase() === 'aceptado'"
@@ -47,8 +52,8 @@
                 <!-- 
                     CORRECCIÓN DEL CHIP (TEXTO Y COLOR):
                     Aquí estaba el problema del guion '-'.
-                    1. Si es 'FINALIZADO', le pasamos 'realizado' al badge para que se ponga verde.
-                    2. Si es 'FINALIZADO', escribimos el texto manualmente. Si no, usa el pipe.
+                    1. Si es 'FINALIZADO' ========> le pasamos 'realizado' al badge para que se ponga verde
+                    2. Si es 'FINALIZADO' =>=======> escribimos el texto manualmente. Si no usa el pipe
                 -->
                 <span class="estado-chip" [appStatusBadge]="t.estado === 'FINALIZADO' ? 'realizado' : t.estado">
                     {{ t.estado === 'FINALIZADO' ? 'Finalizado' : (t.estado | statusLabel) }}
@@ -69,6 +74,11 @@
                     <span class="valor estrellas">★ {{ t.calificacion }} / 5</span>
                 </div>
             </div>
+
+
+
+            <!-- mostrar o ocultar botones segun reglas -->
+
 
             <div class="card-actions">
                 <button mat-stroked-button color="warn" (click)="cancelarTurno(t)" [disabled]="!puedeCancelar(t)"
