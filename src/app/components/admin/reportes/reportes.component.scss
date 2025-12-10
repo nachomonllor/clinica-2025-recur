@@ -1,22 +1,22 @@
 
-:host{display:block}
-.reportes{padding:1rem;display:grid;gap:1rem}
-.filtros{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:1rem}
-.rango{display:grid;grid-auto-flow:column;gap:.75rem;align-items:end}
-.rango label{display:grid;gap:.25rem;font-size:.9rem}
-.rango input[type=date]{padding:.4rem .6rem;border:1px solid #d4d4d8;border-radius:.5rem}
-.presets{display:flex;gap:.5rem}
-.presets button,.exports button{padding:.5rem .8rem;border-radius:.5rem;border:1px solid #d4d4d8;background:#fff;cursor:pointer}
-.exports{display:flex;gap:.5rem}
-.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
-.card{border:1px solid #e4e4e7;border-radius:.75rem;padding:.9rem 1rem;background:#fff}
-.card .big{font-size:1.8rem;margin:.25rem 0}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem}
-.panel{border:1px solid #e4e4e7;border-radius:.75rem;padding:.75rem;background:#fff}
-.panel.full{grid-column:1/-1}
-.tabla{width:100%;border-collapse:collapse}
-.tabla th,.tabla td{padding:.6rem .5rem;border-bottom:1px solid #eee;text-align:left}
-.tabla thead th{font-weight:600;background:#fafafa}
-.loading{padding:1rem;color:#6b7280}
-@media (max-width:1024px){.kpis{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}}
-@media print {.exports,.presets,.rango{display:none}}
+// :host{display:block}
+// .reportes{padding:1rem;display:grid;gap:1rem}
+// .filtros{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:1rem}
+// .rango{display:grid;grid-auto-flow:column;gap:.75rem;align-items:end}
+// .rango label{display:grid;gap:.25rem;font-size:.9rem}
+// .rango input[type=date]{padding:.4rem .6rem;border:1px solid #d4d4d8;border-radius:.5rem}
+// .presets{display:flex;gap:.5rem}
+// .presets button,.exports button{padding:.5rem .8rem;border-radius:.5rem;border:1px solid #d4d4d8;background:#fff;cursor:pointer}
+// .exports{display:flex;gap:.5rem}
+// .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+// .card{border:1px solid #e4e4e7;border-radius:.75rem;padding:.9rem 1rem;background:#fff}
+// .card .big{font-size:1.8rem;margin:.25rem 0}
+// .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem}
+// .panel{border:1px solid #e4e4e7;border-radius:.75rem;padding:.75rem;background:#fff}
+// .panel.full{grid-column:1/-1}
+// .tabla{width:100%;border-collapse:collapse}
+// .tabla th,.tabla td{padding:.6rem .5rem;border-bottom:1px solid #eee;text-align:left}
+// .tabla thead th{font-weight:600;background:#fafafa}
+// .loading{padding:1rem;color:#6b7280}
+// @media (max-width:1024px){.kpis{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}}
+// @media print {.exports,.presets,.rango{display:none}}

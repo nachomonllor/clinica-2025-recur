@@ -15,51 +15,27 @@ export class LoadingOverlayComponent {
   constructor(public loadingService: LoadingService) {}
 }
 
+/*
+1. El Propósito (UX):
 
+"Este componente LoadingOverlay tiene como objetivo mejorar la experiencia del usuario bloqueando la interacción 
+con la interfaz mientras se realizan operaciones asíncronas (como peticiones HTTP), evitando que el usuario 
+haga doble clic o modifique datos mientras espera."
+2. La Magia del Async Pipe (| async):
+"Lo más importante de este HTML es la directiva *ngIf combinada con el pipe async.
+En lugar de suscribirme manualmente al Observable isLoading$ en el TypeScript (lo cual requeriría gestionar la desuscripción en el ngOnDestroy para evitar fugas de memoria), delegué esa responsabilidad a la vista.
+El pipe | async:
+Se suscribe automáticamente al Observable del servicio.
+Devuelve el valor actual (true o false).
+Marca el componente para detección de cambios.
+Se desuscribe automáticamente cuando el componente se destruye."
+3. Directiva Estructural (*ngIf):
+"Usamos *ngIf en lugar de [hidden]. 
+Esto significa que el overlay no existe en el DOM cuando no está cargando, 
+lo que mantiene la página ligera. Solo se inserta en el árbol HTML cuando el servicio emite true."
 
+*/
 
-// // src/app/components/loading-overlay/loading-overlay.component.ts
-// import { Component, ChangeDetectionStrategy } from '@angular/core';
-// import { NgIf, AsyncPipe } from '@angular/common';
-// import { MatProgressBarModule } from '@angular/material/progress-bar';
-// import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-// import { LoadingService } from '../../../services/loading.service';
-
-// @Component({
-//   selector: 'app-loading-overlay',
-//   standalone: true,
-//   imports: [NgIf, AsyncPipe, MatProgressBarModule, MatProgressSpinnerModule],
-//   template: `
-//     <ng-container *ngIf="loader.isLoading$ | async">
-//       <div class="overlay" role="alert" aria-live="polite" aria-busy="true">
-//         <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-//         <div class="center">
-//           <mat-progress-spinner mode="indeterminate" diameter="56"></mat-progress-spinner>
-//           <span class="label">Cargando…</span>
-//         </div>
-//       </div>
-//     </ng-container>
-//   `,
-//   styles: [`
-//     .overlay {
-//       position: fixed; inset: 0; z-index: 9999;
-//       background: rgba(8, 16, 24, .35);
-//       backdrop-filter: blur(2px);
-//       display: grid; align-content: start;
-//     }
-//     .center {
-//       place-self: center; display: grid; justify-items: center; gap: 12px;
-//       padding: 16px 20px; border-radius: 10px;
-//       background: rgba(15, 34, 53, .9); color: #eaf2fb;
-//       box-shadow: 0 6px 18px rgba(0,0,0,.35);
-//     }
-//     .label { font-weight: 500; letter-spacing: .2px; }
-//   `],
-//   changeDetection: ChangeDetectionStrategy.OnPush
-// })
-// export class LoadingOverlayComponent {
-//   constructor(public loader: LoadingService) {}
-// }
 
 
 

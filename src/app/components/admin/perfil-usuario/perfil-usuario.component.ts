@@ -69,7 +69,8 @@ export class PerfilUsuarioComponent implements OnInit, OnDestroy {
     this.sub?.unsubscribe();
   }
 
-  // Lógica auxiliar para traer especialidades y armar el objeto para la vista
+  // Logica auxiliar para traer especialidades y armar el objeto para la vista
+  // data Mapping ===> transformamos la data cruda de la BD a un objeto de vista limpio
   private async cargarDatosCompletos(u: any): Promise<void> {
     const rolRaw = String(u.perfil || 'PACIENTE').toUpperCase();
     const rol: Rol = rolRaw === 'ESPECIALISTA' ? 'ESPECIALISTA' : 
@@ -77,7 +78,7 @@ export class PerfilUsuarioComponent implements OnInit, OnDestroy {
 
     this.esAdmin = rol === 'ADMIN';
 
-    // 1. Cargar Especialidades (Solo si es especialista)
+    //  Cargar Especialidades (Solo si es especialista)
     let especialidades: string[] = [];
     
     if (rol === 'ESPECIALISTA') {
@@ -93,12 +94,12 @@ export class PerfilUsuarioComponent implements OnInit, OnDestroy {
       }
     }
 
-    // 2. Calcular Edad (si no viene directo)
+    // Calcular Edad (si no viene directo)
     let edad: number | undefined = u.edad;
     // Si quisieras calcular por fecha de nacimiento (si la tuvieras en metadata o DB)
     // if (!edad && u.fecha_nacimiento) { ... }
 
-    // 3. Generar Bio
+    // Generar Bio
     let bio: string;
     if (rol === 'ESPECIALISTA') {
       if (especialidades.length) {
@@ -115,7 +116,7 @@ export class PerfilUsuarioComponent implements OnInit, OnDestroy {
       bio = this.translate.instant('PROFILE.BIO.PATIENT');
     }
 
-    // 4. Mapear a la interfaz de la vista
+    // Mapear a la interfaz de la vista
     this.usuario = {
       id: u.id,
       nombre: u.nombre ?? '',

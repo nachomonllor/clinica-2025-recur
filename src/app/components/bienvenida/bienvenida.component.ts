@@ -22,10 +22,18 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
     RouterLink,
     MatButtonModule, MatIconModule,
     MatCardModule, MatTooltipModule,
-    TranslateModule      
+    TranslateModule
   ],
   templateUrl: './bienvenida.component.html',
   styleUrls: ['./bienvenida.component.scss'],
+
+  /*
+    Definimos un 'trigger' llamado 'fadeIn'.
+      - transition(':enter'): Se ejecuta cuando el componente se inserta en el DOM.
+      - Estado inicial: Opacidad 0 (invisible) y desplazado 8px hacia abajo (translateY).
+      - Animate: Durante 450ms, suaviza la entrada (ease-out) llevando la opacidad a 1 y la posición a su lugar original.
+      Esto crea un efecto de "flotar hacia arriba" al cargar.
+  */
   animations: [
     trigger('fadeIn', [
       transition(':enter', [
@@ -36,10 +44,12 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
   ]
 })
 export class BienvenidaComponent implements OnInit, OnDestroy {
-  
-    protected readonly autenticado = signal(false);
+
+  // Uso de Signals para manejo reactivo del estado de autenticacion
+  protected readonly autenticado = signal(false);
   private unsubscribeAuthChange?: () => void;
- 
+
+  // Configuracion de idiomas disponibles
   protected readonly idiomas = ['es', 'en', 'pt'] as const;
   protected readonly idiomaActual = signal<string>('es');
 
@@ -48,6 +58,9 @@ export class BienvenidaComponent implements OnInit, OnDestroy {
     private router: Router,
     private translate: TranslateService    //  <= ========== NUEVO
   ) {
+
+    // Al instanciar, verificamos si existe una preferencia guardada en localStorage.
+    // Si no, intentamos usar el idioma del navegador o fallback a 'es'.
     const saved = localStorage.getItem('lang');
     const inicial =
       saved && this.idiomas.includes(saved as any)
@@ -59,6 +72,8 @@ export class BienvenidaComponent implements OnInit, OnDestroy {
   }
 
   // PARA LAS PANTALLAS DE IDIOMA
+  // Cambio de idioma en tiempo real.
+  // Actualiza la señal el servicio de traduccion y persiste la eleccion en LocalStorage
   protected cambiarIdioma(lang: string): void {
     if (!this.idiomas.includes(lang as any)) return;
     this.idiomaActual.set(lang);
@@ -66,17 +81,23 @@ export class BienvenidaComponent implements OnInit, OnDestroy {
     localStorage.setItem('lang', lang);
   }
 
+
   //---------------------------
   //  constructor(
   //   private supabase: SupabaseService,
   //   private router: Router,
   // ) { } 
 
-
   /*
    Detecta si hay un Token de Verificación en la URL (significa que el usuario viene de confirmar su mail). 
-   Si es asi espera un segundo para darle tiempo a Supabase a procesarlo.
+   Si es asi espera un segundo para darle tiempo a Supabase a procesarlo
+  
+   *  Maneja dos escenarios:
+   * Usuario normal => Verifica sesion y muestra botones de ingreso.
+   * Usuario verificando email: Detecta tokens en la URL, espera a que Supabase procese
+   * y redirige automaticamente sin que el usuario tenga que loguearse de nuevo.
    */
+
   async ngOnInit(): Promise<void> {
     // Verificar si hay tokens de verificación en la URL (viene del email)
     const tieneTokensEnUrl = this.tieneTokensDeVerificacion();
@@ -90,7 +111,7 @@ export class BienvenidaComponent implements OnInit, OnDestroy {
     // Verificar sesión inicial
     await this.verificarSesion();
 
-    // Suscribirse a cambios de autenticación
+    // Suscribirse a cambios de autenticacion
     this.unsubscribeAuthChange = this.supabase.onAuthChange(async (event, session) => {
       const tieneSesion = !!session;
       this.autenticado.set(tieneSesion);
@@ -106,26 +127,27 @@ export class BienvenidaComponent implements OnInit, OnDestroy {
     });
   }
 
+  // Limpieza de suscripciones para evitar Memory Leaks
   ngOnDestroy(): void {
     this.unsubscribeAuthChange?.();
   }
 
   /*
-  Revisa la URL del navegador en busca de parámetros como access_token o type=signup. Devuelve true si es un link de autenticación de Supabase.
+  Revisa la URL del navegador en busca de parámetros como access_token o type=signup
+  Devuelve true si es un link de autenticación de Supabase
   */
   private tieneTokensDeVerificacion(): boolean {
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.has('token') || urlParams.has('type') || urlParams.has('access_token');
   }
 
-/*
-  Comprueba activamente si existe una sesión válida (supabase.getSession()).
-  Tiene una lógica de "reintentos" (bucle for): Si hay tokens en la URL
-  intenta hasta 3 veces verificar la sesión
-  porque a veces el proceso de confirmación de email tarda unos milisegundos en impactar.
-  Si encuentra sesión, llama a redirigirSegunRol.
-*/
-
+  /*
+    Comprueba activamente si existe una sesión válida (supabase.getSession()).
+    Tiene una lógica de reintentos (bucle for): Si hay tokens en la URL
+    intenta hasta 3 veces verificar la sesión
+    porque a veces el proceso de confirmación de email tarda unos milisegundos en impactar.
+    Si encuentra sesión, llama a redirigirSegunRol.
+  */
   private async verificarSesion(): Promise<void> {
     try {
       // Intentar múltiples veces si hay tokens en la URL (Supabase puede tardar en procesarlos)
@@ -163,7 +185,11 @@ export class BienvenidaComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Consulta la base de datos (usuarios) para saber qué Rol tiene el usuario autenticado.
+  // Consulta la base de datos (usuarios) para saber que Rol tiene el usuario autenticado.
+  // DEFENSA (RUTEO DINAMICO POR ROL):
+  // Consulta la tabla 'usuarios' para obtener el perfil (Paciente-Especialista-Admin)
+  // y decide a que modulo enviar al usuario
+
   private async redirigirSegunRol(userId: string): Promise<void> {
     try {
       // -------------------------- Nuevo método del SupabaseService --------------------------

@@ -125,6 +125,7 @@ export const routes: Routes = [
         // Animación al entrar a estadísticas
         data: { animation: 'AdminStatsPage', roles: ['ADMIN'] }
       },
+      
       // {
       //   path: 'estadisticas',
       //   canActivate: [RoleGuard],
@@ -132,12 +133,13 @@ export const routes: Routes = [
       //   data: { animation: 'AdminStatsPage', roles: ['ADMIN'] }
       // },
       // reportes específicos
-      {
-        path: 'reportes',
-        canActivate: [RoleGuard],
-        loadComponent: () => import('./components/admin/reportes/reportes.component').then(m => m.ReportesComponent),
-        data: { animation: 'AdminStatsPage', roles: ['ADMIN'] }
-      },
+      // {
+      //   path: 'reportes',
+      //   canActivate: [RoleGuard],
+      //   loadComponent: () => import('./components/admin/reportes/reportes.component').then(m => m.ReportesComponent),
+      //   data: { animation: 'AdminStatsPage', roles: ['ADMIN'] }
+      // },
+
       {
         path: 'turnos-por-especialidad',
         canActivate: [RoleGuard],
