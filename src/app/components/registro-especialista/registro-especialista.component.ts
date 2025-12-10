@@ -451,7 +451,7 @@ export class RegistroEspecialistaComponent implements OnInit {
         return;
       }
 
-      // Si hay sesión (Auto confirm off), avisamos éxito
+      // Si hay sesion (Auto confirm off), avisamos exito
       await Swal.fire({
         icon: 'success',
         title: 'Registro enviado',

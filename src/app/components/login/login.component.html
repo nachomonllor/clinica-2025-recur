@@ -1,3 +1,17 @@
+
+<!-- 
+ 
+La variable f:  *ngIf='formularioLogin as f' para no tener que escribir formularioLogin.get('email') todo el tiempo.
+Hago el código más limpio usando solo f.get('email')".
+Translate Pipe: Toda la interfaz está internacionalizada. 
+El pipe | translate busca la clave en el archivo JSON correspondiente (es, en, pt) y muestra el texto correcto
+Comunicación Padre-Hijo: Al señalar <app-quick-login-buttons>, 
+- aplico composición de componentes. 
+El Login es el componente 'inteligente' (Smart Component) que maneja la logica, 
+y los botones son componentes 'tontos' (Dumb Components) que solo reciben datos (@Input) y emiten eventos (@Output) 
+-->
+
+
 <mat-card class="login-card" *ngIf="formularioLogin as f">
   <mat-card-title>{{ 'LOGIN.TITLE' | translate }}</mat-card-title>
   <div class="lang-switch">
