@@ -539,7 +539,9 @@ export class UsuariosAdminComponent implements OnInit {
         // CABECERA DEL TURNO 
         const fechaStr = t.fecha_hora_inicio ? new Date(t.fecha_hora_inicio).toLocaleDateString('es-AR') : 'Sin fecha';
         addParagraph(`Turno #${index + 1} · ${fechaStr} · (${(t.estado?.codigo || '').toUpperCase()})`, { bold: true });
-        addParagraph(`Especialidad: ${t.especialidad?.nombre || ''} | Profesional: ${this.nombreCompleto(t.especialista)}`);
+        //addParagraph(`Especialidad: ${t.especialidad?.nombre || ''} | Profesional: ${this.nombreCompleto(t.especialista)}`);
+
+        addParagraph(`Especialidad: ${t.especialidad?.nombre || ''} | Paciente: ${this.nombreCompleto(t.paciente)} | Esp.: ${this.nombreCompleto(t.especialista)}`);
 
         //  DATOS CLINICOS
         const hc = historiasMap.get(t.id);

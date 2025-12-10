@@ -33,7 +33,13 @@ Se desuscribe automáticamente cuando el componente se destruye."
 "Usamos *ngIf en lugar de [hidden]. 
 Esto significa que el overlay no existe en el DOM cuando no está cargando, 
 lo que mantiene la página ligera. Solo se inserta en el árbol HTML cuando el servicio emite true."
+¿Y quién cambia ese valor de isLoading$?", tu respuesta ganadora es:
 
+Ese Observable está en el LoadingService. 
+Generalmente, se actualiza mediante un HTTP Interceptor. 
+Cada vez que sale una petición, el interceptor pone el valor en true, 
+y cuando vuelve la respuesta (o falla), lo pone en false. 
+Asi centralizamos la logica de carga para toda la aplicacion en un solo lugar
 */
 
 
