@@ -45,6 +45,7 @@ import { QuickLoginButtonsComponent, QuickLoginUser } from "../quick-login-butto
 })
 export class LoginComponent implements OnInit {
 
+  // Uso de Formularios Reactivos tipados para mayor seguridad y control de validaciones
   formularioLogin!: FormGroup<{
     email: FormControl<string>;
     password: FormControl<string>;
@@ -56,17 +57,17 @@ export class LoginComponent implements OnInit {
   // Variable de control del captcha
   captchaResuelto: boolean = false;
 
+  // Configuracion para los botones de acceso rapido 
   quickLogins: QuickLoginsConfig = environment.quickLogins as QuickLoginsConfig;
   quickSeleccionado?: { nombre: string; rol: Rol; email: string };
 
+  // Internacionalizacion (i18n)
   idiomas = ['es', 'en', 'pt'];
   idiomaActual = 'es';
 
   @ViewChild('passwordInput', { static: false }) passwordInput?: ElementRef<HTMLInputElement>;
 
-
   /* --------------------------------------------------------------------------- */
-
   public quickLoginsData = {
 
 
@@ -145,12 +146,14 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Inicializamos el formulario con validadores sincronos: Email valido y password minima
     this.formularioLogin = this.fb.group({
       email: this.fb.control('', { nonNullable: true, validators: [Validators.required, Validators.email] }),
       password: this.fb.control('', { nonNullable: true, validators: [Validators.required, Validators.minLength(6)] }),
     });
   }
 
+  // Gestion de cambio de idioma en tiempo real usando ngx-translate
   cambiarIdioma(lang: string) {
     if (!this.idiomas.includes(lang)) return;
     this.idiomaActual = lang;
@@ -158,12 +161,14 @@ export class LoginComponent implements OnInit {
     localStorage.setItem('lang', lang);
   }
 
+  // Callback del componente hijo de Captcha. 
+  // Habilita el botón de submit solo si es valido
   recibirCaptcha(esValido: boolean) {
     this.captchaResuelto = esValido;
   }
 
 
-
+ // Logica para rellenar el formulario desde los botones de acceso rapido
   activarQuick(user: any, event?: Event) {
     event?.preventDefault();
 
@@ -172,10 +177,14 @@ export class LoginComponent implements OnInit {
       password: user.password
     });
 
+    // Al usar QuickLogin asumimos que es un entorno seguro de prueba 
     this.captchaResuelto = true;
   }
 
-
+ /**
+    Este metodo orquesta todo el flujo de autenticacioon paso a paso.
+    Es una transaccion logica que debe cumplir varios requisitos para ser exitosa.
+   */
   async iniciarSesion(): Promise<void> {
     console.log(' [LOGIN] Inicio del proceso');
 
@@ -256,7 +265,7 @@ export class LoginComponent implements OnInit {
       // PASO 7: Log
       this.logIngresos.registrarIngreso().catch(err => console.error('Log error', err));
 
-      // PASO 8: Navegación
+      // PASO 8: Navegacion
       let ruta = '/bienvenida';
       if (usuario?.perfil === 'PACIENTE') ruta = '/mis-turnos-paciente';
       else if (usuario?.perfil === 'ESPECIALISTA') ruta = '/mis-turnos-especialista';
@@ -273,14 +282,13 @@ export class LoginComponent implements OnInit {
     }
   }
 
-
+ // Metodo auxiliar para traducir codigos de error de Supabase-Postgres a mensajes amigables para el usuario
   private traducirError(e: unknown): string {
     const err: any = e;
-    // Agregamos 'err.details' porque Supabase/Postgres suele poner el detalle de la llave duplicada ahí
+    // Agregamos 'err.details' porque Supabase-Postgres suele poner el detalle de la llave duplicada ahí
     const msg = String(err?.message ?? err?.details ?? err?.error_description ?? err?.statusText ?? '');
     const m = msg.toLowerCase();
 
-    // --- Lógica existente ---
     if (m.includes('failed to fetch') || m.includes('networkerror') || m.includes('load failed')) {
       return 'No se pudo conectar con el servidor. Verificá tu conexión a internet, la URL y la API key de Supabase.';
     }
@@ -291,13 +299,13 @@ export class LoginComponent implements OnInit {
     if (m.includes('rate') && m.includes('limit')) return 'Demasiados intentos. Esperá unos minutos e intentá nuevamente.';
     if (m.includes('exists') && m.includes('resource')) return 'El archivo ya existe. Probá con otro nombre o ruta.';
 
-    // --- NUEVA LÓGICA PARA DNI DUPLICADO ---
-    // El error de postgres suele ser: "duplicate key value violates unique constraint"
+    // ---  LoGICA PARA DNI DUPLICADO ---
+    // El error de postgres suele ser "duplicate key value violates unique constraint"
     if (m.includes('duplicate key') && (m.includes('dni') || m.includes('users_dni_key'))) {
       return 'El DNI ingresado ya pertenece a otro usuario registrado en el sistema.';
     }
 
-    // Si es duplicate key pero no dice DNI (por si acaso choca otro campo único)
+    // Si es duplicate key pero no dice DNI (por si acaso choca otro campo unico)
     if (m.includes('duplicate key')) {
       return 'Uno de los datos ingresados ya existe en el sistema (posiblemente DNI o Email).';
     }
@@ -356,6 +364,8 @@ export class LoginComponent implements OnInit {
   }
 
   // PARA TDOSS OLOS ACCESOS RAPIDOS
+  // Manejador del evento de clic en un boton de acceso rapido. 
+  // Rellena el form hace foco en el password y da feedback visual
   loginRapidoUser(user: QuickAccessUser): void {
     console.log('loginRapidoUser ->', user.email, user.password);
 
@@ -386,10 +396,10 @@ export class LoginComponent implements OnInit {
 
   handleQuickLogin(user: QuickLoginUser) {
     console.log(`Login rápido intentado para: ${user.nombre}`);
-    // Ejemplo: Si tienes un formulario reactivo llamado 'loginForm'
+    // Ejemplo: Si tengo un formulario reactivo llamado 'loginForm'
     // this.loginForm.patchValue({ email: user.email, password: user.password });
 
-    // O llama directamente al servicio de auth desde aquí
+    // O llama directamente al servicio de auth desde aca
     // this.authService.login(user.email, user.password);
   }
 
