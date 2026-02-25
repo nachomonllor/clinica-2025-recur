@@ -19,6 +19,7 @@ import Swal from 'sweetalert2';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { CapitalizarNombrePipe } from "../../../pipes/capitalizar-nombre.pipe";
+import { LogIngresosService } from '../../../services/log-ingresos.service';
 
 // ---------------------------------------------------------------------
 // Tipos locales para el componente (ya no se importan de otros .ts)
@@ -115,148 +116,14 @@ export class SolicitarTurnoComponent implements OnInit {
     private supa: SupabaseService,
     public router: Router,
     private snackBar: MatSnackBar,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private logService: LogIngresosService
   ) {
     // Form básico para que el template no reviente antes de OnInit
     this.inicializarFormularioBasico();
   }
 
   /// ========> PARA QUE SOLO PINTE LOS HORARIOS QUE TIENE DISPONIBLE EL ESPECIALISTA
-
-
-  // private async actualizarHorariosDisponiblesParaSeleccion(): Promise<void> {
-  //   const especialidadCtrl = this.formularioTurno.get('especialidad') as FormControl<string | null>;
-  //   const especialistaCtrl = this.formularioTurno.get('especialista') as FormControl<string | null>;
-  //   const diaCtrl = this.formularioTurno.get('dia') as FormControl<string | null>;
-  //   const horaCtrl = this.formularioTurno.get('hora') as FormControl<string | null>;
-
-  //   const especialistaId = especialistaCtrl?.value;
-  //   const nombreEspecialidad = especialidadCtrl?.value;
-  //   const diaValue = diaCtrl?.value; // "YYYY-MM-DD|texto lindo"
-
-  //   if (!especialistaId || !nombreEspecialidad || !diaValue) {
-  //     this.horariosDisponibles = [];
-  //     horaCtrl?.reset();
-  //     horaCtrl?.disable({ emitEvent: false });
-  //     return;
-  //   }
-
-  //   const especialidadId = this.especialidadIdPorNombre.get(nombreEspecialidad) ?? null;
-
-  //   // ------- IMPORTANTE: calcular día de semana en horario local -------
-  //   const diaSeleccionado = diaValue.split('|')[0]; // "YYYY-MM-DD"
-  //   const [yearStr, monthStr, dayStr] = diaSeleccionado.split('-');
-  //   const year = Number(yearStr);
-  //   const month = Number(monthStr); // 1..12
-  //   const day = Number(dayStr);
-
-  //   // new Date(año, mesIndex, día) usa fecha LOCAL (no UTC)
-  //   const fechaLocal = new Date(year, month - 1, day);
-  //   const diaSemana = fechaLocal.getDay(); // 0=domingo ... 6=sábado
-
-  //   try {
-  //     // 1) Traer horarios del especialista para ese día de semana
-  //     const { data: horariosData, error: horariosErr } = await this.supa.client
-  //       .from('horarios_especialista')
-  //       .select('id, especialista_id, especialidad_id, dia_semana, hora_desde, hora_hasta, duracion_turno_minutos')
-  //       .eq('especialista_id', especialistaId)
-  //       .eq('dia_semana', diaSemana);
-
-  //     if (horariosErr) throw horariosErr;
-
-  //     const horarios = (horariosData ?? []) as HorarioEspecialistaRow[];
-
-  //     // Filtrar por especialidad si corresponde
-  //     const horariosFiltrados = horarios.filter(h => {
-  //       if (!especialidadId) return true; // si no hay especialidad, usamos todos
-  //       // si especialidad_id es null => aplica a todas
-  //       return !h.especialidad_id || h.especialidad_id === especialidadId;
-  //     });
-
-  //     if (!horariosFiltrados.length) {
-  //       this.horariosDisponibles = [];
-  //       horaCtrl?.reset();
-  //       horaCtrl?.disable({ emitEvent: false });
-  //       return;
-  //     }
-
-  //     // 2) Generar slots posibles
-  //     let slots: string[] = [];
-
-  //     for (const h of horariosFiltrados) {
-  //       const duracion = h.duracion_turno_minutos || 30;
-
-  //       // hora_desde / hora_hasta vienen como "HH:MM" o "HH:MM:SS"
-  //       const [hdH, hdM] = h.hora_desde.substring(0, 5).split(':').map(Number);
-  //       const [hhH, hhM] = h.hora_hasta.substring(0, 5).split(':').map(Number);
-
-  //       let minutosDesde = hdH * 60 + hdM;
-  //       const minutosHasta = hhH * 60 + hhM;
-
-  //       while (minutosDesde + duracion <= minutosHasta) {
-  //         const hh = Math.floor(minutosDesde / 60).toString().padStart(2, '0');
-  //         const mm = (minutosDesde % 60).toString().padStart(2, '0');
-  //         slots.push(`${hh}:${mm}`);
-  //         minutosDesde += duracion;
-  //       }
-  //     }
-
-  //     // Quitar duplicados y ordenar
-  //     slots = Array.from(new Set(slots)).sort();
-
-  //     // 3) Filtrar los slots que ya tengan turno reservado
-  //     const { data: turnosDia, error: turnosErr } = await this.supa.client
-  //       .from('turnos')
-  //       .select(`
-  //       fecha_hora_inicio,
-  //       estado:estados_turno!fk_turno_estado ( codigo )
-  //     `)
-  //       .eq('especialista_id', especialistaId)
-  //       .gte('fecha_hora_inicio', `${diaSeleccionado}T00:00:00`)
-  //       .lt('fecha_hora_inicio', `${diaSeleccionado}T23:59:59`);
-
-  //     if (turnosErr) throw turnosErr;
-
-  //     const ocupadas = new Set<string>();
-  //     (turnosDia ?? []).forEach((t: any) => {
-  //       const codigo = String(t.estado?.codigo ?? '').toUpperCase();
-  //       if (codigo === 'PENDIENTE' || codigo === 'ACEPTADO') {
-  //         const dt = new Date(t.fecha_hora_inicio);
-  //         const hh = dt.getHours().toString().padStart(2, '0');
-  //         const mm = dt.getMinutes().toString().padStart(2, '0');
-  //         ocupadas.add(`${hh}:${mm}`);
-  //       }
-  //     });
-
-  //     this.horariosDisponibles = slots.filter(h => !ocupadas.has(h));
-
-  //     // Habilitar el selector de hora sólo si hay algo
-  //     if (this.horariosDisponibles.length > 0) {
-  //       horaCtrl?.enable({ emitEvent: false });
-  //     } else {
-  //       horaCtrl?.reset();
-  //       horaCtrl?.disable({ emitEvent: false });
-
-  //       this.snackBar.open(
-  //         this.translate.instant('APPOINTMENT.NO_FREE_SLOTS'),
-  //         this.translate.instant('COMMON.CLOSE'),
-  //         { duration: 3000 }
-  //       );
-  //     }
-
-  //   } catch (e) {
-  //     console.error('[SolicitarTurno] Error al cargar horarios del especialista', e);
-  //     this.horariosDisponibles = [];
-  //     horaCtrl?.reset();
-  //     horaCtrl?.disable({ emitEvent: false });
-
-  //     this.snackBar.open(
-  //       this.translate.instant('APPOINTMENT.ERROR_LOAD_SLOTS'),
-  //       this.translate.instant('COMMON.CLOSE'),
-  //       { duration: 3000 }
-  //     );
-  //   }
-  // }
 
   private async actualizarHorariosDisponiblesParaSeleccion(): Promise<void> {
     const especialidadCtrl = this.formularioTurno.get('especialidad') as FormControl<string | null>;
@@ -392,17 +259,23 @@ export class SolicitarTurnoComponent implements OnInit {
         );
       }
 
+      this.logService.registrarIngreso('LOADED_AVAILABLE_SLOTS', 'SolicitarTurnoComponent', 'actualizarHorariosDisponiblesParaSeleccion', `Especialista ID ${especialistaId}, Día ${diaSeleccionado}, Slots disponibles: ${this.horariosDisponibles.join(', ')}`); // Logueamos los horarios disponibles que se cargaron para el especialista y día seleccionado
+
     } catch (e) {
       console.error('[SolicitarTurno] Error al cargar horarios del especialista', e);
       this.horariosDisponibles = [];
       horaCtrl?.reset();
       horaCtrl?.disable({ emitEvent: false });
 
+
+
       this.snackBar.open(
         this.translate.instant('APPOINTMENT.ERROR_LOAD_SLOTS'),
         this.translate.instant('COMMON.CLOSE'),
         { duration: 3000 }
       );
+
+
     }
   }
 
@@ -510,9 +383,14 @@ export class SolicitarTurnoComponent implements OnInit {
       }
 
       this.diasDisponibles = dias;
+
+
+      this.logService.registrarIngreso('LOADED_AVAILABLE_DAYS', 'SolicitarTurnoComponent', 'actualizarDiasDisponiblesParaSeleccion', `Especialista ID ${especialistaId}, Especialidad ${nombreEspecialidad}, Días disponibles: ${this.diasDisponibles.join(', ')}`); // Logueamos los días disponibles que se cargaron para el especialista y especialidad seleccionados
+
     } catch (e) {
       console.error('[SolicitarTurno] Error al cargar días disponibles', e);
       this.diasDisponibles = [];
+      this.logService.registrarIngreso('ERROR_LOADING_AVAILABLE_DAYS', 'SolicitarTurnoComponent', 'actualizarDiasDisponiblesParaSeleccion', `Error al cargar días disponibles para Especialista ID ${especialistaId}, Especialidad ${nombreEspecialidad}: ${e instanceof Error ? e.message : JSON.stringify(e)}`); // Logueamos el error ocurrido al cargar los días disponibles, mostrando el especialista y especialidad para facilitar la identificación de problemas
     }
   }
 
@@ -702,19 +580,14 @@ export class SolicitarTurnoComponent implements OnInit {
 
       this.especialistas = options;
       this.especialistasFiltrados = [];
+
+      this.logService.registrarIngreso('LOADED_SPECIALTIES_AND_SPECIALISTS', 'SolicitarTurnoComponent', 'cargarEspecialidades', `Especialidades cargadas: ${this.especialidades.join(', ')}. Especialistas cargados: ${this.especialistas.length}`);  
+
     } catch (e: any) {
       console.error('[SolicitarTurno] Error al cargar especialidades/especialistas', e);
       this.especialidades = [];
       this.especialistas = [];
       this.especialistasFiltrados = [];
-
-
-
-      // this.snackBar.open(
-      //   'Error al cargar especialidades o especialistas',
-      //   'Cerrar',
-      //   { duration: 4000 }
-      // );
 
       this.snackBar.open(
         this.translate.instant('APPOINTMENT.ERROR_LOAD_SPECIALTIES'),
@@ -722,44 +595,10 @@ export class SolicitarTurnoComponent implements OnInit {
         { duration: 4000 }
       );
 
-
+      this.logService.registrarIngreso('ERROR_LOADING_SPECIALTIES_AND_SPECIALISTS', 'SolicitarTurnoComponent', 'cargarEspecialidades', `Error al cargar especialidades y especialistas: ${e instanceof Error ? e.message : JSON.stringify(e)}`);
 
     }
   }
-
-  // async cargarPacientes(): Promise<void> {
-  //   try {
-  //     const { data, error } = await this.supa.client
-  //       .from('usuarios')
-  //       .select('id, nombre, apellido, perfil, activo')
-  //       .eq('perfil', 'PACIENTE')
-  //       .eq('activo', true)
-  //       .order('apellido', { ascending: true });
-
-  //     if (error) throw error;
-
-  //     const rows = (data ?? []) as any[];
-  //     this.pacientes = rows.map(
-  //       (p): PacienteOption => ({
-  //         id: p.id,
-  //         nombre: p.nombre ?? '',
-  //         apellido: p.apellido ?? ''
-  //       })
-  //     );
-  //   } catch (e: any) {
-  //     console.error('[SolicitarTurno] Error al cargar pacientes', e);
-
-  //     this.snackBar.open(
-  //       this.translate.instant('APPOINTMENT.ERROR_LOAD_PATIENTS'),
-  //       this.translate.instant('COMMON.CLOSE'),
-  //       { duration: 2500 }
-  //     );
-
-
-  //     this.pacientes = [];
-  //   }
-  // }
-
 
   async cargarPacientes(): Promise<void> {
     try {
@@ -784,6 +623,9 @@ export class SolicitarTurnoComponent implements OnInit {
           dni: p.dni ?? '---' // Si no trae DNI agregamos guiones
         })
       );
+
+      this.logService.registrarIngreso('LOADED_PATIENTS', 'SolicitarTurnoComponent', 'cargarPacientes', `Pacientes cargados: ${this.pacientes.length}`);
+
     } catch (e: any) {
       console.error('[SolicitarTurno] Error al cargar pacientes', e);
       this.snackBar.open(
@@ -792,6 +634,8 @@ export class SolicitarTurnoComponent implements OnInit {
         { duration: 2500 }
       );
       this.pacientes = [];
+
+      this.logService.registrarIngreso('ERROR_LOADING_PATIENTS', 'SolicitarTurnoComponent', 'cargarPacientes', `Error al cargar pacientes: ${e instanceof Error ? e.message : JSON.stringify(e)}`);
     }
   }
 
@@ -829,6 +673,8 @@ export class SolicitarTurnoComponent implements OnInit {
     const dia = fecha.getDate();
     const mes = meses[fecha.getMonth()];
     const año = fecha.getFullYear();
+
+    this.logService.registrarIngreso('FORMATTED_DATE', 'SolicitarTurnoComponent', 'formatearFecha', `Fecha formateada: ${diaSemana} ${dia} de ${mes} ${año}`); // Logueamos la fecha formateada para verificar que se muestra correctamente
 
     return `${diaSemana} ${dia} de ${mes} ${año}`;
   }
@@ -888,6 +734,9 @@ export class SolicitarTurnoComponent implements OnInit {
 
 
       if (hayChoque) {
+
+        
+
         throw new Error(this.translate.instant('APPOINTMENT.ERROR_SLOT_TAKEN'));
       }
 

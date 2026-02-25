@@ -30,6 +30,7 @@ import { RouterLink } from '@angular/router';
 
 import { EstadisticasService } from '../../../services/estadisticas.service';
 import { ChartOptions, EstadisticaTurnosPorDia } from '../../models/estadistica.model';
+import { LogIngresosService } from '../../../services/log-ingresos.service';
 
 @Component({
   selector: 'app-turnos-por-dia',
@@ -106,7 +107,8 @@ export class TurnosPorDiaComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private api: EstadisticasService
+    private api: EstadisticasService,
+    private logService: LogIngresosService
   ) {
     // Inicializamos el Logo PARA EL HTML (la vista normal)
     const svg = `<svg width="600" height="200" viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#0099ff;stop-opacity:1"/><stop offset="100%" style="stop-color:#0055b3;stop-opacity:1"/></linearGradient></defs><g transform="translate(50,50)"><path d="M80 0H120A10 10 0 0 1 130 10V80H200A10 10 0 0 1 210 90V130A10 10 0 0 1 200 140H130V210A10 10 0 0 1 120 220H80A10 10 0 0 1 70 210V140H0A10 10 0 0 1-10 130V90A10 10 0 0 1 0 80H70V10A10 10 0 0 1 80 0Z" fill="url(#g)" transform="scale(0.5) translate(30,30)"/><path d="M60 115L90 145L150 85" stroke="white" stroke-width="14" fill="none" stroke-linecap="round" stroke-linejoin="round" transform="scale(0.5) translate(30,30)"/></g><g transform="translate(180,115)"><text x="0" y="-25" font-family="Arial" font-weight="bold" font-size="28" fill="#0077cc">CLINICA</text><text x="0" y="25" font-family="Arial" font-weight="bold" font-size="52" fill="#003366">MONLLOR</text></g></svg>`;
@@ -171,6 +173,8 @@ export class TurnosPorDiaComponent implements OnInit {
           this.cargando = false;
         }
       });
+
+      this.logService.registrarIngreso('APPLIED_FILTERS', 'TurnosPorDiaComponent', 'aplicarFiltros', `Filtros aplicados - Desde: ${isoDesde || 'N/A'}, Hasta: ${isoHasta || 'N/A'}, Solo Finalizados: ${soloFinalizados}`); // Logueamos los filtros aplicados para la carga de datos
   }
 
   private labelFromDayKey(dayKey: string): string {
@@ -198,7 +202,12 @@ export class TurnosPorDiaComponent implements OnInit {
   // === EXPORTAR PDF (LOGO DEFINIDO EN FUNCION) ===
   async descargarPDF(): Promise<void> {
     const DATA = document.getElementById('captura-pdf');
-    if (!DATA) return;
+    if (!DATA) { 
+
+        this.logService.registrarIngreso('ERROR_ELEMENT_NOT_FOUND', 'TurnosPorDiaComponent', 'descargarPDF', `No se encontró el elemento para capturar el PDF (ID: captura-pdf)`); // Logueamos el error de elemento no encontrado para la captura del PDF
+
+      return;
+    }
 
     // 1. Definimos el SVG EXACTO que pasaste (para el PDF)
     const svgLogo = `
@@ -284,11 +293,17 @@ export class TurnosPorDiaComponent implements OnInit {
     pdf.addImage(chartPng, 'PNG', margin, topMargin, pdfImgWidth, pdfImgHeight);
     
     pdf.save(`Turnos_Por_Dia_${Date.now()}.pdf`);
+
+    this.logService.registrarIngreso('PDF_DOWNLOADED', 'TurnosPorDiaComponent', 'descargarPDF', `PDF de turnos por día descargado con filtros - Desde: ${this.filtrosForm.value.desde || 'N/A'}, Hasta: ${this.filtrosForm.value.hasta || 'N/A'}, Solo Finalizados: ${this.filtrosForm.value.soloFinalizados}`); // Logueamos la descarga del PDF, mostrando los filtros aplicados
+
   }
 
   async descargarImagen(): Promise<void> {
     const el = document.getElementById('captura-pdf');
-    if (!el) return;
+    if (!el) {
+      this.logService.registrarIngreso('ERROR_ELEMENT_NOT_FOUND', 'TurnosPorDiaComponent', 'descargarImagen', `No se encontró el elemento para capturar la imagen (ID: captura-pdf)`); // Logueamos el error de elemento no encontrado para la captura de imagen
+      return;
+    }
 
     const canvas = await html2canvas(el, {
       scale: 2,
@@ -308,5 +323,7 @@ export class TurnosPorDiaComponent implements OnInit {
     link.href = canvas.toDataURL('image/jpeg', 0.9);
     link.download = `turnos_por_dia_${Date.now()}.jpg`;
     link.click();
+
+    this.logService.registrarIngreso('IMAGE_DOWNLOADED', 'TurnosPorDiaComponent', 'descargarImagen', `Imagen JPG de turnos por día descargada con filtros - Desde: ${this.filtrosForm.value.desde || 'N/A'}, Hasta: ${this.filtrosForm.value.hasta || 'N/A'}, Solo Finalizados: ${this.filtrosForm.value.soloFinalizados}`); // Logueamos la descarga de la imagen, mostrando los filtros aplicados
   }
 }
