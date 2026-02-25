@@ -15,6 +15,7 @@ import { EstadoTurnoUI, TurnoUI } from '../../../models/turno.model';
 import { EstadoTurnoCodigo } from '../../../models/tipos.model';
 import { EstadoTurnoLabelPipe } from "../../../../pipes/estado-turno-label.pipe";
 import { DoctorPipe } from "../../../../pipes/doctor.pipe";
+import { LogIngresosService } from '../../../../services/log-ingresos.service';
 
 @Component({
   selector: 'app-turnos-admin',
@@ -53,11 +54,16 @@ export class TurnosAdminComponent implements OnInit {
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
     private fb: FormBuilder,
-    private turnosService: TurnosService
+    private turnosService: TurnosService,
+    private logService: LogIngresosService
+
   ) { }
 
   // Inicia el ciclo de vida del componente. Su unica tarea es llamar a cargarTurnos() de forma asíncrona para traer los datos apenas se carga la pagina.
   async ngOnInit(): Promise<void> {
+
+    this.logService.registrarIngreso('VIEW_ADMIN_APPOINTMENTS_PAGE'); // Logueamos la visita a la página de turnos admin
+
     await this.cargarTurnos();
   }
 
@@ -79,6 +85,9 @@ export class TurnosAdminComponent implements OnInit {
 
       this.turnos = base;
       this.applyFilter(this.busqueda);
+
+      this.logService.registrarIngreso('LOAD_ADMIN_APPOINTMENTS'); // Logueamos la carga de turnos en admin
+
     } catch (e: any) {
       console.error('[TurnosAdmin] Error al cargar turnos', e);
       this.snackBar.open('Error al cargar turnos', 'Cerrar', { duration: 2500 });
@@ -274,6 +283,7 @@ export class TurnosAdminComponent implements OnInit {
         especialistaAvatar 
       };
 
+      this.logService.registrarIngreso('MAP_TURNOS_DB_TO_UI'); // Logueamos la transformación de datos de DB a UI
       return ui;
     });
   }
@@ -292,6 +302,8 @@ export class TurnosAdminComponent implements OnInit {
       const haystack = `${t.especialidad} ${t.especialista} ${t.paciente} ${t.estado} ${t.patologiasText}`.toLowerCase();
       return haystack.includes(f);
     });
+
+    this.logService.registrarIngreso('APPLY_APPOINTMENTS_FILTER'); // Logueamos el uso del filtro de turnos en admin
 
     this.seleccionado = this.filtrados[0] ?? null;
   }
@@ -330,6 +342,7 @@ export class TurnosAdminComponent implements OnInit {
       width: '500px'
     });
 
+
     ref.afterClosed().subscribe(async result => {
       if (result && comentarioForm.valid) {
         const comentario = comentarioForm.value.comentario ?? '';
@@ -338,9 +351,13 @@ export class TurnosAdminComponent implements OnInit {
           turno.estado = 'CANCELADO';
           this.applyFilter(this.busqueda);
           this.snackBar.open('Turno cancelado', 'Cerrar', { duration: 2000 });
+
+
+          this.logService.registrarIngreso('CANCEL_APPOINTMENT'); // Logueamos la cancelación de un turno en admin
         } catch (err: any) {
           console.error('[TurnosAdmin] Error al cancelar turno', err);
           this.snackBar.open(`Error al cancelar: ${err?.message ?? 'Error desconocido'}`, 'Cerrar', { duration: 2500 });
+          this.logService.registrarIngreso('ERROR_CANCELING_APPOINTMENT'); // Logueamos el error al cancelar un turno en admin
         }
       }
     });

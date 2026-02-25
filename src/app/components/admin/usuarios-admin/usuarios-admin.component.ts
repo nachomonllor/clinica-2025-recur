@@ -47,6 +47,7 @@ import { LoadingService } from '../../../../services/loading.service';
 import { DoctorPipe } from "../../../../pipes/doctor.pipe";
 import { HistoriaClinicaDialogComponent } from '../../historia-clinica-dialog/historia-clinica-dialog.component';
 import { DatoDinamico, TipoDatoDinamico } from '../../../models/dato-dinamico.model';
+import { LogIngresosService } from '../../../../services/log-ingresos.service';
 
 @Component({
   selector: 'app-usuarios-admin',
@@ -144,7 +145,8 @@ export class UsuariosAdminComponent implements OnInit {
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
 
-    private loading: LoadingService
+    private loading: LoadingService,
+    private logService: LogIngresosService
   ) { }
 
   /*
@@ -171,8 +173,11 @@ export class UsuariosAdminComponent implements OnInit {
           this.esAdmin = perfil === 'ADMIN';
         }
       }
+
+      this.logService.registrarIngreso('VIEW_ADMIN_USERS_PAGE'); // Logueamos la visita a la página de usuarios admin
     } catch (e) {
       console.error('[UsuariosAdmin] Error al verificar rol', e);
+      this.logService.registrarIngreso('ERROR_CHECKING_ADMIN_ROLE'); // Logueamos el error al verificar el rol de admin
     }
 
     await this.cargarUsuarios();
@@ -206,6 +211,7 @@ export class UsuariosAdminComponent implements OnInit {
 
   // Transforma los datos crudos que vienen de la base de datos
   private toCardVM(u: UsuarioAdmin): UsuarioAdminCard {
+    this.logService.registrarIngreso('MAP_USER_DB_TO_CARD'); // Logueamos la transformación de datos de DB a CardVM
     return {
       id: u.id,
       rol: u.rol,

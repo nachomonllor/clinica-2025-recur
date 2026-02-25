@@ -125,6 +125,14 @@ create table esquema_clinica.ping_keep_alive (
   origen text default 'App Clínica'
 );
 
+-- Convertimos las columnas de texto libre a varchar(1000) para evitar sobrecargas
+ALTER TABLE esquema_clinica.log_ingresos
+ALTER COLUMN user_agent TYPE varchar(1000),
+ALTER COLUMN componente TYPE varchar(1000),
+ALTER COLUMN funcion TYPE varchar(1000),
+ALTER COLUMN descripcion TYPE varchar(1000);
+
+
 -- 2. SEED DE DATOS BÁSICOS Y DE PRUEBA
 insert into esquema_clinica.estados_turno (id, codigo, descripcion, orden) values
   (gen_random_uuid(), 'PENDIENTE', 'Turno pendiente de aceptación', 1),

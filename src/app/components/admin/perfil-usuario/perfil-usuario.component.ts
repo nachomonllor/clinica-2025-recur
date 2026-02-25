@@ -9,6 +9,7 @@ import { SupabaseService } from '../../../../services/supabase.service';
 import { InicialesPipe } from '../../../../pipes/iniciales.pipe';
 import { Rol } from '../../../models/tipos.model';
 import { UsuarioPerfil } from '../../../models/usuario.model';
+import { LogIngresosService } from '../../../../services/log-ingresos.service';
 
 @Component({
   selector: 'app-perfil-usuario',
@@ -40,7 +41,8 @@ export class PerfilUsuarioComponent implements OnInit, OnDestroy {
   constructor(
     private supa: SupabaseService,
     private router: Router,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private logService: LogIngresosService
   ) { }
 
   ngOnInit(): void {
@@ -58,9 +60,14 @@ export class PerfilUsuarioComponent implements OnInit, OnDestroy {
         } finally {
           this.cargando = false;
         }
+
+        this.logService.registrarIngreso('VIEW_PROFILE_PAGE', 'PerfilUsuarioComponent', 'ngOnInit', 'Perfil cargado correctamente'); // Logueamos la visita a la página de perfil
+
       } else {
         // Si es null, puede que esté cargando todavía o no haya sesión.
         // (El Guard se encarga de redirigir si no hay sesión, así que esperamos)
+
+        this.logService.registrarIngreso('VIEW_PROFILE_PAGE_NO_USER', 'PerfilUsuarioComponent', 'ngOnInit', 'Intento de acceso al perfil sin usuario'); // Logueamos el intento de acceso al perfil sin usuario
       }
     });
   }
@@ -91,7 +98,9 @@ export class PerfilUsuarioComponent implements OnInit, OnDestroy {
         especialidades = rels
           .map((r: any) => r.especialidades?.nombre)
           .filter(Boolean);
-      }
+      
+        }
+        this.logService.registrarIngreso(relError ? 'ERROR_LOADING_SPECIALTIES' : 'LOADED_SPECIALTIES', 'PerfilUsuarioComponent', 'cargarDatosCompletos', relError ? `Error: ${relError.message}` : `Especialidades: ${especialidades.join(', ')}`); // Logueamos la carga de especialidades para el perfil de especialista
     }
 
     // Calcular Edad (si no viene directo)
@@ -107,13 +116,18 @@ export class PerfilUsuarioComponent implements OnInit, OnDestroy {
           'PROFILE.BIO.SPECIALIST_WITH_SPECIALITIES',
           { specialities: especialidades.join(', ') }
         );
+
+
       } else {
         bio = this.translate.instant('PROFILE.BIO.SPECIALIST_DEFAULT');
       }
     } else if (rol === 'ADMIN') {
       bio = this.translate.instant('PROFILE.BIO.ADMIN');
+
+
     } else {
       bio = this.translate.instant('PROFILE.BIO.PATIENT');
+
     }
 
     // Mapear a la interfaz de la vista
@@ -168,11 +182,13 @@ export class PerfilUsuarioComponent implements OnInit, OnDestroy {
 
   descargarHistoria() {
     console.log('Descargar historia clínica de', this.usuario?.id);
+
   }
 
   verTurnos() {
     if (this.usuario) {
       this.router.navigate(['/turnos-admin'], { queryParams: { usuario: this.usuario.id } }); // Corregí la ruta a /turnos-admin que es la común
+
     }
   }
 }
