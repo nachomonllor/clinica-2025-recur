@@ -44,6 +44,9 @@ export class SupabaseService {
 
     // Escuchar cambios de Auth automáticamente
     this.inicializarAuthListener();
+
+    this.iniciarKeepAlive(); // Iniciamos el Keep-Alive para evitar pausas en la base de datos
+
   }
 
   get client(): SupabaseClient<any, any, any, any, any> {
@@ -162,6 +165,41 @@ export class SupabaseService {
     if (error) throw error;
     return data;
   }
+
+
+
+  // =========================================================
+  // KEEP ALIVE (Anti-Pausa de Supabase)
+  // =========================================================
+
+  public iniciarKeepAlive(): void {
+    // 1. Enviamos un ping apenas arranca la app
+    this.hacerPing();
+
+    // 2. Configuramos un intervalo para que envíe un ping cada 2 horas (7200000 ms)
+    setInterval(() => {
+      this.hacerPing();
+    }, 7200000);
+  }
+
+  private async hacerPing(): Promise<void> {
+    try {
+      const { error } = await this.client
+        .from('ping_keep_alive')
+        .upsert({
+          id: 1,
+          ultimo_ping: new Date().toISOString(),
+          origen: 'Angular Clínica'
+        });
+
+      if (error) throw error;
+      console.log('⚡ [Supabase] Ping Keep-Alive enviado con éxito. La base sigue despierta.');
+    } catch (err) {
+      console.warn('⚠️ [Supabase] Error en Ping Keep-Alive:', err);
+    }
+  }
+
+
 
 }
 

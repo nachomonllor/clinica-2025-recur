@@ -142,6 +142,7 @@ insert into esquema_clinica.estados_turno (id, codigo, descripcion, orden) value
   (gen_random_uuid(), 'FINALIZADO','Turno realizado', 5);
 
 insert into esquema_clinica.configuracion_sistema (clave, valor_boolean) values ('captcha_habilitado', true);
+
 insert into esquema_clinica.ping_keep_alive (id, ultimo_ping, origen) values (1, now(), 'Inicialización');
 
 INSERT INTO esquema_clinica.especialidades (id, nombre, descripcion) VALUES
