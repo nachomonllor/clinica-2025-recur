@@ -26,6 +26,7 @@ import { environment } from '../../../environments/environment';
 // Captcha Propio
 import { CaptchaPropioComponent } from '../../components/captcha-propio/captcha-propio.component';
 import { FabBienvenidaComponent } from '../fab-bienvenida/fab-bienvenida.component';
+import { LogIngresosService } from '../../../services/log-ingresos.service';
 
 @Component({
   selector: 'app-registro-paciente',
@@ -76,6 +77,7 @@ export class RegistroPacienteComponent implements OnInit {
     private fb: FormBuilder,
     private sb: SupabaseService,
     private router: Router,
+    private logService: LogIngresosService
   ) { }
 
   ngOnInit(): void {
@@ -101,6 +103,8 @@ export class RegistroPacienteComponent implements OnInit {
       imagenPerfil1: this.fb.control<File | null>(null, Validators.required),
       imagenPerfil2: this.fb.control<File | null>(null, Validators.required),
     });
+
+    this.logService.registrarIngreso('VIEW_REGISTRATION_PAGE', 'RegistroPacienteComponent', 'ngOnInit', 'Página de registro de paciente vista'); // Logueamos la visita a la página de registro de paciente
   }
 
   // ---------------------------------------------------------------
@@ -122,6 +126,8 @@ export class RegistroPacienteComponent implements OnInit {
     // 1. Validar formulario
     if (this.registroPacienteForm.invalid) {
       this.registroPacienteForm.markAllAsTouched();
+
+      this.logService.registrarIngreso('FORM_INVALID', 'RegistroPacienteComponent', 'onSubmit', 'Intento de registro con formulario inválido'); // Logueamos el intento de registro con formulario inválido
       return;
     }
 
@@ -133,6 +139,8 @@ export class RegistroPacienteComponent implements OnInit {
         icon: 'warning',
         confirmButtonText: 'Ok'
       });
+
+      this.logService.registrarIngreso('CAPTCHA_NOT_SOLVED', 'RegistroPacienteComponent', 'onSubmit', 'Intento de registro sin resolver el captcha'); // Logueamos el intento de registro sin resolver el captcha
       return;
     }
 
@@ -207,9 +215,14 @@ export class RegistroPacienteComponent implements OnInit {
       await supabase.auth.signOut();
       this.router.navigate(['/bienvenida']);
 
+      this.logService.registrarIngreso('REGISTRATION_SUCCESS', 'RegistroPacienteComponent', 'onSubmit', `Paciente registrado exitosamente: ${fv.email}`); // Logueamos el registro exitoso, mostrando el email del nuevo paciente registrado
+
     } catch (err: any) {
       console.error('[Registro Paciente] Error:', err);
       Swal.fire('Error', this.mapPgError(err), 'error');
+
+      this.logService.registrarIngreso('REGISTRATION_ERROR', 'RegistroPacienteComponent', 'onSubmit', `Error en registro de paciente: ${err instanceof Error ? err.message : JSON.stringify(err)}`); // Logueamos el error ocurrido durante el registro, mostrando el mensaje del error para facilitar la identificación de problemas
+
     } finally {
       this.loading = false;
     }
@@ -270,8 +283,14 @@ export class RegistroPacienteComponent implements OnInit {
       .eq('dni', dni)
       .limit(1);
 
-    if (dniError) throw new Error('Error al validar DNI.');
-    if (dniRows && dniRows.length > 0) throw new Error('El DNI ya existe en el sistema.');
+    if (dniError) {
+      this.logService.registrarIngreso('VALIDATION_ERROR', 'RegistroPacienteComponent', 'validarDniYEmailUnicos', `Error al validar DNI: ${dniError.message}`);
+      throw new Error('Error al validar DNI.');
+    }
+    if (dniRows && dniRows.length > 0) {
+      this.logService.registrarIngreso('VALIDATION_ERROR', 'RegistroPacienteComponent', 'validarDniYEmailUnicos', `El DNI ya existe en el sistema: ${dni}`);
+      throw new Error('El DNI ya existe en el sistema.');
+    }
 
     const { data: emailRows, error: emailError } = await supabase
       .from('usuarios')
@@ -279,8 +298,14 @@ export class RegistroPacienteComponent implements OnInit {
       .eq('email', email)
       .limit(1);
 
-    if (emailError) throw new Error('Error al validar email.');
-    if (emailRows && emailRows.length > 0) throw new Error('El correo ya está registrado.');
+    if (emailError) {
+      this.logService.registrarIngreso('VALIDATION_ERROR', 'RegistroPacienteComponent', 'validarDniYEmailUnicos', `Error al validar email: ${emailError.message}`);
+      throw new Error('Error al validar email.');
+    }
+    if (emailRows && emailRows.length > 0) { 
+      this.logService.registrarIngreso('VALIDATION_ERROR', 'RegistroPacienteComponent', 'validarDniYEmailUnicos', `El correo ya está registrado: ${email}`);
+      throw new Error('El correo ya está registrado.');
+    }
   }
 
   private mapPgError(err: any): string {
@@ -289,6 +314,8 @@ export class RegistroPacienteComponent implements OnInit {
       return 'Este usuario ya está registrado.';
     }
     if (msg.includes('password') && (msg.includes('weak') || msg.includes('at least'))) {
+
+      
       return 'La contraseña debe tener al menos 6 caracteres.';
     }
     return err?.message || 'Error desconocido';

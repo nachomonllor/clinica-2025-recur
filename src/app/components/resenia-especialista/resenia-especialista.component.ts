@@ -13,6 +13,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { LogIngresosService } from '../../../services/log-ingresos.service';
 
 
 @Component({
@@ -39,7 +40,8 @@ export class ReseniaEspecialistaComponent implements OnInit {
     private fb: FormBuilder,
   //  private turnoService: TurnoService,
     private snackBar: MatSnackBar,
-    public router: Router
+    public router: Router,
+     private logService: LogIngresosService
   ) {}
 
   ngOnInit(): void {
@@ -51,12 +53,17 @@ export class ReseniaEspecialistaComponent implements OnInit {
       resena: ['', Validators.required]
     });
 
+
     // // 3) (Opcional) cargar reseña previa si existe
     // this.turnoService.getMockTurnoById(this.turnoId).subscribe(t => {
     //   if (t?.resenaEspecialista) {
     //     this.form.patchValue({ resena: t.resenaEspecialista });
     //   }
     // });
+
+
+   
+
   }
 
   onSubmit(): void {
@@ -74,6 +81,9 @@ export class ReseniaEspecialistaComponent implements OnInit {
     //     this.router.navigate(['/mis-turnos-especialista']);
     //   }
     // );
+
+    this.logService.registrarIngreso('REVIEW_SUBMITTED', 'ReseniaEspecialistaComponent', 'onSubmit', `Reseña enviada para turno ID ${this.turnoId}`); // Logueamos el envío de la reseña, mostrando el ID del turno para el cual se envió la reseña
+
   }
 }
 

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { SupabaseService } from '../../../services/supabase.service';
+import { LogIngresosService } from '../../../services/log-ingresos.service';
 
 interface OpcionCaptcha {
   nombre: string;
@@ -20,6 +21,7 @@ export class CaptchaPropioComponent implements OnInit {
 
   // Evento de salida para avisarle al padre (Registro) si PASO o no la prueba el USUARIOS 
   @Output() captchaValido = new EventEmitter<boolean>();
+
 
   habilitado: boolean = true;
   
@@ -39,7 +41,7 @@ export class CaptchaPropioComponent implements OnInit {
   seleccionado: OpcionCaptcha | null = null;
   esCorrecto: boolean = false;
 
-  constructor(private supa: SupabaseService) {}
+  constructor(private supa: SupabaseService, private logService: LogIngresosService) {}
 
   /**
    * Consulta a Supabase si el sistema requiere Captcha (Configuración Global).
@@ -100,5 +102,8 @@ export class CaptchaPropioComponent implements OnInit {
       // Opcional: Reiniciar si se equivoca para hacerlo más difícil
       // setTimeout(() => this.generarJuego(), 500); 
     }
+
+    this.logService.registrarIngreso('CAPTCHA_SELECTION', 'CaptchaPropioComponent', 'seleccionar', `Opción seleccionada: ${opcion.nombre}. Objetivo: ${this.objetivo?.nombre}. Resultado: ${this.esCorrecto ? 'Correcto' : 'Incorrecto'}`); // Logueamos la selección del captcha, mostrando la opción seleccionada, el objetivo y el resultado
+
   }
 }

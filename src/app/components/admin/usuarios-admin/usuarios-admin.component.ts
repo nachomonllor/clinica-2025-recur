@@ -168,16 +168,21 @@ export class UsuariosAdminComponent implements OnInit {
           .eq('id', userId)
           .single();
 
+          this.logService.registrarIngreso('CHECKING_ADMIN_ROLE', 'UsuariosAdminComponent', 'ngOnInit', `Verificando rol de usuario: ${userId}`); // Logueamos la verificación del rol de admin 
+
         if (!error && usuario) {
           const perfil = String(usuario.perfil ?? '').toUpperCase();
           this.esAdmin = perfil === 'ADMIN';
         }
       }
 
-      this.logService.registrarIngreso('VIEW_ADMIN_USERS_PAGE'); // Logueamos la visita a la página de usuarios admin
+      this.logService.registrarIngreso('CHECKED_ADMIN_ROLE', 'UsuariosAdminComponent', 'ngOnInit', `Rol de admin: ${this.esAdmin}`); // Logueamos el resultado de la verificación del rol de admin
+
     } catch (e) {
       console.error('[UsuariosAdmin] Error al verificar rol', e);
-      this.logService.registrarIngreso('ERROR_CHECKING_ADMIN_ROLE'); // Logueamos el error al verificar el rol de admin
+
+      this.logService.registrarIngreso('ERROR_CHECKING_ADMIN_ROLE', 'UsuariosAdminComponent', 'ngOnInit', `Error al verificar rol de admin: ${e instanceof Error ? e.message : String(e)}`); // Logueamos el error al verificar el rol de admin
+
     }
 
     await this.cargarUsuarios();
@@ -197,6 +202,10 @@ export class UsuariosAdminComponent implements OnInit {
     const habilitadosFiltered = this.soloHabilitados ? rolFiltered.filter(u => (u.rol === 'ESPECIALISTA' ? u.habilitado : true)) : rolFiltered;
     const term = (this.search ?? '').trim().toLowerCase();
     if (!term) return habilitadosFiltered;
+
+
+    this.logService.registrarIngreso('APPLYING_SEARCH_FILTER', 'UsuariosAdminComponent', 'filtered', `Aplicando filtro de búsqueda: "${term}", Usuarios a filtrar: ${habilitadosFiltered.length}`); // Logueamos la aplicación del filtro de búsqueda, mostrando el término y la cantidad de usuarios que se están filtrando
+
     return habilitadosFiltered.filter(u => this.matchesSearch(u, term));
   }
 
@@ -211,7 +220,10 @@ export class UsuariosAdminComponent implements OnInit {
 
   // Transforma los datos crudos que vienen de la base de datos
   private toCardVM(u: UsuarioAdmin): UsuarioAdminCard {
-    this.logService.registrarIngreso('MAP_USER_DB_TO_CARD'); // Logueamos la transformación de datos de DB a CardVM
+
+
+    this.logService.registrarIngreso('MAPPING_USER_TO_CARD', 'UsuariosAdminComponent', 'toCardVM', `Mapeando usuario a card: ${u.id}`); // Logueamos la transformación de usuario a card, mostrando el ID del usuario que se está mapeando
+
     return {
       id: u.id,
       rol: u.rol,
@@ -255,6 +267,10 @@ export class UsuariosAdminComponent implements OnInit {
   private pickColor(id: string): AccentColor {
     const colors: AccentColor[] = ['purple', 'teal', 'blue', 'pink'];
     let hash = 0; for (let i = 0; i < id.length; i++) hash = (hash * 31 + id.charCodeAt(i)) | 0;
+
+
+    this.logService.registrarIngreso('PICKING_COLOR_FOR_USER', 'UsuariosAdminComponent', 'pickColor', `Seleccionando color para usuario: ${id}, Color elegido: ${colors[Math.abs(hash) % colors.length]}`); // Logueamos la selección de color para un usuario, mostrando el ID del usuario y el color elegido  
+
     return colors[Math.abs(hash) % colors.length];
   }
 
@@ -458,6 +474,9 @@ export class UsuariosAdminComponent implements OnInit {
 
     if (!turnosParaExportar.length) {
       this.snackBar.open('No hay turnos para exportar.', 'Cerrar', { duration: 2500 });
+
+      this.logService.registrarIngreso('NO_TURNOS_TO_EXPORT', 'UsuariosAdminComponent', 'descargarTurnosPdf', `No hay turnos para exportar para el usuario: ${usuario.id}`); // Logueamos el caso donde no hay turnos para exportar, mostrando el ID del usuario
+
       return;
     }
 
@@ -475,6 +494,8 @@ export class UsuariosAdminComponent implements OnInit {
     const historiasMap = new Map();
     if (historiasData) {
       historiasData.forEach((h: any) => historiasMap.set(h.turno_id, h));
+
+      this.logService.registrarIngreso('FETCHED_MEDICAL_DATA', 'UsuariosAdminComponent', 'descargarTurnosPdf', `Datos médicos obtenidos para turnos: ${idsTurnos.join(', ')}`); // Logueamos la obtención de datos médicos, mostrando los IDs de los turnos para los cuales se obtuvieron datos
     }
 
     // --- GENERACIÓN PDF ---
@@ -778,7 +799,11 @@ export class UsuariosAdminComponent implements OnInit {
         showConfirmButton: false
       });
       this.cancelarCreacion();
+
+      this.logService.registrarIngreso('USER_CREATED', 'UsuariosAdminComponent', 'guardarUsuario', `Usuario creado con ID: ${user.id}, Email: ${fv.email}, Rol: ${fv.rol}`); // Logueamos la creación de un nuevo usuario, mostrando su ID, email y rol
+
       await this.cargarUsuarios();
+
     } catch (err: any) {
       console.error('[UsuariosAdmin] Error al crear usuario', err);
       Swal.fire(
@@ -824,6 +849,11 @@ export class UsuariosAdminComponent implements OnInit {
 
       if (error) {
         console.error('[UsuariosAdmin] Error al cargar historia clínica', error);
+
+        this.logService.registrarIngreso('ERROR_LOADING_MEDICAL_HISTORY', 'UsuariosAdminComponent', 'verHistoriaClinica', `Error al cargar historia clínica para paciente ID: ${pacienteId}. Error: ${error.message}`); // Logueamos el error al cargar la historia clínica, mostrando el ID del paciente y el mensaje de error
+
+         Swal.fire('Error', 'No se pudo cargar la historia clínica.', 'error');
+
         return;
       }
 
@@ -882,6 +912,8 @@ export class UsuariosAdminComponent implements OnInit {
               tipo = 'booleano';
             }
 
+            this.logService.registrarIngreso('PROCESSED_DYNAMIC_DATA', 'UsuariosAdminComponent', 'verHistoriaClinica', `Dato dinámico procesado - Clave: ${d.clave}, Valor: ${valor}, Tipo: ${tipo}, Unidad: ${unidad}`); // Logueamos el procesamiento de cada dato dinámico, mostrando su clave, valor, tipo y unidad 
+
             return {
               clave: d.clave,
               valor: valor,
@@ -889,6 +921,9 @@ export class UsuariosAdminComponent implements OnInit {
               unidad: unidad
             };
           });
+
+
+          this.logService.registrarIngreso('MAPPED_MEDICAL_HISTORY', 'UsuariosAdminComponent', 'verHistoriaClinica', `Historia clínica mapeada para turno ID: ${h.turno_id}, Paciente ID: ${pacienteId}`); // Logueamos el mapeo completo de la historia clínica, mostrando el ID del turno y del paciente  
 
           return {
             ...h,
@@ -949,6 +984,7 @@ export class UsuariosAdminComponent implements OnInit {
 
       if (error) throw error;
 
+      this.logService.registrarIngreso('USER_PROMOTED_TO_ADMIN', 'UsuariosAdminComponent', 'hacerAdmin', `Usuario ID: ${u.id} promovido a ADMINISTRADOR`); // Logueamos la promoción de un usuario a administrador
       Swal.fire({
         title: '¡Actualizado!',
         text: `El usuario ahora es Administrador.`,
@@ -1036,9 +1072,15 @@ export class UsuariosAdminComponent implements OnInit {
         showConfirmButton: false
       });
 
+     this.logService.registrarIngreso('EXCEL_EXPORT_SUCCESS', 'UsuariosAdminComponent', 'descargarExcel', `Reporte Excel de usuarios generado exitosamente con ${dataParaExcel.length} registros`); // Logueamos la exportación exitosa del Excel, mostrando la cantidad de registros exportados
+
+
     } catch (error) {
       console.error('Error al exportar Excel:', error);
       Swal.fire('Error', 'Hubo un problema al generar el archivo Excel.', 'error');
+
+        this.logService.registrarIngreso('EXCEL_EXPORT_ERROR', 'UsuariosAdminComponent', 'descargarExcel', `Error al generar Excel: ${error instanceof Error ? error.message : String(error)}`); // Logueamos el error ocurrido durante la exportación del Excel, mostrando el mensaje de error
+
     } finally {
       this.loading.hide();
     }
@@ -1235,6 +1277,8 @@ export class UsuariosAdminComponent implements OnInit {
         // GUARDAR ARCHIVO
         const nombreArchivo = `Usuarios_Sistema_${new Date().getTime()}.pdf`;
         doc.save(nombreArchivo);
+
+        this.logService.registrarIngreso('PDF_EXPORT_SUCCESS', 'UsuariosAdminComponent', 'descargarUsuariosPdf', `Reporte PDF de usuarios generado exitosamente con ${usuariosOrdenados.length} registros`); // Logueamos la exportación exitosa del PDF, mostrando la cantidad de registros exportados
       };
 
       //  CARGAR IMAGEN =====> EJECUTAR DIBUJO
@@ -1263,6 +1307,8 @@ export class UsuariosAdminComponent implements OnInit {
       console.error('Error al generar PDF', e);
       this.snackBar.open('Error al generar el PDF.', 'Cerrar');
       this.loading.hide();
+
+      this.logService.registrarIngreso('PDF_EXPORT_ERROR', 'UsuariosAdminComponent', 'descargarUsuariosPdf', `Error al generar PDF: ${e instanceof Error ? e.message : String(e)}`); // Logueamos el error ocurrido durante la generación del PDF, mostrando el mensaje de error
     }
   }
 

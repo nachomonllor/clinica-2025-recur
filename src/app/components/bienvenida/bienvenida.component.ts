@@ -13,6 +13,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { SupabaseService } from '../../../services/supabase.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { LogIngresosService } from '../../../services/log-ingresos.service';
 
 @Component({
   selector: 'app-bienvenida',
@@ -56,7 +57,9 @@ export class BienvenidaComponent implements OnInit, OnDestroy {
   constructor(
     private supabase: SupabaseService,
     private router: Router,
-    private translate: TranslateService    //  <= ========== NUEVO
+    private translate: TranslateService  ,  //  <= ========== NUEVO
+    private  logService: LogIngresosService     //  <= ========== NUEVO
+      
   ) {
 
     // Al instanciar, verificamos si existe una preferencia guardada en localStorage.
@@ -79,6 +82,9 @@ export class BienvenidaComponent implements OnInit, OnDestroy {
     this.idiomaActual.set(lang);
     this.translate.use(lang);
     localStorage.setItem('lang', lang);
+
+    this.logService.registrarIngreso('LANGUAGE_CHANGED', 'BienvenidaComponent', 'cambiarIdioma', `Idioma cambiado a: ${lang}`); // Logueamos el cambio de idioma, mostrando el nuevo idioma seleccionado
+
   }
 
 

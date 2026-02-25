@@ -2,6 +2,7 @@
 
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { LogIngresosService } from '../../../services/log-ingresos.service';
 
 interface CaptchaConfig {
   imagenUrl: string;
@@ -21,6 +22,9 @@ export class CaptchaImagenComponent implements OnInit {
 
   gridSize = 3;
   celdas = Array.from({ length: 9 }, (_, i) => i);
+
+
+  constructor(private logService: LogIngresosService) {}
 
   private captchas: CaptchaConfig[] = [
     {
@@ -68,6 +72,9 @@ export class CaptchaImagenComponent implements OnInit {
 
     this.esCorrecto = ok;
     this.captchaValido.emit(ok);
+
+    this.logService.registrarIngreso('CAPTCHA_VERIFICATION', 'CaptchaImagenComponent', 'verificar', `Captcha verificado. Resultado: ${ok ? 'Correcto' : 'Incorrecto'}. Selección: [${seleccion.join(', ')}], Correctas: [${correctas.join(', ')}]`); // Logueamos el resultado de la verificación del captcha, mostrando la selección del usuario y las celdas correctas
+
   }
 
   recargar(): void {
@@ -81,6 +88,9 @@ export class CaptchaImagenComponent implements OnInit {
     this.captchaActual =
       this.captchas[Math.floor(Math.random() * this.captchas.length)];
     this.captchaValido.emit(false);
+
+
+    this.logService.registrarIngreso('CAPTCHA_RESET', 'CaptchaImagenComponent', 'resetearCaptcha', `Captcha reseteado. Nueva instrucción: ${this.captchaActual.instruccion}`); // Logueamos el reseteo del captcha, mostrando la nueva instrucción
   }
 
   getBackgroundPosition(indice: number): string {

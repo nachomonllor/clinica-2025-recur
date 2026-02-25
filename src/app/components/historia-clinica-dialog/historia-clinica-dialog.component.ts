@@ -7,6 +7,7 @@ import { HistoriaClinicaConExtras } from '../../models/historia-clinica.model';
 import { DatoDinamicoPipe } from '../../../pipes/dato-dinamico.pipe';
 import { CapitalizarNombrePipe } from '../../../pipes/capitalizar-nombre.pipe';
 import { formatearDatoDinamico } from '../../models/dato-dinamico.model';
+import { LogIngresosService } from '../../../services/log-ingresos.service';
 
 export interface HistoriaClinicaDialogData {
   pacienteNombre: string;
@@ -31,7 +32,8 @@ export class HistoriaClinicaDialogComponent {
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: HistoriaClinicaDialogData,
-    private dialogRef: MatDialogRef<HistoriaClinicaDialogComponent>
+    private dialogRef: MatDialogRef<HistoriaClinicaDialogComponent>,
+    private logService: LogIngresosService
   ) { }
 
   toggleCard(index: number): void {
@@ -75,6 +77,8 @@ export class HistoriaClinicaDialogComponent {
           .map((d: any) => formatearDatoDinamico(d))
           .join('; ');
       }
+
+      this.logService.registrarIngreso('EXPORT_EXCEL_ROW', 'HistoriaClinicaDialogComponent', 'exportarExcel', `Preparando fila para Excel: Fecha: ${h.fechaAtencion || h.fecha_registro || h.created_at}, Especialidad: ${h.especialidad}, Especialista: ${h.especialistaNombre}, Reseña: ${h.resena ? 'Sí' : 'No'}, Datos Dinámicos: ${dinamicosStr ? 'Sí' : 'No'}`); // Logueamos la preparación de cada fila para el Excel, mostrando los datos clave y si tiene reseña o datos dinámicos
 
       // 2. Retornamos la fila para el Excel
       return {
@@ -181,6 +185,9 @@ export class HistoriaClinicaDialogComponent {
         doc.setFontSize(12);
         doc.text('No hay historias clínicas registradas.', pageWidth / 2, pageHeight / 2, { align: 'center' });
         doc.save(`historia_clinica_${this.data.pacienteNombre.replace(/\s+/g, '_').toLowerCase()}.pdf`);
+
+        this.logService.registrarIngreso('EXPORT_PDF_NO_HISTORIAS', 'HistoriaClinicaDialogComponent', 'exportarPdf', `El paciente ${this.data.pacienteNombre} no tiene historias clínicas para exportar a PDF.`); // Logueamos el intento de exportar a PDF sin historias clínicas, mostrando el nombre del paciente
+
         return;
       }
 

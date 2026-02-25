@@ -23,6 +23,7 @@ import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
 
 import { EstadisticasService } from '../../../services/estadisticas.service';
+import { LogIngresosService } from '../../../services/log-ingresos.service';
 
 // Registramos la data del idioma
 registerLocaleData(localeEsAr, 'es-AR');
@@ -94,7 +95,8 @@ export class InformesGeneralesComponent implements OnInit {
   constructor(
     private fb: FormBuilder, 
     private api: EstadisticasService,
-    private _adapter: DateAdapter<any> // Inyectamos el adaptador de fecha
+    private _adapter: DateAdapter<any>, // Inyectamos el adaptador de fecha
+    private logService: LogIngresosService
   ) {}
 
   async ngOnInit() {
@@ -125,6 +127,8 @@ export class InformesGeneralesComponent implements OnInit {
         return `${dia}-${mes}-${anio}`;
       }
     }
+
+    this.logService.registrarIngreso('DATE_FORMAT_UNEXPECTED', 'InformesGeneralesComponent', 'formatearFecha', `Fecha con formato inesperado: ${fechaStr}`); // Logueamos si la fecha viene en un formato inesperado, para poder identificar posibles problemas de formato en la base de datos o en la API
     // Fallback por si viene en otro formato
     return fechaStr;
   }
@@ -256,6 +260,8 @@ export class InformesGeneralesComponent implements OnInit {
     pdf.addImage(chartPng, 'PNG', margin, topMargin, pdfImgWidth, pdfImgHeight);
     
     pdf.save(`informe_general_${Date.now()}.pdf`);
+
+    this.logService.registrarIngreso('EXPORT_PDF', 'InformesGeneralesComponent', 'descargarPDF', `Se descargó un PDF del informe general: ${titulo}`); // Logueamos la descarga del PDF, mostrando el título del informe generado
   }
 
 
