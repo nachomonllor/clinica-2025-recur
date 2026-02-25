@@ -262,3 +262,19 @@ insert into esquema_clinica.estados_turno (id, codigo, descripcion, orden) value
 insert into esquema_clinica.configuracion_sistema (clave, valor_boolean)
 values ('captcha_habilitado', true)
 on conflict (clave) do nothing;
+
+
+
+-- -------------------------------------------------------------------
+-- PING KEEP ALIVE (Para evitar que Supabase pause el proyecto)
+-- -------------------------------------------------------------------
+create table esquema_clinica.ping_keep_alive (
+  id integer primary key default 1, -- ID fijo para sobreescribir siempre la misma fila
+  ultimo_ping timestamptz not null default now(),
+  origen text default 'App Clínica'
+);
+
+-- Insertamos el registro inicial (solo afectará la primera vez)
+insert into esquema_clinica.ping_keep_alive (id, ultimo_ping, origen) 
+values (1, now(), 'Inicialización')
+on conflict (id) do nothing;

@@ -78,4 +78,3 @@ WHERE
     e.email = 'nora@hotmail.com' -- Filtramos por el mail de Nora
 ORDER BY 
     ea.fecha_respuesta DESC;
-
